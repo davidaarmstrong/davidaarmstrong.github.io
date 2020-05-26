@@ -1,5 +1,5 @@
 ---
-title: Interactive Visualization, Dashboards and Apps with R
+project_title: Interactive Visualization, Dashboards and Apps with R
 author: Dave Armstrong
 ---
 

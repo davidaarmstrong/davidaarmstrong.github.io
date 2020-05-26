@@ -1,0 +1,458 @@
+---
+title: "Interactive Visualization"
+subtitle: "Interactivity without Shiny"  
+author: "Dave Armstrong"
+date: 'May 27, 2020'
+output:
+  xaringan::moon_reader:
+    chakra: libs/remark-latest.min.js
+    lib_dir: libs
+    css: ["xaringan-themer.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: 16:9
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, dev="svg")
+```
+
+
+```{r xaringan-themer, include=FALSE}
+
+library(xaringanthemer)
+style_mono_accent(base_color = "#4F2683", code_font_size=".65rem", text_font_size = "1.25rem")
+```
+
+# Welcome
+
+Instructional Staff
+
+- [Dave Armstrong](https://quantoid.net) [Instructor] [dave.armstrong@uwo.ca](mailto::dave.armstrong@uwo.ca)
+
+- John Kennedy [TA] [jkenne57@uwo.ca](mailto::jkenne57@uwo.ca)
+
+
+The course material will be posted in two places: 
+
+- [UMich Canvas](https://umich.instructure.com/) 
+  - ICPSR is recording the course for later viewing and these recordings will only appear on Canvas. 
+
+- [My website](https://quantoid.net/teachicpsr/shiny)
+
+---
+
+# What you need (R)
+
+- [R](https://cran.r-project.org): I am using R v 4.0.0, released April 24, 2020.  If you're using an earlier version, please upgrade. 
+
+- [Rstudio](https://rstudio.com/products/rstudio/download/): I am using RStudio v 1.2.5042, released April 1, 2020.  If you're using a different version than this, please upgrade. 
+
+- **Optional** If you are using a machine that prevents installing software, you could use [RStudio Cloud](https://Rstudio.cloud) which is a web-based RStudio distribution.  
+  
+---
+
+# What you need (deploying)
+
+- [Shinyapps.io](https://www.shinyapps.io) account.  You can get the free tier for now.  This will allow us to deploy the apps we make in the course. 
+
+- **Optional:** It would be nice if you had a website where it would be easy to upload (through ftp or otherwise) content.  If you're looking for a recommendation, I use [asocialfolder](https://asocialfolder.com/).  It's currently free.  It uses [Markdown](https://daringfireball.net/projects/markdown/syntax) and [Dropbox](https://www.dropbox.com) to build websites, which makes putting uploading content as easy as saving it in a dropbox folder. 
+
+---
+
+# Classroom Management 
+
+Obviously, we are using Zoom as the platform for the course.  Here are a few tips that will hopefully keep us all rowing in the same direction. 
+
+- In the "participants" pop-out window, there are buttons at the bottom that allow you to respond to prompts non-verbally.  Please use these to raise your hand, respond to yes-no questions or respond to questions about the pace of the course. 
+
+![](part_action.png)
+
+- You can use the chat window to ask questions.  
+
+---
+
+# Example Datasets
+
+We're going to be doing lots of applied work in the course.  As such, we'll need to have some data to work with.
+
+- Use your own data `r emo::ji("thumbsup")`
+
+- Here are a few example datasets for those who would like something already in R: 
+  - `gapminder_unfiltered` in the `{gapminder}` package. 
+  - `diamonds` in the `{ggplot2}` package. 
+  - `SLID` from the `{carData}` package. 
+  
+- You could also look through the `{carData}` package or the `{datasets}` package to find other examples. 
+
+---
+
+# Outline for Part I
+
+- Making graphs with `{ggplot2}` - before moving into interactive viz, we'll build a foundation with static visualization. 
+
+- Using `ggplotly()` from the `{plotly}` package to make plotly objects. 
+
+- Maps in R using the `{sf}` package. 
+
+- htmlwidgets universe of functions. 
+  - particularly `{plotly}`, `{leaflet}`, `{d3heatmap}` 
+
+- Putting your interactive graphs online. 
+
+---
+
+# `ggplot` 
+
+Our initial forray into interactive graphics will focus on static graphics through the `{ggplot2}` package.  In this visualization framework, 
+
+- Variables can be used to specify aesthetics, from $x$ and $y$ coordinates, to shapes, sizes and colours of elements. 
+
+- Data are encoded with geometries - these are specified with a `geom_*()` function.  This is how points, lines, confidence intervals/envelopes, etc... are included in the plot. 
+
+- Aesthetics can be customized and manipulated with the `scale_*()` functions - these allow changing default colours, sizes, shapes, etc...  
+
+---
+
+# `ggplot` 2
+
+There are also lots of ways to change the way that the plot looks. 
+
+- Themes change the overall look of the plot - grid lines, background colour, aspect ratio, etc... I almost always use the `theme_bw()` function to drop the gray background or `theme_minimal()`. 
+
+- Facets allow plots to be juxtaposed (side-by-side) instead of superposed (same panel with different colour, shape, etc...).  The `facet_grid()` and `facet_wrap()` functions implement this. 
+
+- The `labs()` function allow you to put titles on axes and legends. 
+
+---
+
+# Gapminder example 1
+
+```{r, gg1, eval=FALSE}
+library(gapminder)
+library(ggplot2)
+library(dplyr)
+gm4 <- gapminder %>% 
+  filter(country %in% c("Canada", "United States", "Australia", "United Kingdom")) %>%
+  mutate( country = droplevels(country))
+  
+
+g1 <- ggplot(gm4, aes(x=year, y=gdpPercap, colour=country)) + 
+  geom_line() +
+  theme_bw() + 
+  labs(x="Year", y="GDP/capita", colour="Country") 
+g1
+```
+
+---
+
+# plot
+
+```{r, gg1, fig=TRUE, fig.height=5, fig.width=9, out.width="65%", fig.align="center", dev="svg", eval=TRUE, echo=FALSE}
+```
+
+
+
+
+---
+# Gapminder example 2
+
+```{r, fig=TRUE, fig.height=3, fig.width=9, out.width="100%", fig.align="center", dev="svg"}
+g2 <- ggplot(gm4, aes(x=year, y=gdpPercap)) + 
+  geom_line() +
+  facet_wrap(~country, nrow=1) + 
+  theme_bw() + 
+  labs(x="Year", y="GDP/capita", colour="Country")
+g2
+```
+
+---
+
+# Now, you try!
+
+```{r, echo=FALSE}
+library(countdown)
+countdown(minutes = 5, seconds = 0)
+```
+
+Make a graph using either your data or the example data. 
+
+
+---
+
+# ggplotly 1
+
+```{r, echo=FALSE}
+ifWidget <- function(plot, h=500, w=500, file=1, return=TRUE, selfcontained=TRUE){
+  if(is.numeric(file)){
+    f <- paste0("p-", file, ".html")  
+  }else{
+    f <- file
+  }
+  htmlwidgets::saveWidget(plot, f, selfcontained=selfcontained)
+  if(return){
+  htmltools::tags$iframe(
+    src=f,
+    height=as.character(h),
+    width=as.character(w),
+    scrolling="no", 
+    seamless="seamless", 
+    frameBorder="0")
+  }
+}
+```
+
+
+```{r, out.height="50%"}
+library(plotly)
+gp1 <- ggplotly(g1, height=375, width=750)
+ifWidget(gp1, 900, 1800, 0)
+```
+
+---
+
+# sidebar
+
+I am using the `ifWidget()` function which is defined in the R file for this lecture. 
+
+- Solves a problem with tooltips not showing up in the right place. 
+- Problem exists when including plotly output in a xaringan presentation. 
+
+You shouldn't have to use this unless you're making a xaringan presentation with plotly objects in it. 
+
+---
+
+# Sharing Your Plot
+
+The easiest way to share this plot is to put it in an RMarkdown document and render an html page. 
+
+- Open an RMarkdown document - specify render to HTML in the opening dialog. 
+- Place the code to generate the plot and plotly objects in the document. 
+- Knit to html. 
+
+The plotly object and all of the relevant javascript resources are embedded in the resulting html so you just need to put the html document on your webserver. 
+
+
+
+```{r, echo=FALSE}
+countdown(minutes = 3, seconds = 0)
+```
+
+---
+
+# ggplotly problems
+
+The `ggplotly` function makes interactive graphs easily, but the elements of the graphs are harder to control. 
+
+- You don't have as fine control over what's going on in the plot as you can by using `plot_ly()` directly. 
+
+There are some other problems that will be relevant for later in the workshop as well. 
+
+- In Shiny apps, the axis labels don't always show up in the right place. 
+- The legend title over-plots some of the interactive controls. 
+
+We can solve these by using plotly directly. 
+
+---
+
+# htmlwidgets
+
+The `{plotly}` package is part of the [htmlwidgets](https://www.htmlwidgets.org/) universe of packages.  
+
+- Lots of different packages that work on different kinds of plots. 
+- Functions that produce interactive, html graphics. 
+- Works for maps, scatter, line and heatmap plots.  
+- Some extend D3.js functionality. 
+
+---
+
+# plotly elements
+
+The encoding and displaying of information happens similarly to `ggplot()`.  The call to `plot_ly()` usually has aesthetic elements in it, though they are not specified with an `aes()` function as in `ggplot()`.  
+
+For example, 
+
+```{r, eval=FALSE}
+plot_ly(gm4, x = ~year, y = ~gdpPercap, color = ~country)
+```
+
+will initialize a plot where `year` is on the x-axis, `gdpPercap` is on the y-axis and the color changes based on `country`.  You can also specify `size=`, `symbol=` and `linetype=` to change other aesthetic elements. 
+
+---
+
+# encoding information
+
+We can encode inforamtion with the `add_*()` functions.   Generally, out initialized `polt_ly` object is piped to these other functions.  
+
+- `add_marker()` adds points
+- `add_line()` connects the dots between all x-y coordinate pairs. 
+- `add_segment()` adds a line segment between two x-y coordinates. 
+- `add_polygon()` adds polygons to the plotting region.  
+- `add_ribbon()` adds polygons, specifially of the type you would use to make confidence regions. 
+- `add_annotations()` adds text to the plotting region. 
+
+---
+
+# The `layout()` function
+
+Plotly plots can always be piped to a `layout()` function.  This controls 
+- axis labels
+- tick mark placement, length, etc...
+- margins, padding, etc... 
+
+You can learn more about all the options [here](https://plotly.com/r/reference/#layout). 
+
+---
+
+# plotly
+
+```{r, fig.align="center"}
+library(plotly)
+p <- plot_ly(gm4, x= ~year, y = ~gdpPercap, color=~country, 
+        width=750, height=275) %>% 
+      add_lines() %>% 
+      layout(xaxis=list(title="Year"),  
+         yaxis=list(title="GDP/capita")) 
+ifWidget(p, 500, 1800, 1)
+```
+
+---
+
+# Encoding More Information
+```{r, fig.align="center"}
+p2 <- plot_ly(gm4, height=350, width=600) %>% 
+        add_markers(x= ~year, y = ~gdpPercap, color=~country,
+                   size=~log(pop)) %>% #<<
+      layout(xaxis=list(title="Year"),  
+         yaxis=list(title="GDP/capita")) 
+```
+
+<center>
+```{r, echo=FALSE}
+ifWidget(p2, 450, 1800, 3)
+
+```
+
+</center>
+
+---
+
+# Adding in Statistical Models
+
+Let's say that we wanted to build a plot of `lifeExp` (y)  relative to `gdpPercap` (x) and put in a single regression line.  How would we do this? 
+
+1. Run the regression. 
+2. Use `augment()` from the `{broom}` package to save the results. 
+3. Plot the augmented data - both the points and the fitted values. 
+
+Give it a try!
+
+```{r, echo=FALSE}
+countdown(minutes=5, seconds=0)
+```
+
+---
+
+# Extending 
+
+What if you wanted to make a different regression line for each country? 
+
+Give it a try!
+
+```{r, echo=FALSE}
+countdown(minutes=5, seconds=0)
+```
+
+---
+
+# 3D scatterplots
+
+3-D scatterplots always get 👏😲💯🧠💣
+
+
+```{r plotly3d}
+plot_ly(gm4, width=700, height=500, showlegend=FALSE) %>%
+      add_markers(x = ~log(pop), z = ~lifeExp, 
+              y = ~gdpPercap, color=~country, showlegend=TRUE) %>% 
+      layout(autosize=FALSE,  
+             scene = list(
+              xaxis=list(title="log(Population)"),  
+              yaxis=list(title="GDP/capita"), 
+              zaxis=list(title="Life Expectancy")
+             ))
+             
+```
+
+---
+
+## Plot
+
+```{r, figpy3d, eval=TRUE
+`---}
+
+``
+
+# adding a regression surface
+
+The `add_surface()` function is the analog for `add_line()` in three dimensions.  It does work a bit differently.  The inputs have to be as follows: 
+
+- `x`: a $n_{x}$ length ordered vector of unique x-values. 
+- `y`: A $n_{y}$ length ordered vector of unique y-values. 
+- `z`: a $n_{x}\times n_{y}$ matrix of values that give the height of the surface at every x-y combination. 
+
+Here, $n_{x}$ and $n_{y}$ are not necessarily the number of unique values in the data, it could be a smaller (or larger) number.
+- Also, `x` and `y` would both be independent variables and `z` would be fitted values. 
+
+
+---
+
+# adding a regression surface 2
+
+There is a function in the R-code for the class called `predictMat()` that you can source into R and use to generate these predictions.  Give it a try!
+
+- Hint: make sure that the first independent variable in the model is `x` in `plotly` and the second one is `y`. 
+
+```{r, echo=F}
+countdown(minutes=5, seconds=0)
+```
+
+---
+
+# maps
+
+R has great capabilities for mapping.  We are going to use the [`{sf}`](https://r-spatial.github.io/sf/index.html) package for handling spatial data.  
+
+
+```{r, results='hide', cache=TRUE}
+load("counties.rda")
+library(sf)
+library(stringr)
+
+ohio <- counties %>% 
+  filter(state %in% c("Ohio")) %>% 
+  mutate(text = paste(NAMELSAD, "\n", cases, " cases", sep=""))
+```
+
+---
+
+# ohio 
+
+```{r, cache=FALSE}
+ohio_map <- plot_ly(ohio, split = ~ text,  color = ~log(cases),  alpha = 1, 
+        hoverinfo="text", hoveron="fill",  showlegend=FALSE)
+ifWidget(ohio_map, h="65%", w="65%", 4, selfcontained=FALSE)
+```
+
+
+---
+
+# deaths in florida
+
+Now you plot deaths in Florida. 
+
+```{r}
+countdown(minutes=20, seconds=0)
+```

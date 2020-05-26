@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Interactive Visualization</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <meta name="date" content="2020-05-27" />
+    <link href="libs/countdown/countdown.css" rel="stylesheet" />
+    <script src="libs/countdown/countdown.js"></script>
+    <script src="libs/htmlwidgets/htmlwidgets.js"></script>
+    <script src="libs/plotly-binding/plotly.js"></script>
+    <script src="libs/typedarray/typedarray.min.js"></script>
+    <script src="libs/jquery/jquery.min.js"></script>
+    <link href="libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
+    <script src="libs/crosstalk/js/crosstalk.min.js"></script>
+    <link href="libs/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+    <script src="libs/plotly-main/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Interactive Visualization
+## Interactivity without Shiny
+### Dave Armstrong
+### May 27, 2020
+
+---
+
+
+
+
+
+
+
+# Welcome
+
+Instructional Staff
+
+- [Dave Armstrong](https://quantoid.net) [Instructor] [dave.armstrong@uwo.ca](mailto::dave.armstrong@uwo.ca)
+
+- John Kennedy [TA] [jkenne57@uwo.ca](mailto::jkenne57@uwo.ca)
+
+
+The course material will be posted in two places: 
+
+- [UMich Canvas](https://umich.instructure.com/) 
+  - ICPSR is recording the course for later viewing and these recordings will only appear on Canvas. 
+
+- [My website](https://quantoid.net/teachicpsr/shiny)
+
+---
+
+# What you need (R)
+
+- [R](https://cran.r-project.org): I am using R v 4.0.0, released April 24, 2020.  If you're using an earlier version, please upgrade. 
+
+- [Rstudio](https://rstudio.com/products/rstudio/download/): I am using RStudio v 1.2.5042, released April 1, 2020.  If you're using a different version than this, please upgrade. 
+
+- **Optional** If you are using a machine that prevents installing software, you could use [RStudio Cloud](https://Rstudio.cloud) which is a web-based RStudio distribution.  
+  
+---
+
+# What you need (deploying)
+
+- [Shinyapps.io](https://www.shinyapps.io) account.  You can get the free tier for now.  This will allow us to deploy the apps we make in the course. 
+
+- **Optional:** It would be nice if you had a website where it would be easy to upload (through ftp or otherwise) content.  If you're looking for a recommendation, I use [asocialfolder](https://asocialfolder.com/).  It's currently free.  It uses [Markdown](https://daringfireball.net/projects/markdown/syntax) and [Dropbox](https://www.dropbox.com) to build websites, which makes putting uploading content as easy as saving it in a dropbox folder. 
+
+---
+
+# Classroom Management 
+
+Obviously, we are using Zoom as the platform for the course.  Here are a few tips that will hopefully keep us all rowing in the same direction. 
+
+- In the "participants" pop-out window, there are buttons at the bottom that allow you to respond to prompts non-verbally.  Please use these to raise your hand, respond to yes-no questions or respond to questions about the pace of the course. 
+
+![](part_action.png)
+
+- You can use the chat window to ask questions.  
+
+---
+
+# Example Datasets
+
+We're going to be doing lots of applied work in the course.  As such, we'll need to have some data to work with.
+
+- Use your own data 👍
+
+- Here are a few example datasets for those who would like something already in R: 
+  - `gapminder_unfiltered` in the `{gapminder}` package. 
+  - `diamonds` in the `{ggplot2}` package. 
+  - `SLID` from the `{carData}` package. 
+  
+- You could also look through the `{carData}` package or the `{datasets}` package to find other examples. 
+
+---
+
+# Outline for Part I
+
+- Making graphs with `{ggplot2}` - before moving into interactive viz, we'll build a foundation with static visualization. 
+
+- Using `ggplotly()` from the `{plotly}` package to make plotly objects. 
+
+- Maps in R using the `{sf}` package. 
+
+- htmlwidgets universe of functions. 
+  - particularly `{plotly}`, `{leaflet}`, `{d3heatmap}` 
+
+- Putting your interactive graphs online. 
+
+---
+
+# `ggplot` 
+
+Our initial forray into interactive graphics will focus on static graphics through the `{ggplot2}` package.  In this visualization framework, 
+
+- Variables can be used to specify aesthetics, from `\(x\)` and `\(y\)` coordinates, to shapes, sizes and colours of elements. 
+
+- Data are encoded with geometries - these are specified with a `geom_*()` function.  This is how points, lines, confidence intervals/envelopes, etc... are included in the plot. 
+
+- Aesthetics can be customized and manipulated with the `scale_*()` functions - these allow changing default colours, sizes, shapes, etc...  
+
+---
+
+# `ggplot` 2
+
+There are also lots of ways to change the way that the plot looks. 
+
+- Themes change the overall look of the plot - grid lines, background colour, aspect ratio, etc... I almost always use the `theme_bw()` function to drop the gray background or `theme_minimal()`. 
+
+- Facets allow plots to be juxtaposed (side-by-side) instead of superposed (same panel with different colour, shape, etc...).  The `facet_grid()` and `facet_wrap()` functions implement this. 
+
+- The `labs()` function allow you to put titles on axes and legends. 
+
+---
+
+# Gapminder example 1
+
+
+```r
+library(gapminder)
+library(ggplot2)
+library(dplyr)
+gm4 &lt;- gapminder %&gt;% 
+  filter(country %in% c("Canada", "United States", "Australia", "United Kingdom")) %&gt;%
+  mutate( country = droplevels(country))
+  
+
+g1 &lt;- ggplot(gm4, aes(x=year, y=gdpPercap, colour=country)) + 
+  geom_line() +
+  theme_bw() + 
+  labs(x="Year", y="GDP/capita", colour="Country") 
+g1
+```
+
+---
+
+# plot
+
+&lt;img src="deck1_files/figure-html/gg1-1.svg" width="65%" style="display: block; margin: auto;" /&gt;
+
+
+
+
+---
+# Gapminder example 2
+
+
+```r
+g2 &lt;- ggplot(gm4, aes(x=year, y=gdpPercap)) + 
+  geom_line() +
+  facet_wrap(~country, nrow=1) + 
+  theme_bw() + 
+  labs(x="Year", y="GDP/capita", colour="Country")
+g2
+```
+
+&lt;img src="deck1_files/figure-html/unnamed-chunk-1-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Now, you try!
+
+<div class="countdown" id="timer_5ecd525a" style="right:0;bottom:0;" data-warnwhen="0">
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+Make a graph using either your data or the example data. 
+
+
+---
+
+# ggplotly 1
+
+
+
+
+
+```r
+library(plotly)
+gp1 &lt;- ggplotly(g1, height=375, width=750)
+ifWidget(gp1, 900, 1800, 0)
+```
+
+<iframe src="p-0.html" height="900" width="1800" scrolling="no" seamless="seamless" frameBorder="0"></iframe>
+
+---
+
+# sidebar
+
+I am using the `ifWidget()` function which is defined in the R file for this lecture. 
+
+- Solves a problem with tooltips not showing up in the right place. 
+- Problem exists when including plotly output in a xaringan presentation. 
+
+You shouldn't have to use this unless you're making a xaringan presentation with plotly objects in it. 
+
+---
+
+# Sharing Your Plot
+
+The easiest way to share this plot is to put it in an RMarkdown document and render an html page. 
+
+- Open an RMarkdown document - specify render to HTML in the opening dialog. 
+- Place the code to generate the plot and plotly objects in the document. 
+- Knit to html. 
+
+The plotly object and all of the relevant javascript resources are embedded in the resulting html so you just need to put the html document on your webserver. 
+
+
+
+<div class="countdown" id="timer_5ecd51d9" style="right:0;bottom:0;" data-warnwhen="0">
+<code class="countdown-time"><span class="countdown-digits minutes">03</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+# ggplotly problems
+
+The `ggplotly` function makes interactive graphs easily, but the elements of the graphs are harder to control. 
+
+- You don't have as fine control over what's going on in the plot as you can by using `plot_ly()` directly. 
+
+There are some other problems that will be relevant for later in the workshop as well. 
+
+- In Shiny apps, the axis labels don't always show up in the right place. 
+- The legend title over-plots some of the interactive controls. 
+
+We can solve these by using plotly directly. 
+
+---
+
+# htmlwidgets
+
+The `{plotly}` package is part of the [htmlwidgets](https://www.htmlwidgets.org/) universe of packages.  
+
+- Lots of different packages that work on different kinds of plots. 
+- Functions that produce interactive, html graphics. 
+- Works for maps, scatter, line and heatmap plots.  
+- Some extend D3.js functionality. 
+
+---
+
+# plotly elements
+
+The encoding and displaying of information happens similarly to `ggplot()`.  The call to `plot_ly()` usually has aesthetic elements in it, though they are not specified with an `aes()` function as in `ggplot()`.  
+
+For example, 
+
+
+```r
+plot_ly(gm4, x = ~year, y = ~gdpPercap, color = ~country)
+```
+
+will initialize a plot where `year` is on the x-axis, `gdpPercap` is on the y-axis and the color changes based on `country`.  You can also specify `size=`, `symbol=` and `linetype=` to change other aesthetic elements. 
+
+---
+
+# encoding information
+
+We can encode inforamtion with the `add_*()` functions.   Generally, out initialized `polt_ly` object is piped to these other functions.  
+
+- `add_marker()` adds points
+- `add_line()` connects the dots between all x-y coordinate pairs. 
+- `add_segment()` adds a line segment between two x-y coordinates. 
+- `add_polygon()` adds polygons to the plotting region.  
+- `add_ribbon()` adds polygons, specifially of the type you would use to make confidence regions. 
+- `add_annotations()` adds text to the plotting region. 
+
+---
+
+# The `layout()` function
+
+Plotly plots can always be piped to a `layout()` function.  This controls 
+- axis labels
+- tick mark placement, length, etc...
+- margins, padding, etc... 
+
+You can learn more about all the options [here](https://plotly.com/r/reference/#layout). 
+
+---
+
+# plotly
+
+
+```r
+library(plotly)
+p &lt;- plot_ly(gm4, x= ~year, y = ~gdpPercap, color=~country, 
+        width=750, height=275) %&gt;% 
+      add_lines() %&gt;% 
+      layout(xaxis=list(title="Year"),  
+         yaxis=list(title="GDP/capita")) 
+ifWidget(p, 500, 1800, 1)
+```
+
+<iframe src="p-1.html" height="500" width="1800" scrolling="no" seamless="seamless" frameBorder="0"></iframe>
+
+---
+
+# Encoding More Information
+
+```r
+p2 &lt;- plot_ly(gm4, height=350, width=600) %&gt;% 
+        add_markers(x= ~year, y = ~gdpPercap, color=~country,
+*                  size=~log(pop)) %&gt;%
+      layout(xaxis=list(title="Year"),  
+         yaxis=list(title="GDP/capita")) 
+```
+
+&lt;center&gt;
+<iframe src="p-3.html" height="450" width="1800" scrolling="no" seamless="seamless" frameBorder="0"></iframe>
+
+&lt;/center&gt;
+
+---
+
+# Adding in Statistical Models
+
+Let's say that we wanted to build a plot of `lifeExp` (y)  relative to `gdpPercap` (x) and put in a single regression line.  How would we do this? 
+
+1. Run the regression. 
+2. Use `augment()` from the `{broom}` package to save the results. 
+3. Plot the augmented data - both the points and the fitted values. 
+
+Give it a try!
+
+<div class="countdown" id="timer_5ecd5074" style="right:0;bottom:0;" data-warnwhen="0">
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+# Extending 
+
+What if you wanted to make a different regression line for each country? 
+
+Give it a try!
+
+<div class="countdown" id="timer_5ecd4f63" style="right:0;bottom:0;" data-warnwhen="0">
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+# 3D scatterplots
+
+3-D scatterplots always get 👏😲💯🧠💣
+
+
+
+```r
+plot_ly(gm4, width=700, height=500, showlegend=FALSE) %&gt;%
+      add_markers(x = ~log(pop), z = ~lifeExp, 
+              y = ~gdpPercap, color=~country, showlegend=TRUE) %&gt;% 
+      layout(autosize=FALSE,  
+             scene = list(
+              xaxis=list(title="log(Population)"),  
+              yaxis=list(title="GDP/capita"), 
+              zaxis=list(title="Life Expectancy")
+             ))
+```
+
+---
+
+## Plot
+
+<div id="htmlwidget-5525ac724f535e330475" style="width:700px;height:500px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-5525ac724f535e330475">{"x":{"visdat":{"6c765d1ddb3e":["function () ","plotlyVisDat"]},"cur_data":"6c765d1ddb3e","attrs":{"6c765d1ddb3e":{"showlegend":true,"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"x":{},"y":{},"z":{},"type":"scatter3d","mode":"markers","color":{},"inherit":true}},"layout":{"width":700,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"autosize":false,"scene":{"xaxis":{"title":"log(Population)"},"yaxis":{"title":"GDP/capita"},"zaxis":{"title":"Life Expectancy"}},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"showlegend":true,"x":[15.9778229581724,16.0889313778799,16.1945906575913,16.2897154813388,16.3939834435274,16.4598467867839,16.5357659715048,16.6040494595781,16.6766810224828,16.7368017346539,16.7883217388595,16.8327193511922],"y":[10039.59564,10949.64959,12217.22686,14526.12465,16788.62948,18334.19751,19477.00928,21888.88903,23424.76683,26997.93657,30687.75473,34435.36744],"z":[69.12,70.33,70.93,71.1,71.93,73.49,74.74,76.32,77.56,78.83,80.37,81.235],"type":"scatter3d","mode":"markers","name":"Australia","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"frame":null},{"showlegend":true,"x":[16.5091632099814,16.649321017829,16.7592044701636,16.8514134299261,16.9194019274945,16.9850448666965,17.0424299464648,17.0945290061534,17.166238936996,17.2268510901725,17.2781876624065,17.3237712347321],"y":[11367.16112,12489.95006,13462.48555,16076.58803,18970.57086,22090.88306,22898.79214,26626.51503,26342.88426,28954.92589,33328.96507,36319.23501],"z":[68.75,69.96,71.3,72.13,72.88,74.21,75.76,76.86,77.95,78.61,79.77,80.653],"type":"scatter3d","mode":"markers","name":"Canada","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"frame":null},{"showlegend":true,"x":[17.7360967940529,17.7557322177511,17.7912967840622,17.8220980106619,17.8422719688626,17.8440535795532,17.8469100665826,17.8582393176583,17.873646581876,17.88979298122,17.9083945707698,17.922709448177],"y":[9979.508487,11283.17795,12477.17707,14142.85089,15895.11641,17428.74846,18232.42452,21664.78767,22705.09254,26074.53136,29478.99919,33203.26128],"z":[69.18,70.42,70.76,71.36,72.01,72.76,74.04,75.007,76.42,77.218,78.471,79.425],"type":"scatter3d","mode":"markers","name":"United Kingdom","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"frame":null},{"showlegend":true,"x":[18.8752724675604,18.962912007195,19.0441455296445,19.1073670982501,19.1621227279156,19.210223878287,19.2630572356748,19.3077631681146,19.3641748421279,19.4246590774581,19.4773437571244,19.5230856548613],"y":[13990.48208,14847.12712,16173.14586,19530.36557,21806.03594,24072.63213,25009.55914,29884.35041,32003.93224,35767.43303,39097.09955,42951.65309],"z":[68.44,69.49,70.21,70.76,71.34,73.38,74.65,75.02,76.09,76.81,77.31,78.242],"type":"scatter3d","mode":"markers","name":"United States","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"line":{"color":"rgba(231,138,195,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+
+---
+
+# adding aession surface
+
+The `add_surface()` function is the analog for `add_line()` in three dimensions.  It does work a bit differently.  The inputs have to be as follows: 
+
+- `x`: a `\(n_{x}\)` length ordered vector of unique x-values. 
+- `y`: A `\(n_{y}\)` length ordered vector of unique y-values. 
+- `z`: a `\(n_{x}\times n_{y}\)` matrix of values that give the height of the surface at every x-y combination. 
+
+Here, `\(n_{x}\)` and `\(n_{y}\)` are not necessarily the number of unique values in the data, it could be a smaller (or larger) number.
+- Also, `x` and `y` would both be independent variables and `z` would be fitted values. 
+
+
+---
+
+# adding a regression surface 2
+
+There is a function in the R-code for the class called `predictMat()` that you can source into R and use to generate these predictions.  Give it a try!
+
+- Hint: make sure that the first independent variable in the model is `x` in `plotly` and the second one is `y`. 
+
+<div class="countdown" id="timer_5ecd51b7" style="right:0;bottom:0;" data-warnwhen="0">
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+
+---
+
+# maps
+
+R has great capabilities for mapping.  We are going to use the [`{sf}`](https://r-spatial.github.io/sf/index.html) package for handling spatial data.  
+
+
+
+```r
+load("counties.rda")
+library(sf)
+library(stringr)
+
+ohio &lt;- counties %&gt;% 
+  filter(state %in% c("Ohio")) %&gt;% 
+  mutate(text = paste(NAMELSAD, "\n", cases, " cases", sep=""))
+```
+
+---
+
+# ohio 
+
+
+```r
+ohio_map &lt;- plot_ly(ohio, split = ~ text,  color = ~log(cases),  alpha = 1, 
+        hoverinfo="text", hoveron="fill",  showlegend=FALSE)
+ifWidget(ohio_map, h="65%", w="65%", 4, selfcontained=FALSE)
+```
+
+<iframe src="p-4.html" height="65%" width="65%" scrolling="no" seamless="seamless" frameBorder="0"></iframe>
+
+
+---
+
+# deaths in florida
+
+Now you plot deaths in Florida. 
+
+
+```r
+countdown(minutes=20, seconds=0)
+```
+
+<div class="countdown" id="timer_5ecd50b9" style="right:0;bottom:0;" data-warnwhen="0">
+<code class="countdown-time"><span class="countdown-digits minutes">20</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

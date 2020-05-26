@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1590513318491.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "B9C86133",
+    "lastKnownWriteTime" : 1590513337,
+    "last_content_update" : 1590513337662,
+    "path" : "~/Dropbox (DaveArmstrong)/Interactive_Viz/deck1/deck1.Rmd",
+    "project_path" : "deck1.Rmd",
+    "properties" : {
+        "cursorPosition" : "387,0",
+        "scrollLine" : "369"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

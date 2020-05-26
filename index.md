@@ -1,4 +1,7 @@
-## Welcome to Interactive Visualization
+---
+title: Interactive Visualization, Dashboards and Apps with R
+author: Dave Armstrong
+---
 
 These slides are for the Interactive Visualization, Dashboards and Apps with R course offered through the ICPSR Summer Program (May 27-29, 2020).  Since the slides are all in HTML, I am hosting them here for lack of a better place, though I may eventually move them to my main site: [quantoid](https://quantoid.net/teachicpsr/shiny).  For now, you can follow the links below to the different slide decks.  
 

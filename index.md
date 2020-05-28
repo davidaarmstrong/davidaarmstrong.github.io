@@ -18,7 +18,7 @@ The decks below do not match up especially nicely with the natural breaks in the
 [Slide Deck 2](deck2/deck2.html)
 - In these slides, we start to build interactive dashboards, though ones that are pure html (i.e., no R server required), so they can be hosted on any webserver that allows you to upload files (e.g., [github.io](https://github.io), [netlify](https://netlify.com))).    You can get just the plots and code [here](deck2/sharing2.html).  Click [here](https://www.dropbox.com/s/kskuy9lackb2io0/deck2.zip?dl=0) to get the data and code. 
 
-[Slide Deck 3]() 
+[Slide Deck 3](deck3/deck3.html) 
 - In these slides, we move to talking about shiny and building shiny-based dashboards. 
 
 [Slide Deck 4]()

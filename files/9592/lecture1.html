@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9592</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9592
+]
+.subtitle[
+## Lecture 1: Maximum Likelihood Estimation
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color:
+    
+   
+    
+    #  777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+.right-plot-shift3 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -25px;
+}
+.shift { 
+  position:relative; 
+  top: -100px;
+  }
+
+.shift150 { 
+  position:relative; 
+  top: -150px;
+  }
+
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid
+  #  23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position:relative; 
+  top: -50px;
+}
+
+
+.pull-right ~ * {
+  clear: both;
+}
+
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+&lt;/style&gt;
+
+
+## Goals for this class
+
+1. Introductions
+2. Discuss direction for the course. 
+3. Describe Maximum Likelihood Estimation (MLE)
+4. Consider a couple of examples of MLE
+
+---
+
+
+## Experiment
+
+- Go to the following [Google sheet](https://docs.google.com/spreadsheets/d/1GkCSXFtdw9NSwNe9kZJqWO_F4yaMtQZSS43v1GwxSeI/edit?gid=0#gid=0)
+
+- In the column with your name, put the results of the following experiment:
+    - Roll your die 4 times and count the number of _even_ numbers you get.
+    - Record the number of even rolls you get in Trial 1.
+    - Repeat for Trials 2-5.
+
+---
+
+
+## Questions About Experiment
+
+1. What is the overall mean - how could we figure out how variable it is? 
+
+1. If we had a hypothesis about everyone's die being fair, how would we evaluate it?
+
+1. What if we wanted to estimate `\(Pr(\text{Even})\)` for each person? 
+
+1. What if we wanted to do this in a regression context? 
+
+---
+
+
+## Binomial Distribution
+
+We could use the binomial distribution to figure this out. It assumes Bernoulli trials: 
+
+1. There are only two outcomes (success and failure, no judgment intended)
+1. All trials have the same underlying probability `\(p\)`. 
+1. The trials are independent from each other. 
+
+If `\(y\)` has a binomial distribution, then 
+
+`$$f(y) = {n \choose k} p^k(1-p)^{(n-k)}$$` 
+
+
+where `\(n \choose k\)` is the binomial coefficient and is defined as `\(\frac{n!}{k!(n-k)!}\)`.  Calculating this out tells us the number of possible possible outcomes of size `\(n\)` that have exactly `\(k\)` successes.  
+
+
+---
+
+## Binomial Example
+
+Let's say I had one data point, 1 out of 4 rolls was even and I had to pick between two different values of `\(p\)` that produced these two distributions. 
+
+&lt;img src="lecture1_files/figure-html/binom_ex-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Look Over all Values of _p_
+
+&lt;img src="lecture1_files/figure-html/binom_ex2-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## 2 Data Points
+.pull-left[
+What if we had 2 data points (1 and 2 even rolls out of 4)? 
+]
+.pull-right-shift2[
+&lt;img src="lecture1_files/figure-html/binom_ex3-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## More Data!
+
+.pull-left[
+What if, instead of 4 rolls and 1 even, I did 40 rolls with 10 events (or 400 rolls with 100 events)? 
+]
+.pull-right-shift2[
+&lt;img src="lecture1_files/figure-html/binom_ex4-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## MLE
+
+
+
+Maximum Likelihood Estimation is a different way of estimating statistical relationships.  
+
+- Least Squares is also a method and while robust to the violation of lots of its assumptions, it assumes a "continuous" dependent variable (or put differently, it assumes that the errors are normally distributed)
+- Put another way, it assumes that each value of `\(y\)`, is normally distributed in repeated sampling. 
+- This assumption need not be made and as we will see, linear relationships can also be estimated with MLE, but so can lots of others.  
+	
+---
+
+## Probability
+
+Before we go into MLE, we need to refresh ourselves on the axioms of probability.  Let's assume that the sample space is `\(S\)` (the set of all possible outcomes): 
+1. For any event `\(A\)`, `\(Pr(A\geq 0)\)`. 
+1. `\(Pr(S) = 1\)`
+1. If events `\(A\)`, `\(B\)` and `\(C\)` are mutually exclusive, then `\(Pr(A\&amp;B\&amp;C) = Pr(A)\cdot Pr(B)\cdot Pr(C)\)`
+
+---
+
+## Probability Density Function
+
+One of the main elements of a likelihood estimation is a _probability density function_ or _PDF_ .  
+
+- The PDF gives the _relative likelihood_ that an observation drawn randomly from a continuous random variable would take on a particular value.
+- We can use these relative likelihoods to find the best parameters for our relationships. 
+
+
+---
+
+
+## Cumulative Distribution Function
+
+A counterpart to the PDF is the _Cumulative Distribution Function_ or _CDF_. 
+
+- The CDF tells us the probability of being below (or alternatively above) a certain value of a random variable. 
+- The `\(z\)`- and `\(t\)`- tables in the back of your stats book from last semester give you the CDF for the normal and `\(t\)` distributions evaluated at lots of different points. 
+
+---
+
+## Normal PDF and CDF
+
+
+.pull-left[
+&lt;img src="lecture1_files/figure-html/normal_pdf-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="lecture1_files/figure-html/normal_cdf-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+## Discrete Distributions
+
+With discrete distributions (those where some values are impossible, like counts), we have a _probability mass function_ or _PMF_ instead of a PDF.  
+
+.pull-left[
+&lt;img src="lecture1_files/figure-html/binomial_pmf-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="lecture1_files/figure-html/binomial_cdf-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+## What is Likelihood
+The Likelihood Axiom is as follows: 
+
+`$$\begin{aligned}
+L(\tilde\theta|y)&amp;= k(y)f(y|\tilde\theta)\\
+	&amp;\propto f(y|\tilde\theta)
+\end{aligned}$$`
+
+
+- `\(f(y|\tilde\theta)\)` is a probability density function of `\(y\)` given the hypothetical model parameters `\(\tilde\theta\)` 
+- `\(k(y)\)` is an unknown function that depends only on the data, not the parameters. 
+- What Maximum Likelihood Estimation does is to pick the parameters `\(\hat{\theta}\)` that make the data most likely to have been generated given the assumptions we make. 
+
+---
+
+## Evaluating the Likelihood function
+Assuming that you've got lots of `\(y\)` values (i.e., `\(y_{i}\)` for `\(i = {1, \ldots, n}\)`), then you would want to know the aggregate likelihood for all values (i.e., a single number). 
+
+`$$L(\theta | y) = \prod_{i=1}^{n} L(\theta, y_{i}) \propto \prod_{i=1}^{n} f(y_{i} | \theta)$$`
+
+While this would theoretically work fine, taking the product of a bunch of small numbers is going to generate something that the computer will have difficulty dealing with, thus we usually try to maximize the log-likelihood (LL). 
+
+`$$LL(\theta | y) = \sum_{i=1}^{n} LL(\theta, y_{i}) \propto \sum_{i=1}^{n} log\left(f(y_{i} | \theta)\right)$$`
+
+---
+
+
+## Back to the 2 data points
+
+.pull-left[
+If we wanted to know what the combined probability was for data points 1 and 2 given a certain `\(p\)`, we would want to know `\(Pr(y_1 =1|p)\times Pr(y_2=2|p)\)`. 
+]
+.pull-right-shift2[
+&lt;img src="lecture1_files/figure-html/binom_ex3a-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## 2 data points: Log-likelihood
+.pull-left[
+Using the product of the probabilities gives the likelihood, if we wanted the log-likelihood, we would take the sum of the log of the probabilities. 
+]
+.pull-right-shift2[
+&lt;img src="lecture1_files/figure-html/binom_ex3b-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Functions in R
+
+``` r
+library(maxLik)
+llfun &lt;- function(par, x){
+    p &lt;- dbinom(x, 4, par[1])
+    sum(log(p))
+}
+out &lt;- maxLik(llfun, start=.5, x=c(1,2))
+summary(out)
+```
+
+```
+## --------------------------------------------
+## Maximum Likelihood estimation
+## Newton-Raphson maximisation, 2 iterations
+## Return code 1: gradient close to zero (gradtol)
+## Log-Likelihood: -2.114452 
+## 1  free parameters
+## Estimates:
+##      Estimate Std. error t value Pr(&gt; t)  
+## [1,]   0.3750     0.1712   2.191  0.0285 *
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## --------------------------------------------
+```
+
+---
+
+## Likelihood and Log-Likelihood
+
+.pull-left[
+&lt;img src="lecture1_files/figure-html/binom_ex4a-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="lecture1_files/figure-html/binom_ex4b-1.png" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Functions in R
+
+``` r
+library(maxLik)
+llfun &lt;- function(par, x){
+    p &lt;- dbinom(x, 4, par[1])
+    sum(log(p))
+}
+out &lt;- maxLik(llfun, start=.5, x=c(1,2,1,2,1,2,1,2,1,2))
+summary(out)
+```
+
+```
+## --------------------------------------------
+## Maximum Likelihood estimation
+## Newton-Raphson maximisation, 2 iterations
+## Return code 1: gradient close to zero (gradtol)
+## Log-Likelihood: -10.57226 
+## 1  free parameters
+## Estimates:
+##      Estimate Std. error t value  Pr(&gt; t)    
+## [1,]  0.37500    0.07655   4.899 9.63e-07 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## --------------------------------------------
+```
+
+---
+
+## Log-Likelihood Functions
+
+.pull-left[
+We could look at the two likelihood functions, one from two points and one from 10 points. 
+]
+.pull-right-shift2[
+&lt;img src="lecture1_files/figure-html/lln-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Back to the Experimental Data
+
+
+``` r
+library(googlesheets)
+library(reshape)
+gs &lt;- gs_title("9591 Experiment")
+g &lt;- gs_read(gs)
+g.long &lt;- melt(g, id="Trial")
+out1 &lt;- maxLik(llfun, start=.5, x=g.long$value)
+summary(out)
+```
+
+
+---
+
+## By Experimenter
+
+
+``` r
+llfun &lt;- function(par, x, group){
+    p &lt;- dbinom(x, 4, par[group])
+    sum(log(p))
+}
+g &lt;- as.numeric(g.long$variable)
+
+out &lt;- maxLik(llfun, start=rep(.5, 10), x=g.long$value, group=g)
+summary(out)
+```
+
+---
+
+## Testing the Two Models: Likelihood Ratio Test
+
+If two models are nested, then we can use a likelihood ratio test to figure out whether the bigger one is "better".  
+
+`$$s = -2\left(LL(M_{\text{small}}) - LL(M_{\text{big}})\right)$$`
+
+
+Under `\(H_{0}:\)` Both Models Same, `\(s \sim \chi_{k_{\text{big}} - k_{\text{small}}}^{2}\)`. 
+
+
+``` r
+lr &lt;- -2*(logLik(out1) - logLik(out))
+pchisq(lr, 9)
+```
+
+---
+
+## Properties of MLEs
+
+- Consistent - As sample size increases the probability that the MLE differs from the true parameter by an arbitrarily small amount is zero
+- Asymptotically efficient which means that the MLE's variance is the smallest among all possible consistent estimators. 
+- Asymptotically normally distributed
+
+All of these are asymptotic properties, so they describe the properties of the estimators as `\(n\)` is close to `\(\infty\)`.  They may behave differently in small samples.  We will discuss this a bit later on 
+
+---
+
+## Linear Models: OLS
+
+.pull-left[
+
+``` r
+data(Prestige, package="carData")
+Prestige &lt;- na.omit(Prestige)
+summary(lm(prestige ~ education, data=Prestige))
+```
+
+```
+## 
+## Call:
+## lm(formula = prestige ~ education, data = Prestige)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -21.605  -6.151   0.366   6.565  17.540 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -10.8409     3.5285  -3.072  0.00276 ** 
+## education     5.3884     0.3168  17.006  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 8.578 on 96 degrees of freedom
+## Multiple R-squared:  0.7508,	Adjusted R-squared:  0.7482 
+## F-statistic: 289.2 on 1 and 96 DF,  p-value: &lt; 2.2e-16
+```
+]
+.pull-right[
+
+``` r
+X &lt;- cbind(1, Prestige$education)
+y &lt;- matrix(Prestige$prestige, ncol=1)
+llfun &lt;- function(par, X, y, ...){
+   n &lt;- nrow(X)
+   b &lt;- par[1:2]
+   yhat &lt;- X %*% b
+   sig2 &lt;- par[3]
+   sum(dnorm(y-yhat, 0, sqrt(exp(sig2)), log=TRUE))
+}
+lm_mle &lt;- maxLik(llfun, X=X, y=y, start=c(0,0,1), tol=1E-15)
+summary(lm_mle)
+```
+
+```
+## --------------------------------------------
+## Maximum Likelihood estimation
+## Newton-Raphson maximisation, 19 iterations
+## Return code 8: successive function values within relative tolerance limit (reltol)
+## Log-Likelihood: -348.6709 
+## 3  free parameters
+## Estimates:
+##      Estimate Std. error t value  Pr(&gt; t)    
+## [1,] -10.8390     2.9643  -3.657 0.000256 ***
+## [2,]   5.3882     0.2670  20.181  &lt; 2e-16 ***
+## [3,]   4.2777     0.1438  29.747  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## --------------------------------------------
+```
+
+]
+
+---
+
+## Recap
+
+1. What is MLE?
+  - `\(L(\theta|\text{Data}) \propto f(\text{Data} | \theta)\)`
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

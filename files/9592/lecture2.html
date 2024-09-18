@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9592</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tabwid/tabwid.css" rel="stylesheet" />
+    <script src="libs/tabwid/tabwid.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9592
+]
+.subtitle[
+## Lecture 2: Bianry Dependent Variable Models
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+
+.remark-slide thead, .remark-slide tr:nth-child(2n) {
+        background-color: white;
+    }
+
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+.right-plot-shift3 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -25px;
+}
+.shift { 
+  position:relative; 
+  top: -100px;
+  }
+
+.shift150 { 
+  position:relative; 
+  top: -150px;
+  }
+
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid
+  #  23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position:relative; 
+  top: -50px;
+}
+
+
+.pull-right ~ * {
+  clear: both;
+}
+
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+&lt;/style&gt;
+
+
+
+## Goals for This Session
+
+1. Develop and Evaluate the Linear Probability Model
+2. Describe the Generalized Linear Model Framework
+3. Estimate GLMs for Binary Dependent Variables
+4. Consider Different Methods of Describing Effects. 
+5. What Should You Present?
+
+---
+
+## What are we up to? 
+
+.pull-left[
+&lt;img src="lecture2_files/figure-html/unnamed-chunk-2-1.png" width="504" /&gt;
+]
+.pull-right[
+What's the best way to model the relationship between these variables? 
+- Straight line? 
+- S-shaped (sigmoid) curve?
+- Step
+- Something else?
+]
+
+---
+
+## Models for Binary Data: Preliminaries
+
+I will refer to `\(b_0 + b_1x_1 + b_2x_2 + \ldots + b_kx_k\)` as `\(\mathbf{X\beta}\)` and "the linear predictor", which in GLM notation is often referred to as `\(\eta\)` (the Greek letter "eta"). 
+
+In the linear model, we are modeling `\(E(y|\mathbf{X})\)` (the expected value of `\(y\)` given `\(\mathbf{X}\)`) as: 
+
+`$$y = \mathbf{X}\beta + \varepsilon$$`
+
+or 
+
+`$$E(y|\mathbf{X}) = \mathbf{X}\beta$$`
+---
+
+## Linear Probability Model
+
+The definition of an expectation is: 
+
+`$$E(y) = \sum y\times Pr(y)$$`
+
+For a binary variable where `\(Y=\{0,1\}\)`, we get
+
+`$$\begin{aligned}
+  E(y) &amp;= 1\times Pr(y=1) + 0\times Pr(y = 0)\\
+  &amp;= 1\times Pr(y=1) + 0\times (1-Pr(y=1))\\
+  &amp;= Pr(y=1)
+\end{aligned}$$`
+If `\(y\)` is binary and we model it with the linear model, then we are asserting: 
+
+`$$Pr(y=1|\mathbf{X}) = E(y|\mathbf{X}) = \mathbf{X}\beta$$`
+---
+
+## Voting Example
+
+.pull-left[
+
+``` r
+mod &lt;- lm(voted ~ age, 
+   data=dat)
+summary(mod)
+```
+
+```
+## 
+## Call:
+## lm(formula = voted ~ age, data = dat)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.95374  0.07087  0.18871  0.25864  0.37778 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 0.534159   0.055181   9.680  &lt; 2e-16 ***
+## age         0.005180   0.001149   4.507 7.97e-06 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.414 on 582 degrees of freedom
+## Multiple R-squared:  0.03372,	Adjusted R-squared:  0.03206 
+## F-statistic: 20.31 on 1 and 582 DF,  p-value: 7.967e-06
+```
+]
+.pull-right[
+&lt;img src="lecture2_files/figure-html/unnamed-chunk-4-1.png" width="504" /&gt;
+]
+
+---
+
+## A Better Specified LPM
+
+.pull-left[
+
+``` r
+dat$ideo_strength &lt;- abs(dat$leftright-5)
+mod &lt;- lm(voted ~ age + educ + income + 
+            ideo_strength + female + race, 
+          data=dat)
+```
+]
+.pull-right[
+
+``` r
+summary(mod)
+```
+
+```
+## 
+## Call:
+## lm(formula = voted ~ age + educ + income + ideo_strength + female + 
+##     race, data = dat)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.98154 -0.10438  0.09751  0.26112  0.68097 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   -0.391614   0.103560  -3.782 0.000172 ***
+## age            0.004557   0.001076   4.234 2.67e-05 ***
+## educ           0.041008   0.007101   5.775 1.26e-08 ***
+## income         0.011400   0.003198   3.565 0.000394 ***
+## ideo_strength  0.032798   0.009483   3.459 0.000583 ***
+## female         0.049907   0.031653   1.577 0.115416    
+## raceWhite      0.128341   0.048707   2.635 0.008642 ** 
+## raceBlack      0.300102   0.057220   5.245 2.20e-07 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.3767 on 576 degrees of freedom
+## Multiple R-squared:  0.2084,	Adjusted R-squared:  0.1988 
+## F-statistic: 21.66 on 7 and 576 DF,  p-value: &lt; 2.2e-16
+```
+]
+
+---
+
+## Model Interpretation
+
+- Model fit looks reasonable 
+- The probability of the oldest person in the dataset voting is 33% more than the probability of the youngest person voting 
+- The probability of the most educated person voting is about 69% higher than the probability of the least educated person voting.
+- Those with the highest income have probability of voting about 27% higher than those with the lowest income.
+- Those at the extremes of the ideological spectrum have probabilities of voting 16% higher than those in the middle of the ideological spectrum.
+- Females are more likely to vote than men, though not significantly so. 
+- Whites and black are both more likely to vote than those in the "other" category. Further, blacks have a signiêcantly higher probability of voting than do whites.
+
+---
+
+## Does the Model Make Sense?
+
+The substantive conclusions seem mostly reasonable if not a bit exaggerated for education and perhaps age, but
+
+- Is the linear functional form right? Probably not.  Further, the model imposes (at least in this case) a constant marginal effect.  That means regardless of where you start, the variable always gives the smae change in predicted probabilities. 
+- Do the errors have the same variance?  No - the errors will almost certainly be heteroskedastic. 
+- Are the errors normally distributed? No - the errors will likely be bimodal. 
+- Also, it is possible that `\(\hat{y} &gt; 1\)` or that `\(\hat{y} &lt; 0\)`, which is theoretically not possible for a probability. 
+
+---
+
+## Summary
+
+The problems could be solved if we coul;d make the outcome variable: 
+1. Continuous, and
+2. Unbounded
+
+Then we could model: 
+
+`$$\widehat{\text{Outcome}} = b_0 + b_1x_1 + \ldots + b_kx_k$$`
+
+---
+
+## The Solution
+
+We start by wanting to predict a probability: `\(\Pr(Y=1|\mathbf{X})\)`, which is continuous but bounded in `\([0,1]\)`.  We could think of some transformations that may produce the right result: 
+
+1. Odds: `\(\frac{\Pr(Y=1|\mathbf{X})}{\Pr(Y=0|\mathbf{X})}\)`, which is still bounded in `\([0, \infty]\)`
+2. The log of the odds: `\(\log\left(\frac{\Pr(Y=1|\mathbf{X})}{\Pr(Y=0|\mathbf{X})}\right)\)` is continuous and unbounded. 
+
+So, we could model: 
+
+`$$\log\left(\frac{\Pr(Y=1|\mathbf{X})}{\Pr(Y=0|\mathbf{X})}\right) = b_0 + b_1x_1 + \ldots + b_kx_k$$`
+
+This is the logistic regression model. 
+
+---
+
+## Log-odds to Probabilities
+
+.pull-left[
+If we think of a simple model: 
+
+`$$\log\left(\frac{\Pr(Y=1|\mathbf{X})}{\Pr(Y=0|\mathbf{X})}\right) = -1 + 2x$$`
+
+where `\(x\)` is in the range `\([-2,3]\)`, we could unwind the transformation to get the probabilities: 
+
+`$$\Pr(Y=1|\mathbf{X}) = \frac{e^{-1+2x}}{1+e^{-1+2x}}$$`
+This produces a function that is non-linear in `\(x\)`. 
+]
+
+.pull-right[
+&lt;img src="lecture2_files/figure-html/unnamed-chunk-7-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## We did it! 
+
+Great, so we have a solution, can we use linear regression now 
+- Nope - because we don't actually observe the log of the odds - only wheter `\(y=\{0,1\}\)`. 
+- We have to use MLE
+    - We want to make `\(\Pr(Y=1|\mathbf{X})\)` as big as possible for the observations where `\(Y=1\)` and, 
+    - as small as possible for the observations where `\(Y=0\)`. 
+
+---
+
+## What Distribution?
+
+The dependent variable is whether a respondent voted or not `\(y=\{0,1\}\)`, so what distribution could we use?
+- There aren't a lot of two-point distributions, but the Bernoulli is a common one.  Its PMF is:
+
+`$$f(y_i|p_i) = p_i^{y_i}(1-p_i)^{1-y_i}$$`
+---
+
+## Likelihood Function
+
+First, let's consider the likelihood function:
+
+`\begin{align*}
+    L_{i} &amp;= \prod_{i} \hat{p}_{i}^{y_{i}} (1-\hat{p}_{i})^{(1-y_{i})}\\
+    \log L_{i} &amp;= \sum_{i} y_{i}\log \hat{p}_{i} + (1-y_{i})\log (1-\hat{p}_{i})
+\end{align*}`
+
+ where `\(p_{i} = Pr(y_{i} = 1|\mathbf{X})\)`.  For our purposes, most of the time: 
+
+`\begin{align*}
+    Pr(y_{i}=1|\mathbf{X}) &amp;= \Lambda (\mathbf{Xb})\quad\quad (\text{Logit})\\
+    Pr(y_{i}=1|\mathbf{X}) &amp;= \Phi (\mathbf{Xb})\quad\quad (\text{Probit})
+\end{align*}`
+
+`\(\Phi(\cdot)\)` and `\(\Lambda(\cdot)\)` are the CDFs for the normal and logistic distributions, respectively.
+
+---
+
+
+## Logit
+
+We will often use logistic regression because the interpretation becomes a bit easier.  Here: 
+
+`$$\begin{aligned}
+    Pr(y_{i}=1|\mathbf{X}) &amp;= \Lambda(\mathbf{Xb})\\
+    &amp;= \frac{e^{\mathbf{Xb}}}{1+e^{\mathbf{Xb}}}
+\end{aligned}$$`
+
+Figuring out the predicted probability "by hand" here doesn't require integration (as it does in the case of the probit model).
+
+
+---
+
+## Simple Example: Age and Turnout
+
+.pull-left[
+We might want to know how age affects turnout.  One possibility would be to calculate turnout for each individual value of `age`.  
+
+
+``` r
+dat_ag &lt;- dat %&gt;% 
+  group_by(age) %&gt;% 
+  summarise(turnout = mean(voted, na.rm=TRUE))
+ggplot(dat_ag, aes(x=age, y=turnout)) + 
+  geom_line(col="black") + 
+  theme_classic() + 
+  labs(x="Age", y="Pr(Voted | Age)")
+```
+]
+.pull-right[
+&lt;img src="lecture2_files/figure-html/unnamed-chunk-8-1.png" width="504" /&gt;
+]
+
+---
+
+## Smoothing out the Predictions
+
+.pull-left[
+We could smooth out the predictions with a local polynomial regression. 
+
+
+``` r
+ggplot() + 
+  geom_line(data = dat_ag, 
+            aes(x=age, y=turnout), 
+            col="black") + 
+  geom_smooth(data = dat, 
+              aes(x=age, y=voted), 
+              method="loess", 
+              se=TRUE, 
+              fill="red", 
+              color="red") + 
+  theme_classic() + 
+  labs(x="Age", y="Pr(Voted | Age)")
+```
+]
+.pull-right[
+&lt;img src="lecture2_files/figure-html/unnamed-chunk-9-1.png" width="504" /&gt;
+]
+
+---
+
+## Logit Model 
+
+.pull-left[
+
+
+``` r
+ggplot() + 
+  geom_line(data = dat_ag, 
+            aes(x=age, y=turnout), 
+            col="black") + 
+  geom_smooth(data = dat, 
+              aes(x=age, y=voted, 
+                  fill="LOESS", 
+                  color="LOESS"), 
+              method="loess", 
+              se=TRUE) + 
+  geom_smooth(data = dat, 
+              aes(x=age, y=voted, 
+                  fill="GLM", 
+                  color="GLM"), 
+              method="glm", 
+              se=TRUE, 
+              method.args=list(family=binomial)) + 
+  scale_fill_manual(values=c("blue", "red")) + 
+  scale_colour_manual(values=c("blue", "red")) + 
+  theme_classic() + 
+  theme(legend.position="top") + 
+  labs(x="Age", 
+       y="Pr(Voted | Age)", 
+       colour="Model",
+       fill="Model")
+```
+]
+.pull-right[
+&lt;img src="lecture2_files/figure-html/unnamed-chunk-10-1.png" width="504" /&gt;
+]
+
+---
+
+## Where is the S-shaped Curve?
+
+.pull-left[
+
+You might wonder, why isn't the effect shaped like an "S" as we discussed before?
+- because the range of age only covers a small range of the s-shaped curve. 
+
+
+``` r
+mod &lt;- glm(voted ~ age, data=dat, family=binomial)
+b &lt;- mod$coef 
+s &lt;- seq(-200, 200, length = 1000) 
+p &lt;- plogis(b[1] + b[2] * s) 
+ggplot(mapping=aes(x=s, y=p)) + 
+  geom_line() + 
+  geom_polygon(mapping=aes(x=c(17,90,90,17,17), 
+                           y=c(0,0,1,1,0)), 
+               fill="gray50", 
+               alpha=.25) + 
+  theme_classic() + 
+  labs(x="Age", y="Pr(Voted | Age)")
+```
+]
+.pull-right[
+&lt;img src="lecture2_files/figure-html/unnamed-chunk-11-1.png" width="504" /&gt;
+
+]
+
+
+---
+
+## Estimation
+
+Estimation could be done in a number of ways, easiest is with the generalized linear model. In our normal linear model: 
+
+`\begin{align*}
+    \mathbf{Y} &amp;= \mathbf{X\beta} + \mathbf{\varepsilon}\\
+    E(\mathbf{Y}) &amp;= \mathbf{\eta} = \mathbf{X\beta}
+\end{align*}`
+
+The generalization, is: 
+
+`\begin{equation*}
+    g(\mathbf{\mu}) = \mathbf{\eta} = \mathbf{X\beta}
+\end{equation*}`
+
+where `\(g(\cdot)\)` is a "link function" that transforms the unbounded linear predictor into the response space of `\(\mathbf{Y}\)`.  
+
+---
+
+
+## GLMs
+
+GLMs have 4 components:
+1. Stochastic component: `\(\mathbf{Y}\)` is a random or stochastic component that we expect to change from sample to sample in the frequentist thought experiment.
+1. Systematic component: `\(\mathbf{\theta} = \mathbf{X\beta}\)`
+1. Link function: The stochastic and systematic components are linked through a function which "tricks" the model into thinking that it is still acting on normally distributed outcomes.
+1. Residuals: The residuals can be computed the same way as in the linear model, but there are other, perhaps more useful options here, too.
+
+
+---
+
+
+## Model of Voting
+
+In our model of voting: 
+
+
+`$$\begin{aligned}
+\mathbf{X}\beta &amp;= b_0 + b_1\text{Age} + b_2\text{Race=Black} + b_3\text{Race=Other}\\[.1in]
+log\left(\frac{Pr(\text{Voted}|\mathbf{X})}{1-Pr(\text{Voted}|\mathbf{X})}\right) &amp;= \mathbf{X}\beta\\
+\widehat{Pr(\text{Voted})} &amp;= \frac{e^{\mathbf{X}\beta}}{1+e^{\mathbf{X}\beta}}
+\end{aligned}$$`
+
+---
+
+
+## Estimated Voting Model
+
+.pull-left[
+
+
+``` r
+mod &lt;- glm(voted ~ age + race, 
+           data=dat, 
+           family=binomial(link="logit"))
+```
+]
+.pull-right[
+
+``` r
+summary(mod)
+```
+
+```
+## 
+## Call:
+## glm(formula = voted ~ age + race, family = binomial(link = "logit"), 
+##     data = dat)
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -0.824407   0.365715  -2.254 0.024181 *  
+## age          0.027611   0.007294   3.785 0.000154 ***
+## raceWhite    0.831845   0.268921   3.093 0.001980 ** 
+## raceBlack    1.613868   0.372594   4.331 1.48e-05 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 629.10  on 583  degrees of freedom
+## Residual deviance: 588.32  on 580  degrees of freedom
+## AIC: 596.32
+## 
+## Number of Fisher Scoring iterations: 4
+```
+]
+
+
+---
+
+
+## Interpreting Coefficients
+
+We could interpret coefficients the same as in the linear model, but with a different dependent variable.  
+
+- For every one-unit change in age, the log of the odds of the probability of voting goes up by 0.028 holding race constant.  *How enlightening!*
+
+- This is often not an intuitive metric for your readers (or yourselves).  
+
+- And, it doesn't really tell us anything about the actual probability of voting.  
+
+---
+
+
+
+## Visual Display of Log-Odds `\(\rightarrow\)` Probabilities
+
+&lt;img src="lecture2_files/figure-html/odds2probs-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+For all of these changes, the log odds ratio is the same: 
+
+.small[
+`$$\log\left[\left(\frac{\Pr(y=1|\text{Age}=a_0+10, \text{Race})}{1-\Pr(y=1|\text{Age}=a_0+10, \text{Race})}\right)/\left(\frac{\Pr(y=1|\text{Age}=a_0, \text{Race})}{1-\Pr(y=1|\text{Age}=a_0, \text{Race})}\right)\right] = 0.2761$$`
+]
+
+
+---
+
+## What do OLS Coefficients Mean? 
+
+In the OLS context (assuming a continuous `\(x\)`), we could think about the the coefficients in two different ways.  
+
+`$$y = b_0 + b_1x + b_2z + e$$`
+
+- Marginal Effect: 
+
+`$$\frac{\partial E(y|x,z)}{\partial x} = b_1$$`
+- First Difference: 
+
+`$$E(y|x = x_0+1, z=z_0) - E(y|x = x_0, z_0) = b_1$$`
+- Marginal Effect = First Difference
+- Marginal Effect and First Difference are constant.
+
+---
+
+## Marginal Effects and First Differences in the Logit Model
+
+`$$\log\left(\frac{\Pr(y=1|x,z)}{1-\Pr(y=1|x,z)}\right) = b_0 + b_1x + b_2z$$`
+
+
+Marginal Effect: 
+
+`$$\frac{\partial E(y|x)}{\partial x} = b_1f(b_0 + b_1x + b_2z)$$`
+First Difference: 
+
+`$$\Delta_x = F(y|x=x_0+1,z=z) - F(y|x=x_0,z=z)$$`
+
+- Marginal Effect doesn't necessarily equal First Difference
+- Neither Marginal Effect nor First Difference is constant. 
+
+---
+
+## Marginal Effects vs. First Differences: Age, Race Turnout. 
+
+Consider white respondents and the effect of a 10-year change age when Age is 25 vs when it is 85: 
+
+`$$ME_{25} = 0.0276\times 10\times  f(0.0074 + 0.0276\times 25) = 0.06125$$`
+`$$FD_{25} = F(0.0074 + 0.0276\times 30) - F(0.0074 + 0.0276\times 20) = .06118$$`
+`$$ME_{85} = 0.0276\times 10\times  f(0.0074 + 0.0276\times 85) = 0.02188$$`
+`$$FD_{85} = F(0.0074 + 0.0276\times 90) - F(0.0074 + 0.0276\times 80) = 0.02191$$`
+
+---
+
+## Taking Stock
+
+What dowe know so far? 
+
+- The coefficients don't have a nice intuitive interpretation like they do in OLS. 
+
+- The coefficients do not necessarily indicate anything in particular about the absolute value of the predicted probability.  
+
+- Different one-unit changes can have different effects.  
+
+So, how do we characterize the _effect_ of a variable in a single number?
+
+---
+
+## Approaches to Identifying the Effect
+
+- Hold all other variables constant at their means and calculate the first difference or marginal effect of `\(x\)`.  [First Difference or Marginal Effect at Means]
+
+- Hold all other variables constant at reasonable/representative and calculate the first difference or marginal effect of `\(x\)`. [First Difference or Marginal Effects at Reasonable values]
+
+- Calculate the marginal effect or first difference for all observations and then average over all observations.  [Average First Difference or Marginal Effects]
+
+---
+
+## FD at Reasonable Values 
+
+Age:
+
+
+``` r
+library(marginaleffects)
+comparisons(mod, newdata=datagrid(age = 40, race="White"), variables=list(age=10)) 
+```
+
+```
+## 
+##  Term Contrast age  race Estimate Std. Error    z Pr(&gt;|z|)    S  2.5 % 97.5 %
+##   age      +10  40 White   0.0478     0.0127 3.75   &lt;0.001 12.5 0.0228 0.0728
+## 
+## Columns: rowid, term, contrast, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high, age, race, predicted_lo, predicted_hi, predicted, voted 
+## Type:  response
+```
+
+Race:
+
+
+``` r
+comparisons(mod, newdata=datagrid(age=45), variables=list(race="pairwise"))
+```
+
+```
+## 
+##  Term      Contrast age Estimate Std. Error    z Pr(&gt;|z|)    S  2.5 % 97.5 %
+##  race Black - Other  45    0.281     0.0644 4.37  &lt; 0.001 16.3 0.1549  0.407
+##  race Black - White  45    0.107     0.0363 2.94  0.00329  8.2 0.0356  0.178
+##  race White - Other  45    0.174     0.0612 2.85  0.00439  7.8 0.0544  0.294
+##   race
+##  White
+##  White
+##  White
+## 
+## Columns: rowid, term, contrast, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high, age, predicted_lo, predicted_hi, predicted, race, voted 
+## Type:  response
+```
+
+---
+
+## ME at Reasonable Values
+
+
+``` r
+comparisons(mod, newdata=datagrid(age = 40, race="White"), variables="age", comparison = "dydx") 
+```
+
+```
+## 
+##  Term age  race Estimate Std. Error    z Pr(&gt;|z|)    S   2.5 % 97.5 %
+##   age  40 White  0.00514    0.00146 3.53   &lt;0.001 11.2 0.00228  0.008
+## 
+## Columns: rowid, term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high, age, race, predicted_lo, predicted_hi, predicted, voted 
+## Type:  response
+```
+
+Marginal effects (first derivatives) only really make sense for continuous variables, so we shouldn't try to do that for `race`. 
+
+---
+
+## Average First Differences
+
+Age: 
+
+``` r
+avg_comparisons(mod, variables = list(age=10), comparison="difference")
+```
+
+```
+## 
+##  Term  Contrast Estimate Std. Error    z Pr(&gt;|z|)    S  2.5 % 97.5 %
+##   age mean(+10)   0.0423     0.0102 4.17   &lt;0.001 15.0 0.0224 0.0622
+## 
+## Columns: term, contrast, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high, predicted_lo, predicted_hi, predicted 
+## Type:  response
+```
+
+Race: 
+
+
+``` r
+avg_comparisons(mod, variables = list(race="pairwise"))
+```
+
+```
+## 
+##  Term                  Contrast Estimate Std. Error    z Pr(&gt;|z|)    S  2.5 %
+##  race mean(Black) - mean(Other)    0.276     0.0630 4.39  &lt; 0.001 16.4 0.1530
+##  race mean(Black) - mean(White)    0.107     0.0366 2.92  0.00348  8.2 0.0352
+##  race mean(White) - mean(Other)    0.169     0.0594 2.85  0.00435  7.8 0.0530
+##  97.5 %
+##   0.400
+##   0.179
+##   0.286
+## 
+## Columns: term, contrast, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high, predicted_lo, predicted_hi, predicted 
+## Type:  response
+```
+
+---
+
+## Average Marginal Effects
+
+Age: 
+
+
+``` r
+avg_comparisons(mod, variables = "age", comparison="dydx")
+```
+
+```
+## 
+##  Term    Contrast Estimate Std. Error    z Pr(&gt;|z|)    S   2.5 % 97.5 %
+##   age mean(dY/dX)  0.00453    0.00116 3.91   &lt;0.001 13.4 0.00226 0.0068
+## 
+## Columns: term, contrast, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high, predicted_lo, predicted_hi, predicted 
+## Type:  response
+```
+
+---
+
+
+## Distribution of Marginal Effects
+
+We might be interested in the distribution of marginal effects in two different senses.
+
+- How much does the average marginal effect (or average discrete change) change as a function of sampling variability?
+
+- How are marginal effects or discrete changes distributed in the sample?
+
+The answers to these will be necessarily different.
+
+---
+
+
+## Effect Distributions
+
+
+.pull-left[
+&lt;img src="lecture2_files/figure-html/unnamed-chunk-19-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="lecture2_files/figure-html/unnamed-chunk-20-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Considering the two Distributions
+
+Note that the two distributions are quite different.
+- The sampling distribution is, not surprisingly, approximately normal.
+- The distribution in the sample looks skewed negative or maybe multimodal.  
+
+---
+
+## Effect Distributions by Race
+
+.pull-left[
+&lt;img src="lecture2_files/figure-html/unnamed-chunk-21-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="lecture2_files/figure-html/unnamed-chunk-22-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Effect Plot
+
+Effect plots are a way of showing how the probability of the outcome of interest changes as you vary one variable over its range.  
+- You can use either an average effect or an effect at reasonable values approach. 
+
+---
+
+## Effect Plot: RV Approach
+
+.pull-left[
+
+``` r
+p_age &lt;- predictions(mod, 
+          newdata=datagrid(age=18:90))
+
+ggplot(p_age, aes(x=age, y=estimate, 
+                  ymax=conf.high, 
+                  ymin=conf.low)) + 
+  geom_ribbon(alpha=.25) + 
+  geom_line() + 
+  theme_classic() + 
+  labs(x="Age", y="Predicted Pr(Voted)")
+```
+]
+.pull-right[
+&lt;img src="lecture2_files/figure-html/unnamed-chunk-23-1.png" width="504" /&gt;
+]
+
+---
+
+## Effect Plot: AE Approach
+
+.pull-left[
+
+``` r
+ap_age &lt;- avg_predictions(mod, 
+          variables = list(age=18:90))
+
+ggplot(ap_age, aes(x=age, y=estimate, 
+                  ymax=conf.high, 
+                  ymin=conf.low)) + 
+  geom_ribbon(alpha=.25) + 
+  geom_line() + 
+  theme_classic() + 
+  labs(x="Age", y="Predicted Pr(Voted)")
+```
+]
+.pull-right[
+&lt;img src="lecture2_files/figure-html/unnamed-chunk-24-1.png" width="504" /&gt;
+]
+
+---
+
+## Comparison
+
+.pull-left[
+
+
+``` r
+age_both &lt;- p_age %&gt;% 
+  as.data.frame() %&gt;% 
+  mutate(type="Average Case") %&gt;% 
+  bind_rows(ap_age %&gt;% 
+              as.data.frame() %&gt;% 
+              mutate(type="Average Effect"))
+
+ggplot(age_both, aes(x=age, y=estimate, 
+                  ymax=conf.high, 
+                  ymin=conf.low)) + 
+  geom_ribbon(aes(fill=type), alpha=.25) + 
+  geom_line(aes(color=type)) + 
+  theme_classic() + 
+  theme(legend.position="top") + 
+  labs(x="Age", y="Predicted Pr(Voted)", 
+       color="", fill="")
+```
+]
+.pull-right[
+&lt;img src="lecture2_files/figure-html/unnamed-chunk-25-1.png" width="504" /&gt;
+]
+
+
+---
+
+## What Should You Present
+
+- For variables of theoretical interest
+    - A graph of predicted probabilities if the variable is continuous or a table or graph if it is categorical.
+    - In the discussion, you can talk about the distribution of discrete changes if you like and identify important groups in that distribution.
+- For variables that have theoretical importance to others.
+    - You might want to present a first difference or two for variables others will find really interesting, particularly if you can show your theoretically important variable is more important.
+- Make sure to present a table of descriptive statistics either in the paper or an appendix so people could calculate MEMs or MERs if they wanted to on their own.
+
+
+---
+
+## Example Table
+
+.pull-left[
+
+``` r
+tidy.comparisons &lt;- function(x, ...){
+  comps %&gt;% select(term, estimate, std.error, 
+                   p.value, conf.low, conf.high)
+}
+registerS3method("tidy", "comparisons", tidy.comparisons)
+comps &lt;- avg_comparisons(mod) %&gt;%
+  mutate(term =c("age", "raceBlack", "raceWhite"))
+f &lt;- function(x) format(round(x, 3), big.mark=",")
+gm &lt;- list(
+  list("raw" = "nobs", "clean" = "N", "fmt" = f),
+  list("raw" = "logLik", "clean" = "LL", "fmt" = f),
+  list("raw" = "aic", "clean" = "AIC", "fmt" = f), 
+  list("raw" = "bic", "clean" = "BIC", "fmt" = f))
+
+modelsummary(
+  list("GLM" = mod, 
+       "FD" = comps), 
+  estimate = c("{estimate}{stars}", 
+                  "{estimate}"), 
+  stars = c("*" = .05), 
+  coef_map = c("age" = "Age", 
+               "raceBlack" = "Race: Black", 
+               "raceOther" = "Race: Other", 
+               "raceWhite" = "Race: White", 
+               "(Intercept)" = "Constant"), 
+  gof_map = gm,
+  notes = "* p &lt; 0.05 (two-tailed)",
+  output = "flextable"
+)
+```
+]
+.pull-right[
+&lt;div class="tabwid"&gt;&lt;style&gt;.cl-ddc79516{}.cl-ddc499d8{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-ddc5deba{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-ddc5eb80{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-ddc5eb8a{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-ddc5eb8b{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 1pt solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-ddc5eb8c{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-ddc5eb94{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}&lt;/style&gt;&lt;table data-quarto-disable-processing='true' class='cl-ddc79516'&gt;&lt;thead&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;th class="cl-ddc5eb80"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt; &lt;/span&gt;&lt;/p&gt;&lt;/th&gt;&lt;th class="cl-ddc5eb80"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;GLM&lt;/span&gt;&lt;/p&gt;&lt;/th&gt;&lt;th class="cl-ddc5eb80"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;FD&lt;/span&gt;&lt;/p&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;Age&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;0.028*&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;0.005&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;(0.007)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;(0.001)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;Race: Black&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;1.614*&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;0.276&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;(0.373)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;(0.063)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;Race: White&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;0.832*&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;0.169&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;(0.269)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;(0.059)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;Constant&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;-0.824*&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;(0.366)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-ddc5eb8b"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;N&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8b"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;584&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8b"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;LL&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;-294.162&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;AIC&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;596.323&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8a"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td class="cl-ddc5eb8c"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;BIC&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8c"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;613.803&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;td class="cl-ddc5eb8c"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;tfoot&gt;&lt;tr style="overflow-wrap:break-word;"&gt;&lt;td  colspan="3"class="cl-ddc5eb94"&gt;&lt;p class="cl-ddc5deba"&gt;&lt;span class="cl-ddc499d8"&gt;* p &amp;lt; 0.05 (two-tailed)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;&lt;/table&gt;&lt;/div&gt;
+]
+
+---
+
+## Review
+
+We covered the following topics: 
+
+1. Develop and Evaluate the Linear Probability Model
+2. Describe the Generalized Linear Model Framework
+3. Estimate GLMs for Binary Dependent Variables
+4. Consider Different Methods of Describing Effects. 
+5. What Should You Present?
+
+---
+
+## Exercises 
+If you load the file `ces0419.rda`, it will put an object in your workspace called `ces0419`, which has selected variables form the Canadian Election Study for the years 2004-2019.  The variables in the data are described below. Estimate a model that predicts support for the Liberal party (you'll have to make a dummy variable indicating liberal vote vs vote for another party, first).  Use whatever variables you like.  Then answer the following questions: 
+
+1. Which variables are statistically significant in the model? 
+2. Pick 2 variables and find the first differences using both the First Differences at Reasonable Values and Average First Differences approaches. 
+3. Pick 2 variables and make effects graphs for them, again using both the Reasonable Values and Average Effects approaches.  
+4. What can does your model say about the likelihood of voting for the Liberal Candidate? 
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

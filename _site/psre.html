@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="/assets/css/style.css?v=8fe9508ecf52c09a11140f0042200f5b76dfd50a">
+    <link rel="stylesheet" type="text/css" href="/assets/css/print.css" media="print">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Quantoid | Dave Armstrong’s Website</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Quantoid" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Dave Armstrong’s Website" />
+<meta property="og:description" content="Dave Armstrong’s Website" />
+<link rel="canonical" href="http://localhost:4000/psre.html" />
+<meta property="og:url" content="http://localhost:4000/psre.html" />
+<meta property="og:site_name" content="Quantoid" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Quantoid" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Dave Armstrong’s Website","headline":"Quantoid","url":"http://localhost:4000/psre.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Quantoid</h1>
+          <h2>Dave Armstrong's Website</h2>
+        </header>
+        <section id="downloads" class="clearfix">
+          
+	
+        </section>
+        <hr>
+        <section id="main_content">
+          <script src="https://kit.fontawesome.com/3b340a2892.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('downloads').innerHTML = '<div class="icon-container" style="width: 100%;"><a href="index.html" class="link-item" title="Home" target="_blank" rel="nofollow"><i class="fa-solid fa-house fa-2xl"></i><span style="padding-top: 15px;">Home</span></a><a href="Research.html" class="link-item" title="Research" target="_blank" rel="nofollow"><i class="fa-solid fa-puzzle-piece fa-2xl"></i><span style="padding-top: 15px;">Research</span></a><a href="Teaching.html" class="link-item" title="Teaching" target="_blank" rel="nofollow"><i class="fa-solid fa-user-graduate fa-2xl"></i><span style="padding-top: 15px;">Teaching</span></a><a href="Software.html" class="link-item" title="Software" target="_blank" rel="nofollow"><i class="fa-solid fa-floppy-disk fa-2xl"></i><span style="padding-top: 15px;">Software</span></a></div>';}, false);
+</script>
+
+<style>
+.icon-container {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.icon-container a {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.icon-container i {
+    font-size: 24px; /* Adjust the icon size */
+    margin-bottom: 5px; /* Space between icon and label */
+    margin-top: 5px; /* Space between icon and label */
+}
+
+.icon-container span {
+    font-size: 14px; /* Adjust the label size */
+}
+</style>
+
+<p>You can install the package directly from GitHub using the <code class="language-plaintext highlighter-rouge">remotes</code> package:</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">remotes</span><span class="o">::</span><span class="n">install_github</span><span class="p">(</span><span class="s2">"davidaarmstrong/psre"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>After installation, the replication code will be in the package directory under <code class="language-plaintext highlighter-rouge">replication_code</code> where there are two sub-directories: <code class="language-plaintext highlighter-rouge">figure_code</code> and <code class="language-plaintext highlighter-rouge">table_code</code>.  You can identify the location of any of these files with:</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">system.file</span><span class="p">(</span><span class="s2">"replication_code/figure_code"</span><span class="p">,</span><span class="w"> </span><span class="s2">"fig1_2.r"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="o">=</span><span class="s2">"psre"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Perhaps more easily, these files can be downloaded en masse from the book’s <a href="https://dataverse.harvard.edu/dataverse/psre">dataverse</a>.  The package will be on CRAN, but development and bug fixes will appear more rapidly on GitHub than on CRAN.</p>
+
+<p>Most of the functions in the package are helper functions that permit the construction of plots that are made automatically in either base R or lattice as ggplots.  That is, they return the data required to make the plot rather than making the plot itself.  The following functions do that:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">normBand</code> uses the <code class="language-plaintext highlighter-rouge">sm.density()</code> function from the <code class="language-plaintext highlighter-rouge">sm</code> package to generate density estimates with variability bands and a corresponding normal density (with the same mean and variance as the original variable) also with variability bands.</li>
+  <li><code class="language-plaintext highlighter-rouge">qqPoints</code> uses the guts of the <code class="language-plaintext highlighter-rouge">qqPlot()</code> function from the <code class="language-plaintext highlighter-rouge">car</code> package to produce the relevant information to make quantile comparison plots in the ggplot framework.</li>
+</ul>
+
+<p>There are a couple of functions that we feel make more interesting contributions.  In the book, we propose as an alternative to a full scatterplot matrix, a <strong>linear scatterplot array</strong>.  This is a series of scatterplots where the dependent variable from the model is always on the y-axis, but each panel has a different covariate on the x-axis.  There are also marginal histograms that show the distribution of each of the independent variables above the plots and the distribution of the dependent variable on the right-hand side of the array.  An example is below:</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">data</span><span class="p">(</span><span class="n">wvs</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span><span class="w">
+</span><span class="n">tmp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">wvs</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">select</span><span class="p">(</span><span class="n">resemaval</span><span class="p">,</span><span class="w"> </span><span class="n">moral</span><span class="p">,</span><span class="w"> </span><span class="n">pct_univ_degree</span><span class="p">,</span><span class="w"> </span><span class="n">pct_female</span><span class="p">,</span><span class="w"> 
+         </span><span class="n">pct_low_income</span><span class="p">,</span><span class="w"> </span><span class="n">sacsecval</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">filter</span><span class="p">(</span><span class="n">resemaval</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0.1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">sacsecval</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0.1</span><span class="w"> </span><span class="p">)</span><span class="w"> 
+</span><span class="n">form</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">reformulate</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"resemaval"</span><span class="p">,</span><span class="w"> </span><span class="s2">"moral"</span><span class="p">,</span><span class="w"> </span><span class="s2">"pct_univ_degree"</span><span class="p">,</span><span class="w"> 
+                      </span><span class="s2">"pct_female"</span><span class="p">,</span><span class="w"> </span><span class="s2">"pct_low_income"</span><span class="p">),</span><span class="w"> 
+                      </span><span class="n">response</span><span class="o">=</span><span class="s2">"sacsecval"</span><span class="p">)</span><span class="w">
+</span><span class="n">lsa</span><span class="p">(</span><span class="n">formula</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">form</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">xlabels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Emancipative Vals"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Moral Perm"</span><span class="p">,</span><span class="w"> 
+                </span><span class="s2">"% Univ Degree"</span><span class="p">,</span><span class="w"> </span><span class="s2">"% Female"</span><span class="p">,</span><span class="w"> </span><span class="s2">"% Low Income"</span><span class="p">),</span><span class="w"> 
+    </span><span class="n">ylab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Secular Values"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">data</span><span class="o">=</span><span class="n">tmp</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p><img src="/files/images/lsa.png" alt="" /></p>
+
+<p>The other sort-of innovation is a plot that joins a compact letter display with a coefficient plot.  There is a similar plot in the <code class="language-plaintext highlighter-rouge">multcomp</code> package, but it plots box-plots rather than coefficient estimates.  Here is an example of the plot we produce.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">wa1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">wvs</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">ungroup</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">pct_sec_plus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pct_secondary</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">pct_some_univ</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">pct_univ_degree</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">civ</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">case_when</span><span class="p">(</span><span class="w">
+            </span><span class="n">civ</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"Islamic"</span><span class="p">,</span><span class="w"> 
+            </span><span class="n">civ</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">6</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"Latin American"</span><span class="p">,</span><span class="w"> 
+            </span><span class="n">civ</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">7</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"Orthodox"</span><span class="p">,</span><span class="w"> 
+            </span><span class="n">civ</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"Sinic"</span><span class="p">,</span><span class="w"> 
+            </span><span class="n">civ</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">9</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"Western"</span><span class="p">,</span><span class="w"> 
+            </span><span class="kc">TRUE</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"Other"</span><span class="p">),</span><span class="w"> 
+          </span><span class="n">civ</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">factor</span><span class="p">(</span><span class="n">civ</span><span class="p">,</span><span class="w"> 
+                       </span><span class="n">levels</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s2">"Western"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Sinic"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Islamic"</span><span class="p">,</span><span class="w"> 
+                                </span><span class="s2">"Latin American"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Orthodox"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Other"</span><span class="p">)))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">country</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">slice</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">filter</span><span class="p">(</span><span class="n">country</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s2">"Poland"</span><span class="p">)</span><span class="w">
+</span><span class="n">mod</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lm</span><span class="p">(</span><span class="n">resemaval</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">I</span><span class="p">(</span><span class="n">gdp_cap</span><span class="o">/</span><span class="m">10000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">civ</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">pct_sec_plus</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="o">=</span><span class="n">wa1</span><span class="p">)</span><span class="w">
+</span><span class="n">gp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ggeffects</span><span class="o">::</span><span class="n">ggpredict</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span><span class="w"> </span><span class="n">terms</span><span class="o">=</span><span class="s2">"civ"</span><span class="p">,</span><span class="w"> </span><span class="n">typical</span><span class="o">=</span><span class="s2">"mean"</span><span class="p">)</span><span class="w">
+</span><span class="n">pwc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">summary</span><span class="p">(</span><span class="n">multcomp</span><span class="o">::</span><span class="n">glht</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span><span class="w"> </span><span class="n">linfct</span><span class="o">=</span><span class="n">multcomp</span><span class="o">::</span><span class="n">mcp</span><span class="p">(</span><span class="n">civ</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Tukey"</span><span class="p">)),</span><span class="w"> 
+               </span><span class="n">test</span><span class="o">=</span><span class="n">multcomp</span><span class="o">::</span><span class="n">adjusted</span><span class="p">(</span><span class="n">type</span><span class="o">=</span><span class="s2">"none"</span><span class="p">))</span><span class="w">
+</span><span class="n">cld1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">multcomp</span><span class="o">::</span><span class="n">cld</span><span class="p">(</span><span class="n">pwc</span><span class="p">)</span><span class="w">
+</span><span class="n">lmat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cld1</span><span class="o">$</span><span class="n">mcletters</span><span class="o">$</span><span class="n">LetterMatrix</span><span class="w">
+
+</span><span class="n">letter_plot</span><span class="p">(</span><span class="n">gp</span><span class="p">,</span><span class="w"> </span><span class="n">lmat</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+  </span><span class="n">labs</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">"Fitted Values\n(95% Confidence Interval)"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p><img src="/files/images/letterplot.png" alt="" /></p>
+
+        </section>
+
+        <footer>
+        
+          Quantoid is maintained by <a href="https://github.com/davidaarmstrong">davidaarmstrong</a><br>
+        
+          This page was generated by <a href="https://pages.github.com">GitHub Pages</a>.
+        </footer>
+
+      </div>
+    </div>
+  </body>
+</html>

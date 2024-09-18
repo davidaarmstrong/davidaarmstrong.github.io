@@ -15,8 +15,4 @@ div.demo {
     width: 100%;
     table-layout: fixed;    /* For cells of equal size */
 }
-div.demo a {
-    display: table-cell;
-    text-align: center;
-}
 </style>

@@ -30,3 +30,15 @@ document.addEventListener('DOMContentLoaded', function() {
     font-size: 14px; /* Adjust the label size */
 }
 </style>
+
+I am currently [Canada Research Chair in Political Methodology](http://www.chairs-chaires.gc.ca) in the department of [Political Science](http://www.politicalscience.uwo.ca) and [Statistics](http://www.stats.uwo.ca/), by courtesy, at Western University in London, Ontario. I teach courses on political methodology. Find out more about the courses I [teach](/teach).
+
+![@image-small](/files/images/armstrong.jpg)
+
+Much of my substantive research focuses on the link between state repression and democratic institutions/behavior. Methodologically, my interests have taken me in a number of different  directions on collaborative projects, though the measurement and scaling seem to be common themes. Visit my [research page](/research) or download my full [CV](/files/2017/11/02/armstrongcv.pdf).
+
+I've also had the privilege of teaching at the ICPSR Summer Program since 2006. I really value the experiences I had as a participant (2001--03) and a teaching assistant (2002--06) at the Summer Program and consider myself lucky to be a member of the Program's faculty. Please check out the materials for my [ICPSR courses](/teachicpsr).
+
+If you are looking for something that appears to be gone, please just shoot me an [e-mail](mailto:davearmstrong.ps@gmail.com) and I will be happy to forward along what you're looking for.
+
+

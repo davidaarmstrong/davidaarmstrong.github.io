@@ -2,7 +2,7 @@
 
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('downloads').innerHTML = '<a href="URL-HERE" class="link-item" title="Research" target="_blank" rel="nofollow"><i class="fa-solid fa-puzzle-piece fa-2xl"></i><span>Research</span></a>';}, false);
+    document.getElementById('downloads').innerHTML = '<a href="URL-HERE" class="link-item" title="Research" target="_blank" rel="nofollow"><i class="fa-solid fa-puzzle-piece fa-2xl"></i><span style="padding-top: 10px;">Research</span></a>';}, false);
 </script>
 
 <style>

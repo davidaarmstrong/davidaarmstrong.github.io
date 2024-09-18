@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 I am currently Professor and [Canada Research Chair in Political Methodology](http://www.chairs-chaires.gc.ca) in the department of [Political Science](http://www.politicalscience.uwo.ca) at Western University in London, Ontario. I teach courses on political methodology and Comparative Politics. Find out more about the courses I [teach](/teach).
 
-<img src="/files/images/armstrong.jpg" align="left" width="30%" style="padding-right: 5px">
+<img src="/files/images/armstrong.jpg" align="left" width="30%" style="padding-right: 10px">
 
 Much of my substantive research focuses on the link between state repression and democratic institutions/behavior. Methodologically, my interests have taken me in a number of different  directions on collaborative projects, though the measurement and scaling seem to be common themes. Visit my [research page](/research) or download my full [CV](/files/documents/armstrongcv.pdf).
 

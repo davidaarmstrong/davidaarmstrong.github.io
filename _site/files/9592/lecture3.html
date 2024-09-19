@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9592</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9592
+]
+.subtitle[
+## Lecture 3: Interactions
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+
+
+&lt;/style&gt;
+
+
+## Goals for This Session
+
+1. Discuss Interaction Effects in the Linear Model
+2. Discuss Interaction Effects in the GLM
+3. Presentation of Interaction Results
+
+
+---
+
+# Interaction Effects in LMs (1)
+
+When the partial effect of one variable depends on the value of another variable, those two variables are said to "interact".
+  - For example, we may want to test whether age effects are different for men (coded 1) and women (coded 0).
+  - In such cases it is sensible to fit separate regressions for men and women, but this does not allow for a formal statistical test of the differences
+  - Specification of interaction effects facilitates statistical tests for a difference in slopes within a single regression
+
+---
+
+# Interaction Effects in LMs (2)
+
+Interaction terms are the *product of the regressors for the two variables*.
+  - The interaction regressor in the model below is `\(X_{i}D_{i}\)`:
+
+`$$\begin{aligned}
+Y_{i} &amp;= \alpha + \beta X_{i} + \gamma D_{i} + \delta (X_{i}D_{i}) + \varepsilon_i\\
+\text{income}_{i} &amp;= \alpha + \beta \text{ age}_{i} + \gamma\text{ men}_{i} + \delta (\text{age}_{i}\times \text{men}_{i}) + \varepsilon_i
+\end{aligned}$$`
+
+Ultimately we want to know two things:
+
+
+- Is there a statistically significant interactive (i.e., multiplicative or conditional) effect?
+- If the answer to \#1 is "yes", what is the nature of that effect (i.e., what does it look like)?
+
+Below, I will walk you through all of the possible two-way interaction scenarios and we will discuss how to answer these two questions.
+
+
+---
+
+
+# ANOVA Type I Sums of Squares
+
+Consider the model: 
+
+`$$y = b_0 + b_1 x_1 + b_2 x_2 + b_3 x_3 + b_4x_1x_2 + e$$`
+In a type I test, the following tests are calculated. 
+
+1. The effect of `\(x_1\)` not controlling for any other variables. 
+2. The effect of `\(x_2\)` controlling for `\(x_1\)`. 
+3. The effect of `\(x_3\)` controlling for `\(x_1\)` and `\(x_2\)`. 
+4. The effect of the interaction, `\(x_1x_2\)` controlling for `\(x_1\)`, `\(x_2\)` and `\(x_3\)`. 
+
+The results depend on the order in which the variables are included in the model. 
+
+The `anova()` function in the `stats` package does this kind of test. 
+
+
+---
+
+# ANOVA Type II Sums of Squares
+
+Consider the model: 
+
+`$$y = b_0 + b_1 x_1 + b_2 x_2 + b_3 x_3 + b_4x_1x_2 + e$$`
+
+In a type II test, the following tests are calculated. 
+
+1. The effect of `\(x_1\)` controlling for `\(x_2\)` and `\(x_3\)`.
+2. The effect of `\(x_2\)` controlling for `\(x_1\)` and `\(x_3\)`. 
+3. The effect of `\(x_3\)` controlling for `\(x_1\)` and `\(x_2\)` and `\(x_1x_2\)`. 
+4. The effect of the interaction, `\(x_1x_2\)` controlling for `\(x_1\)`, `\(x_2\)` and `\(x_3\)`. 
+
+When testing lower-order terms, they do not control for higher-order terms of the same variable(s). 
+
+The `ANOVA(..., type="II")` function in the `car` package does this test. 
+
+---
+
+# ANOVA Type III Sums of Squares
+
+Consider the model: 
+
+`$$y = b_0 + b_1 x_1 + b_2 x_2 + b_3 x_3 + b_4x_1x_2 + e$$`
+
+In a type III test, the following tests are calculated. 
+
+1. The effect of `\(x_1\)` controlling for `\(x_2\)`, `\(x_1x_2\)` and `\(x_3\)`.
+2. The effect of `\(x_2\)` controlling for `\(x_1\)`, `\(x_1x_2\)` and `\(x_3\)`. 
+3. The effect of `\(x_3\)` controlling for `\(x_1\)`, `\(x_2\)` and `\(x_1x_2\)`. 
+4. The effect of the interaction, `\(x_1x_2\)` controlling for `\(x_1\)`, `\(x_2\)` and `\(x_3\)`. 
+
+When testing lower-order terms, they do control for higher-order terms of the same variable(s). 
+
+The `ANOVA(..., type="III")` function in the `car` package does this test. 
+
+
+---
+
+# Two Categorical Variables
+
+With two categorical variables, essentially you are estimating a different conditional mean for every pair of values across the two categorical variables. You could do that as follows:
+.left-code[
+
+``` r
+library(DAMisc)
+library(car)
+data(Duncan)
+Duncan &lt;- Duncan %&gt;% 
+  mutate(inc.cat = cut(Duncan$income, 3), 
+         inc.cat = factor(as.numeric(inc.cat), 
+                          labels=c("Low", "Middle", "High")))
+
+mod &lt;- lm(prestige~ inc.cat * type + education,
+  data=Duncan)
+```
+]
+.right-plot-shift2[
+
+``` r
+S(mod, brief=TRUE)
+```
+
+```
+## Coefficients:
+##                        Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)              7.8827     3.4364   2.294 0.027915 *  
+## inc.catMiddle           22.4574     4.8792   4.603 5.30e-05 ***
+## inc.catHigh             51.2807     9.4351   5.435 4.29e-06 ***
+## typeprof                55.6073    11.6800   4.761 3.30e-05 ***
+## typewc                   2.5446     8.1162   0.314 0.755746    
+## education                0.2799     0.1121   2.496 0.017411 *  
+## inc.catMiddle:typeprof -41.5789    11.2428  -3.698 0.000740 ***
+## inc.catHigh:typeprof   -50.3567    13.3929  -3.760 0.000621 ***
+## inc.catMiddle:typewc   -13.0171    10.3130  -1.262 0.215223    
+## inc.catHigh:typewc     -33.6407    13.1215  -2.564 0.014806 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard deviation: 9.115 on 35 degrees of freedom
+## Multiple R-squared: 0.9334
+## F-statistic: 54.54 on 9 and 35 DF,  p-value: &lt; 2.2e-16 
+##    AIC    BIC 
+## 337.29 357.16
+```
+
+]
+
+
+
+---
+
+
+# Anova
+
+Q1: Is there an interaction Effect here?
+
+
+- An incremental (Type II) F-test will answer that question.  We want to test the null hypothesis that all of the interaction dummy regressor coefficients are zero in the population.
+
+- The `inc.cat:type` line of the output gives the results of this test.
+
+
+
+``` r
+Anova(mod)
+```
+
+```
+## Anova Table (Type II tests)
+## 
+## Response: prestige
+##              Sum Sq Df F value    Pr(&gt;F)    
+## inc.cat      3491.9  2 21.0159 1.010e-06 ***
+## type         2856.0  2 17.1885 6.308e-06 ***
+## education     517.7  1  6.2313  0.017411 *  
+## inc.cat:type 1644.4  4  4.9484  0.002871 ** 
+## Residuals    2907.7 35                      
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+
+
+---
+
+
+
+# Q2: What is the nature of the interaction?
+
+.left-code[
+
+``` r
+library(marginaleffects)
+p1 &lt;- predictions(mod, newdata = "mean", variables=list(inc.cat = unique, type = unique))
+ggplot(p1) + 
+  geom_pointrange(aes(x=inc.cat, y=estimate, 
+                 ymin=conf.low, 
+                 ymax=conf.high)) + 
+  facet_wrap(~type, ncol=2) + 
+  theme_bw() + 
+  labs(x="Income Category",
+       y="Predicted Prestige")
+```
+] 
+.right-plot[
+&lt;img src="Lecture3_files/figure-html/unnamed-chunk-2-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+# Testing Differences
+
+.pull-left[
+Imagine that you wanted to test whether the effect of moving from middle income to high income was the same for blue collar and white collar occupations.
+
+
+``` r
+p1 %&gt;%
+  mutate(param = paste0("b", row_number())) %&gt;% 
+  select(param, inc.cat, type, estimate) %&gt;% 
+  as.data.frame()
+```
+
+```
+##   param inc.cat type estimate
+## 1    b1    High prof 79.24763
+## 2    b2    High   wc 42.90089
+## 3    b3    High   bc 73.99703
+## 4    b4  Middle prof 59.20218
+## 5    b5  Middle   wc 34.70119
+## 6    b6  Middle   bc 45.17372
+## 7    b7     Low prof 78.32369
+## 8    b8     Low   wc 25.26095
+## 9    b9     Low   bc 22.71635
+```
+]
+.pull-right[
+
+``` r
+hypotheses(p1, "b3-b6 = b2 -b5", 
+           df = mod$df.residual)
+```
+
+```
+## 
+##         Term Estimate Std. Error    t Pr(&gt;|t|)   S 2.5 % 97.5 % Df
+##  b3-b6=b2-b5     20.6       13.5 1.52    0.136 2.9 -6.83   48.1 35
+## 
+## Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high, df 
+## Type:  response
+```
+
+]
+
+---
+
+
+
+# One Categorical and One Continuous
+
+With one categorical and one continuous variable, we want to show the conditional coefficients of the continuous variable (probably in a table) and we want to show the conditional coefficients of the dummy variables.
+
+
+``` r
+data(Prestige, package="carData")
+Prestige$income &lt;- Prestige$income/1000
+mod &lt;- lm(prestige ~ income*type + education,
+        data=Prestige)
+S(mod, brief=TRUE)
+```
+
+```
+## Coefficients:
+##                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)      -6.7273     4.9515  -1.359   0.1776    
+## income            3.1344     0.5215   6.010 3.79e-08 ***
+## typeprof         25.1724     5.4670   4.604 1.34e-05 ***
+## typewc            7.1375     5.2898   1.349   0.1806    
+## education         3.0397     0.6004   5.063 2.14e-06 ***
+## income:typeprof  -2.5102     0.5530  -4.539 1.72e-05 ***
+## income:typewc    -1.4856     0.8720  -1.704   0.0919 .  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard deviation: 6.455 on 91 degrees of freedom
+##   (4 observations deleted due to missingness)
+## Multiple R-squared: 0.8663
+## F-statistic: 98.23 on 6 and 91 DF,  p-value: &lt; 2.2e-16 
+##    AIC    BIC 
+## 652.35 673.03
+```
+
+
+---
+
+
+
+# Anova
+Q1: Is there a significant interaction?
+
+
+``` r
+Anova(mod)
+```
+
+```
+## Anova Table (Type II tests)
+## 
+## Response: prestige
+##             Sum Sq Df F value    Pr(&gt;F)    
+## income      1058.8  1 25.4132 2.342e-06 ***
+## type         591.2  2  7.0947   0.00137 ** 
+## education   1068.0  1 25.6344 2.142e-06 ***
+## income:type  890.0  2 10.6814 6.809e-05 ***
+## Residuals   3791.3 91                      
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+Notice that the `income:type` line of the `Anova` output tells us that the interaction is significant.  Thus, we should go on to calculate and explain the conditional coefficients.
+
+
+
+
+---
+
+
+# Conditional Coefficients of Income
+Q2: What is the nature of the interaction effect?
+- The nature of the interaction has to be considered both for `income` and for `type`.
+- We can calculate the conditional effects and variances of `income` as follows:
+
+
+``` r
+(s &lt;- slopes(mod, variables="income", by = "type"))
+```
+
+```
+## 
+##    Term    Contrast type Estimate Std. Error    z Pr(&gt;|z|)    S 2.5 % 97.5 %
+##  income mean(dY/dX) bc      3.134      0.522 6.01  &lt; 0.001 29.0 2.112   4.16
+##  income mean(dY/dX) prof    0.624      0.222 2.82  0.00486  7.7 0.190   1.06
+##  income mean(dY/dX) wc      1.649      0.709 2.33  0.02002  5.6 0.259   3.04
+## 
+## Columns: term, contrast, type, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high, predicted_lo, predicted_hi, predicted 
+## Type:  response
+```
+
+``` r
+hypotheses(s, hypothesis = "pairwise")
+```
+
+```
+## 
+##       Term Estimate Std. Error     z Pr(&gt;|z|)    S  2.5 % 97.5 %
+##  bc - prof     2.51      0.553  4.54   &lt;0.001 17.4  1.426  3.594
+##  bc - wc       1.49      0.872  1.70   0.0885  3.5 -0.224  3.195
+##  prof - wc    -1.02      0.740 -1.38   0.1664  2.6 -2.476  0.426
+## 
+## Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
+## Type:  response
+```
+
+
+
+
+---
+
+
+
+# Conditional Effects of Income
+
+
+.left-code[
+
+``` r
+preds &lt;- predictions(mod, newdata="mean", 
+            variables = list(income = unique, 
+                             type=unique))
+library(patchwork)
+g1 &lt;- ggplot(preds, 
+             aes(x=income, 
+                 y=estimate, 
+                 ymin=conf.low, 
+                 ymax=conf.high, 
+                 fill=type, 
+                 color=type)) + 
+  geom_ribbon(alpha=.15, 
+              color="transparent") + 
+  geom_line()  + 
+  theme_classic() + 
+  theme(legend.position="bottom")
+
+g2 &lt;- ggplot(Prestige %&gt;% 
+               filter(!is.na(type)), 
+             aes(x=income,
+                 fill=type)) + 
+  geom_histogram(position="identity", 
+                 alpha=.15, 
+                 show.legend = FALSE) + 
+  theme_void()
+
+g2 + 
+  g1 + 
+  plot_layout(nrow = 2, 
+              heights = c(1, 4))
+```
+]
+.right-plot-shift2[
+&lt;img src="Lecture3_files/figure-html/unnamed-chunk-5-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+
+
+# Interpretation
+
+
+- The slope is significant for all occupation types and is the biggest for blue collar.
+
+- Confidence bounds for both blue collar and white collar occupation lines are very big at high levels of income (lack of data density).
+
+- The only valid places where professional occupations can be compared to the others is between around 5,000 and 8,000 dollars.
+
+
+
+---
+
+
+
+# Conditional Effect of Type
+Q2: What is the nature of the interaction effect (this time for `type`)?
+
+- The conditional effect of type (as we saw) is a bit more difficult.  Here, We would presumably have to test each pairwise difference: BC vs Prof, BC vs WC and Prof vs WC for different values of education.  First, let's think about what we need.
+
+`$$\begin{aligned}
+\text{BC vs Prof: } &amp; \frac{\partial \text{Prestige}}{\partial \text{Prof}} = b_{2} + b_{5}\text{Income}\\
+\text{BC vs WC: }  &amp; \frac{\partial \text{Prestige}}{\partial \text{WC}} = b_{3} + b_{6}\text{Income}\\
+\text{Prof vs WC: } &amp; \frac{\partial \text{Prestige}}{\partial \text{Prof}} - \frac{\partial \text{Prestige}}{\partial \text{WC}} = (b_{2}-b_{3}) + (b_{5}-b_{6})\text{Income}
+\end{aligned}$$`
+
+---
+
+
+
+# Conditional Effect of Type: Numerical
+
+
+``` r
+num3 &lt;- function(x, mult=1){
+  s &lt;- sd(x, na.rm=TRUE)*mult
+  m &lt;- mean(x, na.rm=TRUE)
+  c("Mean - SD" = m-s, "Mean" = m, "Mean + SD" = m+s)
+}
+p2 &lt;- purrr::map(num3(Prestige$income), \(x)
+             avg_predictions(mod, newdata= datagrid(income=x), variables=list(type=unique)))
+             
+bind_rows(lapply(p2, \(x)hypotheses(x, hypothesis="pairwise")), .id="income") %&gt;% 
+  as_tibble() %&gt;% 
+  select(income, term, estimate, std.error, conf.low, conf.high)
+```
+
+```
+## # A tibble: 9 × 6
+##   income    term      estimate std.error conf.low conf.high
+##   &lt;chr&gt;     &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 Mean - SD prof - bc    18.8       4.48     9.98     27.5 
+## 2 Mean - SD prof - wc    15.4       3.44     8.68     22.2 
+## 3 Mean - SD bc - wc      -3.35      3.43   -10.1       3.38
+## 4 Mean      prof - bc     8.11      3.55     1.16     15.1 
+## 5 Mean      prof - wc    11.1       2.81     5.55     16.6 
+## 6 Mean      bc - wc       2.96      2.60    -2.14      8.07
+## 7 Mean + SD prof - bc    -2.55      4.01   -10.4       5.32
+## 8 Mean + SD prof - wc     6.72      4.88    -2.84     16.3 
+## 9 Mean + SD bc - wc       9.27      5.40    -1.32     19.9
+```
+
+---
+
+
+# Interpretation
+
+In the previous table we see the following:
+
+- The differences between Professional occupations and the other two groups is significant when income is at its mean and a standard deviation below its mean. 
+
+- There are no significant differences at the mean plus one SD. 
+
+---
+
+# Two continuous Variables
+
+With two continuous variables the interpretation gets a bit trickier.  For example, consider the following model:
+
+`$$\hat{Y}_{i} = \beta_{0} + \beta_{1}X_{i1} + \beta_{2}X_{i2} + \beta_{3}X_{i3} + \beta_{4}X_{i1}X_{i2}$$`
+
+
+We want to know the partial conditional effect of both `\(X_1\)` and `\(X_2\)`, but unlike above, neither can be boiled down to a small set of values.  Just think about the equation:
+
+`$$\begin{aligned}
+\frac{\partial \hat{Y}}{\partial X_{1}} &amp;= \beta_{1} + \beta_{4}X_{2}\\
+\frac{\partial \hat{Y}}{\partial X_{2}} &amp;= \beta_{2} + \beta_{4}X_{1}
+\end{aligned}$$`
+
+
+Note, that `\(\beta_4\)` is the amount by which the *effect* of `\(X_1\)` goes up for every additional unit of `\(X_2\)` and the amount by which the *effect* of `\(X_2\)` goes up for every additional unit of `\(X_1\)`.
+
+---
+
+
+# Testable Hypotheses
+
+`$$\hat{Y}_{i} = \beta_{0} + \beta_{1}X_{i1} + \beta_{2}X_{i2} + \beta_{3}X_{i3} + \beta_{4}X_{i1}X_{i2}$$`
+Berry, Golder and Milton (2012) suggest that we should be able to test 5 hypotheses:
+
+.small[
+- `\(\mathbf{P}_{X_{1}|X_{2}=\text{min}}\)` The marginal effect of `\(X_{1}\)` is [positive, zero, negative] when `\(X_{2}\)` takes its lowest value.
+- `\(\mathbf{P}_{X_{1}|X_{2} = \text{max}}\)` The marginal effect of `\(X_{1}\)` is [positive, zero, negative] when `\(X_{2}\)` takes its highest value.
+- `\(\mathbf{P}_{X_{2}|X_{1}=\text{min}}\)` The marginal effect of `\(X_{2}\)` is [positive, zero, negative] when `\(X_{1}\)` takes its lowest value.
+- `\(\mathbf{P}_{X_{2}|X_{1} = \text{max}}\)` The marginal effect of `\(X_{2}\)` is [positive, zero, negative] when `\(X_{1}\)` takes its highest value.
+- `\(\mathbf{P}_{X_{1}X_{2}}\)` The marginal effect of each of `\(X_{1}\)` and `\(X_{2}\)` is [positively, negatively] related to the other variable.
+]
+
+
+---
+
+# Example
+
+
+``` r
+mod &lt;- lm(prestige ~ income*education + type, data=Prestige)
+S(mod, brief=TRUE)
+```
+
+```
+## Coefficients:
+##                   Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)      -17.80359    7.59424  -2.344 0.021212 *  
+## income             3.78593    0.94453   4.008 0.000124 ***
+## education          5.10432    0.77665   6.572 2.93e-09 ***
+## typeprof           5.47866    3.71385   1.475 0.143574    
+## typewc            -3.58387    2.42775  -1.476 0.143303    
+## income:education  -0.21019    0.06977  -3.012 0.003347 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard deviation: 6.806 on 92 degrees of freedom
+##   (4 observations deleted due to missingness)
+## Multiple R-squared: 0.8497
+## F-statistic:   104 on 5 and 92 DF,  p-value: &lt; 2.2e-16 
+##    AIC    BIC 
+## 661.80 679.89
+```
+
+
+
+
+---
+
+
+
+# Example (2)
+Q1: Is there a significant interaction?
+
+
+- The `income:education` line answers this question.  If it is significant, then there is a significant interaction, otherwise there is not.
+
+- This is counter to a minor, though still influential, point in Brambor, Clark and Golder (2006), but is consistent with Berry, Golder and Milton (2012).
+
+- In this case, the interaction is significant, so we can move on to the next question
+
+
+---
+
+## Q2: What is the nature of the interaction?
+
+.pull-left[
+
+``` r
+library(ggplotify)
+h1 &lt;- ggplot(Prestige, aes(x=education)) + 
+  geom_histogram() + 
+  theme_void()
+m1 &lt;- plot_slopes(mod, variable="income", condition="education")  + 
+  geom_hline(yintercept=0, linetype=3) + 
+  theme_classic() + 
+  labs(x="Education", y="Conditional Effect of Income")
+m1 &lt;- m1 - annotation_custom(as.grob(h1), ymax=calc_ymax(m1)) 
+
+m2 &lt;- plot_slopes(mod, variable="education", condition="income") + 
+  geom_hline(yintercept=0, linetype=3) + 
+  theme_classic() + 
+  labs(x="Income", y="Conditional Effect of Education")
+h2 &lt;- ggplot(Prestige, aes(x=income)) + 
+  geom_histogram() + 
+  theme_void()
+m2 &lt;- m2 - annotation_custom(as.grob(h2), ymax=calc_ymax(m2)) 
+
+m1 + m2 + plot_layout(nrow=2)
+```
+]
+.pull-right[
+&lt;img src="Lecture3_files/figure-html/unnamed-chunk-6-1.png" width="504" /&gt;
+]
+
+
+---
+
+# When Confidence Bounds Equal Zero
+
+You may want to know when the confidence bounds are equal to zero.  Consider the equation:
+
+`$$\hat{Y}_{i} = \beta_{0} + \beta_{1}X_{i1} + \beta_{2}X_{i2} + \beta_{3}X_{i3} + \beta_{4}X_{i1}X_{i2}$$`
+
+
+- We know that the conditional effect of `\(X_1\)` is `\(\beta_1 + \beta_4X_2\)` and that the lower bound is `\((\beta_1 + \beta_4X_2) - 1.96\times SE(\beta_1 + \beta_4X_2)\)`.
+
+- Since those are all quantities that we know (or estimate), we could set it equal to zero and solve.
+
+- This is what the `changeSig` function does.
+
+---
+
+## Change in Significance
+
+
+
+``` r
+changeSig(mod, c("income", "education"))
+```
+
+```
+## LB for B(income | education) = 0 when education=15.4979 (95th pctile)
+## UB for B(income | education) = 0 when education=27.9396 (&gt; Maximum Value in Data)
+## LB for B(education | income) = 0 when income=15.9273 (96th pctile)
+## UB for B(education | income) = 0 when income=59.5175 (&gt; Maximum Value in Data)
+```
+
+---
+
+## Berry, Golder and Milton Hypotheses
+
+
+``` r
+library(DAMisc)
+BGMtest(mod, c("income", "education"))
+```
+
+```
+##              est    se      t p-value
+## P(X|Zmin)  2.445 0.520  4.698 0.000  
+## P(X|Zmax)  0.429 0.287  1.495 0.138  
+## P(Z|Xmin)  4.756 0.712  6.681 0.000  
+## P(Z|Xmax) -0.335 1.466 -0.229 0.820  
+## P(XZ)     -0.210 0.070 -3.012 0.003
+```
+---
+
+
+# Interpretation
+
+
+- The effect of income is nearly always significant, though it gets smaller as education gets bigger.  That is, as education increases, we expect smaller increases in prestige from increasing income
+
+- The effect of education is significant and positive until around 16,000 dollars, which is around 2/3 the range of `income`, but is the `\(96^{th}\)` percentile because of the skewness of income.
+
+- This suggests that people tend to derive prestige from either higher incomes or higher education, but not really both.
+
+
+---
+
+## Implicit Interaction
+
+Consider the Following model: 
+
+`$$\log \Omega = b_{0} + b_{1}x_{1} + b_{2}x_{2} + b_{3}x_{3}$$`
+
+In this case, the effect of `\(x_1\)` is 
+
+`$$\frac{\partial \Lambda (Xb)}{\partial x_{1}} = \lambda(Xb)b_{1}$$`
+
+where `\(\Lambda(\cdot)\)` is the CDF, and `\(\lambda(\cdot)\)` the PDF of the logistic distribution. - Note, that even when there is no product term, marginal effect is conditional on the values of the other variables through `\(\lambda(Xb)\)`.  
+
+
+---
+## Compression or Conditioning?
+
+The effect noted above is often referred to as "compression".  
+
+- Compression happens necessarily as a function of the "S" shape of the logistic CDF. 
+- Changes in probabilities in the middle of the curve are bigger than changes out in the tails of the distribution.  
+
+
+---
+
+
+
+## The Debate
+
+The debate, such as it is, in political science is whether or not compression constitutes a substantively interesting interaction.  
+
+- On the "compression is interesting" side is [Berry, DeMeritt and Esarey (2010)](https://quantoid.net/files/935/BDE.pdf)
+- On the "compression is not interesting" side is [Nalger (1991)](https://quantoid.net/files/935/nagler1991.pdf)
+- [Rainey (2014)](https://quantoid.net/files/935/Rainey2014.pdf}{Rainey (2014)) has a nice discussion of the debate and the virtues of both approaches. 
+
+---
+
+## Rainey's Suggestion
+
+&lt;img src="images/rainey_table.png" width="60%" style="display: block; margin: auto;" /&gt;
+---
+
+## Rainey's Suggestions
+
+1. Clearly state the interactive theory and provide a model that can represent both the theoretically expected and null relationships. 
+1. Always include the product term (if you propose an interaction could be present).  
+
+
+---
+
+## Second difference
+
+To figure out if there is an interaction, you need to calculate the second difference (or cross-derivative) in the outcome for the two variables in the interaction.  If the two variables are `\(X\)` and `\(Z\)`, you would calculate: s
+
+`$$\begin{aligned}
+ \Delta\Delta Pr(Y=1|X,Z) =&amp; (Pr(Y=1|X = \text{high}, Z=\text{low}) \\
+  &amp;- Pr(Y=1|X=\text{low}, Z=\text{low}))\\
+  &amp;- (Pr(Y=1|X = \text{high}, Z=\text{high})\\
+  &amp;+ Pr(Y=1|X=\text{low}, Z=\text{high}))
+\end{aligned}$$`
+
+We'll use R to do this for us below. 
+
+---
+
+## Example
+.pull-left[
+Consider vote for Obama in 2012.  I hypothesize: 
+
+- For people on the right, income decreases the likelihood of voting for Obama.  For those on the left, income increases the probability of voting for Obama. 
+]
+.pull-right[
+
+``` r
+dat &lt;- import("data/anes2012.dta")
+mod &lt;- glm(votedem ~ black + evprot + incgroup_num *lrself + 
+             econ_retnat, data=dat, family=binomial)
+summary(mod)
+```
+
+```
+## 
+## Call:
+## glm(formula = votedem ~ black + evprot + incgroup_num * lrself + 
+##     econ_retnat, family = binomial, data = dat)
+## 
+## Coefficients:
+##                      Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)          4.629952   0.398818  11.609  &lt; 2e-16 ***
+## black                4.995479   0.284023  17.588  &lt; 2e-16 ***
+## evprot              -0.468927   0.156150  -3.003 0.002673 ** 
+## incgroup_num         0.056964   0.021800   2.613 0.008975 ** 
+## lrself              -0.216037   0.059100  -3.655 0.000257 ***
+## econ_retnat         -1.480114   0.077297 -19.148  &lt; 2e-16 ***
+## incgroup_num:lrself -0.019020   0.003707  -5.131 2.89e-07 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 4017.9  on 2918  degrees of freedom
+## Residual deviance: 2006.6  on 2912  degrees of freedom
+## AIC: 2020.6
+## 
+## Number of Fisher Scoring iterations: 6
+```
+]
+
+---
+
+## Second Difference in Probabilities
+
+Below, we answer the question: is there an interaction that is interesting? 
+
+
+``` r
+avg_predictions(mod, variables = list(incgroup_num = c(9,22), lrself=c(3,8)), 
+                hypothesis="(b3-b1)-(b4-b2)=0")
+```
+
+```
+## 
+##               Term Estimate Std. Error    z Pr(&gt;|z|)    S  2.5 % 97.5 %
+##  (b3-b1)-(b4-b2)=0    0.137     0.0289 4.74   &lt;0.001 18.8 0.0802  0.193
+## 
+## Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
+## Type:  response
+```
+
+Since this is significant (the `\(2.5\%\)` value is greater than zero), it suggests there is a significant interaction between income and left-right self-placement.  
+
+---
+## Nature of Interaction
+
+.pull-left[
+
+``` r
+pv &lt;- avg_predictions(mod, 
+                      variables=list(incgroup_num=unique, 
+                                     lrself=num3)) %&gt;%
+  mutate(cond = as.factor(lrself))
+levels(pv$cond) &lt;- c("Mean - SD", "Mean", "Mean + SD")
+
+ggplot(pv, aes(x=incgroup_num, 
+               y=estimate, 
+               ymin=conf.low, 
+               ymax=conf.high, 
+               fill=cond)) + 
+  geom_ribbon(alpha=.15, color="transparent") + 
+  geom_line(aes(color=cond)) + 
+  theme_classic() + 
+  theme(legend.position="top") + 
+  labs(x="Income Group", 
+       y="Pr(Vote Obama)", 
+       colour="L-R Self", fill="L-R Self")
+```
+]
+.pull-right[
+&lt;img src="Lecture3_files/figure-html/unnamed-chunk-9-1.png" width="504" /&gt;
+]
+
+---
+
+## Review
+
+We covered the following topics: 
+
+1. Discuss Interaction Effects in the Linear Model
+2. Discuss Interaction Effects in the GLM
+3. Presentation of Interaction Results
+
+---
+
+## Exercises 
+In 2012, Jaroslav Tir and Douglas Stinnett published an article arguing that international water treaties can reduce the impact of water scarcity on conflict.  You can find the replication data at the [_JPR_ replication archive](https://www.prio.org/JPR/Datasets/)  here's a [link](https://files.prio.org/Journals/JPR/2012/49/1/TirAndStinnett49Replication.zip) directly to the data's zip archive.
+
+1. In the model they label "River and Water Variables", they predict `cwmid` with `lnwaterpcmin`, `instcoop`, `numbtreaties`, `anyupdown`, `power1`, `alliance`, `gdpmax`, `interdep`, `dyaddem`, `contig`, `peaceyrs1`, `_spline1`, `_spline2` and `_spline3` included additively.  
+  - What are the effects of the water variables? 
+2. In their third model, they add an interaction between `lnwaterpcmin` and `instcoop`.  I want you to do the same. 
+  - Evaluate the need for the interaction. 
+  - Plot the nature of the interaction. 
+  - How does this model fit relative to the previous model? 
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -72,35 +72,10 @@ I taught the intereactive data viz short course for a couple of years.  The cour
 
 In 2001, I took the Scaling and Dimensional class at the ICPSR Summer Program after my second year in graduate school.  It would turn out to be my favourite class of all the classes I have taken at any level of education.  The way that Bill (Jacoby) talked about data and thought about measurement was compelling to me and stirred a deep interest in the subject that remains to this day.  I was Bill's TA from 2002-2006 and was honoured when he asked me to co-teach the course with him in 2011 and 2013.  The course covered topics including summated rating and Mokken scaling, Alternating Least-Squares Optimal Scaling (ALSOS), Exploratory Factor Analysis and Multidimensional Scaling.
 
-## Essex Summer School in Social Science Data Analysis
+## Instats
 
-### Data Reduction in R (2015)
-
-This course broadly covered the material in _Analyzing Spatial Models of Choice and Judgment_, a book I co-authored with Ryan Bakker, Royce Carroll, Chris Hare, Keith Poole and Howard Rosenthal.  You can find out more about the book on my [Research page](Research.html).  The course covered multidimensional scaling, item-response theory, Aldrich-McKelvey and Black Box scaling methods, unfolding analysis and Bayesian implementations of many of these tools.  
-
-### Improving Regression Analysis (2008)
-
-This course was mean to bring some of the same thinking from the Regression III Course I taught at ICPSR to Essex, though done entirely in Stata rather than R.  Primarily, the course focused on modeling interactions and non-linearities.  
-
-## UW-Milwaukee
-
-### POLSCI 701: Introduction to Statistics
-
-### POLSCI 702: Linear Models
-
-### POLSCI 935: Maximum Likelihood Estimation
-
-### POLSCI 936: Applied Bayesian Modeling
-
-## University of Oxford
-
-### Applied Statistics for the Social Sciences 
-
-### Intermediate Statistics for the Social Sciences
-
-### Measurement and Scaling
-
-### Statistics for International Relations
-
-
-
+I have taught a few courses for [instats](https://instats.org).  They have an interesting model where synchronous online courses are taught and often that material is transformed to asynchronous on-demand courses.  I've taught the following courses: 
+- [Interactive Data Visualization and Dashboards with R](https://instats.org/seminar/interactive-data-visualization-and-dashb0420)
+- [Interactive Dashboards and Web Apps with Shiny in R](https://instats.org/seminar/interactive-dashboards-and-web-apps-with3)
+- [Interactions and Non-Linearities in Regression Models (R and Stata)](https://instats.org/seminar/interactions-and-non-linearities-in-regr3)
+- [Generalized Linear Models for the Social and Health Sciences](https://instats.org/seminar/generalized-linear-models-for-social-and3) 

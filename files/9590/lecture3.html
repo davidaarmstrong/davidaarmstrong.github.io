@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9590: Methods I</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9590: Methods I
+]
+.subtitle[
+## Learning About and Visualizing Data
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+
+
+&lt;/style&gt;
+
+
+## Videos
+
+We covered a few different things in the videos: 
+
+1. Frequency Distributions
+2. Rates and Ratios
+  - Ratios only really work for **ratio** level variables. 
+3. Percentages and Percentiles
+4. Visualizing Distributions
+  - Bar charts (or, the rightfully-maligned pie chart) for qualitative variables.
+  - Histograms for quantitative variables.
+--
+
+##Questions?
+
+---
+
+## Required Packages
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+For what we're doing today, you will need to install the `DAMisc` and the `uwo4419` packages from github.  
+
+``` r
+install.packages("remotes")
+remotes::install_github("davidaarmstrong/damisc")
+remotes::install_github("davidaarmstrong/uwo4419")
+```
+
+``` r
+library(ggplot2)
+library(dplyr)
+library(rio)
+library(scales)
+library(uwo4419)
+library(DAMisc)
+```
+]
+
+
+.pull-right[
+Sometimes when you install packages, you will be alerted to packages you currently have that have been updated since you installed them.  For me, it looked like this (updating all is slightly preferred): 
+
+```
+These packages have more recent versions available.
+It is recommended to update all of them.
+Which would you like to update?
+
+1: All                                  
+2: CRAN packages only                   
+3: None                                 
+4: vroom     (1.5.4   -&gt; 1.5.5  ) [CRAN]
+5: e1071     (1.7-8   -&gt; 1.7-9  ) [CRAN]
+6: DescTools (0.99.42 -&gt; 0.99.43) [CRAN]
+Enter one or more numbers, or an empty line to skip updates: 
+```
+
+]
+]
+.panel[.panel-name[Python]
+
+``` python
+import pandas as pd
+import mizani.labels as ml
+import numpy as np
+from plotnine import aes, after_stat, geom_line, geom_bar, geom_histogram, ggplot, labs, position_dodge, scale_color_brewer, scale_y_continuous, theme_classic
+```
+
+``` r
+exec(open('python_functions.py').read())
+```
+]
+.panel[.panel-name[Stata]
+
+``` stata
+net install catplot.pkg
+```
+]
+]
+
+
+
+
+---
+
+## Import the data
+
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+ces19 &lt;- import("ces19.dta")
+```
+]
+
+.panel[.panel-name[Python]
+
+``` r
+reticulate::use_python("/Users/david/.pyenv/shims/python")
+```
+
+``` python
+import pandas as pd
+ces19 = pd.read_stata("ces19.dta")
+```
+]
+.panel[.panel-name[Stata]
+
+
+``` stata
+use "ces19.dta", clear
+```
+]
+]
+
+---
+
+## Frequency Distributions 
+
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+freqDist(ces19$educ)
+```
+
+```
+##       Freq   %     Cu % 
+## 1      491  17.59  17.59
+## 2     1029  36.86  54.44
+## 3     1272  45.56 100.00
+## Total 2792 100.00
+```
+
+``` r
+ces19$educ &lt;- factorize(ces19$educ)
+freqDist(ces19$educ)
+```
+
+```
+##              Freq   %     Cu % 
+## &lt;HS           491  17.59  17.59
+## HS/College   1029  36.86  54.44
+## College Grad 1272  45.56 100.00
+## Total        2792 100.00
+```
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+``` python
+def freqDist(d, v):
+  tab = (d[v]
+          .value_counts()
+          .reset_index(name='Frequency')
+        )
+  tab["pct"] = round((tab["Frequency"]/sum(tab["Frequency"]))*100, 2)
+  print(tab)
+```
+]
+.pull-right[
+
+``` python
+ces19['educ'].value_counts().reset_index(name='Frequency')
+```
+
+```
+##            educ  Frequency
+## 0  College Grad       1272
+## 1    HS/College       1029
+## 2           &lt;HS        491
+```
+
+``` python
+freqDist(ces19, 'educ')
+```
+
+```
+##            educ  Frequency    pct
+## 0  College Grad       1272  45.56
+## 1    HS/College       1029  36.86
+## 2           &lt;HS        491  17.59
+```
+]
+]
+.panel[.panel-name[Stata]
+
+``` stata
+tab educ
+
+  Respondent |
+     highest |
+    level of |
+   education |      Freq.     Percent        Cum.
+-------------+-----------------------------------
+         &lt;HS |        491       17.59       17.59
+  HS/College |      1,029       36.86       54.44
+College Grad |      1,272       45.56      100.00
+-------------+-----------------------------------
+       Total |      2,792      100.00
+```
+]
+]
+
+
+
+
+
+---
+
+## Summary Statistics
+
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+sumStats(ces19, "leader_lib")
+```
+
+```
+## # A tibble: 1 × 11
+##   variable    mean    sd   iqr   min   q25   q50   q75   max     n   nNA
+##   &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt;
+## 1 leader_lib  43.4  30.8    61     0     9    50    70   100  2799     7
+```
+]
+.panel[.panel-name[Python]
+
+``` python
+ces19.leader_lib.describe()
+```
+
+```
+## count    2792.000000
+## mean       43.393266
+## std        30.839375
+## min         0.000000
+## 25%         9.000000
+## 50%        50.000000
+## 75%        70.000000
+## max       100.000000
+## Name: leader_lib, dtype: float64
+```
+
+or a function similar to `sumStats` in R:
+
+
+``` python
+exec(open('../python_functions.py').read())
+sumStats(ces19, "leader_lib")
+```
+
+```
+##              mean    std  min  25%   50%   75%    max  nNA  nValid
+## leader_lib  43.39  30.84  0.0  9.0  50.0  70.0  100.0    7  2792.0
+```
+]
+
+.panel[.panel-name[Stata]
+
+``` stata
+sum leader_lib, det
+
+          Liberal party leader feeling thermometer
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            0              0
+ 5%            0              0
+10%            0              0       Obs               2,792
+25%            9              0       Sum of wgt.       2,792
+
+50%           50                      Mean           43.39327
+                        Largest       Std. dev.      30.83938
+75%           70            100
+90%           80            100       Variance       951.0671
+95%           90            100       Skewness      -.0663978
+99%          100            100       Kurtosis       1.694905
+
+```
+]
+]
+
+
+
+---
+
+## Summary Statistics by Group
+
+
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+sumStats(ces19, "leader_lib", byvar="educ")
+```
+
+```
+## # A tibble: 4 × 12
+##   variable   educ     mean    sd   iqr   min   q25   q50   q75   max     n   nNA
+##   &lt;chr&gt;      &lt;fct&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt;
+## 1 leader_lib &lt;HS      35.7  32.6  60       0   0      29  60     100   491     1
+## 2 leader_lib HS/Col…  38.9  30.3  58.5     0   6.5    39  65     100  1029     3
+## 3 leader_lib Colleg…  50.1  29.2  46       0  29      55  75     100  1272     3
+## 4 leader_lib &lt;NA&gt;     26    29.4  32.5     0   7       9  39.5    80     7     0
+```
+]
+.panel[.panel-name[Python]
+
+``` python
+(ces19[['leader_lib', 'educ']]
+  .groupby('educ',observed=True) 
+  .describe() 
+  .droplevel(axis=1, level=0) 
+  .reset_index())
+```
+
+```
+##            educ   count       mean        std  min   25%   50%   75%    max
+## 0           &lt;HS   490.0  35.704082  32.622088  0.0   0.0  29.0  60.0  100.0
+## 1    HS/College  1026.0  38.947368  30.335541  0.0   6.5  39.0  65.0  100.0
+## 2  College Grad  1269.0  50.052797  29.156646  0.0  29.0  55.0  75.0  100.0
+```
+
+or
+
+
+``` python
+sumStats(ces19, "leader_lib", g="educ")
+```
+
+```
+##            educ   mean    std  min   25%   50%   75%    max  nNA  nValid
+## 0           &lt;HS  35.70  32.62  0.0   0.0  29.0  60.0  100.0    1     490
+## 1    HS/College  38.95  30.34  0.0   6.5  39.0  65.0  100.0    3    1026
+## 2  College Grad  50.05  29.16  0.0  29.0  55.0  75.0  100.0    3    1269
+```
+]
+.panel[.panel-name[Stata]
+
+``` stata
+ tabstat leader_lib, by(educ) statistics(mean sd min p25 p50 p75 max n )
+
+Summary for variables: leader_lib
+Group variable: educ (Respondent highest level of education)
+
+        educ |      Mean        SD       Min       p25       p50       p75       Max         N
+-------------+--------------------------------------------------------------------------------
+         &lt;HS |  35.70408  32.62209         0         0        29        60       100       490
+  HS/College |  38.94737  30.33554         0         6        39        65       100      1026
+College Grad |   50.0528  29.15665         0        29        55        75       100      1269
+-------------+--------------------------------------------------------------------------------
+       Total |  43.43698  30.83552         0         9        50        70       100      2785
+----------------------------------------------------------------------------------------------
+
+```
+]
+]
+
+
+
+
+---
+
+## Quantile
+
+.panelset[
+.panel[.panel-name[R]
+
+You can find any percentile you want using the `quantile()` function.  Below is how we would find the `\(62^{nd}\)` percentile of the `leader_lib` variable.  
+
+
+``` r
+quantile(ces19$leader_lib, .62, na.rm=TRUE)
+```
+
+```
+## 62% 
+##  60
+```
+
+You can also find multiple percentiles at once. 
+
+
+``` r
+quantile(ces19$leader_lib, c(.38, .62), na.rm=TRUE)
+```
+
+```
+## 38% 62% 
+##  29  60
+```
+]
+.panel[.panel-name[Python]
+
+You can find any percentile you want using the `quantile()` method.  Below is how we would find the `\(62^{nd}\)` percentile of the `leader_lib` variable.  
+
+
+``` python
+ces19.leader_lib.quantile([.62])
+```
+
+You can also find multiple percentiles at once. 
+
+
+``` python
+ces19.leader_lib.quantile([.62, .38])
+```
+
+```
+## 0.62    60.0
+## 0.38    29.0
+## Name: leader_lib, dtype: float64
+```
+
+]
+.panel[.panel-name[Stata]
+
+You can find any percentile you want using the `centile` function  Below is how we would find the `\(62^{nd}\)` percentile of the `leader_lib` variable.  
+
+
+``` stata
+ centile leader_lib, centile(62)
+                                                         Binom. interp.   
+    Variable |       Obs  Percentile    Centile        [95% conf. interval]
+-------------+-------------------------------------------------------------
+  leader_lib |     2,792         62          60              60          60
+
+```
+
+You can also find multiple percentiles at once. 
+
+
+``` stata
+centile leader_lib, centile(38 62)
+                                                          Binom. interp.   
+    Variable |       Obs  Percentile    Centile        [95% conf. interval]
+-------------+-------------------------------------------------------------
+  leader_lib |     2,792         38          29              29    37.84239
+             |                   62          60              60          60
+```
+]
+]
+
+
+---
+
+## Line Graph
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+You can get the crime data from the course OWL page. 
+
+
+``` r
+crime &lt;- import("crime.dta")
+ggplot(crime, 
+       aes(x=year, 
+           y=incidents, 
+           colour=prov)) +
+  geom_line()
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-30-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Python]
+.pull-left[
+You can get the crime data from the course OWL page. 
+
+
+``` python
+crime = pd.read_stata("crime.dta")
+from plotnine import ggplot, geom_line, aes
+
+## Line plot 1
+(ggplot(crime, 
+       aes(x="year", 
+           y="incidents", 
+           colour="prov")) +
+  geom_line()
+)
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-31-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Stata]
+.pull-left[
+You can get the crime data from the course OWL page. 
+
+``` stata
+twoway (line incidents year if prov == "Alb", lpattern(solid)) 
+  (line incidents year if prov == "BC", lpattern(solid)) 
+  (line incidents year if prov == "NB", lpattern(solid)) 
+  (line incidents year if prov == "NL", lpattern(solid)) 
+  (line incidents year if prov == "NS", lpattern(solid)) 
+  (line incidents year if prov == "Ont", lpattern(solid)) 
+  (line incidents year if prov == "PEI", lpattern(solid)) 
+  (line incidents year if prov == "Que", lpattern(solid)) 
+  (line incidents year if prov == "Sask", lpattern(solid)), 
+legend(label(1 "AB") label(2 "BC") label(3 "NB") 
+       label(4 "NS") label(5 "NL") label(6 "ON") 
+       label(7 "PEI") label(8 "QC") label(9 "SK")) 
+```
+]
+.pull-right[
+&lt;img src="line1_stata.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+]
+
+
+---
+
+## Line Graph
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+You can get the crime data from the course OWL page. 
+
+
+``` r
+ggplot(crime, 
+       aes(x=year, 
+           y=incidents, 
+           colour=prov)) +
+  geom_line() + 
+* theme_classic()
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-34-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+from plotnine import theme_classic
+
+(ggplot(crime, 
+       aes(x="year", 
+           y="incidents", 
+           colour="prov")) +
+  geom_line() + 
+* theme_classic()
+)
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-35-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Stata]
+In Stata, the equivalent to themes are called _schemes_.  See `help schemes` for the options
+]
+]
+
+---
+
+## Line Graph
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+
+``` r
+ggplot(crime, 
+       aes(x=year, 
+           y=incidents, 
+           colour=prov)) +
+  geom_line() + 
+  theme_classic() + 
+* scale_color_brewer(palette="Paired")
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-36-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+from plotnine import scale_color_brewer
+
+(ggplot(crime, 
+       aes(x="year", 
+           y="incidents", 
+           colour="prov")) +
+  geom_line() + 
+  theme_classic() + 
+* scale_color_brewer(type="qualitative", palette="Paired")
+)
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-37-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Stata]
+In Stata, there is a package called `colorpalette` that has different color palettes.  
+
+]
+]
+
+---
+
+## Line Graph
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+
+``` r
+ggplot(crime, 
+       aes(x=year, 
+           y=incidents, 
+           colour=prov)) +
+  geom_line() + 
+  theme_classic() + 
+  scale_color_brewer(palette="Paired") + 
+* labs(x="Year", y="Incidents of Crime",
+*      colour="Province")
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-38-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+from plotnine import labs
+
+(ggplot(crime, 
+       aes(x="year", 
+           y="incidents", 
+           colour="prov")) +
+  geom_line() + 
+  theme_classic() + 
+  scale_color_brewer(type="qualitative", palette="Paired")+ 
+* labs(x="Year", y="Incidents of Crime",
+*      colour="Province")
+)
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-39-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Stata]
+In Stata, `xtitle()` and `ytitle()` will change the x- and y-axis labels. 
+- Using `title()` in the call to `legend()` will allow you to change the legend title (e.g., `legend(title("Legend Title") ...)`)
+
+]
+]
+
+---
+
+## Line Graph
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+
+``` r
+ggplot(crime, 
+       aes(x=year, 
+           y=incidents, 
+           colour=prov)) +
+  geom_line() + 
+  theme_classic() + 
+  scale_colour_brewer(palette="Paired") + 
+  labs(x="Year", y="Incidents of Crime", 
+       colour="Province") + 
+* scale_y_continuous( label = comma)
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-40-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+from plotnine import scale_y_continuous
+import mizani.labels as ml
+
+(ggplot(crime, 
+       aes(x="year", 
+           y="incidents", 
+           colour="prov")) +
+  geom_line() + 
+  theme_classic() + 
+  scale_color_brewer(type="qual", palette=3) + 
+  labs(x="Year", y="Incidents of Crime",
+     color="Province") + 
+* scale_y_continuous(labels = ml.label_comma())
+)
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-41-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Stata]
+Stata usually makes nice labels, but there is a package called `nicelabels` that can help if it doesn't do what you want automatically.
+]
+]
+
+---
+# Rates 
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+
+``` r
+ggplot(crime, 
+       aes(x=year, 
+*          y=rate,
+           colour=prov)) +
+  geom_line() + 
+  theme_classic() + 
+  scale_colour_brewer(palette="Paired") + 
+  labs(x="Year", y="Incidents of Crime", 
+       colour="Province") + 
+  scale_y_continuous( label = comma) 
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-42-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+(ggplot(crime, 
+       aes(x="year", 
+*          y="rate",
+           colour="prov")) +
+  geom_line() + 
+  theme_classic() + 
+  scale_color_brewer(type="qual", palette=3) + 
+  labs(x="Year", y="Incidents of Crime",
+     color="Province") + 
+  scale_y_continuous(labels = ml.label_comma())
+)
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-43-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Stata]
+In Stata, just change the y-variable to `rate`. 
+
+]
+]
+
+---
+
+## Bar Chart
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+freqDist(ces19$educ)
+```
+
+```
+##              Freq   %     Cu % 
+## &lt;HS           491  17.59  17.59
+## HS/College   1029  36.86  54.44
+## College Grad 1272  45.56 100.00
+## Total        2792 100.00
+```
+
+
+``` r
+ggplot(ces19, aes(x=educ)) + 
+  geom_bar() 
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-45-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+``` python
+freqDist(ces19, 'educ')
+```
+
+```
+##            educ  Frequency       pct
+## 0  College Grad       1272  0.455587
+## 1    HS/College       1029  0.368553
+## 2           &lt;HS        491  0.175860
+```
+
+
+``` python
+from plotnine import geom_bar
+(ggplot(ces19, aes(x="educ")) + 
+  geom_bar() 
+)
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-47-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+.pull-left[
+
+``` stata
+ graph bar, over(educ)
+```
+]
+.pull-right[
+&lt;img src="bar1_stata.png.png" width="100%" /&gt;
+]
+]
+]
+
+---
+
+
+## Bar Chart
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+*ces19 %&gt;% filter(!is.na(educ)) %&gt;%
+ggplot(aes(x=educ)) + 
+  geom_bar() 
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-50-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+*(ggplot(ces19[ces19['educ'].notnull()],
+    aes(x="educ")) + 
+    geom_bar() 
+)
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-51-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+Stata is generally more aggressive at removing missing values - it listwise deletes by default where R and Python do not.  
+]
+]
+
+---
+
+
+## Bar Chart
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+ces19 %&gt;% filter(!is.na(educ)) %&gt;%
+  ggplot(aes(x=educ, 
+*            y=after_stat(count/sum(count)))) +
+    geom_bar() + 
+*   scale_y_continuous(label=percent)
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-52-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+import numpy as np
+from plotnine import after_stat, scale_y_continuous
+
+(ggplot(ces19[ces19['educ'].notnull()], 
+  aes(x="educ")) + 
+* geom_bar(aes(y=after_stat('count / np.sum(count)'))) +
+* scale_y_continuous(labels = ml.label_percent())
+)
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-53-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+In Stata, the bar plot already persents percentages. 
+
+]
+]
+
+
+---
+
+
+## Bar Chart
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+ces19 %&gt;% filter(!is.na(educ)) %&gt;%
+  ggplot(aes(x=educ, 
+             y=after_stat(count/sum(count)))) + 
+    geom_bar() + 
+    scale_y_continuous(label=percent) +
+*   labs(x="Highest Level of Education",
+*      y="Percentage") +
+*   theme_classic()
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-54-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+import numpy as np
+from plotnine import after_stat, scale_y_continuous
+
+(ggplot(ces19[ces19['educ'].notnull()], 
+  aes(x="educ")) + 
+  geom_bar(aes(y=after_stat('count / np.sum(count)'))) + 
+  scale_y_continuous(labels = ml.label_percent()) + 
+* labs(x="Highest Level of Education",
+*    y="Percentage") +
+* theme_classic()
+)
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-55-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+In Stata, `xtitle()` and `ytitle()` will change the x- and y-axis labels. 
+- Using `title()` in the call to `legend()` will allow you to change the legend title (e.g., `legend(title("Legend Title") ...)`)
+]
+]
+
+
+---
+
+# Some other themes: 
+
+``` r
+g &lt;- ces19 %&gt;% filter(!is.na(educ)) %&gt;%
+  ggplot(aes(x=educ, 
+             y=..count../sum(..count..))) + 
+    geom_bar() + 
+    scale_y_continuous(label=
+            label_percent(accuracy=2)) + 
+  labs(x="Highest Level of Education", 
+       y="Percentage") 
+```
+
+.pull-left[
+
+``` r
+g + theme_minimal() + ggtitle("theme_minimal()")
+```
+
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-57-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+
+``` r
+g + theme_bw() + ggtitle("theme_bw()")
+```
+
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-58-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Histogram
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+ggplot(ces19, aes(x=leader_lib)) + 
+  geom_histogram() + 
+  theme_classic() + 
+  labs(
+    x="Liberal Leader Feeling Thermometer", 
+    y="# Observations")
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-59-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+from plotnine import geom_histogram
+
+(ggplot(ces19, aes(x="leader_lib")) + 
+  geom_histogram() + 
+  theme_classic() + 
+  labs(
+    x="Liberal Leader Feeling Thermometer", 
+    y="# Observations")
+)
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-60-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+ hist leader_lib, freq
+```
+]
+.pull-right[
+&lt;img src="hist1_stata.png" width="100%" /&gt;
+]
+]
+]
+
+---
+
+## Histogram
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+ggplot(ces19, aes(x=leader_lib)) + 
+* geom_histogram(bins=10) +
+  theme_classic() + 
+  labs(
+    x="Liberal Leader Feeling Thermometer", 
+    y="# Observations")
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-63-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+(ggplot(ces19, aes(x="leader_lib")) + 
+* geom_histogram(bins=10) +
+  theme_classic() + 
+  labs(
+    x="Liberal Leader Feeling Thermometer", 
+    y="# Observations")
+)
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-64-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+ hist leader_lib, bins(10) color(gray) frequency
+```
+]
+.pull-right[
+&lt;img src="hist2_stata.png" width="100%" /&gt;
+]
+]
+]
+
+---
+
+# Exercises
+
+1. Using the gss data 
+  - Make a bar plot of `SRH_110` 
+  - Make a bar plot of `SRH_115`
+  - Make a histogram of `resilience`
+
+---
+
+## Grouped Bar Charts: Education by Gender
+
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+ces19$gender &lt;- factor(ces19$gender, 
+                     levels=c(1,5), 
+                     labels=c("Male","Female"))
+```
+
+``` r
+ces19 %&gt;% 
+  filter(!is.na(educ)) %&gt;%
+  group_by(gender, educ) %&gt;% 
+  summarise(n = n()) %&gt;% 
+  ungroup %&gt;% 
+  group_by(gender) %&gt;% 
+  mutate(prop = n/sum(n)) %&gt;%
+  ggplot(aes(x=educ, 
+             y=prop, 
+             fill=gender)) + 
+    geom_bar(position = position_dodge(), 
+             stat="identity") + 
+    scale_y_continuous(label=
+            label_percent(accuracy=2)) + 
+    theme_classic() + 
+    labs(x="Highest Level of Education", 
+         y="Percentage") 
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-68-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+gencase=[(ces19.gender == 1, 'M'),
+          (ces19.gender == 5, 'F')]
+ces19['genderf'] = ces19.gender.case_when(caselist=gencase).astype('category')
+tmp = ces19[['educ', 'genderf']][ces19[['educ', 'genderf']].notnull()]
+tmp = tmp.groupby(['educ', 'genderf'], observed=True).value_counts().reset_index()
+tmp['pct'] = tmp[['genderf', 'count']].groupby('genderf').transform(lambda x: x/x.sum())
+tmp['genderf'] = tmp.genderf.cat.reorder_categories(['M', 'F'], ordered=True)
+```
+
+``` python
+from plotnine import position_dodge, after_stat, scale_y_continuous
+(ggplot(tmp,
+  aes(x="educ",
+      y = "pct", 
+      fill="genderf")) + 
+  geom_bar(stat = "identity", position = position_dodge()) + 
+  scale_y_continuous(labels = ml.label_percent()) + 
+  theme_classic() + 
+  labs(x="Highest Level of Education", 
+       y="Percentage"))
+```
+]
+.pull-right[
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-70-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+net install catplot.pkg
+label def gender 1 "Male" 5 "Female"
+label val gender gender
+catplot gender educ, percent(gender) vertical asyvars
+```
+]
+.pull-right[
+&lt;img src="gbarp.png" width="100%" /&gt;
+]
+]
+]
+
+---
+
+## Review
+
+1. Reading in Data
+2. Frequency Distributions/Summary Statistics
+3. Graphs
+  - Line Graph
+  - Bar Plot
+  - Histogram
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

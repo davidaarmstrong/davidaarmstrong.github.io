@@ -303,7 +303,7 @@ PLATFORMS
 
 DEPENDENCIES
   github-pages
-  jekyll (~> 3.10)
+  jekyll (~> 3.9)
   jekyll-commonmark-ghpages (~> 0.5.1)
   jekyll-theme-tactile (~> 0.2.0)
   webrick (~> 1.8.2)

@@ -9,7 +9,7 @@ gem 'github-pages', group: :jekyll_plugins
 
 gem "webrick", "~> 1.8.2"
 
-gem "jekyll", "~> 3.10"
+gem "jekyll", "~> 3.9"
 
 gem "jekyll-theme-tactile", "~> 0.2.0"
 

@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9590: Methods I</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9590: Methods I
+]
+.subtitle[
+## Sampling and Generalization
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+
+
+&lt;/style&gt;
+
+## Population Distribution
+
+.pull-left[
+
+``` r
+set.seed(2543)
+pop &lt;- runif(10000, 0, 1)
+```
+
+``` r
+ggplot() + 
+  geom_histogram(aes(x=pop), 
+                 bins=25, 
+                 col="white") + 
+  theme_bw() + 
+  labs(x="Population Distribution of X")
+```
+
+The true population mean `\(\mu\)` is: 
+
+
+``` r
+mean(pop)
+```
+
+```
+## [1] 0.49728
+```
+
+and the true population SD `\(\sigma\)` is: 
+
+
+``` r
+sqrt(sum((pop - mean(pop))^2)/length(pop))
+```
+
+```
+## [1] 0.2872507
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-5-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Random Sample
+
+Let's take a sample of size 100 at random from the population 
+
+
+``` r
+samp &lt;- sample(pop, 100, replace=TRUE)
+# sample mean
+mean(samp)
+```
+
+```
+## [1] 0.4871019
+```
+
+``` r
+# sample sd
+sd(samp)
+```
+
+```
+## [1] 0.2748858
+```
+
+The **sampling error** is `\(\bar{x}-\mu\)`: 
+
+
+``` r
+mean(samp) - mean(pop)
+```
+
+```
+## [1] -0.0101781
+```
+
+---
+
+## Repeat
+
+
+.pull-left[
+What if we did this 1000 times? 
+
+
+``` r
+means &lt;- replicate(1000, 
+       mean(sample(pop, 100, replace=TRUE)))
+samp.errors &lt;- means - mean(pop)
+ggplot() + 
+  geom_histogram(aes(x=samp.errors), 
+                 bins=25, 
+                 col="white") + 
+  theme_bw() + 
+  geom_vline(xintercept=0, col="red") + 
+  labs(x="Distribution of Sampling Errors")
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-8-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Sampling Distribution 
+
+.pull-left[
+
+``` r
+ggplot() + 
+  geom_histogram(aes(x=means), 
+                 bins=25, 
+                 col="white") + 
+  theme_bw() + 
+  geom_vline(xintercept=mean(pop), 
+             col="red") + 
+  labs(x="Distribution of Sample Means")
+```
+
+The **sampling distribution** is the distribution of sample means around the true, but generally unknown, population mean. 
+]
+.pull-right-shift2[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-9-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Sample Statistics
+
+&lt;img src="highlander.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Sample Statistics
+
+.pull-left[
+We only ever have **one** sample statistic.  How do we learn about the population from one value? 
+]
+.pull-right-shift2[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-11-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## What we want to do
+
+.pull-left[
+We would like to be able to identify how likely it is that we would observe our sample statistic `\((\bar{x} = .45)\)` in the population.
+
+
+``` r
+pnorm(.45, mean(pop), true.se)
+```
+
+```
+## [1] 0.04988717
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-13-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## What we have. 
+
+We have a couple of things.  
+- A value for the sample mean, `\(\bar{x}\)` (which is an estimate of the true population mean `\(\mu\)`.)
+- A value for the sample standard deviation `\(s\)` (which is an estimate of the true population standard deviation `\(\sigma\)`.)
+
+---
+
+## Confidence Interval
+
+A slightly circuitous definition: 
+
+_A confidence is an interval created such that `\((1-\alpha)\%\)` of the intervals we *could* make from different samples will cover the true, but unknown population value_. 
+
+Important points: 
+
+1. We can't make any interesting probability statements about a single interval.  It either contains the true value or it does not.  
+  - The interesting probability statements are about the set of intervals of which we have, but one instance. 
+2. We don't know which of the above situations we're in. 
+  - if `\(\alpha\)` is sufficiently small, then we are _willing to bet_ that we are in one of the "good" samples. 
+  
+---
+
+## Confidence Interval Formulae
+
+If we know `\(\sigma_{\bar{x}}\)` (unlikely)
+
+`$$\bar{x} \pm z_{\text{crit}}\frac{\sigma_{x}}{\sqrt{n}}$$`
+If we have to estimate `\(\hat{\sigma}_{\bar{x}} = s_{\bar{x}}\)`, then:
+
+`$$\bar{x} \pm z_{\text{crit}}\frac{s_{x}}{\sqrt{n}}$$`
+
+If we have small samples `\((n &lt; 120)\)`:
+
+`$$\bar{x} \pm t_{\text{crit}}\frac{s_{x}}{\sqrt{n}}$$`
+Note: the formula doesn't require us to know `\(\mu\)`, which is nice.
+
+---
+
+## Confidence Intervals in Software
+
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+library(uwo4419)
+confidenceInterval(samp, distr = "norm")
+```
+
+```
+##   Estimate   CI lower   CI upper Std. Error 
+## 0.48710189 0.43322527 0.54097851 0.02748858
+```
+
+``` r
+confidenceInterval(samp, distr = "t")
+```
+
+```
+##   Estimate   CI lower   CI upper Std. Error 
+## 0.48710189 0.43255859 0.54164519 0.02748858
+```
+Or `mean_cl_normal()` function from `ggplot2`.  
+
+
+``` r
+mean_cl_normal(samp)
+```
+
+```
+##           y      ymin      ymax
+## 1 0.4871019 0.4325586 0.5416452
+```
+]
+.panel[.panel-name[Python]
+
+``` r
+reticulate::use_python("/Users/david/.pyenv/shims/python")
+reticulate::r_to_py(samp)
+```
+
+``` python
+import pandas as pd
+import numpy as np
+import scipy.stats as st
+exec(open('../python_functions.py').read())
+confidenceInterval(r.samp)
+```
+
+```
+##        Mean        SE     Lower     Upper
+## 0  0.487102  0.027489  0.433225  0.540979
+```
+
+``` python
+confidenceInterval(r.samp, dist="t")
+```
+
+```
+##        Mean        SE     Lower     Upper
+## 0  0.487102  0.027489  0.432559  0.541645
+```
+]
+.panel[.panel-name[Stata]
+
+``` stata
+use samp.dta, clear
+ci means samp
+
+    Variable |        Obs        Mean    Std. err.       [95% conf. interval]
+-------------+---------------------------------------------------------------
+        samp |        100    .4871019    .0274886        .4325586    .5416452
+
+```
+
+Stata only gives you the t-distribution value for means.  Generally, this will be sufficient. 
+]
+]
+
+
+
+
+---
+
+## CES data
+
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+library(rio)
+library(tidyr)
+ces &lt;- import("ces19.dta")
+confidenceInterval(ces$market)
+```
+
+```
+##     Estimate     CI lower     CI upper   Std. Error 
+## -0.285597485 -0.300882915 -0.270312055  0.007798832
+```
+
+``` r
+x &lt;- ces %&gt;% 
+  filter(!is.na(vote) &amp; !is.na(market)) %&gt;%
+  mutate(vote = factorize(vote)) %&gt;% 
+  group_by(vote) %&gt;% 
+  summarise(ci = list(mean_cl_normal(market))) %&gt;% 
+  unnest(ci)
+x
+```
+
+```
+## # A tibble: 4 × 4
+##   vote               y    ymin    ymax
+##   &lt;fct&gt;          &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1 Liberal      -0.355  -0.377  -0.333 
+## 2 Conservative -0.0149 -0.0433  0.0134
+## 3 NDP          -0.534  -0.573  -0.495 
+## 4 Other        -0.354  -0.404  -0.303
+```
+]
+.panel[.panel-name[Python]
+
+``` python
+ces = pd.read_stata("ces19.dta")
+confidenceInterval(ces.market)
+```
+
+```
+##        Mean        SE     Lower     Upper
+## 0 -0.285597  0.007799 -0.300883 -0.270312
+```
+
+``` python
+res = (ces[['vote', 'market']]
+  .groupby('vote')
+  .apply(lambda x: confidenceInterval(x, dist="t"))
+  .reset_index()
+  .drop("level_1", axis=1))
+res
+```
+
+```
+##            vote      Mean        SE     Lower     Upper
+## 0       Liberal -0.354759  0.011128 -0.376592 -0.332926
+## 1  Conservative -0.014950  0.014438 -0.043299  0.013399
+## 2           NDP -0.533798  0.019816 -0.572766 -0.494829
+## 3         Other -0.353696  0.025587 -0.404179 -0.303213
+```
+]
+.panel[.panel-name[Stata]
+
+``` stata
+use ces19.dta, clear
+mean market, over(vote)
+
+Mean estimation                           Number of obs = 2,343
+
+---------------------------------------------------------------
+              |       Mean   Std. err.     [95% conf. interval]
+--------------+------------------------------------------------
+c.market@vote |
+     Liberal  |  -.3547594   .0111278     -.3765807   -.3329381
+Conservative  |  -.0149498   .0144382     -.0432628    .0133632
+         NDP  |  -.5337976   .0198155     -.5726554   -.4949398
+       Other  |  -.3536957   .0255867     -.4038706   -.3035207
+---------------------------------------------------------------
+```
+]
+]
+
+
+
+---
+
+## Plotting Confidence Intervals
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+ggplot(x, aes(x=reorder(vote, -y, mean), y=y, 
+              ymin=ymin, 
+              ymax=ymax)) + 
+  geom_pointrange() + 
+  theme_classic() + 
+  labs(x="Vote Choice in 2019 Federal Election", 
+       y="Market Liberalism Scale")
+```
+]
+.pull-right[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-22-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+from plotnine import ggplot, aes, geom_pointrange, theme_classic, labs
+res.vote = res.vote.cat.reorder_categories(['Conservative', 'Other', 'Liberal', 'NDP'], ordered=True)
+(ggplot(res, aes(x="vote", y="Mean", ymin = "Lower", ymax = "Upper")) + 
+  geom_pointrange() + 
+  theme_classic() + 
+  labs(x="Vote", y="Average Market Liberalism")
+  
+).show()
+```
+]
+.pull-right[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-23-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+recode vote (2=1 "Conservative") (4=2 "Other") (1=3 "Liberal") (3=4 "NDP"), gen(voteo)
+mean market, over(voteo)
+marginsplot, recast(scatter) plotopts(msym(circle)) xtitle("Vote") ytitle("Average Market Liberalism")
+```
+]
+.pull-right[
+&lt;img src="market_ci.png" width="100%" /&gt;
+]
+]
+]
+
+
+---
+
+## Exercises
+
+Using the GSS data, do the following: 
+
+1. Calculate the confidence interval of `resilience`.  Make both `\(95\%\)` and `\(99\%\)` confidence intervals. 
+2. Plot the confidence intervals of `resilience` for the different groups identified by `SRH_115`. 
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

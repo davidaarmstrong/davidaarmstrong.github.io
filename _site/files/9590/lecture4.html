@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9590: Methods I</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9590: Methods I
+]
+.subtitle[
+## Probabilities
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+
+
+&lt;/style&gt;
+
+
+# Videos
+
+We covered a few different things in the videos: 
+
+1. What are probabilities
+2. Calculating probabilities of discrete events. 
+  - probabilities of unrelated events. 
+  - probabilities of related events. 
+  - probabilities of mutually exclusive events. 
+3. Continuous probabilities (didn't calculate these, yet). 
+
+--
+
+##Questions?
+
+---
+
+# Probabilities
+
+
+``` r
+marbles &lt;- function(draws, 
+                    colors=c("red" = 10, "blue" = 10, "yellow" = 10, "green" = 10), 
+                    replace=FALSE){
+  # draws should be a character vector of required draws
+  # colors defines the contents of the marble bag
+  # replace indicates whether a drawn marble should be replaced in the bag
+  ## make the bag 
+  inbag &lt;- rep(names(colors), colors)
+  ## initialize the draws
+  out_draw &lt;- NULL
+  ## loop over the values in draws
+  for(i in 1:length(draws)){
+    ## sample 1 observation from the bag
+    tmp_s &lt;- sample(inbag, 1)
+    ## record the sampled item in the output object
+    out_draw &lt;- c(out_draw, tmp_s)
+    if(!replace){
+      ## if no replacement, then remove the drawn value
+      ## from the bag
+      w &lt;- min(which(inbag == tmp_s))
+      inbag &lt;- inbag[-w]
+    }
+  }
+  ## return a vector indicating whether the 
+  ## draw matched all the conditions
+  all(out_draw == draws)
+}
+```
+
+---
+
+# Figure
+
+.left-code[
+
+``` r
+reps1 &lt;- replicate(250000, 
+                   marbles(c("red", "green"), 
+                      replace=TRUE)
+                  )
+reps2 &lt;- replicate(250000, 
+                   marbles(c("red", "green"), 
+                           replace=FALSE)
+                   )
+tmp &lt;- tibble(
+  reps = c(reps1, reps2), 
+  it = rep(1:250000, 2), 
+  replace=rep(c("Yes", "No"), each=250000))
+tmp &lt;- tmp %&gt;%
+  group_by(replace) %&gt;% 
+  mutate(cm = cummean(reps)) %&gt;% 
+  filter(it %% 10 == 0)
+```
+
+``` r
+ggplot(tmp, aes(x=it, 
+                y=cm, 
+                colour=replace))+ 
+  geom_line() + 
+  theme_bw() + 
+  labs(x="Iteration", 
+       y="Cumulative Probability") + 
+  theme(legend.position="top")
+```
+]
+.right-plot-shift2[
+&lt;img src="lecture4_files/figure-html/unnamed-chunk-4-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# Data Management
+
+There isn't really a theoretical equivalent to the data management tools that will consume a lot of your time.
+
+- **Recoding:** changing the values of your variable (often times collapsing or creating groups)
+
+- **filtering:** finding only observations that meet some pre-defined condition. 
+
+There will be other tasks, too, that we will talk about later. 
+
+---
+
+## Setup
+
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+library(ggplot2)
+library(dplyr)
+library(rio)
+library(scales)
+```
+]
+.panel[.panel-name[Python]
+
+
+``` python
+import pandas as pd
+from plotnine import ggplot, aes, geom_bar, position_dodge, scale_y_continuous, theme_classic, labs
+import mizani.labels as ml
+exec(open('../python_functions.py').read())
+```
+]
+.panel[.panel-name[Stata]
+No setup required
+]
+]
+
+
+---
+
+
+## Recoding
+
+.panelset[
+.panel[.panel-name[R]
+Recoding can be done lots of ways, but the one we'll use is the `case_when()` function.  
+  - This fits nicely into the `dplyr` world. 
+  - It follows all of R's conventions.
+  
+The `case_when()` function takes a bunch of arguments of the form: 
+
+
+``` r
+case_when(x, 
+  condition1 ~ value1, 
+  condition2 ~ value2, 
+  TRUE ~ value3)
+```
+  
+Every observation that matches `condition#` will be given the value `value#`.  All other observations that don't meet `condition1` or `condition2` are assigned `value3`. 
+]
+.panel[.panel-name[Python]
+
+Recoding can be done lots of ways, but the one we'll use is the `case_when()` method.  
+The `case_when()` function takes a case list as its argument.  Default values are pre-defined. 
+
+
+``` python
+data['y'] = value3
+caselist = [(data.x.condition1, value1),
+            (data.x.condition2, value2)]
+data['y'] = data.y.case_when(caselist)
+```
+  
+Every observation that matches `condition#` will be given the value `value#`.  All other observations that don't meet `condition1` or `condition2` are unchanged.
+
+]
+.panel[.panel-name[Stata]
+In Stata, recoding is done with the `recode` function (swapping a number for another) or `replace` (changing value based on condition). 
+
+
+``` stata
+gen y = value3
+replace y = value1 if condition1
+replace y = value2 if condition2
+```
+
+As with python, it is easiest using `replace` to pre-define the default value. 
+]
+]
+
+
+
+
+---
+
+## Logical Operators
+
+.panelset[
+.panel[.panel-name[R]
+- `==` equailty: `x==1` will be `TRUE` if and only if `x` is equal to 1. 
+- `&amp;` conjunction (and): `x==1 &amp; y==2` will be `TRUE` if and only if both conditions hold. 
+- `|` disjunction (or): `x==1 | y==2` will be `TRUE` if either or both of the conditions are met. 
+- `!` - negation: turns `TRUE` into `FALSE` and vice versa. (e.g., `x != 4` is `FALSE` when `x` is 4)
+- `%in%` element: `x %in% c(1,4,6)` will be `TRUE` if `x` is any of 1, 4 or 6. 
+- `&lt;` less than: `x &lt; 1` will be `TRUE` for all numbers up to, but not including 1.  `x &lt;= 1` will be `TRUE` for all numbers up to _and including_ 1. `&gt;` works similarly.
+]
+.panel[.panel-name[Python]
+- `==` equailty: `x==1` will be `True` if and only if `x` is equal to 1. 
+- `&amp;` conjunction (and): `x==1 &amp; y==2` will be `True` if and only if both conditions hold. 
+- `|` disjunction (or): `x==1 | y==2` will be `True` if either or both of the conditions are met. 
+- `!` - negation: turns `True` into `False` and vice versa. (e.g., `x != 4` is `False` when `x` is 4)
+- `isin()` element: `data.x.isin([1,4,6])` will be `True` if `x` is any of 1, 4 or 6. 
+- `&lt;` less than: `x &lt; 1` will be `True` for all numbers up to, but not including 1.  `x &lt;= 1` will be `True` for all numbers up to _and including_ 1. `&gt;` works similarly.
+  - There are also `x.lt()`, `x.gt()`, `x.le()` and `x.ge()` methods  that work similarly. 
+]
+.panel[.panel-name[Stata]
+- `==` equailty: `x==1` will be `True` if and only if `x` is equal to 1. 
+- `&amp;` conjunction (and): `x==1 &amp; y==2` will be `True` if and only if both conditions hold. 
+- `|` disjunction (or): `x==1 | y==2` will be `True` if either or both of the conditions are met. 
+- `!` - negation: turns `True` into `FALSE` and vice versa. (e.g., `x != 4` is `FALSE` when `x` is 4)
+- `%in%` and `isin()` do not have direct analogs in Stata.  You could use a for list for this: 
+
+``` stata
+foreach x of numlist 1 3 4{
+  replace y=0 if x == `x'
+}
+```
+- `&lt;` less than: `x &lt; 1` will be `True` for all numbers up to, but not including 1.  `x &lt;= 1` will be `True` for all numbers up to _and including_ 1. `&gt;` works similarly.
+]
+]
+
+
+---
+
+## Examples of Recoding
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+dat = data.frame(x = c(1,2,3,4))
+dat &lt;- dat%&gt;% 
+  mutate(y = case_when(x &lt;=3 ~ "yes", 
+                       TRUE ~ "no"))
+dat
+```
+
+```
+##   x   y
+## 1 1 yes
+## 2 2 yes
+## 3 3 yes
+## 4 4  no
+```
+]
+.pull-right[
+
+``` r
+dat &lt;- dat %&gt;% 
+  mutate(y = case_when(x %in% c(1,2,3) ~ "yes", 
+                       TRUE ~ "no"))
+dat
+```
+
+```
+##   x   y
+## 1 1 yes
+## 2 2 yes
+## 3 3 yes
+## 4 4  no
+```
+]
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+dat = pd.DataFrame(data={'x': [1,2,3,4]})
+caselist = [(dat.x.le(3), "yes")]
+dat['y'] = 'no'
+dat['y'] = dat.y.case_when(caselist)
+dat
+```
+
+```
+##    x    y
+## 0  1  yes
+## 1  2  yes
+## 2  3  yes
+## 3  4   no
+```
+]
+.pull-right[
+
+``` python
+dat = pd.DataFrame(data={'x': [1,2,3,4]})
+caselist = [(dat.x.isin([1,2,3]), "yes")]
+dat['y'] = 'no'
+dat['y'] = dat.y.case_when(caselist)
+dat
+```
+
+```
+##    x    y
+## 0  1  yes
+## 1  2  yes
+## 2  3  yes
+## 3  4   no
+```
+]
+]
+
+.panel[.panel-name[Stata]
+.pull-left[
+
+``` stata
+set obs 4
+gen x = _n
+gen y = "no"
+replace y = "yes" if x &lt;= 3
+list
+   +---------+
+   | x     y |
+   |---------|
+1. | 1   yes |
+2. | 2   yes |
+3. | 3   yes |
+4. | 4    no |
+   +---------+
+```
+]
+.pull-right[
+
+``` stata
+capture drop y
+gen y = "no"
+foreach i of numlist 1 2 3{
+  replace y = "yes" in `i'
+}
+list
+   +---------+
+   | x     y |
+   |---------|
+1. | 1   yes |
+2. | 2   yes |
+3. | 3   yes |
+4. | 4    no |
+   +---------+
+```
+
+]
+]
+]
+
+
+---
+
+## Missing Values
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+The `TRUE ~ ` arguments turns _everything else_ including `NA` to the indicated value. 
+
+
+``` r
+dat &lt;- data.frame(x = c(1,2,3,4, NA))
+dat &lt;- dat %&gt;% 
+  mutate(y = case_when(x &lt;=3 ~ "yes", 
+               TRUE ~ "no"))
+dat
+```
+
+```
+##    x   y
+## 1  1 yes
+## 2  2 yes
+## 3  3 yes
+## 4  4  no
+## 5 NA  no
+```
+]
+.pull-right[
+
+``` r
+dat &lt;- dat %&gt;% 
+  mutate(y = case_when(x &lt;=3 ~ "yes", 
+               is.na(x) ~ NA_character_, 
+               TRUE ~ "no"))
+dat
+```
+
+```
+##    x    y
+## 1  1  yes
+## 2  2  yes
+## 3  3  yes
+## 4  4   no
+## 5 NA &lt;NA&gt;
+```
+
+If the variable you're making (`y` in this case) isn't a character string, but a number, you could use `NA_real_` in place of `NA_character_`.  
+
+]
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+``` python
+dat = pd.DataFrame(data={'x': [1,2,3,4,None]})
+caselist = [(dat.x.le(3), "yes")]
+dat['y'] = 'no'
+dat['y'] = dat.y.case_when(caselist)
+dat
+```
+
+```
+##      x    y
+## 0  1.0  yes
+## 1  2.0  yes
+## 2  3.0  yes
+## 3  4.0   no
+## 4  NaN   no
+```
+]
+.pull-right[
+
+``` python
+dat = pd.DataFrame(data={'x': [1,2,3,4,None]})
+caselist = [(dat.x.le(3), "yes"), (dat.x.isna(), None)]
+dat['y'] = 'no'
+dat['y'] = dat.y.case_when(caselist)
+dat
+```
+
+```
+##      x     y
+## 0  1.0   yes
+## 1  2.0   yes
+## 2  3.0   yes
+## 3  4.0    no
+## 4  NaN  None
+```
+
+]
+]
+.panel[.panel-name[Stata]
+.pull-left[
+
+``` stata
+clear
+set obs 5
+gen x = _n
+replace x = . in 5
+gen y = "no"
+replace y = "yes" if x &lt;= 3
+list
+   +---------+
+   | x     y |
+   |---------|
+1. | 1   yes |
+2. | 2   yes |
+3. | 3   yes |
+4. | 4    no |
+5. | .    no |
+   +---------+
+```
+]
+.pull-right[
+In Stata, the main problem is that the missing value (`.`) has a value of `\(\infty\)`: 
+
+
+``` stata
+list if x &gt; 3
+     +--------+
+     | x    y |
+     |--------|
+  4. | 4   no |
+  5. | .   no |
+     +--------+
+```
+
+After creating `y` from `x`, do the following to reinstate missing values 
+
+
+``` stata
+replace y = . if x == .
+```
+
+]
+
+]
+]
+
+---
+
+## Multiple Rules
+.panelset[
+.panel[.panel-name[R]
+It's worth seeing what happens when we have multiple rules for a single value: 
+
+
+``` r
+dat &lt;- data.frame(x=1:4)
+dat &lt;- dat %&gt;% 
+  mutate(y = case_when(x &lt;= 2 ~ "l", 
+                       x &gt;= 2 ~ "g"), 
+         z = case_when(x &gt;= 2 ~ "g",
+               x &lt;= 2 ~ "l"))
+dat
+```
+
+```
+##   x y z
+## 1 1 l l
+## 2 2 l g
+## 3 3 g g
+## 4 4 g g
+```
+
+The first rule takes precedence. 
+]
+.panel[.panel-name[Python]
+
+``` python
+dat = pd.DataFrame(data={'x': [1,2,3,4]})
+caselist = [(dat.x.le(2), "l"), (dat.x.ge(2), "g")]
+caselistr = [(dat.x.ge(2), "g"), (dat.x.le(2), "l")]
+dat['y'] = dat.x.case_when(caselist)
+dat['z'] = dat.x.case_when(caselistr)
+dat
+```
+
+```
+##    x  y  z
+## 0  1  l  l
+## 1  2  l  g
+## 2  3  g  g
+## 3  4  g  g
+```
+
+In Python, the first rule also takes precedence
+]
+.panel[.panel-name[Stata]
+.pull-left[
+
+``` stata
+set obs 4
+gen x = _n
+gen y = .
+gen z = .
+replace y = 1 if x &lt;= 2
+replace y = 2 if x &gt;= 2
+replace z = 2 if x &gt;= 2
+replace z = 1 if x &lt;= 2
+list
+     +-----------+
+     | x   y   z |
+     |-----------|
+  1. | 1   1   1 |
+  2. | 2   2   1 |
+  3. | 3   2   2 |
+  4. | 4   2   2 |
+     +-----------+
+```
+
+With `replace`, the most recent rule takes precedence. 
+]
+.pull-right[
+
+``` stata
+set obs 4
+gen x = _n
+recode x (1/2 = 1) (2/4 = 2), into(y)
+recode x (2/4=2) (1/2 = 1), into(z)
+list
+     +-----------+
+     | x   y   z |
+     |-----------|
+  1. | 1   1   1 |
+  2. | 2   1   2 |
+  3. | 3   2   2 |
+  4. | 4   2   2 |
+     +-----------+
+```
+In `recode()` the first rule takes precedence. 
+]
+]
+]
+
+
+---
+
+## CES example
+
+Let's use the skills we learned last week to make a new variable `market_01` which is 0 if `market` is lower than its `\(40^{th}\)` percentile and 1 otherwise (missings should stay missing).  
+
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+ces &lt;- import("ces19.dta")
+q40 &lt;- quantile(ces$market, .4, na.rm=TRUE)
+ces &lt;- ces %&gt;% 
+  mutate(market_01 = case_when(
+    market &lt; q40 ~ 0, 
+    is.na(market) ~ NA_real_, 
+    TRUE ~ 1
+  ))
+table(ces$market_01, useNA="ifany")
+```
+
+```
+## 
+##    0    1 &lt;NA&gt; 
+## 1049 1707   43
+```
+]
+.panel[.panel-name[Python]
+
+``` python
+ces = pd.read_stata("ces19.dta")
+caselist = [(ces.market &lt; ces.market.quantile(.4), 0), 
+            (ces.market.isna(), None)]
+ces['market_01'] = 1
+ces['market_01'] = ces.market_01.case_when(caselist)
+ces.market_01.value_counts(dropna=False)
+```
+
+```
+## market_01
+## 1       1707
+## 0       1049
+## None      43
+## Name: count, dtype: int64
+```
+]
+.panel[.panel-name[Stata]
+
+``` stata
+use ces19.dta, clear
+gen market_01 = 1
+centile market, centile(40)
+replace market_01 = 0 if market &lt; `r(c_1)'
+replace market_01 = . if market == .
+tab market_01, missing
+
+  market_01 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      1,049       37.48       37.48
+          1 |      1,707       60.99       98.46
+          . |         43        1.54      100.00
+------------+-----------------------------------
+      Total |      2,799      100.00
+```
+]
+]
+
+
+---
+
+## Recode Example 
+
+Let's find people who like the NDP leader more than the other two.  
+
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+ces &lt;- ces %&gt;% 
+  mutate(heart_ndp = case_when(
+    leader_lib &lt; leader_ndp &amp; leader_con &lt; leader_ndp ~ "yes", 
+    is.na(leader_lib) | is.na(leader_con) | is.na(leader_ndp) ~ NA_character_, 
+    TRUE ~ "no"))
+table(ces$heart_ndp, useNA="ifany")
+```
+
+```
+## 
+##   no  yes &lt;NA&gt; 
+## 2030  744   25
+```
+]
+.panel[.panel-name[Python]
+
+``` python
+caselist = [(ces.leader_ndp.gt(ces.leader_lib) &amp; ces.leader_ndp.gt(ces.leader_con), 1), 
+            (ces.leader_ndp.isna() | ces.leader_lib.isna() | ces.leader_con.isna(), None)]
+ces['heart_ndp'] = 0
+ces['heart_ndp'] = ces.heart_ndp.case_when(caselist)
+ces.heart_ndp.value_counts(dropna=False)
+```
+
+```
+## heart_ndp
+## 0       2030
+## 1        744
+## None      25
+## Name: count, dtype: int64
+```
+]
+.panel[.panel-name[Stata]
+
+``` stata
+gen heart_ndp = 0
+replace heart_ndp = 1 if leader_ndp &gt; leader_lib &amp; leader_ndp &gt; leader_con
+replace heart_ndp = . if leader_ndp ==. | leader_lib == . | leader_con == .
+tab heart_ndp, missing
+
+  heart_ndp |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      2,030       72.53       72.53
+          1 |        744       26.58       99.11
+          . |         25        0.89      100.00
+------------+-----------------------------------
+      Total |      2,799      100.00
+```
+]
+]
+
+---
+
+## Vote by heart_ndp
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+ces %&gt;% 
+  mutate(vote = factorize(vote)) %&gt;% 
+  group_by(vote, heart_ndp) %&gt;% 
+  summarise(n = n()) %&gt;% 
+  na.omit() %&gt;% 
+  group_by(heart_ndp) %&gt;% 
+  mutate(pct = n/sum(n)) %&gt;% 
+  ggplot(aes(x=vote, y=pct, fill=heart_ndp)) + 
+    geom_bar(stat="identity", 
+             position=position_dodge()) + 
+    theme_classic() + 
+  scale_y_continuous(label=percent) + 
+  labs(x="Vote in 2019 Federal Election", 
+       y="Percentage Voting For", 
+       fill="Like NDP\nLeader Most")
+```
+]
+.pull-right[
+&lt;img src="lecture4_files/figure-html/unnamed-chunk-35-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+dat = freqDist(ces, 'vote', g='heart_ndp')
+caselist = [(dat.heart_ndp.eq(1), 'yes'), 
+            (dat.heart_ndp.eq(0), 'no')]
+dat['heart_ndp'] = (dat.heart_ndp
+    .case_when(caselist)
+    .astype("category"))
+(ggplot(dat,
+  aes(x="vote",
+      y = "pct", 
+      fill="heart_ndp")) + 
+  geom_bar(stat = "identity", position = position_dodge()) + 
+  scale_y_continuous(labels = ml.label_percent()) + 
+  theme_classic() + 
+  labs(x="Highest Level of Education", 
+       y="Percentage", 
+       fill="Like NDP\nLeader Most")).show()
+```
+]
+.pull-right[
+&lt;img src="lecture4_files/figure-html/unnamed-chunk-36-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+label def heart_ndp 0 "No" 1 "Yes"
+label val heart_ndp heart_ndp
+catplot heart_ndp vote, percent(heart_ndp) vertical asyvars legend(title("Likes NDP" "Leader Most"))
+```
+]
+.pull-right[
+&lt;img src="heart_ndp_stata.png" width="100%" /&gt;
+]
+]
+]
+
+
+---
+
+## Exercise 1
+
+Question: What is the difference between people who love and hate Trudeau?
+
+1. Make a new variable that is coded `"love"` for observations where `leader_lib` is greater than or equal to 90 and `"hate"` for observations where `leader_lib` is less than or equal to 10.  All other observations should be missing. 
+2. Create the distribution of `educ`, `agegrp`, `market` and `relig` for these two groups. 
+
+
+---
+
+## Exercise 2
+
+Question: What does the distribution of mental health look like for three groups of resilience. 
+
+1. Import the `gss16_can.dta` data set.  
+2. Use the `case_when()` function to create three groups of resilience using the `\(33rd\)` and `\(67^{th}\)` percentiles as the cutoffs. 
+3. Make a graph of `SRH_115` using this new resilience measure as the `facet` variable. 
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9590: Methods I</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9590: Methods I
+]
+.subtitle[
+## Measures of Centre and Spread
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+
+.small-code .remark-code{
+  font-size: .4rem;
+}
+&lt;/style&gt;
+
+
+# Videos
+
+We covered a few different things in the videos: 
+
+1. Measures of Centre
+  - Mean
+  - Median 
+  - Mode
+2. Measures of Spread
+  - Range/IQR
+  - Mean absolute deviation (MAD)
+  - Variance/Standard Deviation
+3. Z-scores (standard scores). 
+
+--
+
+## Questions?
+
+---
+
+
+## Exercise 1
+
+Question: What is the difference between people who love and hate Trudeau?
+
+1. Make a new variable that is coded `"love"` for observations where `leader_lib` is greater than or equal to 90 and `"hate"` for observations where `leader_lib` is less than or equal to 10.  All other observations should be missing. 
+2. Create the distribution of `educ`, `agegrp`, `market` and `relig` for these two groups. 
+
+
+---
+
+## Exercise 2
+
+Question: What does the distribution of mental health look like for three groups of resilience. 
+
+1. Import the `gss16_can.dta` data set.  
+2. Use the `case_when()` function to create three groups of resilience using the `\(33rd\)` and `\(67^{th}\)` percentiles as the cutoffs. 
+3. Make a graph of `SRH_115` using this new resilience measure as the `facet` variable. 
+
+
+---
+
+## Setup
+
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+library(rio)
+library(DAMisc)
+library(uwo4419)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+]
+.panel[.panel-name[Python]
+
+
+
+``` python
+exec(open('../python_functions.py').read())
+import pandas as pd
+import numpy as np
+from plotnine import ggplot, aes, geom_point, geom_line, stat_summary, theme_bw, theme_classic, labs, ylim, position_dodge, theme, facet_wrap, scale_colour_manual, scale_x_continuous
+```
+]
+.panel[.panel-name[Stata]
+
+``` stata
+
+```
+]
+]
+
+
+
+---
+## Summary Statistics
+
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+ces &lt;- import("ces19.dta")
+ces$educ &lt;- factorize(ces$educ)
+sumStats(ces, "leader_lib")
+```
+
+```
+## # A tibble: 1 × 11
+##   variable    mean    sd   iqr   min   q25   q50   q75   max     n   nNA
+##   &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt;
+## 1 leader_lib  43.4  30.8    61     0     9    50    70   100  2799     7
+```
+
+``` r
+sumStats(ces, "leader_lib", byvar="educ")
+```
+
+```
+## # A tibble: 4 × 12
+##   variable   educ     mean    sd   iqr   min   q25   q50   q75   max     n   nNA
+##   &lt;chr&gt;      &lt;fct&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt;
+## 1 leader_lib &lt;HS      35.7  32.6  60       0   0      29  60     100   491     1
+## 2 leader_lib HS/Col…  38.9  30.3  58.5     0   6.5    39  65     100  1029     3
+## 3 leader_lib Colleg…  50.1  29.2  46       0  29      55  75     100  1272     3
+## 4 leader_lib &lt;NA&gt;     26    29.4  32.5     0   7       9  39.5    80     7     0
+```
+]
+.panel[.panel-name[Python]
+
+``` python
+ces = pd.read_stata("ces19.dta")
+sumStats(ces, "leader_lib")
+```
+
+```
+##              mean    std  min  25%   50%   75%    max  nNA  nValid
+## leader_lib  43.39  30.84  0.0  9.0  50.0  70.0  100.0    7  2792.0
+```
+
+``` python
+sumStats(ces, "leader_lib", g="educ")
+```
+
+```
+##            educ   mean    std  min   25%   50%   75%    max  nNA  nValid
+## 0           &lt;HS  35.70  32.62  0.0   0.0  29.0  60.0  100.0    1     490
+## 1    HS/College  38.95  30.34  0.0   6.5  39.0  65.0  100.0    3    1026
+## 2  College Grad  50.05  29.16  0.0  29.0  55.0  75.0  100.0    3    1269
+```
+]
+.panel[.panel-name[Stata]
+
+``` stata
+use ces19.dta, clear
+tabstat leader_lib,  statistics(mean sd min p25 p50 p75 max n )
+
+    Variable |      Mean        SD       Min       p25       p50       p75       Max         N
+-------------+--------------------------------------------------------------------------------
+  leader_lib |  43.39327  30.83938         0         9        50        70       100      2792
+----------------------------------------------------------------------------------------------
+
+tabstat leader_lib, by(educ) statistics(mean sd min p25 p50 p75 max n )
+
+Summary for variables: leader_lib
+Group variable: educ (Respondent highest level of education)
+
+        educ |      Mean        SD       Min       p25       p50       p75       Max         N
+-------------+--------------------------------------------------------------------------------
+         &lt;HS |  35.70408  32.62209         0         0        29        60       100       490
+  HS/College |  38.94737  30.33554         0         6        39        65       100      1026
+College Grad |   50.0528  29.15665         0        29        55        75       100      1269
+-------------+--------------------------------------------------------------------------------
+       Total |  43.43698  30.83552         0         9        50        70       100      2785
+----------------------------------------------------------------------------------------------
+```
+]
+]
+
+---
+
+# Plot
+
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+ces %&gt;% filter(!is.na(educ)) %&gt;% 
+ggplot(aes(x=educ, y=leader_lib)) + 
+  stat_summary(geom="point", fun=mean) + 
+  theme_bw() + 
+  labs(x="Highest Level of Educational Attainment", 
+       y = "Liberal Leader Feeling Thermometer (0-100)") + 
+* ylim(0,100)
+```
+]
+.pull-right[
+
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-9-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+from plotnine import ggplot, aes, stat_summary, theme_classic, labs, ylim
+import numpy as np
+(ggplot(ces[['educ', 'leader_lib']].dropna(), 
+  aes(x='educ', y='leader_lib')) + 
+  stat_summary(geom="point", fun_data="mean_cl_normal") + 
+  theme_bw() + 
+  labs(x="Highest Level of Educational Attainment", 
+       y = "Liberal Leader Feeling Thermometer (0-100)") + 
+* ylim(0,100)
+).show()
+```
+]
+.pull-right[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-10-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+preserve
+collapse (mean) mean = leader_lib, by(educ)
+drop if educ == .
+
+twoway scatter mean educ, xlabel(1 "&lt;HS" 2 "HS/College" 3 "College Grad") \\\
+yscale(range(0 100)) ylabel(0(10)100) \\\
+ytitle("Lib Leader Feeling Thermometer (0-100)") \\\
+xtitle("Highest Level of Educational Attainment")
+
+restore
+```
+
+The `preserve` command retains a local copy of the current data so you can return to that state.  Using `restore` resets the data to the state when you executed the `preserve` command. 
+
+]
+.pull-right[
+&lt;img src="libmean1.png" width="100%" /&gt;
+]
+]
+]
+
+
+
+---
+
+## Plot
+
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+ces %&gt;% filter(!is.na(educ)) %&gt;% 
+ggplot(aes(x=educ, y=leader_lib)) + 
+* stat_summary(aes(shape="Mean", colour="Mean"),
+*              geom="point",
+*              fun=mean) +
+* stat_summary(aes(shape="Median", colour="Median"),
+*              geom="point",
+*              fun=median) +
+  theme_bw() + 
+  theme(legend.position="top") + 
+  labs(x="Highest Level of Educational Attainment", 
+       y = "Liberal Leader Feeling Thermometer (0-100)", 
+*      colour="Measure", shape="Measure") +
+  ylim(0,100) 
+```
+]
+.pull-right[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-13-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+meds = (ces[['educ', 'leader_lib']]
+.groupby('educ', observed=True)
+.agg(lambda x: x.quantile(.5))
+.reset_index()
+.rename(columns={"leader_lib": "val"}))
+mns = (ces[['educ', 'leader_lib']]
+.groupby('educ', observed=True)
+.agg(lambda x: np.mean(x))
+.reset_index()
+.rename(columns={"leader_lib": "val"}))
+mns['stat'] = 'Mean'
+meds['stat'] = 'Median'
+out = meds._append(mns)
+out['stat'] = out.stat.astype('category')
+
+(ggplot(out, 
+    aes(x="educ", y="val", color="stat", shape="stat")) +  
+    geom_point() + 
+  theme_bw() + 
+  labs(x="Highest Level of Educational Attainment", 
+       y = "Liberal Leader Feeling Thermometer (0-100)", 
+       colour="Measure", shape="Measure") + 
+  ylim(0,100)).show()
+```
+]
+.pull-right[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-14-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+preserve
+collapse (mean) mean = leader_lib (median) med = leader_lib, by(educ)
+drop if educ == .
+
+twoway (scatter mean educ, mcolor("black") msymbol(circle)) \\\
+  (scatter med educ, mcolor("gray") msymbol(square)), \\\
+  xlabel(1 "&lt;HS" 2 "HS/College" 3 "College Grad") \\\
+  yscale(range(0 100)) ylabel(0(10)100) \\\
+  ytitle("Lib Leader Feeling Thermometer (0-100)") \\\
+  xtitle("Highest Level of Educational Attainment") \\\
+  legend(label(1 "Mean") label(2 "Median"))
+
+restore
+```
+]
+.pull-right[
+&lt;img src="mean_med.png" width="100%" /&gt;
+]
+]
+]
+
+
+
+
+---
+
+## Plot
+
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+ces %&gt;% filter(!is.na(educ)) %&gt;% 
+ggplot(aes(x=educ, y=leader_lib)) + 
+  stat_summary(aes(shape="Mean", colour="Mean"), 
+               geom="point", 
+               fun=mean, 
+*              position = position_nudge(x=-.1)) +
+  stat_summary(aes(shape="Median", colour="Median"), 
+               geom="point",
+               fun=median, 
+*              position = position_nudge(x=.1)) +
+  theme_bw() + 
+  theme(legend.position="top") + 
+  labs(x="Highest Level of Educational Attainment", 
+       y = "Liberal Leader Feeling Thermometer (0-100)", 
+       colour="Measure", shape="Measure") + 
+  ylim(0,100) 
+```
+]
+.pull-right[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-17-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+meds = (ces[['educ', 'leader_lib']]
+.groupby('educ', observed=True)
+.agg(lambda x: x.quantile(.5))
+.reset_index()
+.rename(columns={"leader_lib": "val"}))
+mns = (ces[['educ', 'leader_lib']]
+.groupby('educ', observed=True)
+.agg(lambda x: np.mean(x))
+.reset_index()
+.rename(columns={"leader_lib": "val"}))
+mns['stat'] = 'Mean'
+meds['stat'] = 'Median'
+out = meds._append(mns)
+out['stat'] = out.stat.astype('category')
+
+(ggplot(out, 
+    aes(x="educ", y="val", color="stat", shape="stat")) +  
+*   geom_point(position = position_dodge(width=.25)) +
+  theme_bw() + 
+  labs(x="Highest Level of Educational Attainment", 
+       y = "Liberal Leader Feeling Thermometer (0-100)", 
+       colour="Measure", shape="Measure") + 
+  ylim(0,100)).show()
+```
+]
+.pull-right[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-18-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+preserve
+collapse (mean) mean = leader_lib (median) med = leader_lib, by(educ)
+drop if educ == .
+
+gen edlow = educ - .125
+gen edhigh = educ + .125
+
+twoway (scatter mean edlow, mcolor("black") msymbol(circle)) \\\
+  (scatter med edhigh, mcolor("gray") msymbol(square)), \\\
+  xlabel(1 "&lt;HS" 2 "HS/College" 3 "College Grad") \\\
+  yscale(range(0 100)) ylabel(0(10)100) \\\
+  ytitle("Lib Leader Feeling Thermometer (0-100)") \\\
+  xtitle("Highest Level of Educational Attainment") \\\
+  legend(label(1 "Mean") label(2 "Median"))
+
+restore
+```
+]
+.pull-right[
+&lt;img src="mean_med_dodge.png" width="100%" /&gt;
+]
+]
+]
+
+
+
+---
+
+# Exercise 3
+
+Make the plot above, but for the `resilience` and the `SRH_110` variable from the GSS data we've been using. 
+
+---
+
+## Wide to Long
+
+.pull-left[
+&lt;img src="longer.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+
+
+]
+.pull-right-shift[
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+x &lt;- tibble::tibble(
+  country = c("A", "B", "C"), 
+  `1999` = 1:3, 
+  `2000` = 4:6)
+xl &lt;- pivot_longer(x, cols=`1999`:`2000`, 
+             names_to="year", 
+             values_to="cases")
+x
+```
+
+```
+## # A tibble: 3 × 3
+##   country `1999` `2000`
+##   &lt;chr&gt;    &lt;int&gt;  &lt;int&gt;
+## 1 A            1      4
+## 2 B            2      5
+## 3 C            3      6
+```
+
+``` r
+xl
+```
+
+```
+## # A tibble: 6 × 3
+##   country year  cases
+##   &lt;chr&gt;   &lt;chr&gt; &lt;int&gt;
+## 1 A       1999      1
+## 2 A       2000      4
+## 3 B       1999      2
+## 4 B       2000      5
+## 5 C       1999      3
+## 6 C       2000      6
+```
+]
+.panel[.panel-name[Python]
+
+``` python
+x = pd.DataFrame(data = {"country": ['A', 'B', 'C'], 
+                     "1999": [1,2,3], 
+                     "2000": [4,5,6]})
+x
+```
+
+```
+##   country  1999  2000
+## 0       A     1     4
+## 1       B     2     5
+## 2       C     3     6
+```
+
+``` python
+x.melt(id_vars="country")
+```
+
+```
+##   country variable  value
+## 0       A     1999      1
+## 1       B     1999      2
+## 2       C     1999      3
+## 3       A     2000      4
+## 4       B     2000      5
+## 5       C     2000      6
+```
+]
+.panel[.panel-name[Stata]
+
+``` stata
+clear
+set obs 3
+gen country = "A"
+replace country = "B" in 2
+replace country = "C" in 3
+gen yr1999 = _n
+gen yr2000 = _n+3
+list
+     +---------------------------+
+     | country   yr1999   yr2000 |
+     |---------------------------|
+  1. |       A        1        4 |
+  2. |       B        2        5 |
+  3. |       C        3        6 |
+     +---------------------------+
+
+reshape long yr, i(country) j(year)
+rename yr value
+list
+   +------------------------+
+   | country   year   value |
+   |------------------------|
+1. |       A   1999       1 |
+2. |       A   2000       4 |
+3. |       B   1999       2 |
+4. |       B   2000       5 |
+5. |       C   1999       3 |
+   |------------------------|
+6. |       C   2000       6 |
+   +------------------------+
+
+```
+]
+]
+]
+
+---
+
+## Long to Wide
+
+.pull-left[
+&lt;img src="wider.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+]
+.pull-right-shift[
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+xw &lt;- xl %&gt;% pivot_wider(names_from="year", 
+                   values_from="cases")
+xl
+```
+
+```
+## # A tibble: 6 × 3
+##   country year  cases
+##   &lt;chr&gt;   &lt;chr&gt; &lt;int&gt;
+## 1 A       1999      1
+## 2 A       2000      4
+## 3 B       1999      2
+## 4 B       2000      5
+## 5 C       1999      3
+## 6 C       2000      6
+```
+
+``` r
+xw
+```
+
+```
+## # A tibble: 3 × 3
+##   country `1999` `2000`
+##   &lt;chr&gt;    &lt;int&gt;  &lt;int&gt;
+## 1 A            1      4
+## 2 B            2      5
+## 3 C            3      6
+```
+]
+.panel[.panel-name[Python]
+
+``` python
+xl = x.melt(id_vars="country")
+xl 
+```
+
+```
+##   country variable  value
+## 0       A     1999      1
+## 1       B     1999      2
+## 2       C     1999      3
+## 3       A     2000      4
+## 4       B     2000      5
+## 5       C     2000      6
+```
+
+``` python
+xl.pivot(index='country', columns='variable', values='value').reset_index()
+```
+
+```
+## variable country  1999  2000
+## 0              A     1     4
+## 1              B     2     5
+## 2              C     3     6
+```
+]
+.panel[.panel-name[Stata]
+
+``` stata
+clear
+set obs 3
+gen country = "A"
+replace country = "B" in 2
+replace country = "C" in 3
+gen yr1999 = _n
+gen yr2000 = _n+3
+reshape long yr, i(country) j(year)
+rename yr value
+list
+   +------------------------+
+   | country   year   value |
+   |------------------------|
+1. |       A   1999       1 |
+2. |       A   2000       4 |
+3. |       B   1999       2 |
+4. |       B   2000       5 |
+5. |       C   1999       3 |
+   |------------------------|
+6. |       C   2000       6 |
+   +------------------------+
+
+reshape wide value, i(country) j(year)
+list
+   +-------------------------------+
+   | country   val~1999   val~2000 |
+   |-------------------------------|
+1. |       A          1          4 |
+2. |       B          2          5 |
+3. |       C          3          6 |
+   +-------------------------------+
+```
+]
+]
+]
+
+
+---
+
+## All Leaders
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+x &lt;- ces %&gt;% 
+  filter(!is.na(educ)) %&gt;% 
+  group_by(educ) %&gt;% 
+  summarise(across(starts_with("leader"), 
+                   list(Mean = ~mean(.x, na.rm=TRUE), 
+                        Median = ~median(.x, na.rm=TRUE)))) %&gt;% 
+  pivot_longer(-educ, 
+               names_pattern="leader_(.*)_(.*)", 
+               names_to = c("party", "measure"), 
+               values_to="val") %&gt;% 
+  mutate(party = factor(party, 
+                        levels=c("ndp", "lib", "con"), 
+                        labels=c("NDP", "Liberal", "Conservative")))
+
+ggplot(x, aes(x=educ, y=val, 
+              colour=party)) + 
+  geom_point(position=position_dodge(width=.25)) + 
+  theme_bw() + 
+  facet_wrap(~measure, ncol=2) + 
+  scale_colour_manual(values=c( "#F58220", "#d71920", "#003F72")) + 
+  theme(legend.position="top") + 
+  labs(x="Highest Level of Educational Attainment", 
+       y = "Liberal Leader Feeling Thermometer (0-100)") + 
+  ylim(0,100)
+```
+]
+.pull-right[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-29-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+.small-code[
+
+``` python
+cesl = (ces[ces.filter(regex="educ|leader").columns]
+  .melt(id_vars = "educ")
+)
+mns =  (cesl
+  .groupby(['educ', 'variable'], observed=True)
+  .agg(lambda x: np
+  .mean(x))
+  .reset_index()
+  .rename(columns={"value": "mean"})
+  )
+meds = (cesl
+  .groupby(['educ', 'variable'], observed=True)
+  .agg(lambda x: x
+  .quantile())
+  .reset_index()
+  .rename(columns={"value": "median"}))
+
+out = mns.merge(meds).rename(columns = {'variable': 'party'})
+
+outl = pd.DataFrame(out).melt(id_vars = ['educ', 'party'])
+caselist = [(outl.party.eq("leader_lib"), "Liberal"), 
+            (outl.party.eq("leader_ndp"), "NDP"), 
+            (outl.party.eq("leader_con"), "Conservative")]
+outl.party = outl.party.case_when(caselist)
+
+(ggplot(outl, aes(x="educ", y="value", 
+              colour="party")) + 
+  geom_point(position=position_dodge(width=.25)) + 
+  theme_bw() + 
+  facet_wrap("variable", ncol=2) + 
+  scale_colour_manual(values=[ "#003F72", "#d71920", "#F58220"]) + 
+  theme(legend_position="top") + 
+  labs(x="Highest Level of Educational Attainment", 
+       y = "Liberal Leader Feeling Thermometer (0-100)") + 
+  ylim(0,100))
+```
+]
+]
+.pull-right[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-30-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+use ces19.dta, clear
+collapse (mean) mean_ndp = leader_ndp mean_con = leader_con mean_lib = leader_lib (median) median_ndp = leader_ndp median_con = leader_con median_lib = leader_lib, by(educ)
+
+reshape long mean_ median_, i(educ) j(party) string
+
+rename (mean_ median_) (stat_mean stat_median)
+
+reshape long stat_, i(educ party) j(value) string
+drop if educ == .
+rename (stat_ value) (value stat)
+encode party, into(party_num)
+
+twoway (scatter value educ if party == "ndp", mcol("245 130 32") msymbol(circle)) (scatter value educ if party == "lib", mcol("215 25 32") msymbol(square)) (scatter value educ if party == "con", mcol("0 63 114") msymbol(triangle)), by(stat, imargin(medlarge)) xlabel(1 "&lt;HS" 2 "HS/College" 3 "College Grad") xtitle("Highest Level of Educational Attainment") ytitle("Average Leader Thermometer Score") legend(label(1 "NDP") label(2 "Liberal") label(3 "Conservative") rows(1))
+```
+]
+.pull-right[
+&lt;img src="mm_all_lead.png" width="100%" /&gt;
+]
+]
+]
+
+---
+
+## With lines
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+ggplot(x, aes(x=as.numeric(educ), y=val, 
+              colour=party)) + 
+  geom_point() + 
+  geom_line() + 
+  theme_bw() + 
+  facet_wrap(~measure, ncol=2) + 
+  scale_colour_manual(values=c( "#F58220", "#d71920", "#003F72")) + 
+  scale_x_continuous(breaks = 1:3, labels=c("&lt;HS", "HS/college", "College\nGrad")) + 
+  theme(legend.position="top", 
+        panel.spacing=unit(1.5, "lines")) + 
+  labs(x="Highest Level of Educational Attainment", 
+       y = "Liberal Leader Feeling Thermometer (0-100)") + 
+  ylim(0,100)
+```
+]
+.pull-right[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-33-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+``` python
+outl['educn'] = outl.educ.cat.codes + 1
+
+(ggplot(outl, aes(x="educn", y="value", 
+              colour="party")) + 
+  geom_point() + 
+  geom_line() + 
+  theme_bw() + 
+  facet_wrap("variable", ncol=2) + 
+  scale_colour_manual(values=[ "#003F72", "#d71920", "#F58220"]) + 
+  scale_x_continuous(breaks = [1, 2, 3], labels=["&lt;HS", "HS/College", "College\nGrad"]) + 
+  theme(legend_position="top", 
+        panel_spacing=.05) + 
+  labs(x="Highest Level of Educational Attainment", 
+       y = "Liberal Leader Feeling Thermometer (0-100)") + 
+  ylim(0,100)).show()
+```
+]
+.pull-right[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-34-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+twoway (scatter value educ if party == "ndp", c(l) lcol("245 130 32") mcol("245 130 32") msymbol(circle)) (scatter value educ if party == "lib", c(l) lcol("215 25 32") mcol("215 25 32") msymbol(square)) (scatter value educ if party == "con", c(l) lpattern(solid) lcol("0 63 114") mcol("0 63 114") msymbol(triangle)), by(stat, imargin(medlarge)) xlabel(1 "&lt;HS" 2 "HS/College" 3 "College Grad") xtitle("Highest Level of Educational Attainment") ytitle("Average Leader Thermometer Score") legend(label(1 "NDP") label(2 "Liberal") label(3 "Conservative") rows(1))
+```
+]
+.pull-right[
+&lt;img src="mm_all_lead_lines.png" width="100%" /&gt;
+]
+]
+]
+
+---
+
+# Exercise 4
+
+1. Make a two-level factor that codes bad mental health (`Fair` and `Poor` on `SRH_115`) and good mental health (`Excellent`, `Very good` and `Good` on `SRH_115`).
+2. Make a graph that shows the mean and median of `resilience` for `SRH_110` with different colors for good and bad mental health.  
+
+Plot the mean and median of resilience for each of the different groups of `SRH_110` from the GSS data.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="/assets/css/style.css?v=41db650c1793fcdf2f3cfd68aa3be780da89b56c">
+    <link rel="stylesheet" type="text/css" href="/assets/css/print.css" media="print">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Quantoid | Dave Armstrong’s Website</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Quantoid" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Dave Armstrong’s Website" />
+<meta property="og:description" content="Dave Armstrong’s Website" />
+<link rel="canonical" href="http://localhost:4000/uwo9590.html" />
+<meta property="og:url" content="http://localhost:4000/uwo9590.html" />
+<meta property="og:site_name" content="Quantoid" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Quantoid" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Dave Armstrong’s Website","headline":"Quantoid","url":"http://localhost:4000/uwo9590.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Quantoid</h1>
+          <h2>Dave Armstrong's Website</h2>
+        </header>
+        <section id="downloads" class="clearfix">
+          
+	
+        </section>
+        <hr>
+        <section id="main_content">
+          <script src="https://kit.fontawesome.com/3b340a2892.js" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" type="text/css" href="assets/icons.css" />
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('downloads').innerHTML = '<div class="icon-container" style="width: 100%;"><a href="index.html" class="link-item" title="Home" rel="nofollow"><i class="fa-solid fa-house fa-2xl"></i><span style="padding-top: 15px;">Home</span></a><a href="Research.html" class="link-item" title="Research" rel="nofollow"><i class="fa-solid fa-puzzle-piece fa-2xl"></i><span style="padding-top: 15px;">Research</span></a><a href="Teaching.html" class="link-item" title="Teaching" rel="nofollow"><i class="fa-solid fa-user-graduate fa-2xl"></i><span style="padding-top: 15px;">Teaching</span></a><a href="Software.html" class="link-item" title="Software" rel="nofollow"><i class="fa-solid fa-floppy-disk fa-2xl"></i><span style="padding-top: 15px;">Software</span></a></div>';}, false);
+</script>
+
+<style>
+.icon-container {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.icon-container a {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.icon-container i {
+    font-size: 24px; /* Adjust the icon size */
+    margin-bottom: 5px; /* Space between icon and label */
+    margin-top: 5px; /* Space between icon and label */
+}
+
+.icon-container span {
+    font-size: 14px; /* Adjust the label size */
+}
+</style>
+
+<p>In <strong>POLSCI 9590: Introduction to Methodology</strong>, we focus on two things.</p>
+
+<ol>
+  <li>The theoretical foundations of Frequentist inference - sampling, sampling distributions, bivariate relationships.</li>
+  <li>How to manage a data-based workflow in R.</li>
+</ol>
+
+<p>While these two things are not inherentily related, they are equally important for being able to do work with a quantitative component.  As I tell all the students, we spend a lot of time developing the ideas behind how inference works, but in terms of the day-to-day work of a quantitative researcher, you will spend 90\% of your time (or more) managing your data and getting it in shape to estiamte a model.  As such, I want to make sure my students have a good grounding in both things.  While I teach the course in R, faculty members (i.e., potential supervisors or employers of students as RAs) work in different software.  So, for every result I generate in R, I show how to do the equivalent (or a similar) thing in both Python and Stata. We don’t spend time on this in class, but they are there if people want to see how to do what we learned in other software on examples that they know work in R.</p>
+
+<p>During the course, I have students whtch short videos that focus on the details in the readings.  The readings generally come from “An Introductionto Statistics for Canadian Social Scientists” by Mike Haan and Jenny Godley, published by Oxford University Press.  The ideas are relatively straightforward, so I don’t want to spend a lot of time on them in lecture if I don’t need to.  There are some self-evaluation quizzes that I give on the course’s brightspace page that help gauge students’ understanding of the material.  If you want to see the videos, you can go to the <a href="https://www.youtube.com/playlist?list=PLaM-XeIGqCoFI9Rg7DYptfiW11emrfQCq">YouTube playlist</a>.  The other materials for the course are below:</p>
+
+<h3 id="data">Data</h3>
+
+<div>Canadian Election Study 2019 (Excerpt): <a href="/files/9590/ces19.dta"><i class="stata-icon-small"></i></a></div>
+
+<div>Canadian General Social Survey 2016 (Excerpt): <a href="/files/9590/gss16_can.dta"><i class="stata-icon-small"></i></a></div>
+
+<div>Crime Data: <a href="/files/9590/crime.dta"><i class="stata-icon-small"></i></a></div>
+<p><br /></p>
+
+<h3 id="custom-python-functions">Custom Python Functions</h3>
+
+<p>Some of the Python code relies on a set of custom functions I wrote, but did not put into a formal package. Download the file by clicking the python link: <a href="/files/9590/python_functions.py"><i class="python-icon-small"></i></a></p>
+
+<p><br /></p>
+<h3 id="week-1-data-and-variables">Week 1: Data and Variables</h3>
+
+<p><strong>Slides: </strong> <a href="/files/9590/lecture2.pdf" style="padding-right: 3px;"><i class="pdf-icon-small"></i></a><a href="/files/9590/lecture2.html" style="padding-left: 3px"><i class="html-icon-small"></i></a>   <strong>Code:</strong> <a href="/files/9590/lecture2.R" style="padding-right: 3px"><i class="R-icon-small"></i></a><a href="/files/9590/lecture2.do" style="padding-right: 3px; padding-left: 3px;"><i class="stata-icon-small"></i></a><a href="/files/9590/lecture2.py" style="padding-left: 3px"><i class="python-icon-small"></i></a></p>
+
+<h3 id="week-2-learning-about-distributions-of-variables">Week 2: Learning about Distributions of Variables</h3>
+
+<p><strong>Slides: </strong> <a href="/files/9590/lecture3.pdf" style="padding-right: 3px;"><i class="pdf-icon-small"></i></a><a href="/files/9590/lecture3.html" style="padding-left: 3px"><i class="html-icon-small"></i></a>   <strong>Code:</strong> <a href="/files/9590/lecture3.R" style="padding-right: 3px"><i class="R-icon-small"></i></a><a href="/files/9590/lecture3.do" style="padding-right: 3px; padding-left: 3px;"><i class="stata-icon-small"></i></a><a href="/files/9590/lecture3.py" style="padding-left: 3px"><i class="python-icon-small"></i></a></p>
+
+<h3 id="week-3-probabilities-and-data-management">Week 3: Probabilities and Data Management</h3>
+
+<p><strong>Slides: </strong> <a href="/files/9590/lecture4.pdf" style="padding-right: 3px;"><i class="pdf-icon-small"></i></a><a href="/files/9590/lecture4.html" style="padding-left: 3px"><i class="html-icon-small"></i></a>   <strong>Code:</strong> <a href="/files/9590/lecture4.R" style="padding-right: 3px"><i class="R-icon-small"></i></a><a href="/files/9590/lecture4.do" style="padding-right: 3px; padding-left: 3px;"><i class="stata-icon-small"></i></a><a href="/files/9590/lecture4.py" style="padding-left: 3px"><i class="python-icon-small"></i></a></p>
+
+<h3 id="week-4-measures-of-centre-and-spread">Week 4: Measures of Centre and Spread</h3>
+
+<p><strong>Slides: </strong> <a href="/files/9590/lecture5.pdf" style="padding-right: 3px;"><i class="pdf-icon-small"></i></a><a href="/files/9590/lecture5.html" style="padding-left: 3px"><i class="html-icon-small"></i></a>   <strong>Code:</strong> <a href="/files/9590/lecture5.R" style="padding-right: 3px"><i class="R-icon-small"></i></a><a href="/files/9590/lecture5.do" style="padding-right: 3px; padding-left: 3px;"><i class="stata-icon-small"></i></a><a href="/files/9590/lecture5.py" style="padding-left: 3px"><i class="python-icon-small"></i></a></p>
+
+<h3 id="week-5-sampling-and-generalization">Week 5: Sampling and Generalization</h3>
+
+<p><strong>Slides: </strong> <a href="/files/9590/lecture4.pdf" style="padding-right: 3px;"><i class="pdf-icon-small"></i></a><a href="/files/9590/lecture4.html" style="padding-left: 3px"><i class="html-icon-small"></i></a>   <strong>Code:</strong> <a href="/files/9590/lecture4.R" style="padding-right: 3px"><i class="R-icon-small"></i></a><a href="/files/9590/lecture4.do" style="padding-right: 3px; padding-left: 3px;"><i class="stata-icon-small"></i></a><a href="/files/9590/lecture4.py" style="padding-left: 3px"><i class="python-icon-small"></i></a></p>
+
+<h3 id="week-6-bivariate-statistics">Week 6: Bivariate Statistics</h3>
+
+<h3 id="week-7-bivariate-statistics-for-nominal-and-ordinal-data">Week 7: Bivariate Statistics for Nominal and Ordinal Data</h3>
+
+<h3 id="week-8-bivariate-statistics-for-interval-and-ratio-data">Week 8: Bivariate Statistics for Interval and Ratio Data</h3>
+
+<h3 id="week-9-simple-ols-regression">Week 9: Simple OLS Regression</h3>
+
+
+        </section>
+
+        <footer>
+        
+          Quantoid is maintained by <a href="https://github.com/davidaarmstrong">davidaarmstrong</a><br>
+        
+          This page was generated by <a href="https://pages.github.com">GitHub Pages</a>.
+        </footer>
+
+      </div>
+    </div>
+  </body>
+</html>

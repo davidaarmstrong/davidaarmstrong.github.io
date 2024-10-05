@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9590: Methods I</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9590: Methods I
+]
+.subtitle[
+## Sampling and Generalization
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+
+
+&lt;/style&gt;
+
+## What is a p-value? 
+
+A `\(p\)`-value is: the probability that we observe sample statistic at least as extreme as the one we observed if the null hypothesis is true. 
+- `\(p\)`-values are increasingly controversial, even though almost everyone uses them more or less uncritically.  
+- `\(p\)`-values can be made arbitrarily small by collecting more data (though this is time/resource-intensive and often impractical or impossible). 
+
+---
+
+## The Idea 
+
+Theoretically, we know
+
+&lt;img src="lecture7_files/figure-html/unnamed-chunk-2-1.png" width="35%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## The Idea 
+.pull-left[
+We know two pieces of information to help us out: 
+
+- `\(\bar{x}\)` - our sample statistic value. 
+- `\(s_x\)` - the standard deviation of `\(x\)`.  
+
+But, we still don't know `\(\mu\)`.  
+]
+.pull-right[
+&lt;img src="lecture7_files/figure-html/unnamed-chunk-3-1.png" width="85%" style="display: block; margin: auto;" /&gt;
+
+]
+
+
+---
+
+## The Idea 
+.pull-left[
+We know two pieces of information to help us out: 
+
+- `\(\bar{x}\)` - our sample statistic value. 
+- `\(s_x\)` - the standard deviation of `\(x\)`.  
+
+But, we still don't know `\(\mu\)`.  
+- This is where our hypothesis comes in: `\(\mu_{0}\)`
+]
+.pull-right[
+&lt;img src="lecture7_files/figure-html/unnamed-chunk-4-1.png" width="85%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## P-values
+
+Now, we know all of the relevant pieces of this distribution.  Under the null hypothesis (i.e., if the null hypothesis is true), we know that (approximately): 
+
+`$$\bar{x}\sim N\left(\mu_{0}, \frac{s_x}{\sqrt{n}}\right)\text{  or    } \bar{x}\sim t_{n-1}\left(\mu_{0}, \frac{s_x}{\sqrt{n}}\right)$$`
+
+So, we can turn our sample statistic into a `\(z\)`-score. 
+
+`$$z = \frac{\bar{x}-\mu_{0}}{\frac{s}{\sqrt{n}}}$$`
+
+We can then use the normal probability table to figure out what the probability is. 
+
+---
+
+## One and Two Tailed Tests
+
+Let's assume `\(\bar{x} = 0.5\)`, `\(\mu_{0} = 0\)`, `\(s_{x} = 3\)` and `\(n=100\)`
+
+
+&lt;img src="lecture7_files/figure-html/unnamed-chunk-5-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## t-test 
+
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+set.seed(519)
+x &lt;- scale(rnorm(100, 0, 1))
+x &lt;- x*3 + .5
+t.test(x, mu = 0, alternative="two")
+```
+
+```
+## 
+## 	One Sample t-test
+## 
+## data:  x
+## t = 1.6667, df = 99, p-value = 0.09874
+## alternative hypothesis: true mean is not equal to 0
+## 95 percent confidence interval:
+##  -0.09526509  1.09526509
+## sample estimates:
+## mean of x 
+##       0.5
+```
+]
+.panel[.panel-name[Python]
+
+``` r
+library(reticulate)
+use_python("/Users/david/.pyenv/shims/python")
+```
+
+
+``` python
+import pandas as pd
+exec(open('../python_functions.py').read())
+dat = pd.read_stata("dat_1samp.dta")
+tTest(dat.x)
+```
+
+```
+##    Mean   SE  H0         t  df  p-val
+## 0   0.5  0.3   0  1.666667  99  0.099
+```
+]
+.panel[.panel-name[Stata]
+
+``` stata
+use dat_1samp.dta
+ttest x == 0
+
+One-sample t test
+------------------------------------------------------------------------------
+Variable |     Obs        Mean    Std. err.   Std. dev.   [95% conf. interval]
+---------+--------------------------------------------------------------------
+       x |     100          .5          .3           3   -.0952651    1.095265
+------------------------------------------------------------------------------
+    mean = mean(x)                                                t =   1.6667
+H0: mean = 0                                     Degrees of freedom =       99
+
+    Ha: mean &lt; 0                 Ha: mean != 0                 Ha: mean &gt; 0
+ Pr(T &lt; t) = 0.9506         Pr(|T| &gt; |t|) = 0.0987          Pr(T &gt; t) = 0.0494
+
+```
+]
+]
+
+
+
+
+---
+
+## One-sided
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+t.test(x, mu = 0, alternative="less")
+```
+
+```
+## 
+## 	One Sample t-test
+## 
+## data:  x
+## t = 1.6667, df = 99, p-value = 0.9506
+## alternative hypothesis: true mean is less than 0
+## 95 percent confidence interval:
+##       -Inf 0.9981173
+## sample estimates:
+## mean of x 
+##       0.5
+```
+]
+.pull-right[
+
+``` r
+t.test(x, mu = 0, alternative="greater")
+```
+
+```
+## 
+## 	One Sample t-test
+## 
+## data:  x
+## t = 1.6667, df = 99, p-value = 0.04937
+## alternative hypothesis: true mean is greater than 0
+## 95 percent confidence interval:
+##  0.001882653         Inf
+## sample estimates:
+## mean of x 
+##       0.5
+```
+]
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+``` python
+tTest(dat.x, alternative="less")
+```
+
+```
+##    Mean   SE  H0         t  df  p-val
+## 0   0.5  0.3   0  1.666667  99  0.951
+```
+]
+.pull-right[
+
+``` python
+tTest(dat.x, alternative="greater")
+```
+
+```
+##    Mean   SE  H0         t  df   p-val
+## 0   0.5  0.3   0  1.666667  99  0.049*
+```
+]
+
+]
+.panel[.panel-name[Stata]
+
+``` stata
+use dat_1samp.dta
+ttest x == 0
+
+One-sample t test
+------------------------------------------------------------------------------
+Variable |     Obs        Mean    Std. err.   Std. dev.   [95% conf. interval]
+---------+--------------------------------------------------------------------
+       x |     100          .5          .3           3   -.0952651    1.095265
+------------------------------------------------------------------------------
+    mean = mean(x)                                                t =   1.6667
+H0: mean = 0                                     Degrees of freedom =       99
+
+    Ha: mean &lt; 0                 Ha: mean != 0                 Ha: mean &gt; 0
+ Pr(T &lt; t) = 0.9506         Pr(|T| &gt; |t|) = 0.0987          Pr(T &gt; t) = 0.0494
+```
+]
+]
+
+
+
+---
+
+## Hypothesis Test for Proportions
+
+Same as a test for the mean, but 
+- We use the `\(z\)` distribution. 
+- We can calculate the standard error based under the null hypothesis directly (rather than estimating it) because regardless of the individual values, the standard deviation of a binary variable is `\(s=\sqrt{\frac{p(1-p)}{n}}\)`. 
+
+For the normal approximation to work, we need: 
+- `\(np \geq 5\)`
+- `\(n(1-p) \geq 5\)`
+
+where `\(n\)` is the number of observations in the sample and `\(p\)` is the hypothesized population proportion.  If this isn't true, we need a different test. 
+
+---
+
+## Proportion Test Example
+
+Let's say that we had a 250 observations on gender and that 110 were males.  If we wenated to test `\(H_{0}: p = .5\)` against the two-sided alternative, we would do: 
+
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+prop.test(x=110, n=250, p=.5)
+```
+
+```
+## 
+## 	1-sample proportions test with continuity correction
+## 
+## data:  110 out of 250, null probability 0.5
+## X-squared = 3.364, df = 1, p-value = 0.06664
+## alternative hypothesis: true p is not equal to 0.5
+## 95 percent confidence interval:
+##  0.3778970 0.5039775
+## sample estimates:
+##    p 
+## 0.44
+```
+]
+.panel[.panel-name[Python]
+
+``` python
+propTest1(110, 250, .5)
+```
+
+```
+##      k    N   H0  est_p   p-value
+## 0  110  250  0.5   0.44  0.066421
+```
+]
+.panel[.panel-name[Stata]
+
+``` stata
+bitesti 250 110 .5
+
+Binomial probability test
+
+            N   Observed k   Expected k   Assumed p   Observed p
+----------------------------------------------------------------
+          250          110          125     0.50000      0.44000
+
+  Pr(k &gt;= 110)             = 0.975147  (one-sided test)
+  Pr(k &lt;= 110)             = 0.033211  (one-sided test)
+  Pr(k &lt;= 110 or k &gt;= 140) = 0.066421  (two-sided test)
+
+```
+]
+]
+
+
+---
+
+## Difference of Means
+
+We want to make an inference about the difference between two population parameters, where generally `\(H_{0}: \mu_1 = \mu_2\)`, 
+- `\(H_A: \mu_1 \neq \mu_2\)`; `\(H_A \mu_1-\mu_2 = 0\)`
+- `\(H_A: \mu_1 &lt; \mu_2\)`; `\(H_A \mu_1-\mu_2 &lt; 0\)`
+- `\(H_A: \mu_1 &gt; \mu_2\)`; `\(H_A \mu_1-\mu_2 &gt; 0\)`
+
+Just like any test, we need to make a `\(z\)`- or `\(t\)`-statistic: 
+
+`$$\frac{\text{Estimate} - H_0\text{Value}}{\text{SE}}$$`
+
+In this case: 
+
+`$$\frac{(\bar{x}_1-\bar{x}_2) - 0}{s_{\bar{x}_1-\bar{x}_2}}$$`
+
+---
+
+## SE of Difference
+
+- Assume different population variances of two groups 
+
+`$$\sqrt{\frac{\sigma_{1}^{2}}{n_{1}} + \frac{\sigma_{2}^{2}}{n_{2}}} \text{  with df: }\frac{\left[\left(\frac{s_{1}^{2}}{n_{1}}\right) + \left(\frac{s_{2}^{2}}{n_{2}}\right)\right]^{2}}{\frac{\left(\frac{s_{1}^{2}}{n_{1}}\right)^{2}}{n_{1}-1} + \frac{\left(\frac{s_{2}^{2}}{n_{2}}\right)^{2}}{n_{2}-1}}$$`
+
+- Assume same population variance of two groups
+
+`$$\begin{aligned}
+s_{p} &amp;= \sqrt{\frac{(n_{1}-1)s_{1}^{2} + (n_{2}-1)s_{2}^{2}}{n_{1}+n_{2} - 2}}\\
+s_{\bar{x}_1-\bar{x}_2} &amp;= s_{p}\sqrt{\frac{1}{n_{1}} + \frac{1}{n_{2}}}\text{  with df: }n_{1}+n_{2}-2
+\end{aligned}$$`
+
+---
+
+## Which to Choose? 
+
+If you choose equal variances and you're wrong...
+- Your inferences will be wrong and potential anti-conservative. 
+
+If you choose unequal variances and you're wrong ...
+- Your inferences may have higher variance than they would have otherwise, so your inferences will be a bit conservative, but this is probably better. 
+
+The default in `t.test()` and `tTest()` is to **not** assume that the variances are equal. 
+
+---
+
+## CES Example
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+library(rio)
+library(dplyr)
+library(DAMisc)
+ces &lt;- import("ces19.dta")
+ces &lt;- ces %&gt;% mutate(
+  vote_con = case_when(vote == 2 ~ 1, 
+                       vote %in% c(1,3,4) ~ 0, 
+                       TRUE ~ NA_real_))
+```
+]
+.pull-left[
+
+``` r
+tTest("vote_con", "market", data=ces, var.equal=FALSE)
+```
+
+```
+## Summary:
+##            mean       n    se        
+## 0          -0.3929244 1679 0.3791567 
+## 1          -0.0149498 664  0.3720461 
+## Difference -0.3779746 2343 0.01714886
+## p-value &lt; 0.001
+## ---------------------------------
+## 
+## 	Welch Two Sample t-test
+## 
+## data:  market by vote_con
+## t = -22.041, df = 1237, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means between group 0 and group 1 is not equal to 0
+## 95 percent confidence interval:
+##  -0.4116186 -0.3443305
+## sample estimates:
+## mean in group 0 mean in group 1 
+##      -0.3929244      -0.0149498
+```
+
+]
+]
+.panel[.panel-name[Python]
+
+``` python
+import pandas as pd
+ces = pd.read_stata("ces19.dta")
+ces_v = ces[['market', 'vote']].dropna()
+ces_v['vote_con'] = (ces_v.vote == "Conservative").astype('int')
+ces_v.vote_con = ces_v.vote_con.case_when([(ces_v.vote.isna(), np.nan)])
+tTest(ces_v.market, group=ces_v.vote_con, equal_var=False)
+```
+
+```
+##                       Mean        SE     N          t           df p-val
+## x                -0.392924  0.009253  1679                              
+## y                -0.014950  0.014438   664                              
+## difference (y-x)  0.377975  0.017279  2343 -22.040794  1237.027929  0.0*
+```
+]
+.panel[.panel-name[Stata]
+
+``` stata
+use ces19.dta, clear
+recode vote (2=1) (1 3 4 = 0) (else = .), into(vote_con)
+ttest market, by(vote_con) unequal
+
+Two-sample t test with unequal variances
+------------------------------------------------------------------------------
+   Group |     Obs        Mean    Std. err.   Std. dev.   [95% conf. interval]
+---------+--------------------------------------------------------------------
+       0 |   1,679   -.3929244    .0092532    .3791567   -.4110734   -.3747753
+       1 |     664   -.0149498    .0144382    .3720461   -.0432999    .0134003
+---------+--------------------------------------------------------------------
+Combined |   2,343   -.2858074    .0085483    .4137778   -.3025704   -.2690443
+---------+--------------------------------------------------------------------
+    diff |           -.3779746    .0171489               -.4116186   -.3443305
+------------------------------------------------------------------------------
+    diff = mean(0) - mean(1)                                      t = -22.0408
+H0: diff = 0                     Satterthwaite's degrees of freedom =  1237.03
+
+    Ha: diff &lt; 0                 Ha: diff != 0                 Ha: diff &gt; 0
+ Pr(T &lt; t) = 0.0000         Pr(|T| &gt; |t|) = 0.0000          Pr(T &gt; t) = 1.0000
+
+```
+]
+]
+
+
+
+
+---
+
+## Proportion Test
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+ces &lt;- ces %&gt;% mutate(
+  coll_grad = case_when(educ == 3 ~ 1, 
+                        educ %in% 1:2 ~ 0, 
+                        TRUE ~ NA_real_))
+s &lt;- ces %&gt;% 
+  # group by the independent variable
+  group_by(coll_grad) %&gt;% 
+  filter(!is.na(coll_grad) &amp; !is.na(vote_con)) %&gt;% 
+  # summarise the dependent variable
+  summarise(n_con = sum(vote_con, na.rm=TRUE), 
+            n = n()) 
+```
+]
+.pull-right[
+
+``` r
+s
+```
+
+```
+## # A tibble: 2 × 3
+##   coll_grad n_con     n
+##       &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;
+## 1         0   423  1254
+## 2         1   256  1117
+```
+
+``` r
+prop.test(s$n_con, s$n)
+```
+
+```
+## 
+## 	2-sample test for equality of proportions with continuity correction
+## 
+## data:  s$n_con out of s$n
+## X-squared = 33.275, df = 1, p-value = 7.999e-09
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  0.07134009 0.14493042
+## sample estimates:
+##    prop 1    prop 2 
+## 0.3373206 0.2291853
+```
+]
+]
+.panel[.panel-name[Python]
+
+``` python
+ces_g = ces[['vote', 'educ']].dropna()
+ces_g['coll_grad'] = (ces_g.educ == "College Grad").astype('int')
+ces_g['vote_con'] = (ces_g.vote == "Conservative").astype('int')
+propTest2(ces_g.vote_con, ces_g.coll_grad)
+```
+
+```
+##         group      prob    Chi2 DF p-value
+## 0           0  0.337321                   
+## 1           1  0.229185                   
+## 2  Difference -0.108135  33.275  1    0.0*
+```
+]
+.panel[.panel-name[Stata]
+
+``` stata
+recode educ (3=1) (1 2=0) (else = .), into(coll_grad)
+prtest vote_con, by(coll_grad)
+
+Two-sample test of proportions                     0: Number of obs =     1254
+                                                   1: Number of obs =     1117
+------------------------------------------------------------------------------
+       Group |       Mean   Std. err.      z    P&gt;|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+           0 |   .3373206   .0133513                      .3111525    .3634887
+           1 |   .2291853    .012576                      .2045369    .2538338
+-------------+----------------------------------------------------------------
+        diff |   .1081353   .0183416                      .0721864    .1440841
+             |  under H0:   .0185992     5.81   0.000
+------------------------------------------------------------------------------
+        diff = prop(0) - prop(1)                                  z =   5.8140
+    H0: diff = 0
+
+    Ha: diff &lt; 0                 Ha: diff != 0                 Ha: diff &gt; 0
+ Pr(Z &lt; z) = 1.0000         Pr(|Z| &gt; |z|) = 0.0000          Pr(Z &gt; z) = 0.0000
+```
+]
+]
+
+
+
+
+---
+
+## Visualizing Differences: Box Plot
+
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+ces %&gt;% 
+  mutate(vc = factor(vote_con, 
+                     levels=c(0,1), 
+                     labels=c("No", "Yes"))) %&gt;% 
+  filter(!is.na(vc)) %&gt;% 
+ggplot(aes(x=vc, y=market)) + 
+  geom_boxplot(width=.25) + 
+  theme_classic() + 
+  labs(x="Vote for Conservative", 
+       y="Market Liberalism Scale")
+```
+]
+.pull-right[
+&lt;img src="lecture7_files/figure-html/unnamed-chunk-27-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+from plotnine import ggplot, aes, geom_boxplot, theme_classic, labs
+ces_v['vc'] = (ces_v
+  .vote_con
+  .case_when([(ces_v.vote_con.eq(0), 'No'), 
+              (ces_v.vote_con.eq(1), 'Yes')])
+  .astype('category')
+  .cat
+  .reorder_categories(['No', 'Yes'], ordered=True)
+)
+(ggplot(ces_v.dropna(), aes(x="vc", y="market")) + 
+  geom_boxplot() + 
+  theme_classic() + 
+  labs(x="Vote Conservative", y="Market Liberalism")
+).show()
+```
+]
+.pull-right[
+&lt;img src="lecture7_files/figure-html/unnamed-chunk-28-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+label def vc 1 "Yes" 0 "No"
+label val vote_con vc
+label var vote_con "Vote Conservative"
+graph box market, over(vote_con, axis(fextend)) alsize(0) ytitle("Market Liberalism") title("Vote Conservative")
+```
+]
+.pull-right[
+&lt;img src="box_stata.png" width="100%" /&gt;
+]
+]
+]
+
+---
+
+## Visualizing Proportions
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+ces %&gt;% select(coll_grad, vote_con) %&gt;% 
+  na.omit %&gt;% 
+  group_by(coll_grad, vote_con) %&gt;% 
+  summarise(n = n()) %&gt;% 
+  ungroup() %&gt;% 
+  group_by(coll_grad) %&gt;% 
+  mutate(prop = n/sum(n)) %&gt;% 
+ggplot(aes(x=factor(coll_grad, labels=c("No", "Yes")), 
+           y=prop, 
+           fill=factor(vote_con, labels=c("No", "Yes")))) +
+  geom_bar(stat="identity", position="stack") + 
+  theme_bw() + 
+  labs(x="College Graduate", 
+       y="Proportion", 
+       fill="Vote Conservative?") + 
+  scale_y_continuous(labels=scales::label_percent())
+```
+]
+.pull-right[
+&lt;img src="lecture7_files/figure-html/unnamed-chunk-31-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+from plotnine import geom_bar
+ces_gf = (ces_g[['coll_grad', 'vote_con']]
+  .apply(lambda x: x
+    .case_when([(x.eq(0), "No"), 
+                (x.eq(1), "Yes")])
+    .astype('category')
+    .cat
+    .reorder_categories(['No', 'Yes'], 
+        ordered=True)))
+cts = (ces_gf
+  .value_counts()
+  .reset_index()
+)
+cts['pct'] = (cts[['coll_grad', 'count']]
+  .groupby('coll_grad', observed=True)
+  .transform(lambda x: x/x.sum()))
+
+(ggplot(cts, aes(x="coll_grad", y="pct", fill="vote_con")) + 
+  geom_bar(stat="identity", position="stack") + 
+  theme_classic() + 
+  labs(x="College Graduate?", fill="Vote\nConservative?")
+).show() 
+```
+]
+.pull-right[
+&lt;img src="lecture7_files/figure-html/unnamed-chunk-32-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+preserve 
+gen ones = 1
+collapse (count) ones, by(coll_grad vote_con)
+drop if coll_grad ==. | vote_con == .
+egen n = sum(ones), by(coll_grad)
+gen pct = ones/n
+drop ones n
+reshape wide pct, i(coll_grad) j(vote_con)
+label def yn 0 "No" 1 "Yes"
+label val coll_grad yn
+graph bar pct1 pct0, over(coll_grad) stack legend(order(2 1) label(2 "No") label(1 "Yes") title("Vote" "Conservative?")) b1title("College Graduate")
+restore
+```
+]
+.pull-right[
+&lt;img src="stack_bar.png" width="100%" /&gt;
+]
+]
+]
+
+---
+
+## What's Best?
+
+&lt;img src="lecture7_files/figure-html/unnamed-chunk-35-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Exercises
+
+Using the **ces** data, answer the following questions. 
+
+1. Do people who identify with a religion higher feeling thermometer scores for the conservative candidate? 
+  - Is there a difference between Catholics and Non-Catholic Christians? 
+  - For each of the results above, make the appropriate graph. 
+2. Are middle-aged people more likely to turn out to vote than older and younger people? 
+  - What if you just look at the difference between the 18-34 and 35-54 groups? 
+  - For each of the results above, make the appropriate graph. 
+  
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

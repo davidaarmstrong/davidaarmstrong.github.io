@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9590: Methods I</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9590: Methods I
+]
+.subtitle[
+## Data and Variables
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+
+
+&lt;/style&gt;
+
+
+# What are we up to in this course? 
+
+&lt;img src="schematic_20240.png" width="985" height="75%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Videos
+
+We covered a few different things in the videos: 
+
+1. Math and order of operations
+2. Data and Variables
+3. Levels of measurement
+  - Qualitative, Categorical, Dichotomous/Polytomous, Discrete: nominal and ordinal
+  - Quantitative, Numeric, Continuous: Interval and Ratio
+  
+--
+
+**Questions?**
+
+---
+
+# R and RStudio
+
+R and RStudio are different, but related pieces of software. 
+- _R_ is the statistical software that does all of the "work". 
+- RStudio is an _I_ntegrated _D_evelopment _E_nvironment (IDE) for R - it is a nice window through which you can interact with R. 
+    - Knowing _R_ is a marketable skill, knowing how to use _RStudio_ is less so. 
+
+--
+
+We can do two different sorts of things to save our work. 
+- Write an R script file - this only contains R code and comments. 
+- Write an RMarkdown file - we can create reproducible reports with RMarkdown. 
+
+---
+
+# Packages 
+
+Packages are collections of add-on functions that enhance and expand R's base capabilities. 
+- These are almost entirely user-developed
+    - relatively limited quality control. 
+    
+Packages need to be ... 
+- Downloaded and installed once (per major R version) 
+- Loaded in every R session before you need to use them. 
+    - An R session starts when you open the R program and ends when you either quit or reset R. 
+    - An R session could last days or weeks if you're not someone who quits your open apps and shuts down your computer every night. 
+    - Resetting R will unload all of the packages you've loaded. 
+
+---
+
+# Downloading/Installing and Loading Packages
+
+
+---
+
+# Create a Project for the Course
+
+1. Somewhere on your computer, make a new folder where you want to save your work. 
+2. Open up RStudio. 
+3. In the upper right-hand corner, click on the project button: ![project](proj_none.png)
+4. Choose "Existing directory": 
+&lt;img src="exist.png" width="20%" style="display: block; margin: auto;" /&gt;
+5. Click on the "Browse" button and browse to the folder that you just created then click "Create Project"
+&lt;img src="browse.png" width="20%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Open an R Script
+
+Once your project is open, you can open an R script file by: 
+- File `\(\rightarrow\)` New File `\(\rightarrow\)` R Script. 
+
+It will probably be most useful to have a different script file (or RMarkdown file) for every week or day of class. 
+- The `#` (hash tag) is the comment character, so anything on the same line after the hash will be disregarded by R. 
+
+---
+
+# Importing data
+
+Data can be read in from other data formats - Stats, SPSS, Excel Workbook, CSV, ...
+
+.panelset[
+.panel[.panel-name[R]
+- To do this, we need the `rio` package. 
+    - To install this, activate the "Packages" tab in the lower-left panel of RStudio. 
+    - Click on the "Install" button in the upper right-hand corner of that panel. 
+    - Type `rio` into the "Packages" text box. 
+    - Make sure the "Install dependencies" check box is checked. 
+    - Click "Install" at the bottom of the dialog box. 
+
+]
+.panel[.panel-name[Python]
+- In python, you need to install the `pandas` package
+
+``` python
+pip install pandas
+```
+]
+.panel[.panel-name[Stata]
+- Stata natively imports data from a more limited set of packages. 
+    - For our purposes, Stata will almost always work because most data area available natively in Stata format. ]
+]
+
+
+---
+
+# Import the CES dataset. 
+
+1. Download the CES 2019 data from the OWL site.   
+2. Save (or move) the data file to the folder that contains the project file you made earlier. 
+3. Import the data.  For this to work: 
+  - **the `ces19.dta` file has to be in the same directory as the .R file you're working on** 
+  - Or you could give the full or relative path to the data file from the directory. 
+
+
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+library(rio)
+ces &lt;- import("ces19.dta")
+```
+]
+
+.panel[.panel-name[Python]
+
+``` r
+reticulate::use_python("/Users/david/.pyenv/shims/python")
+```
+
+``` python
+import pandas as pd
+ces19 = pd.read_stata("ces19.dta")
+```
+]
+.panel[.panel-name[Stata]
+
+
+``` stata
+use "ces19.dta", clear
+```
+]
+]
+
+---
+
+# Looking at the data. 
+
+You can actually look at the data by clicking on the little grid next to the data set name in the "Environment" tab which is in the upper right-hand corner of my RStudio window.
+
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+str(ces$agegrp)
+```
+
+```
+##  num [1:2799] 3 1 2 3 1 2 2 2 2 3 ...
+##  - attr(*, "label")= chr "Respondent age group"
+##  - attr(*, "format.stata")= chr "%12.0g"
+##  - attr(*, "labels")= Named num [1:3] 1 2 3
+##   ..- attr(*, "names")= chr [1:3] "18-34" "35-54" "55+"
+```
+
+``` r
+str(ces$leader_lib)
+```
+
+```
+##  num [1:2799] 70 70 25 0 70 70 9 55 50 50 ...
+##  - attr(*, "label")= chr "Liberal party leader feeling thermometer"
+##  - attr(*, "format.stata")= chr "%10.0g"
+```
+]
+.panel[.panel-name[Python]
+
+``` python
+ces19.agegrp.dtypes
+```
+
+```
+## CategoricalDtype(categories=['18-34', '35-54', '55+'], ordered=True, categories_dtype=object)
+```
+
+``` python
+ces19.leader_lib.dtypes
+```
+
+```
+## dtype('float64')
+```
+
+``` python
+ces19.leader_lib.values
+```
+
+```
+## array([70., 70., 25., ..., 75., 70., 65.])
+```
+
+]
+.panel[.panel-name[Stata]
+
+``` stata
+codebook agegrp
+
+-------------------------------------------------------------------------------------------------
+agegrp                                                                       Respondent age group
+-------------------------------------------------------------------------------------------------
+
+                  Type: Numeric (long)
+                 Label: agegrp
+
+                 Range: [1,3]                         Units: 1
+         Unique values: 3                         Missing .: 0/2,799
+
+            Tabulation: Freq.   Numeric  Label
+                          459         1  18-34
+                          963         2  35-54
+                        1,377         3  55+
+```
+]
+]
+
+---
+
+# Recognizing Categorical Variables 
+
+.panelset[
+.panel[.panel-name[R]
+- Generally things that are "strings" are categorical (ordinal or nominal) variables. 
+    - These can be made into factors with the `as.factor()` function. 
+- Variables that have a `factor` class are categorical. 
+- Variables that have `labels` attribute are often categorical.
+    - If you read the data in with `rio`, these can be made into factors with the `factorize()` function. 
+]
+.panel[.panel-name[Python]
+- Generally things that are "strings" are categorical (ordinal or nominal) variables. 
+    - These can be made into factors with `astype('category')`. 
+    - Variables that have a `Categorical` class are categorical. 
+
+]
+.panel[.panel-name[Stata]
+- Generally, variables that have a `Label` attached to them are categorical. 
+    - Labels can be attached to variables by defining it (with `label def`) and then applying it (with `label val varname lbl_name`)
+]
+]
+
+    
+Often variables with only a few unique values are intended to be categorical. A variable's level of measurement is not an immutable, objective attribute of the data. 
+- People can think differently about the same variable. 
+
+---
+
+# Loading data from R packages 
+
+R packages also often come with data.  You can import those data into your R session with the `data()` function. 
+
+
+``` r
+data("mtcars", package="datasets")
+```
+
+Note, you shouldn't/can't use `import()` and `data()` interchangeably. 
+  - `import()` is for data external to R. 
+  - `data()` is for data internal to R.  
+  
+
+---
+
+# Levels of Measurement 
+
+Describe the levels of measurement in the following data framses from the `datasets` package: 
+
+- `ToothGrotwh`
+- `mtcars`
+
+Also, look at the other variables from the `ces19` dataset. 
+
+---
+
+# GSS Example
+
+1. Download the `gss16_can.dta` file from the OWL site. This is the Canadian General Social Survey data from 2016. 
+2. Write code to import the data into your R session.  
+3. There are three variables - describe each of them.  
+4. What the level of measurement is each variable? 
+
+---
+
+# Mathematical Functions in R. 
+
+- `+`, `-`, `*` and `/` are the operators for add, subtract, multiply and divide, respectively. 
+- `log()` is the natural logarithm (with base `\(e\)`), `log10()` is the log base 10 function. 
+- `exp(x)` does `\(e^x\)` and the caret `^` is the "to-the-power-of" operator, so `4^2=16`. 
+- `sqrt()` is the square root function.  More generally you can take any root `\(r\)` by raising a value to the power `\(\frac{1}{r}\)`.  
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,43 +1,13 @@
-# ngrok http -subdomain=quantoid http://192.168.1.2:49010
-options(htmltools.dir.version = FALSE)
-knitr::opts_chunk$set(message = FALSE, warning = FALSE, dev="png", tidy=TRUE,  tidy.opts = list(only.comment=TRUE,  width.cutoff=80))
-knitr::opts_chunk$set(fig.retina=2)
-knitr::opts_hooks$set(fig.callout = function(options) {
-  if (options$fig.callout) {
-    options$echo <- FALSE
-    options$out.height <- "99%"
-    # options$fig.width <- 16
-    # options$fig.height <- 8
-  }
-  options
-})
-library(tibble)
+###################################
+## Code for POLSCI 9590 Week 2   ##
+## Dave Armstrong                ##
+## University of Western Ontario ##
+## dave.armstrong@uwo.ca         ##
+## 2024                          ##
+###################################
+
 library(ggplot2)
-library(formatR)
-library(knitr)
-library(pander)
-library(xtable)
 library(dplyr)
-library(xaringanthemer)
-style_mono_accent(base_color = "#4F2683", code_font_size=".65rem", text_font_size = "1.25rem")
-
-xaringanExtra::use_scribble(pen_color="#3252a8", pen_size=5, 
-    palette=c("#e41a1c", "#4daf4a", "#ff7f00", "#4F2683", "#3252a8") 
-)
-xaringanExtra::use_clipboard()
-xaringanExtra::use_panelset()
-xaringanExtra::use_tile_view()
-# xaringanExtra::use_editable()
-
-
-mytheme <- function(){
-    theme_xaringan() +
-    theme(axis.title=element_text(size=15), 
-          axis.text=element_text(size=12),
-          text=element_text(size=12), 
-          title=element_text(size=15))
-}
-
 
 install.packages("remotes")
 remotes::install_github("davidaarmstrong/damisc")
@@ -52,13 +22,8 @@ library(uwo4419)
 library(DAMisc)
 
 
-exec(open('python_functions.py').read())
-
-
 ces19 <- import("ces19.dta")
 
-
-reticulate::use_python("/Users/david/.pyenv/shims/python")
 
 
 freqDist(ces19$educ)

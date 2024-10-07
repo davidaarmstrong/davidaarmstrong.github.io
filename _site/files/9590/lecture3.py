@@ -1,3 +1,11 @@
+###################################
+## Code for POLSCI 9590 Week 2   ##
+## Dave Armstrong                ##
+## University of Western Ontario ##
+## dave.armstrong@uwo.ca         ##
+## 2024                          ##
+###################################
+
 import pandas as pd
 import mizani.labels as ml
 import numpy as np

@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9590: Methods I</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9590: Methods I
+]
+.subtitle[
+## Measures of Association for Interval/Ratio Data
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.left-code-shift2 {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+  position:relative; 
+  top: -50px;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+&lt;/style&gt;
+
+## Videos
+
+In the videos for today, we learned about: 
+
+1. Pearson Correlation Coefficient. 
+  - Linear relationships
+  - Significance Testing
+  - Correlation Matrix
+
+---
+
+## Calculating the Correlation Coefficient. 
+
+`$$r = \frac{\sum_{i=1}^{N}(x_i-\bar{x})(y_i-\bar{y})}{\sqrt{\sum_{i=1}^{N}(x_i-\bar{x})^2 \times \sum_{i=1}^{N}(y_i-\bar{y})^2}}$$`
+
+Which is 
+
+`$$r = \frac{\text{Covariance}(x,y)}{\sqrt{\text{Varaiance}(x) \times \text{Variance}(y)}}$$`
+
+Covariance is an _unbounded_ measure of linear association (the scale is based on the values of `\(x\)` and `\(y\)`).  
+- dividing by the variances of `\(x\)` and `\(y\)` re-scales the values to live in the range `\(-1\leq r \leq 1\)`. 
+
+---
+
+## Properties of the Correlation Coefficient
+
+1. Measures **linear** association between variables. 
+  - This is only one of an infinite set of relationships that could exist, though often it is sufficient to characterize the relationship. 
+2. Ranges from `\(-1 \leq r \leq 1\)`, such that numbers farther from zero indicate stronger relationships (but indifferent directions). 
+3. The squared correlation coefficient `\(r^2\)` tells us the proportion of variance in `\(y\)` that is explained by `\(x\)`. 
+
+---
+
+## Tests for Statistical Significance. 
+
+- Approximate `\(z\)`-statistic with `\(\mu = 0\)` and `\(\sigma = \frac{1}{\sqrt{n-3}}\)`
+
+`$$z = \frac{1}{2}\log\left(\frac{1+r}{1-r}\right)$$`
+
+
+- Approximate `\(t\)`-statistic with `\(n-2\)` degrees of freedom
+
+
+`$$t=r\sqrt{\frac{n-2}{1-r^2}}$$`
+
+
+- Permutation test. 
+  - randomly re-arrange `\(y\)` and calculate `\(r_{xy}^{(t)}\)` for `\(t = \{1, \ldots, T\}\)`. 
+  - `\(p = \frac{1}{T}\sum_{t=1}^{T}I\left(r_{xy}^{(t)} &gt; r_{xy}\right)\)`: number of times random `\(r\)` is bigger than original `\(r\)` divided by number of random draws
+
+---
+
+## Correlations in Software 
+
+.panelset[
+.panel[.panel-name[R]
+The `cor()` function makes correlations in R.  
+
+
+``` r
+library(rio)
+ces &lt;- import("ces19.dta")
+cor(ces$leader_con, ces$leader_lib)
+```
+
+```
+## [1] NA
+```
+
+``` r
+cor(ces$leader_con, ces$leader_lib, use="pairwise.complete")
+```
+
+```
+## [1] -0.3643449
+```
+]
+.panel[.panel-name[Python]
+
+In python, `corr()` is a method for a pandas data frame, so you can just append `.corr()` to the data
+
+
+``` python
+exec(open('../python_functions.py').read())
+import statsmodels.api as sm
+import pandas as pd
+ces = pd.read_stata("ces19.dta")
+therms = ces[['leader_ndp', 'leader_lib', 'leader_con']]
+therms.corr()
+```
+
+```
+##             leader_ndp  leader_lib  leader_con
+## leader_ndp    1.000000    0.428491   -0.197606
+## leader_lib    0.428491    1.000000   -0.364345
+## leader_con   -0.197606   -0.364345    1.000000
+```
+]
+
+.panel[.panel-name[Stata]
+
+In Stata, the function to generate correlations is `cor`. 
+
+``` stata
+cor leader*
+             | leader~n leader~b leader~p
+-------------+---------------------------
+  leader_con |   1.0000
+  leader_lib |  -0.3640   1.0000
+  leader_ndp |  -0.1976   0.4292   1.0000
+
+```
+]
+]
+
+
+---
+
+## Correlation Matrix
+
+.panelset[
+.panel[.panel-name[R]
+
+``` r
+therms = ces %&gt;% select(starts_with("leader")) %&gt;% na.omit()
+DAMisc::pwCorrMat(~., 
+                  data=therms, 
+                  method="sim")
+```
+
+```
+## Pairwise Correlations
+##            leader_con leader_lib leader_ndp
+## leader_con                                 
+## leader_lib -0.364*                         
+## leader_ndp -0.198*    0.429*
+```
+]
+.panel[.panel-name[Python]
+
+``` python
+pwcorr(therms)
+```
+
+```
+##            leader_con leader_lib leader_ndp
+## leader_con     1.000     -0.364*    -0.198*
+## leader_lib    -0.364*     1.000      0.429*
+## leader_ndp    -0.198*     0.429*     1.000
+```
+]
+.panel[.panel-name[Stata]
+
+``` stata
+pwcorr leader*, sig list star(.05)
+
+             | leader~n leader~b leader~p
+-------------+---------------------------
+  leader_con |   1.0000 
+             |
+             |
+  leader_lib |  -0.3640*  1.0000 
+             |   0.0000
+             |
+  leader_ndp |  -0.1976*  0.4292*  1.0000 
+             |   0.0000   0.0000
+             |
+
+```
+]
+]
+
+---
+
+## Is a Linear Relationship Appropriate?
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+library(GGally)
+custom_smooth &lt;- function(data, mapping, 
+  ..., span=.35, pt.alpha=.25, jitter=TRUE) {
+  if(jitter){
+    pos &lt;- position_jitter(width=2, height=2)
+  }else{
+    pos &lt;- position_identity()
+  }
+  
+  ggplot(data, mapping, ...) + 
+    geom_point(shape=1, col="gray", 
+               position=pos, alpha=pt.alpha) + 
+    geom_smooth(method="loess", span=span,
+                family="symmetric",
+                se=FALSE, col="red") + 
+    geom_smooth(method="lm", col="black", se=FALSE) 
+}
+ggpairs(therms,
+  lower = list(continuous = wrap(custom_smooth, 
+               span=.5, 
+               pt.alpha=.15,
+               jitter=TRUE))) + 
+theme(legend.position = "bottom")  
+```
+]
+.pull-right[
+&lt;img src="lecture9_files/figure-html/unnamed-chunk-9-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+import seaborn as sb
+import numpy as np
+import matplotlib.pyplot as plt
+```
+
+``` python
+g = sb.PairGrid(therms)
+g.map_diag(sb.histplot, color="gray")
+g.map_offdiag(sb.regplot, 
+              lowess=True, 
+              line_kws = dict(color="r"), 
+              scatter_kws = {"alpha": .05, "color": "gray"}, 
+              x_jitter=.5, 
+              y_jitter=.5)
+g.map_offdiag(sb.regplot, 
+              line_kws = dict(color="black"), 
+              scatter_kws = {"alpha": 0})
+plt.show()
+plt.clf()
+```
+]
+.pull-right[
+&lt;img src="py_pairs.png" width="100%" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+graph matrix leader_con leader_lib leader_ndp, jitter(1) mcolor(gray%15)
+```
+]
+.pull-right[
+&lt;img src="stata_matrix.png" width="100%" /&gt;
+]
+]
+]
+
+---
+
+## Visual Correlation Matrix
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+library(ggplot2)
+library(ggcorrplot)
+r &lt;- cor(therms)
+colnames(r) &lt;- rownames(r) &lt;- c("Liberal", "NDP", 
+                                "Conservative")
+ggcorrplot(r, 
+           ggtheme = theme_classic, 
+           lab=TRUE, 
+           type="upper", 
+           show.diag=FALSE) + 
+  theme(legend.position = "inside", 
+        legend.position.inside=c(.75, .25), 
+        legend.background=element_rect(fill="transparent"), 
+        legend.title = element_blank()) + 
+  ggtitle("Correlation Matrix of Leader Feeling Thermometers")
+```
+]
+.pull-right[
+&lt;img src="lecture9_files/figure-html/unnamed-chunk-14-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+corr = therms.corr()
+rlt = lower_tri(corr)
+plt.clf()
+sb.heatmap(rlt, 
+  cmap = sb.color_palette("vlag", as_cmap=True), 
+  vmin = -1, 
+  vmax = 1, 
+  center = 0, 
+  annot=True,
+  xticklabels = ['NDP', 'Liberal'], 
+  yticklabels = ['Liberal', 'Conservative'])
+plt.show()
+```
+]
+.pull-right[
+&lt;img src="lecture9_files/figure-html/unnamed-chunk-15-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+net install heatplot.pkg
+pwcorr leader_con leader_lib leader_ndp
+mat R = r(C)
+heatplot R, values(format(%9.3f)) color(hcl, diverging intensity(.6)) ///
+  aspectratio(1) lower nodiag cuts(-1(.1)1)
+```
+]
+.pull-right[
+&lt;img src="stata_corrplot.png" width="100%" /&gt;
+]
+]
+]
+
+---
+
+## Exercises.
+
+Using the `prestige` data from the `carData` package ... 
+
+1. Calculate the correlation between `prestige`, `income`, `education` and `women`. 
+2. Make the correlation plot. 
+3. Use the `ggpairs()` function to evaluate whether or not the correlation is a good measure of association for these variables. 
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

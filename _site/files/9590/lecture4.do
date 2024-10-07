@@ -1,3 +1,11 @@
+***********************************
+** Code for POLSCI 9590 Week 3   **
+** Dave Armstrong                **
+** University of Western Ontario **
+** dave.armstrong@uwo.ca         **
+** 2024                          **
+***********************************
+
 gen y = value3
 replace y = value1 if condition1
 replace y = value2 if condition2

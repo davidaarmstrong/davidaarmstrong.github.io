@@ -1,3 +1,11 @@
+###################################
+## Code for POLSCI 9590 Week 3   ##
+## Dave Armstrong                ##
+## University of Western Ontario ##
+## dave.armstrong@uwo.ca         ##
+## 2024                          ##
+###################################
+
 import pandas as pd
 from plotnine import ggplot, aes, geom_bar, position_dodge, scale_y_continuous, theme_classic, labs
 import mizani.labels as ml

@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9590: Methods I</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9590: Methods I
+]
+.subtitle[
+## Nominal/Ordinal Measures of Association
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+&lt;/style&gt;
+
+## Videos
+
+In the videos for today, we learned about: 
+
+1. Cross-tabulations
+  - Make sure DV is in the rows and IV is in the columns. 
+  - Take column percentages. 
+  - Compare those column percentages within each row. 
+2. Statistical Tests for Independence 
+3. Measures of Association (i.e., Substantive Significance). 
+  - Slides didn't cover these much. 
+
+---
+
+## More about the Test.
+
+In the test, we can set up the following set of hypotheses:
+
+- `\(H_{0}:\)` Variables X and Y are independent in the population.
+- `\(H_{A}:\)` Variables X and Y are not independent in the population.
+
+Notice that there is no direction for the test.  Similarly, the results are not generally amenable to directional interpretation (though they could be).
+
+- Rejecting the `\(H_{0}\)` because of a large `\(\chi^{2}\)` statistic means that the variables in the sample are likely related in the population.
+- You still have to figure out exactly _how_.  More on this in a bit.
+
+---
+
+## Measures of Association: Nominal Data
+
+- `\(\phi\)` (phi) is a symmetric measure for `\(2\times2\)` tables based on `\(\chi^{2}\)`.  `\(\phi = \sqrt{\frac{\chi^2}{n}}\)`.  `\(\phi\)` lives in the range: `\(0\leq \phi \leq 1\)`.
+
+- Cramer's V is a generalization of `\(\phi\)` to larger tables: `\(V = \sqrt{\frac{\chi^2}{n\times (min(\#\text{rows}, \#\text{columns})-1)}}\)`
+
+- `\(\lambda\)` is the proportional reduction in error.  Based on classification success.
+
+---
+## `\(\lambda\)`
+
+`\(\lambda\)` uses two values in its calculation.  For the sake of ease, let's call the independent variable `\(x\)` and the dependent variable `\(y\)`. Further let's define `\(\text{mode}(.)\)` as a function that finds the number of observations in the modal category of its argument.
+
+`$$\begin{aligned}
+E_{1} &amp;= n - \text{mode}(y)\\
+E_{2} &amp;= n - \sum_{m \in \text{ x categories}} \text{mode}(y|x=m)\\
+\lambda &amp;= \frac{E_{1} - E_{2}}{E_{1}}
+\end{aligned}$$`
+
+See example on the next slide...
+
+
+
+---
+
+## Example: `\(\lambda\)`
+
+|             | Male |  Female |   |
+|-------------|------|---------|---|
+| Employed FT | 323  |  228    |  551  |
+| Employed PT | 36   |  83     |  119  |
+| Other       | 235  |  300    |  535  |
+| Total       | 594  |  611    |  1205 |
+
+`$$\begin{aligned}
+E_{1} &amp;= 1205-551 = 654\\
+E_{2} &amp;= (594-323) + (611-300) = 582\\
+\lambda &amp;= \frac{654-582}{654} = 0.11
+\end{aligned}$$`
+
+
+
+---
+
+## Measures of Association: Ordinal Data
+
+There are some directional measures of association, too.  Some of them are functions of _ concordant_ and _ discordant_ pairs.
+
+- **concordant** case pairs that are ranked in the same order on both variables.
+- **discordant** case pairs that are ranked in a different order on both variables.
+
+Here, generally, we would have directional hypotheses about the relationship between two variables in the population.
+- There are no parameters explicitly in the hypotheses because we are not talking about something like a mean.
+
+---
+
+## Calculating Concordant and Discordant Pairs
+
+Concordant pairs are found by taking a cell and finding all other cells that have a higher ranking on both variables. The product of these two numbers is taken.
+- The procedure above is done for every cell in the table and then all of those values are summed.
+
+Discordant pairs are found by taking a cell and finding all other cells that have a smaller ranking on one variable and a larger ranking on the other. The product of these two numbers is taken.
+- The procedure above is done for every cell in the table and then all of those values are summed.
+
+
+
+---
+
+&lt;img src="Table_13_8.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+&lt;img src="Table_13_9.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+&lt;img src="Table_13_8.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+&lt;img src="Table_13_10.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Calculating `\(\gamma\)`
+
+If we define ...
+
+- `\(N_{\text{same}}\)` as the total number of concordant pairs, and
+
+- `\(N_{\text{different}}\)` as the total number of discordant pairs, 
+
+then
+
+`$$\gamma = \frac{N_{\text{same}} - N_{\text{different}}}{N_{\text{same}} + N_{\text{different}}}$$`
+
+
+
+
+
+
+---
+
+## Somer's d
+
+Somer's d is an extension of `\(\gamma\)` that accounts for the number of `\(\text{ties}_{y}\)`.
+
+- Ties are the number of observations that take the same rank on the dependent variable, but a bigger number on the independent variable.
+
+- For each cell in the matrix, we calculate `\(\text{ties}_{yj}\)` as the product of the number of observations in cell `\(j\)` and the sum of the values of cells that have larger values on `\(x\)`, but the same value of `\(y\)` as cell `\(j\)`
+
+- Then, we sum these products across all of the `\(j\)` cells.
+
+
+`$$d = \frac{N_{\text{same}} - N_{\text{different}}}{N_{\text{same}} + N_{\text{different}} + \text{ties}_{y}}$$`
+
+
+
+
+---
+## Discordant Pairs and Ties
+
+.pull-left[
+&lt;img src="Table_13_8.png" width="95%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+| Cell    | Tied Cells | `\(\text{ties}_{y}\)`        |
+|---------|------------|------------------------------|
+| 18(a) | (b,c)    | `\(18\times(10+10) = 360\)`  |
+| 10(b) | c          | `\(10\times 10 = 100\)`         |
+| 10(c) | None       | `\(0\)`                          |
+| 14(d) | (e,f)    | `\(14\times(12+11) = 322\)`  |
+| 12(e) | f          | `\(12\times 11 = 132\)`         |
+| 11(f) | None       | `\(0\)`                          |
+| 10(g) | (h,i)    | `\(10\times (14+14) = 280\)` |
+| 14(h) | i          | `\(14\times 14 = 196\)`         |
+| Total   |            | `\(1390\)`                       |
+]
+---
+## Kendall's `\(\tau_{b}\)` (Tau-b)
+
+Kendall's `\(\tau_{b}\)` is an extension of Somer's `\(d\)` that uses not only ties on `\(y\)`, but ties on `\(x\)` as well (calculated the same way).
+
+
+`$$\tau_{b} = \frac{N_{\text{same}} - N_{\text{different}}}{\sqrt{(N_{\text{same}} + N_{\text{different}} + \text{ties}_{y})(N_{\text{same}} + N_{\text{different}} + \text{ties}_{x})}}$$`
+
+---
+
+## Spearman's `\(\rho_s\)` (Rho)
+
+Spearman's `\(\rho_s\)` is based on the difference in ranks of observations on two variables.
+
+`$$\rho_{s} = 1-\frac{6\sum D^{2}}{N(N^{2}-1)}$$`
+
+
+
+&lt;img src="Table_13_12.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+
+
+
+---
+
+## Statistical Significance
+
+- For many of these tools, there are formulas for normal approximations (i.e., that make `\(z\)` or `\(t\)` statistics for these things).
+- Permutation tests are another way to figure out whether a result is significant.
+  - Mimic the process under the null hypothesis lots of different times and calculate the statistic.
+  - Do this by randomly re-arranging one of the two variables involved
+  - Compare your observed result to the results you get through the simulation above.
+
+
+---
+
+## Religion and Vote
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+library(DAMisc)
+library(dplyr)
+library(rio)
+ces &lt;- import("ces19.dta")
+ces &lt;- factorize(ces)
+levels(ces$relig) &lt;- c("Atheist", "Protestant", "Catholic", "Other")
+tab &lt;- xt(ces, "vote", "relig")
+```
+]
+.pull-right[
+
+``` r
+tab$tab
+```
+
+```
+## [[1]]
+##    vote/relig    Atheist Protestant   Catholic      Other        Total
+##       Liberal  49% (412)  44% (312)  52% (329)  49%  (82)  48% (1,135)
+##  Conservative  19% (160)  41% (287)  29% (180)  27%  (45)  29%   (672)
+##           NDP  22% (190)  10%  (72)  10%  (64)  19%  (31)  15%   (357)
+##         Other  10%  (85)   5%  (33)   9%  (57)   5%   (8)   8%   (183)
+##         Total 100% (847) 100% (704) 100% (630) 100% (166) 100% (2,347)
+```
+
+``` r
+tab$stats
+```
+
+```
+## [[1]]
+##              statistic p-value
+## Chi-squared 138.526489       0
+## Cramers V     0.140265       0
+## Lambda        0.000000       1
+```
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+
+``` python
+exec(open('../python_functions.py').read())
+import statsmodels.api as sm
+import pandas as pd
+ces = pd.read_stata("ces19.dta")
+ces.relig = ces.relig.cat.rename_categories(['Atheist', 'Protestant', 'Catholic', 'Other'])
+ces.relig = ces.relig.cat.reorder_categories(['Protestant', 'Atheist', 'Other', 'Catholic'], 
+      ordered=True)
+tab = sm.stats.Table.from_data(ces[['vote', 'relig']])
+tab_stats = cat_stats(ces[['vote', 'relig']], 
+                       ordinal = False, 
+                       perm = True, 
+                       niter = 500)
+```
+]
+.pull-right[
+
+``` python
+print_table(tab)
+```
+
+```
+##              Protestant   Atheist     Other  Catholic
+## vote                                                 
+## Liberal             312       412        82       329
+##                (44.32%)  (48.64%)  (49.40%)  (52.22%)
+## Conservative        287       160        45       180
+##                (40.77%)  (18.89%)  (27.11%)  (28.57%)
+## NDP                  72       190        31        64
+##                (10.23%)  (22.43%)  (18.67%)  (10.16%)
+## Other                33        85         8        57
+##                 (4.69%)  (10.04%)   (4.82%)   (9.05%)
+```
+
+``` python
+tab_stats
+```
+
+```
+##      Statistic   Value  p-value
+## 0  Chi-squared 138.526    0.000
+## 1   Cramer's V   0.140    0.000
+## 2       Lambda   0.000    1.000
+```
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+tab vote relig, col all
+
+   RECODE of |
+  vote (Vote |
+   choice in |
+     federal |            Religious affiliation
+   election) | No religi  Non-Catho   Catholic      Other |     Total
+-------------+--------------------------------------------+----------
+     Liberal |       412        312        329         82 |     1,135 
+             |     48.64      44.32      52.22      49.40 |     48.36 
+-------------+--------------------------------------------+----------
+Conservative |       160        287        180         45 |       672 
+             |     18.89      40.77      28.57      27.11 |     28.63 
+-------------+--------------------------------------------+----------
+         NDP |       190         72         64         31 |       357 
+             |     22.43      10.23      10.16      18.67 |     15.21 
+-------------+--------------------------------------------+----------
+       Other |        85         33         57          8 |       183 
+             |     10.04       4.69       9.05       4.82 |      7.80 
+-------------+--------------------------------------------+----------
+       Total |       847        704        630        166 |     2,347 
+             |    100.00     100.00     100.00     100.00 |    100.00 
+
+```
+]
+.pull-right[
+
+``` stata
+
+          Pearson chi2(9) = 138.5265   Pr = 0.000
+ Likelihood-ratio chi2(9) = 138.5179   Pr = 0.000
+               Cramér's V =   0.1403
+                    gamma =  -0.0801  ASE = 0.028
+          Kendall's tau-b =  -0.0547  ASE = 0.019
+```
+]
+]
+]
+
+
+
+
+---
+
+## Age Group and Relative Economic Position
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+tab &lt;- xt(ces, "educ", "agegrp", ordinal=TRUE)
+tab$tab
+```
+
+```
+## [[1]]
+##   educ/agegrp      18-34      35-54          55+        Total
+##           &lt;HS  17%  (79)  14% (134)  20%   (278)  18%   (491)
+##    HS/College  35% (160)  35% (339)  39%   (530)  37% (1,029)
+##  College Grad  48% (218)  51% (489)  41%   (565)  46% (1,272)
+##         Total 100% (457) 100% (962) 100% (1,373) 100% (2,792)
+```
+]
+.pull-right[
+
+``` r
+tab$stats
+```
+
+```
+## [[1]]
+##                         statistic p-value
+## Chi-squared           27.29586773   0.000
+## Cramers V              0.06991587   0.000
+## Lambda                 0.00000000   0.005
+## Kruskal-Goodman Gamma -0.11766132   0.000
+## Somers D              -0.07280902   0.000
+## Tau-b                 -0.07281304   0.000
+```
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+tab = sm.stats.Table.from_data(ces[['educ', 'agegrp']])
+tab_stats = cat_stats(ces[['educ', 'agegrp']], 
+                       ordinal = True, 
+                       perm = True, 
+                       niter = 500)
+```
+]
+.pull-right[
+
+``` python
+print_table(tab)
+```
+
+```
+##                  18-34     35-54       55+
+## educ                                      
+## &lt;HS                 79       134       278
+##               (17.29%)  (13.93%)  (20.25%)
+## HS/College         160       339       530
+##               (35.01%)  (35.24%)  (38.60%)
+## College Grad       218       489       565
+##               (47.70%)  (50.83%)  (41.15%)
+```
+
+``` python
+tab_stats
+```
+
+```
+##          Statistic  Value  p-value
+## 0      Chi-squared 27.296    0.000
+## 1       Cramer's V  0.070    0.000
+## 2           Lambda  0.000    1.000
+## 0            Gamma -0.118    1.000
+## 1        Somer's D -0.072    1.000
+## 2  Kendall's Tau-b -0.073    1.000
+```
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+tab educ agegrp, col all
+
+  Respondent |
+     highest |
+    level of |       Respondent age group
+   education |     18-34      35-54        55+ |     Total
+-------------+---------------------------------+----------
+         &lt;HS |        79        134        278 |       491 
+             |     17.29      13.93      20.25 |     17.59 
+-------------+---------------------------------+----------
+  HS/College |       160        339        530 |     1,029 
+             |     35.01      35.24      38.60 |     36.86 
+-------------+---------------------------------+----------
+College Grad |       218        489        565 |     1,272 
+             |     47.70      50.83      41.15 |     45.56 
+-------------+---------------------------------+----------
+       Total |       457        962      1,373 |     2,792 
+             |    100.00     100.00     100.00 |    100.00 
+```
+]
+.pull-right[
+
+``` stata
+
+          Pearson chi2(4) =  27.2959   Pr = 0.000
+ Likelihood-ratio chi2(4) =  27.5808   Pr = 0.000
+               Cramér's V =   0.0699
+                    gamma =  -0.1177  ASE = 0.028
+          Kendall's tau-b =  -0.0728  ASE = 0.017
+```
+]
+]
+]
+
+---
+## Substantive Significance
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+ces &lt;- ces %&gt;% 
+  mutate(relig = factor(as.character(relig), 
+    levels=c("Protestant", "Atheist", 
+             "Other", "Catholic")))
+d &lt;- ces %&gt;% 
+  group_by(vote, relig) %&gt;% 
+  tally() %&gt;% 
+  na.omit() %&gt;% 
+  group_by(relig) %&gt;% 
+  mutate(pct = n/sum(n))
+
+ggplot(d, aes(x=vote, y=pct, fill=relig)) + 
+  geom_bar(stat="identity", position="dodge") + 
+  theme_classic() + 
+  theme(legend.position = c(.9, .8)) + 
+  labs(x="Vote", fill="Religion",
+       y="Percentage (by Religion)") + 
+  scale_y_continuous(labels = scales::label_percent())
+```
+]
+.pull-right[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-21-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+from plotnine import ggplot, geom_bar, aes, theme_classic, theme, labs, scale_y_continuous
+import mizani.labels as ml
+tab = sm.stats.Table.from_data(ces[['vote', 'relig']])
+plot_dat = (tab
+  .table_orig
+  .apply(lambda x: x/sum(x))
+  .reset_index()
+  .melt(id_vars="vote"))
+plot_dat.relig = (plot_dat.relig.astype('category').cat
+  .reorder_categories(['Protestant', 'Atheist', 'Other', 'Catholic']))
+(ggplot(plot_dat, aes(x="vote", y="value", fill="relig")) + 
+geom_bar(stat="identity", position = "dodge") + 
+theme_classic() + 
+theme(legend_position = "top") + 
+  labs(x="Vote", fill="Religion",
+       y="Percentage (by Religion)") + 
+  scale_y_continuous(labels = ml.label_percent())
+).show()
+```
+]
+.pull-right[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-22-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+recode relig (2=1 "Protestant") (1=2 "Atheist") (4=3 "Other") (3=4 "Catholic"), gen(relig2)
+catplot relig2 vote, percent(relig2) vertical asyvars
+```
+]
+.pull-right[
+&lt;img src="subsig.png" width="100%" /&gt;
+]
+]
+]
+
+
+
+
+---
+
+## Mosaic Plots
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+library(ggmosaic)
+ ggplot(ces %&gt;% filter(!is.na(relig) &amp; !is.na(vote))) +
+  geom_mosaic(aes(x = product(relig), fill=vote), 
+              show.legend = FALSE) +
+  theme_mosaic() +
+  scale_fill_manual(values = c("#d71920", "#003F72", "#F58220", "gray50"))
+```
+]
+.pull-right[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-25-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+``` python
+## mosaic_plot is in python_functions.py
+colors = {'Liberal': '#d71920', 
+          'Conservative': '#003F72', 
+          'NDP': '#F58220', 
+          'Other': '#7f7f7f'}
+mosaic_plot(ces[['relig', 'vote']], colors=colors)
+```
+]
+.pull-right[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-26-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+net install gr0031_1.pkg
+recode relig (2=1 "Protestant") (1=2 "Atheist") (4=3 "Other") (3=4 "Catholic"), into(relig2)
+label var relig2 "Religion"
+label var vote "Vote"
+spineplot vote relig2
+```
+]
+.pull-right[
+&lt;img src="mosaic_stata.png" width="100%" /&gt;
+]
+]
+]
+
+---
+
+## Standardized residuals
+
+.panelset[
+.panel[.panel-name[R]
+.pull-left[
+
+``` r
+tab &lt;- table(ces$vote, ces$relig)
+tab %&gt;% as.data.frame() %&gt;%
+  rename(vote = Var1, relig = Var2) %&gt;% 
+  mutate(stdres = c(chisq.test(tab)$stdres), 
+    stdres2 = case_when(stdres &lt; -3 ~ "e &lt; -3",
+      stdres &gt;= -3 &amp; stdres &lt; -2 ~ "-3 &lt;= e &lt; 2", 
+      stdres &gt;= -2 &amp; stdres &lt; -1 ~ "-2 &lt;= e &lt; -1", 
+      stdres &gt;= -1 &amp; stdres &lt; 0 ~ "-1 &lt;= e &lt; 0", 
+      stdres &gt;= 0 &amp; stdres &lt; 1 ~ "0 &lt;= e &lt; 1", 
+      stdres &gt;= 1 &amp; stdres &lt; 2 ~ "1 &lt;= e &lt; 2", 
+      stdres &gt;= 2 &amp; stdres &lt;= 3 ~ "2 &lt;= e &lt; 3", 
+      stdres &gt; 3 ~ "3 &lt; e"), 
+   stdres2 = factor(stdres2, 
+     levels=c("e &lt; -3", "-3 &lt;= e &lt; 2", "-2 &lt;= e &lt; -1",  
+        "-1 &lt;= e &lt; 0", "0 &lt;= e &lt; 1", "1 &lt;= e &lt; 2", "2 &lt;= e &lt; 3", "3 &lt; e")), 
+   vote = factor(as.character(vote), 
+     levels=c("NDP", "Liberal", "Conservative", "Other")), 
+   relig = factor(as.character(relig), 
+     levels=c("Catholic", "Protestant", "Other", "Atheist"))) %&gt;% 
+  ggplot(aes(x=relig, y=vote, fill=stdres2)) + 
+    geom_tile(col="white") + 
+    theme_bw() + 
+    scale_fill_brewer(palette="RdBu") + 
+    labs(y="Vote", x="Religious Affiliation", 
+         fill="Std. Resid.")
+```
+]
+.pull-right[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-29-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+.panel[.panel-name[Python]
+.pull-left[
+
+
+``` python
+from plotnine import ggplot, aes, geom_tile, scale_fill_brewer, labs
+plot_dat = tab.standardized_resids.reset_index().melt(id_vars="vote")
+plot_dat.relig = (plot_dat.relig.astype('category').cat
+  .reorder_categories(['Catholic', 'Protestant', 'Other', 'Atheist']))
+plot_dat.vote = (plot_dat.vote.astype('category').cat
+  .reorder_categories(['NDP', 'Liberal', 'Conservative', 'Other']))
+plot_dat['sigres'] = (plot_dat
+  .value
+  .case_when([(plot_dat.value.lt(-3), 'e &lt; -3'), 
+              (plot_dat.value.ge(-3) &amp; plot_dat.value.lt(-2), '-3 &lt;= e &lt; -2'), 
+              (plot_dat.value.ge(-2) &amp; plot_dat.value.lt(-1), '-2 &lt;= e &lt; -1'), 
+              (plot_dat.value.ge(-1) &amp; plot_dat.value.lt(0), '-1 &lt;= e &lt; 0'), 
+              (plot_dat.value.ge(0) &amp; plot_dat.value.lt(1), '0 &lt;= e &lt; 1'), 
+              (plot_dat.value.ge(1) &amp; plot_dat.value.lt(2), '1 &lt;= e &lt; 2'), 
+              (plot_dat.value.ge(2) &amp; plot_dat.value.le(3), '2 &lt;= e &lt; 3'), 
+              (plot_dat.value.gt(3), '3 &lt; e')])
+  .astype('category')
+  .cat
+  .reorder_categories(['e &lt; -3', '-3 &lt;= e &lt; -2', '-2 &lt;= e &lt; -1', 
+                       '-1 &lt;= e &lt; 0', '0 &lt;= e &lt; 1', '1 &lt;= e &lt; 2', 
+                       '2 &lt;= e &lt; 3', '3 &lt; e']))
+(ggplot(plot_dat, aes(x="relig", y="vote", fill="sigres")) + 
+geom_tile(color="white") + 
+scale_fill_brewer("diverging", "RdBu") + 
+labs(x="Religious Affiliation", y="Vote", fill="Std. Resid.")).show()
+```
+]
+.pull-right[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-30-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+]
+.panel[.panel-name[Stata]
+
+.pull-left[
+
+``` stata
+net install gr0031_1.pkg
+recode relig (2=1 "Protestant") (1=2 "Atheist") (4=3 "Other") (3=4 "Catholic"), into(relig2)
+label var relig2 "Religion"
+label var vote "Vote"
+spineplot vote relig2
+```
+]
+.pull-right[
+&lt;img src="mosaic_stata.png" width="100%" /&gt;
+]
+]
+]
+
+---
+
+## Exercises
+
+1. Using the CES data, find the relationship between `region` and `relig`.  What are the appropriate tests for this relationship?  Is it statistically and substantively significant.  
+
+2. Using the GSS data, find the relationship between `SRH_110` and `SRH_115`. What are the appropriate tests for this relationship?  Is it statistically and substantively significant.   
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

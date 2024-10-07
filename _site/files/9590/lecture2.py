@@ -1,3 +1,11 @@
+###################################
+## Code for POLSCI 9590 Week 1   ##
+## Dave Armstrong                ##
+## University of Western Ontario ##
+## dave.armstrong@uwo.ca         ##
+## 2024                          ##
+###################################
+
 # pip install pandas
 
 ## In R 

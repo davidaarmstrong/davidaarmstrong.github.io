@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9592</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9592
+]
+.subtitle[
+## Lecture 4: Model Fit and Evaluation
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+
+.tiny {
+  font-size: 1rem;
+}
+&lt;/style&gt;
+
+
+## Goals for This Session
+
+1. Absolute Measures of Model Fit
+2. Comparative Measures of Model Fit
+3. Nested and Non-nested Model Tests
+4. Model Specification Tests
+5. Model Diagnostics
+6. (Quasi-)Separation 
+
+
+---
+
+## Model Fit, Evaluation and Comparison
+
+Now that we know how to interpret what is going on in these models, we need to develop a sense of how well they fit.  We can do this through a number of different means. 
+
+- Likelihood-based fit measures
+- Pseudo- `\(R^{2}\)`
+- Information criteria
+- Classification-based measures.
+- Cross-validation.
+- Specification tests. 
+
+---
+
+
+## Pseudo R-squared
+
+Pseudo- `\(R^{2}\)` measures rely on analogues to the linear model.  
+
+- Many different types, each of which can produce substantively different results from the others. 
+- If you use these measures, identify which one(s) you are using. 
+- None can be interpreted as the proportion of variation in the dependent variable explained by the independent variables.  
+
+---
+
+## McFadden's R-squared
+
+McFadden's `\(R^{2}\)` uses the following analogue to the linear model `\(R^{2} = 1-\frac{SS_{\text{residual}}}{SS_{\text{total}}}\)`.  In this case, 
+
+`$$\text{McFadden's }R^{2} = 1-\frac{\log \hat{L}(M_{\text{Full}})}{\log \hat{L}(M_{\text{Null}})}$$`
+
+There is also an adjustment to McFadden's `\(R^{2}\)` to account for degrees of freedom: 
+
+`$$\text{McFadden's }\bar{R}^{2} = 1-\frac{\log \hat{L}(M_{\text{Full}}) - K^{*}}{\log \hat{L}(M_{\text{Null}})}$$`
+
+
+where `\(K^{*}\)` is the number of parameters (not independent variables) in the model. 
+
+---
+
+## Cox &amp; Snell and Cragg &amp; Uhler R-squared
+
+The Cox &amp; Snell (or ML) `\(R^{2}\)` uses the same analogy as McFadden's: 
+
+`$$\text{Cox &amp; Snell }R^{2} = 1-\left\{\frac{\log \hat{L}(M_{\text{Null}})}{\log \hat{L}(M_{\text{Full}})}\right\}^{\frac{2}{N}}$$`
+
+
+The Cox &amp; Snell measure reaches a maximum of `\(1-L(M_{\text{Null}})^{\frac{2}{N}}\)`, so Cragg and Uhler's `\(R^{2}\)` norms it to reach a maximum at 1
+
+`$$\text{Cragg &amp; Uhler's }R^{2} = \frac{1-\left\{\frac{\log \hat{L}(M_{\text{Null}})}{\log \hat{L}(M_{\text{Full}})}\right\}^{\frac{2}{N}}}{1-L(M_{\text{Null}})^{\frac{2}{N}}}$$`
+
+
+---
+
+## Efron's R-squared
+
+Efron's analogy to the linear model formula mentioned above is even more explicit.  
+
+`$$\text{Efron's } R^{2} = 1-\frac{\sum_{N}(y_{i} - \hat{\pi}_{i})^{2}}{\sum_{N}(y_{i} - \bar{y})^{2}}$$`
+
+
+---
+
+## McKelvey &amp; Zavoina's R-squared
+
+For models that can be defined in terms of a latent variable `\(y^{*}\)`: `\(y^{*} = \mathbf{x\beta} + \varepsilon\)` where `\(\widehat{\text{Var}}(\hat{y}^{*}) = \hat{\beta}^{\prime}\widehat{\text{Var}}(\mathbf{x})\hat{\beta}\)`, The M&amp;Z `\(R^{2}\)` is: 
+
+`$$\text{M&amp;Z }R^{2} = \frac{\widehat{\text{Var}}(\hat{y}^{*})}{\widehat{\text{Var}}(y^{*})} = \frac{\widehat{\text{Var}}(\hat{y}^{*})}{\widehat{\text{Var}}(y^{*}) + \text{Var}(\varepsilon)}$$`
+
+
+Here, `\(\text{Var}(\varepsilon)\)` identifies the model.  In logit it is `\(\frac{\pi^{2}}{3}\)` and in the probit model it is 1. 
+
+
+
+
+---
+
+## Measures and Models
+.tiny[
+|                                  | OLS          | Bianry       | Ordered      | Multinomial  | Count        |
+|----------------------------------|:--------------:|:--------------:|:--------------:|:--------------:|:--------------:|
+| Log-Likelihood                   | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` |
+| LR `\(\chi^2\)`                      | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` |
+| Information Criteria             | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` |
+| `\(R^2\)` and `\(\tilde{R}^2\)`          | `\(\checkmark\)` |              |              |              |              |
+| Efron's `\(R^2\)` and Tjur's `\(D\)`     |              | `\(\checkmark\)` |              |              |              |
+| McFadden, ML, C&amp;U `\(R^2\)`          |              | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` |
+| Count and Adjusted Count `\(R^2\)`   |              | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` |              |
+| `\(Var(e)\)`, `\(Var(y^*)\)`, M&amp;Z `\(R^2\)`  |              | `\(\checkmark\)` | `\(\checkmark\)` |              |              |
+| PRE and ePRE                     |              | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` |              |
+| AIC                              | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` |
+| BIC                              | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` | `\(\checkmark\)` |
+
+]
+
+---
+
+## Example
+
+
+``` r
+library(DAMisc)
+load("data/anes_2008_binary.rda")
+mod &lt;- glm(voted ~ age + educ + income + poly(leftright, 2) + 
+    female + race, data=dat, family=binomial(link="logit"))
+binfit(mod)
+```
+
+```
+##                    Names1    vals1                       Names2    vals2
+## 1 Log-Lik Intercept Only: -314.550          Log-Lik Full Model: -250.959
+## 2                 D(576):  501.918                       LR(7):  127.182
+## 3                                                    Prob &gt; LR:    0.000
+## 4          McFadden's R2:    0.202           McFadden's Adk R2:    0.177
+## 5      ML (Cox-Snell) R2:    0.196 Cragg-Uhler (Nagelkerke) R2:    0.297
+## 6  McKelvey &amp; Zavoina R2:    0.345                  Efron's R2:    0.208
+## 7               Count R2:    0.793                Adj Count R2:    0.097
+## 8                    BIC:  552.877                         AIC:  517.918
+```
+
+---
+
+## Classification-based Measures
+
+Proportional Reduction in Error.  (PRE) tells us how much better we do at predicting `\(y_{i}\)` using a model versus guessing.  
+
+`$$PRE = \frac{PCP-PMC}{1-PMC}$$`
+
+
+Here,  
+
+`$$\begin{aligned}
+\hat{y}_{i} &amp;= \begin{cases} 1 &amp; \text{if } \hat{p}_{i} &gt; 0.5\\ 0 &amp; \text{if } \hat{p}_{i} \leq .5\end{cases}\\
+	PMC &amp;= max\left(\frac{\sum_{i}y_{i}}{N}, \frac{\sum_{i}(1-y_{i})}{N}\right)\\
+	PCP &amp;= \frac{\#(y_{i} = \hat{y}_{i})}{N}
+\end{aligned}$$`
+
+---
+
+## Expected PRE
+
+Herron (1999) shows that there are lots of different arrangements of predicted probabilities that would generate the same PRE: For example, consider the two different sets of predictions: 
+
+&lt;img src="images/pre1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## ePRE
+
+The ePRE is defined as: 
+
+`$$ePRE = \frac{ePCP - ePMC}{1-ePMC}$$`
+
+
+where: 
+
+`$$\begin{aligned}
+    ePMC &amp;= \bar{y}\\
+    ePCP &amp;= \frac{1}{N}\sum_{i} (y_{i}\hat{p}_{i} + (1-y_{i})(1-\hat{p}_{i}))
+\end{aligned}$$`
+
+
+
+---
+
+## Expected PRE Example
+
+&lt;img src="images/epre1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## PRE in R
+
+
+``` r
+pre(mod, sim=T)
+```
+
+```
+## mod1:  voted ~ age + educ + income + poly(leftright, 2) + female + race 
+## mod2:  voted ~ 1 
+## 
+## Analytical Results
+##  PMC =  0.771 
+##  PCP =  0.793 
+##  PRE =  0.097 
+## ePMC =  0.646 
+## ePCP =  0.723 
+## ePRE =  0.215 
+## 
+## Simulated Results
+##      median lower upper
+##  PRE 0.097  0.052 0.142
+## ePRE 0.210  0.145 0.266
+```
+
+---
+
+
+
+## Others...
+
+There are three other methods that consider the `\(Pr(Y=1|Y=1, X)\)` and `\(1-Pr(Y=1|Y=0, X)\)`.  
+
+- Separation Plot (Greenhill, Ward and Sacks, 2011) is a visual method that plots a single tick for each observation (where ones and zeros are different colors) sorted by `\(Pr(Y=1|X)\)`.
+- Tjur's `\(D\)` is a statistic that is defined as 
+
+`$$\frac{1}{n_{1}}\sum_{y=1}Pr(Y=1|X) - \frac{1}{n_{0}}\sum_{y=0}Pr(Y=1|X)$$`
+
+- Cross-validation
+    
+---
+
+## Comparison of Pseudo R-squared Measures
+
+&lt;img src="images/r2sim.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Separation Plot
+
+``` r
+cols &lt;- brewer.pal(5, "Set2")[c(2,3)]
+y &lt;- model.response(model.frame(mod))
+separationplot(fitted(mod), c(y),
+    col0=cols[1], col1=cols[2], file=NULL)
+```
+
+&lt;img src="images/sepplot.png" width="75%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Empirical vs Predicted Probabilities
+
+.pull-left[
+
+``` r
+# remotes::install_github("davidaarmstrong/psre")
+library(psre)
+gh1 &lt;- gg_hmf(model.response(model.frame(mod)), fitted(mod), method="loess")
+```
+
+
+``` r
+library(patchwork)
+gh1[[1]] + gh1[[2]] + plot_layout(heights=c(2,8), ncol=1)
+```
+]
+.pull-right[
+&lt;img src="Lecture4_files/figure-html/unnamed-chunk-7-1.png" width="504" /&gt;
+]
+
+---
+## Comparing Two Models: Nested
+
+- Nested: use likelihood ratio test. 
+
+
+``` r
+library(lmtest)
+m1 &lt;-  glm(voted ~ age + educ + income + poly(leftright, 2) + 
+    female + race, data=dat, family=binomial(link="logit"))
+m2 &lt;-  glm(voted ~ educ + income + poly(leftright, 2), 
+           data=dat, family=binomial(link="logit"))
+lrtest(m1, m2)
+```
+
+```
+## Likelihood ratio test
+## 
+## Model 1: voted ~ age + educ + income + poly(leftright, 2) + female + race
+## Model 2: voted ~ educ + income + poly(leftright, 2)
+##   #Df  LogLik Df  Chisq Pr(&gt;Chisq)    
+## 1   8 -250.96                         
+## 2   5 -277.46 -3 52.998  1.835e-11 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+## Comparing Non-nested Models: AIC
+
+Let's imagine that all models we are comparing are trying to explain the same objective reality (call it `\(f\)`).  
+- `\(f\)` is a function of `\(\xi\)` (the infinitely large set of all possible explanatory variables) and is non-parametric. 
+
+Further, imagine that we are estimating some model `\(g(\mathbf{X}|\theta)\)` that predicts reality using `\(\mathbf{X}\)`, a subset of the variables in `\(\xi\)` and `\(\theta\)` a set of parameters relating `\(\mathbf{X}\)` to `\(y\)`. Then ... 
+
+`$$\begin{aligned}
+I(f, g) &amp;= E_f[\log(f(x))] - E_f[\log(g(x|\theta))]\\
+&amp;= C - E_f[\log(g(x|\theta))]
+\end{aligned}$$`
+Is the amount of information we lose when trying to approximate `\(f\)` with `\(g(\mathbf{X}, \theta)\)`.  
+
+
+---
+
+## AIC
+
+Akaike found that the `\(LL(g)\)`, the log-likelihood of the model was a biased estimator of `\(I(f,g)\)`, but the bias was on the order of `\(K\)` (the number of parameters in the model).  Therefore: 
+
+`$$\widehat{I(f,g)} = LL(\theta|\mathbf{X}, y) - K$$`
+
+To increase similarity to the already well-established likelihood ratio statistic, Akaike multiplied his measure by -2: 
+
+`$$AIC = -2LL(\theta|\mathbf{X},y) + 2K$$`
+---
+
+## Small Sample Correction
+
+There is a small sample correction that should be used when `\(n\)` is small in the absolute terms or `\(n\)` is small relative to `\(K\)` (e.g., `\(\frac{n}{K}\leq 40\)` )
+
+`$$AIC_{c} = -2LL(\theta|\text{data}) + 2K + \frac{2K(K+1)}{n-K-1}$$`
+
+---
+
+## Comparing Non-nested Models: BIC
+
+BIC is meant to approximate the Bayes Factor: 
+
+`$$		\frac{\Pr(D|M_{1})}{\Pr(D|M_{2})} = \frac{\int \Pr(\theta_{1}|M_{1})\Pr(D|\theta_{1},M_{1})d\theta_{1}}{\int \Pr(\theta_{2}|M_{2})\Pr(D|\theta_{2},M_{2})d\theta_{2}}$$`
+The approximation is defined as:
+
+`$$BIC = -2LL(\theta|\mathbf{X}, y) + K\log(n)$$`
+
+---
+
+## `\(\Delta\)` values. 
+
+`\(\Delta_{i}\)` should be calculated such that for each model `\(i\)` in the model set, 
+
+`$$\Delta_{i} = IC_{i} - IC_{\text{min}}$$` 
+
+Where `\(IC_{i}\)` is the chosen information criterion for model `\(i\)`.  This gives the _best_ model `\(\Delta_{i} = 0\)` 
+
+- This captures the information loss due to using model `\(g_{i}\)` rather than the best model, `\(g_{min}\)`. 
+- The large `\(\Delta_{i}\)`, the less likely model `\(i\)` is the best approximation of reality `\(f\)`. 
+
+Conventional cut-off values for `\(\Delta_{i}\)` are: 
+* `\(\Delta_{i} \leq 2\)` indicates substantial support, 
+* `\(4 \leq \Delta_{i} \leq 7\)` indicates less support, 
+* `\(\Delta_{i} \geq 10\)` indicates essentially no support. 
+
+---
+
+
+## AIC or BIC?
+
+The question of whether to use AIC or BIC is often left to how much you want to penalize additional model parameters.  In actuality, the question is one of performance in picking the best (lowest information loss) model. 
+- When there are _tapering effects_, AIC is better
+- When reality is simple with a _few big effects_ captured by the highest posterior probability models, then BIC is often better. 
+
+---
+## Comparing Non-nested Models: Clarke's Test
+
+Clarke (2003) puts forth a distribution-free test that is really a "paired sign test".  The statistic is calculated as:
+
+`$$\begin{aligned}
+	d_{i} &amp;= \log(\mathcal{L}_{\beta,x_{i}}) - \log(\mathcal{L}_{\gamma,z_{i}}) + (p-q)\left(\frac{log(n)}{2n}\right)\\
+	B &amp;= \sum_{i=1}^{n}I_{0, +\infty}(d_{i})
+\end{aligned}$$`
+
+
+- The `\(d_{i}\)` are the difference in individual log-likelihoods for the two models
+- The second equation above counts up the number of positive `\(d_{i}\)` values.
+- We are testing to see whether `\(B\)` is significantly bigger than a random binomial variable that has a `\(p=.5\)` and `\(n\)` the same as the number of rows in `\(\mathbf{X}\)` and `\(\mathbf{Z}\)`.
+
+
+
+---
+
+## Clarke Test in R
+
+
+
+
+
+``` r
+library(clarkeTest)
+m1 &lt;-  glm(voted ~ age + female + race, data=dat, 
+           family=binomial(link="logit"))
+m2 &lt;-  glm(voted ~ educ + income + poly(leftright, 2), 
+           data=dat, family=binomial(link="logit"))
+IC_delta(m1, m2)
+```
+
+```
+##     df    D_AIC   D_AICc    D_BIC
+## ..1  4 29.32345 29.28872 24.95354
+## ..2  5  0.00000  0.00000  0.00000
+```
+
+``` r
+clarke_test(m1, m2)
+```
+
+```
+## 
+## Clarke test for non-nested models
+## 
+## Model 1 log-likelihood: -293
+## Model 2 log-likelihood: -277
+## Observations: 584
+## Test statistic: 252 (43%)
+## 
+## Model 2 is preferred (p = 0.0011)
+```
+
+---
+
+## Comparing Non-nested Models: Cross-validation 
+
+.pull-left[
+
+``` r
+library(rsample)
+library(tidyr)
+library(purrr)
+dat$lrstren &lt;- abs(dat$leftright-5)
+m1 &lt;-  glm(voted ~ age + female + race +
+             lrstren, data=dat, 
+           family=binomial(link="logit"))
+m2 &lt;-  glm(voted ~ educ + income + 
+             poly(leftright, 2), data=dat, 
+           family=binomial(link="logit"))
+
+cv_logit &lt;- function(split, m1, m2, ...){
+  m1_up &lt;- update(m1, data=assessment(split))
+  m2_up &lt;- update(m2, data=assessment(split))
+  y_out &lt;- model.response(
+            model.frame(formula(m1), 
+                        data=analysis(split)))
+  p1 &lt;- predict(m1_up, 
+                newdata=analysis(split), 
+                type="response")
+  p2 &lt;- predict(m2_up, 
+                newdata=analysis(split), 
+                type="response")
+  ll1 &lt;- sum(-y_out*log(p1) - (1-y_out)*(1-log(p1)))
+  ll2 &lt;- sum(-y_out*log(p2) - (1-y_out)*(1-log(p2)))
+  tibble(model = factor(1:2, 
+                        labels=c("Model1", "Model2")), 
+         ll = c(ll1, ll2))
+}
+```
+]
+.pull-right[
+
+``` r
+cv_out &lt;- vfold_cv(dat, 
+                   v=10, 
+                   repeats=10) %&gt;% 
+    mutate(ll = map(splits, cv_logit, m1, m2)) %&gt;% 
+    unnest(ll) %&gt;% 
+    group_by(id, model) %&gt;% 
+    summarise(ll = sum(ll)) %&gt;% 
+    pivot_wider(names_from="model", values_from="ll") %&gt;% 
+  mutate(diff = Model2-Model1)
+cv_out
+```
+
+```
+## # A tibble: 10 × 4
+## # Groups:   id [10]
+##    id       Model1 Model2   diff
+##    &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+##  1 Repeat01  -593.  -700. -107. 
+##  2 Repeat02  -599.  -707. -108. 
+##  3 Repeat03  -578.  -732. -154. 
+##  4 Repeat04  -606.  -716. -110. 
+##  5 Repeat05  -663.  -709.  -45.4
+##  6 Repeat06  -617.  -738. -120. 
+##  7 Repeat07  -604.  -694.  -89.6
+##  8 Repeat08  -631.  -690.  -58.8
+##  9 Repeat09  -649.  -708.  -58.7
+## 10 Repeat10  -627.  -726.  -99.7
+```
+]
+
+
+---
+
+## Residuals, Outliers and Influential Observations
+
+While looking at the residuals is marginally less interesting in these models, they can still tell us something about model fit. 
+
+- Many different kinds of residuals, all tell us something different about the model.  
+
+---
+
+## Response and Pearson Residuals
+
+- Response residuals are: `\(y_{i} - \hat{p}_{i}\)`, but have little diagnostic value because they do not account for the inherent heteroskedasticity of the non-linear models. 
+- Pearson Residuals: `\(e_{Pi} = \frac{y_{i} - \hat{p}_{i}}{\text{var}(y_{i}|\mathbf{x})} = \frac{y_{i} - \hat{p}_{i}}{\sqrt{\hat{p}_{i}(1-\hat{p}_{i})}}\)`
+- Standardized Pearson Residuals: `\(e_{PSi} = \frac{e_{Pi}}{\sqrt{1-h_{i}}}\)` where `\(h_{i} = \hat{p}_{i}(1-\hat{p}_{i}) x_{i}\widehat{\text{Var}}\left(\hat{\beta}\right)x_{i}^{\prime}\)`
+
+---
+
+## Deviance Residuals
+
+The deviance residuals are the observations contribution to the overall deviance: 
+
+
+`$$e_{Di} = \text{sign}(y-\hat{p}_{i})\sqrt(2)\sqrt{y_{i} \log \left(\frac{y_{i}}{\hat{p}_{i}}\right) + (1-y_{i})\log \left(\frac{1-y_{i}}{1-\hat{p}_{i}}\right)}$$`
+
+
+A standardized version of the deviance residual is also available: 
+
+`$$e_{DSi} = \frac{e_{Di}}{\sqrt{1-h_{i}}}$$`
+
+The standardized Pearson and deviance residuals can be obtained with `rstandard()` in R. 
+
+---
+
+## Component + Residual Plots
+
+
+
+The `gg_crplot()` function is defined in the code for this class. 
+
+
+``` r
+m1 &lt;-  glm(voted ~ age + educ + income + poly(leftright, 2) + 
+    female + race, data=dat, family=binomial(link="logit"))
+```
+
+.pull-left[
+
+``` r
+gg_crplot(m1, "age")
+```
+
+&lt;img src="Lecture4_files/figure-html/unnamed-chunk-13-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+
+``` r
+gg_crplot(m1, "poly(leftright, 2)")
+```
+
+&lt;img src="Lecture4_files/figure-html/unnamed-chunk-14-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## New Model
+
+
+``` r
+dat$lrfac &lt;- as.factor(dat$leftright)
+mnew &lt;- glm(voted ~ age + educ + income + as.factor(leftright) + 
+    female + race, data=dat, family=binomial(link="logit"))
+anova(m1, mnew, test='Chisq')
+```
+
+```
+## Analysis of Deviance Table
+## 
+## Model 1: voted ~ age + educ + income + poly(leftright, 2) + female + race
+## Model 2: voted ~ age + educ + income + as.factor(leftright) + female + 
+##     race
+##   Resid. Df Resid. Dev Df Deviance Pr(&gt;Chi)  
+## 1       576     501.92                       
+## 2       568     485.68  8   16.236  0.03912 *
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+
+
+---
+## Outlier Diagnostics
+
+Cook's D can also be calculated for these models: 
+
+`$$D_{i} = \frac{e_{PSi}^{2}}{K+1}\frac{h_{i}}{1-h_{i}}$$`
+
+The function `influenceIndexPlot` in R will produce an index plot of Cook's distances. 
+
+
+---
+
+## Residual Plots
+
+.pull-left[
+
+``` r
+library(car)
+influenceIndexPlot(mod, vars="Cook", id.n=10)
+```
+]
+.pull-right[
+&lt;img src="Lecture4_files/figure-html/unnamed-chunk-16-1.png" width="504" /&gt;
+]
+---
+
+## Looking at Deleted Obs Effects
+
+I wrote a function called `outEff` that plots the effect of variables on predicted probabilities after removing observations that are thought to be most outlying. 
+
+- It can do this either one at a time or cumulatively. 
+    
+---
+
+
+## outEff
+
+.pull-left[
+
+``` r
+outEff(mod, 
+       var='age',
+       data=dat, 
+       nOut=25, 
+       cumulative=TRUE)
+```
+]
+.pull-right[
+&lt;img src="Lecture4_files/figure-html/unnamed-chunk-17-1.png" width="504" /&gt;
+]
+
+---
+
+## Separation/Small Sample Problems
+
+MLE has a difficult time providing accurate (i.e., unbiased) estimates in the presence of small samples. 
+
+- Small samples in the traditional sense (overall small `\(n\)`). 
+- Small number of observations in the least populous category
+
+Similar problems occur in a condition of separation (or quasi-separation).[Zorn (2005)](https://quantoid.net/935/zorn2005.pdf) is a nice piece on this. 
+
+- No variability on the DV for some category of an independent variable.  
+
+---
+
+## Separation
+
+The problem with separation is
+
+- Parameter values try to take on values arbitrarily far away from zero (ultimately either `\(-\infty\)` or `\(\infty\)`)
+    
+You know you have this problem if: 
+
+- You're using the `logit` command in Stata and it tells you that some observations were perfectly predicted and thus dropped. 
+- You're estimating a GLM in any software and you get huge coefficients with really huge standard errors. 
+
+
+---
+
+
+## Firth's Solution
+
+Firth's solution is a penalized likelihood where: 
+
+- The penalty on the likelihood function drives parameters toward zero 
+- It does so at a much greater rate or those where separation exists (ultimately by providing relatively low weight to those cases).  
+
+The math is a bit beyond the scope of our discussion, but this is the accepted solution for separation problems across a wide range of disciplines. 
+
+---
+
+
+## Example: Voting for National Front
+
+
+``` r
+sepdat &lt;- rio::import("data/france_binary.dta")
+sepdat &lt;- sepdat %&gt;%
+  mutate(across(c("demsat", "retnat", "union"), rio::factorize))
+mod3 &lt;- glm(votefn ~ demsat + age + lrself + hhincome + retnat 
+    + union, data=sepdat, family=binomial)
+printCoefmat(summary(mod3)$coefficients)
+```
+
+```
+##                               Estimate  Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                -19.7125946 689.5448696 -0.0286   0.9772    
+## demsatSomewhat satisfied    15.2255675 689.5443893  0.0221   0.9824    
+## demsatA little satisfied    16.0828401 689.5444023  0.0233   0.9814    
+## demsatNot at all satisfied  16.8229674 689.5444325  0.0244   0.9805    
+## age                         -0.0039201   0.0084709 -0.4628   0.6435    
+## lrself                       0.2537232   0.0515159  4.9251 8.43e-07 ***
+## hhincome                    -0.1305836   0.0860719 -1.5171   0.1292    
+## retnatsame                   0.5459725   0.6085426  0.8972   0.3696    
+## retnatworse                  0.8501427   0.5649549  1.5048   0.1324    
+## unionYes                    -0.3255606   0.5036256 -0.6464   0.5180    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+## Firth Logit
+
+
+
+
+``` r
+library(logistf)
+mod3a &lt;- logistf(mod3, sepdat)
+pfl(mod3a)
+```
+
+```
+##                            coef    se(coef) p      lower 0.95 upper 0.95
+## (Intercept)                -6.1860 1.5819   0.0000 -11.1977   -3.5833   
+## demsatSomewhat satisfied    1.8711 1.3854   0.0762  -0.1462    6.7233   
+## demsatA little satisfied    2.7207 1.3916   0.0036   0.6813    7.5774   
+## demsatNot at all satisfied  3.4529 1.4053   0.0001   1.3640    8.3195   
+## age                        -0.0037 0.0081   0.6573  -0.0203    0.0126   
+## lrself                      0.2483 0.0494   0.0000   0.1504    0.3499   
+## hhincome                   -0.1280 0.0820   0.1300  -0.2964    0.0375   
+## retnatsame                  0.4700 0.5603   0.4047  -0.6084    1.7154   
+## retnatworse                 0.7421 0.5196   0.1384  -0.2207    1.9295   
+## unionYes                   -0.2480 0.4669   0.5978  -1.3016    0.6217   
+##                            Chisq  
+## (Intercept)                32.4146
+## demsatSomewhat satisfied    3.1445
+## demsatA little satisfied    8.4590
+## demsatNot at all satisfied 14.9172
+## age                         0.1968
+## lrself                     25.2481
+## hhincome                    2.2929
+## retnatsame                  0.6944
+## retnatworse                 2.1958
+## unionYes                    0.2783
+```
+
+---
+
+## Review
+
+1. Absolute Measures of Model Fit
+2. Comparative Measures of Model Fit
+3. Nested and Non-nested Model Tests
+4. Model Specification Tests
+5. Model Diagnostics
+6. (Quasi-)Separation 
+
+
+---
+
+## Exercises 
+1. Estimate a model of `cwmid` on  `lnwaterpcmin`, `instcoop`, `numbtreaties`, `anyupdown`, `power1`, `alliance`, `gdpmax`, `interdep`, `dyaddem`, `contig`, `peaceyrs1`, `_spline1`, `_spline2` and `_spline3` included additively.  
+  - Treat the `instcoop` variable both as continuous and categorical in different models. 
+  - How do these two models compare? 
+
+2. Add the interaction of `instcoop` and `lnwaterpcmin` to the two models from question 1.  
+  - How do these two models compare? 
+  - Of the four models, which is the best one? 
+
+3. Consider problems of non-linearity and outliers in the best model.  
+  - What do you find?
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9592</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9592
+]
+.subtitle[
+## Lecture 5: Ordinal Data Models
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+
+.tiny {
+  font-size: 1rem;
+}
+&lt;/style&gt;
+
+## Goals for This Session
+
+1. Ordinal Model Estimation
+2. Effects and Effect Displays
+3. Model Fit and Evaluation
+4. Parallel Regressions Assumption
+
+---
+
+
+## Basic Idea Behind Ordinal Model
+
+Assume that there is a phenomenon we are trying to explain, let's call it `\(y^{*}\)`, that lies on a continuum that we don't observe directly.  
+
+
+
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-2-1.png" width="\textwidth" height=".2\textwidth" style="display: block; margin: auto;" /&gt;
+
+
+If we did observe it directly, we would simply be able to do a linear regression on `\(y^{*}\)`.  
+
+
+---
+
+
+## What We Actually Observe
+
+What we actually observe as `\(y\)`, a more coarse version of `\(y^{*}\)`.  
+
+
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-3-1.png" width="\textwidth" height=".2\textwidth" style="display: block; margin: auto;" /&gt;
+
+
+Everything that falls in between two vertical lines is coded the same value.  For example, everything that falls between `\(\tau_1\)` and `\(\tau_2\)` will be a 2 on `\(y\)`.  
+
+
+---
+
+## Models for Ordinal Data
+
+The mathematical notation for the above is 
+
+`$$y_{i} = m \mbox{  if  } \tau_{m-1} \leq y_{i}^{*} &lt; \tau_{m} \mbox{  for  } m=\{1,\ldots, J\}$$`
+
+ where `\(\tau_0 = -\infty\)` and `\(\tau_J = \infty\)`, the other `\(J-1\)` cut-points are estimated.\\[.2in] 
+
+In addition to above, we also set `\(b_0 = 0\)` so the model works (i.e., is identified). 
+
+
+---
+
+## Probabilities
+
+To characterize `\(Pr(y=m|X)\)` we need to assume a probability distribution for the errors in the latent variable model.
+- Our choices here are really either normal (ordered probit) with `\(\sigma^2 = 1\)` or logistic (ordered logit) with `\(\sigma^2 = \frac{\pi^2}{3}\)`.
+Because we know (or estimate) all of the `\(\tau\)` parameters, and we have a probability distribution, say the logistic distribution, then we know: 
+
+`$$\begin{aligned}
+  Pr(y\leq m) &amp;= \Lambda(\tau_{j} - Xb)
+              &amp;= \frac{1}{1+e^{-(\tau_{j} - Xb)}}
+\end{aligned}$$`
+
+
+---
+
+
+## Probabilities II
+
+Note that what we get above is the probability of being less than or equal to one particular value.  Let's take the observed value 2. We know that: 
+
+`$$\begin{aligned}
+  Pr(y\leq 2) &amp;= \Lambda(\tau_{2} - Xb)
+\end{aligned}$$`
+
+What if we wanted to find `\(Pr(y = 2)\)`?  
+
+--
+
+We would need to find: 
+
+`$$\begin{aligned}
+Pr(y = 2) &amp;= Pr(y\leq 2) - Pr(y \leq 1)\\
+&amp;= \Lambda(\tau_{2} - Xb) - \Lambda(\tau_{1} - Xb)
+\end{aligned}$$`
+
+---
+
+
+## Likelihood Function
+
+Just like with binary logit models, the likelihood for an individual observation is the probability that the observation takes on its observed value. 
+
+`$$L(\mathbf{b} | \mathbf{x}_{i}) = \Lambda(\tau_{y_i} - Xb) - \Lambda(\tau_{y_i-1} - Xb)$$`
+
+
+And the log-likelihood is just: 
+
+`$$\log L(\mathbf{b} | \mathbf{x}_{i}) = \log\left(\Lambda(\tau_{y_i} - Xb) - \Lambda(\tau_{y_i-1} - Xb)\right)$$`
+
+---
+
+
+
+## Example Data
+
+The example data are about state repression.  
+- `sdfac`: State Department Repression score `\(\{1,2,3,4,5\}\)`. 
+- `cwarcow`: COW civil war indicator. 
+- `iwarcow`: COW interstate war indicator. 
+- `logpop`: Log of population. 
+- `logpcgnp`: Log of per-capita GNP. 
+- `vanadd`: Additive index of democracy (Vanhanen). 
+
+Other notes: 
+  - Alternative summary function is available in the code file.  The one from the `MASS` package doesn't provide `\(p\)`-values. 
+
+---
+
+
+
+## Example
+
+
+``` r
+library(ordinal)
+dat &lt;- rio::import("data/ologit_data.dta")
+dat$sd_fac &lt;- factor(dat$sd, levels=1:5)
+mod &lt;- clm(sd_fac ~ cwarcow + iwarcow + logpop + logpcgnp + poly(vanadd, 2), data=dat)
+summary(mod)
+```
+
+```
+## formula: sd_fac ~ cwarcow + iwarcow + logpop + logpcgnp + poly(vanadd, 2)
+## data:    dat
+## 
+##  link  threshold nobs logLik   AIC     niter max.grad cond.H 
+##  logit flexible  2550 -2815.96 5651.91 6(0)  4.05e-11 1.9e+06
+## 
+## Coefficients:
+##                   Estimate Std. Error z value Pr(&gt;|z|)    
+## cwarcow            2.99351    0.16109   18.58  &lt; 2e-16 ***
+## iwarcow            0.93657    0.19472    4.81 1.51e-06 ***
+## logpop             0.42748    0.02723   15.70  &lt; 2e-16 ***
+## logpcgnp          -0.34331    0.03478   -9.87  &lt; 2e-16 ***
+## poly(vanadd, 2)1 -43.81355    2.67265  -16.39  &lt; 2e-16 ***
+## poly(vanadd, 2)2 -25.29074    2.34367  -10.79  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Threshold coefficients:
+##     Estimate Std. Error z value
+## 1|2   3.1857     0.5105   6.241
+## 2|3   5.2670     0.5174  10.180
+## 3|4   7.3189     0.5301  13.807
+## 4|5   9.0755     0.5422  16.738
+```
+
+---
+
+
+
+## Testing Coefficients
+
+Just like in other GLMs and the linear model, the `Anova` function from the `car` package can be used to evaluate the significance of each of the model's terms. 
+
+
+``` r
+library(car)
+Anova(mod)
+```
+
+```
+## Analysis of Deviance Table (Type II tests)
+## 
+## Response: sd_fac
+##                 Df   Chisq Pr(&gt;Chisq)    
+## cwarcow          1  38.947  4.355e-10 ***
+## iwarcow          1 103.624  &lt; 2.2e-16 ***
+## logpop           1 190.646  &lt; 2.2e-16 ***
+## logpcgnp         1 280.161  &lt; 2.2e-16 ***
+## poly(vanadd, 2)  2 358.783  &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+---
+
+## Probabilities by Group
+
+.pull-left[
+
+``` r
+library(marginaleffects)
+probs &lt;- predictions(mod, newdata=dat)
+probs &lt;- probs %&gt;%  filter(group == sd)
+ggplot(probs, aes(x=estimate)) + 
+  geom_histogram(aes(y=after_stat(ndensity)), bins=15) + 
+  facet_wrap(~sd, nrow=3) + 
+  theme_bw() + 
+  theme(panel.grid=element_blank())
+```
+]
+.pull-right-shift[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-4-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+
+## Discrete Change
+
+For any variable (and particularly qualitative ones), the discrete change is:
+
+`$$\Delta Pr(y=m|x) = Pr(y=m | x, x_{k} = x_{k}^{\text{end}}) - Pr(y=m | x, x_{k}=x_{k}^{\text{start}})$$`
+
+This simply gives the difference in predicted probability for a discrete change in one X, holding the other x's constant at particular values.
+
+---
+
+
+## Example: MER Approach
+
+
+
+
+
+``` r
+library(tidyr)
+mer_comps &lt;- comparisons(mod, newdata = datagrid("median"), 
+                         variables=list(cwarcow = c(0,1), 
+                                        iwarcow = c(0,1), 
+                                        logpop = "2sd", 
+                                        logpcgnp = "2sd", 
+                                        vanadd = "2sd"), 
+                         type="prob") 
+mer_comps %&gt;% 
+  mutate(estimate = sprintf("%.2f%s", estimate, ifelse(sign(conf.low) == sign(conf.high), "*", ""))) %&gt;%
+  select(term, contrast, group, estimate) %&gt;%
+  pivot_wider(names_from = "group", values_from = "estimate")
+```
+
+```
+## # A tibble: 5 × 7
+##   term     contrast            `1`    `2`    `3`    `4`    `5`   
+##   &lt;chr&gt;    &lt;chr&gt;               &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt; 
+## 1 cwarcow  1 - 0               -0.14* -0.38* -0.05  0.34*  0.23* 
+## 2 iwarcow  1 - 0               -0.08* -0.14* 0.12*  0.08*  0.02* 
+## 3 logpcgnp (x + sd) - (x - sd) 0.13*  0.11*  -0.16* -0.07* -0.02*
+## 4 logpop   (x + sd) - (x - sd) -0.17* -0.14* 0.20*  0.08*  0.02* 
+## 5 vanadd   (x + sd) - (x - sd) 0.31*  0.03*  -0.25* -0.07* -0.02*
+```
+
+
+
+---
+
+
+## Plot
+.pull-left[
+
+``` r
+ggplot(mer_comps, aes(x=as.factor(group), y=estimate, 
+                     ymin=conf.low, ymax=conf.high)) + 
+  geom_pointrange(size=.1) + 
+  geom_hline(yintercept=0, linetype=3) + 
+  facet_wrap(~term, ncol=2) + 
+  theme_bw() + 
+  theme(panel.grid=element_blank()) + 
+  labs(x="", y="Change in Predicted Probability")
+```
+]
+.pull-right-shift[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-5-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+
+## Example: AME Approach
+
+``` r
+ave_comps &lt;- avg_comparisons(mod, 
+                         variables=list(cwarcow = c(0,1), 
+                                        iwarcow = c(0,1), 
+                                        logpop = "2sd", 
+                                        logpcgnp = "2sd", 
+                                        vanadd = "2sd"), 
+                         type="prob") 
+ave_comps %&gt;% 
+  mutate(estimate = sprintf("%.2f%s", estimate, ifelse(sign(conf.low) == sign(conf.high), "*", ""))) %&gt;%
+  select(term, contrast, group, estimate) %&gt;%
+  pivot_wider(names_from = "group", values_from = "estimate")
+```
+
+```
+## # A tibble: 5 × 7
+##   term     contrast                    `1`    `2`    `3`    `4`    `5`   
+##   &lt;chr&gt;    &lt;chr&gt;                       &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt; 
+## 1 cwarcow  mean(1) - mean(0)           -0.25* -0.20* 0.02   0.21*  0.21* 
+## 2 iwarcow  mean(1) - mean(0)           -0.11* -0.04* 0.06*  0.05*  0.04* 
+## 3 logpcgnp mean(x + sd) - mean(x - sd) 0.15*  0.02*  -0.09* -0.05* -0.03*
+## 4 logpop   mean(x + sd) - mean(x - sd) -0.17* -0.05* 0.11*  0.07*  0.04* 
+## 5 vanadd   mean(x + sd) - mean(x - sd) 0.27*  0.02*  -0.17* -0.07* -0.05*
+```
+
+
+
+---
+
+
+
+## Plot
+
+.pull-left[
+
+``` r
+bcomps &lt;- bind_rows(
+  mer_comps %&gt;% 
+    select(term, group, estimate, conf.low, conf.high) %&gt;%
+    mutate(type = "Reasonable Values"), 
+  ave_comps %&gt;% 
+    select(term, group, estimate, conf.low, conf.high) %&gt;%
+    mutate(type = "Observed Values"))
+
+
+ggplot(bcomps, aes(x=as.factor(group), y=estimate, 
+                     ymin=conf.low, ymax=conf.high, 
+                  colour=type)) + 
+  geom_pointrange(size=.05, position=position_dodge(width=.5)) + 
+  geom_hline(yintercept=0, linetype=3) + 
+  facet_wrap(~term, ncol=2) + 
+  theme_bw() + 
+  theme(panel.grid=element_blank(), 
+        legend.position="bottom") + 
+  labs(x="", y="Change in Predicted Probability")
+```
+]
+.pull-right-shift[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-6-1.png" width="504" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+
+
+
+---
+
+
+## MER Effects Plot
+
+.pull-left[
+
+``` r
+pred_gnp &lt;- plot_predictions(mod, 
+                             newdata="median", 
+                             condition="logpcgnp", 
+                             draw=FALSE)
+ggplot(pred_gnp, aes(x=logpcgnp, y=estimate, 
+                     ymin=conf.low, 
+                     ymax=conf.high, 
+                     fill=as.factor(group), 
+                     colour=as.factor(group))) + 
+  geom_ribbon(alpha=.15, colour="transparent") + 
+  geom_line() + 
+  theme_classic() + 
+  theme(legend.position="bottom") + 
+  labs(x="GNP/capita", y="Predicted Probability", 
+       colour = "Level of Repression", 
+       fill = "Level of Repression")
+```
+]
+.pull-right-shift[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-7-1.png" width="100%" /&gt;
+]
+
+
+---
+
+## MER Approach: Polynomial
+
+
+.pull-left[
+
+``` r
+pred_dem &lt;- plot_predictions(mod, 
+                        condition="vanadd", 
+                        newdata = "median", 
+                        draw=FALSE)
+
+ggplot(pred_dem, aes(x=vanadd, y=estimate, 
+                     ymin=conf.low, 
+                     ymax=conf.high, 
+                     fill=as.factor(group), 
+                     colour=as.factor(group))) + 
+  geom_ribbon(alpha=.15, colour="transparent") + 
+  geom_line() + 
+  theme_classic() + 
+  theme(legend.position="bottom") + 
+  labs(x="Polyarchy", y="Predicted Probability", 
+       colour = "Level of Repression", 
+       fill = "Level of Repression")
+```
+]
+.pull-right-shift[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-8-1.png" width="100%" /&gt;
+]
+
+---
+
+## Plotting Predicted Probabilities: AME Approach
+
+.pull-left[
+
+``` r
+seq_range &lt;- function(x,n=100){
+  mn &lt;- min(x, na.rm=TRUE)
+  mx &lt;- max(x, na.rm=TRUE)
+  seq(mn, mx, length=n)
+}
+pred_gnp2 &lt;- avg_predictions(mod, 
+                        variables=list(logpcgnp=seq_range(dat$logpcgnp, n=100)))
+
+ggplot(pred_gnp2, aes(x=logpcgnp, y=estimate, 
+                     ymin=conf.low, 
+                     ymax=conf.high, 
+                     fill=as.factor(group), 
+                     colour=as.factor(group))) + 
+  geom_ribbon(alpha=.15, colour="transparent") + 
+  geom_line() + 
+  theme_classic() + 
+  theme(legend.position="bottom") + 
+  labs(x="GNP/capita", y="Predicted Probability", 
+       colour = "Level of Repression", 
+       fill = "Level of Repression")
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-9-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## MER vs AME
+
+.pull-left[
+**MER**
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-7-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+**AME**
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-9-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+
+## Model Fit
+
+
+``` r
+library(DAMisc)
+ordfit(mod, data=dat)
+```
+
+```
+##                       Estimate
+## Count R2              0.529   
+## Count R2 (Adj)        0.321   
+## ML R2                 0.497   
+## McFadden R2           0.237   
+## McFadden R2 (Adj)     0.235   
+## McKelvey &amp; Zavoina R2 0.533
+```
+
+
+---
+
+
+
+## Model Fit II
+
+``` r
+p &lt;- MASS::polr(formula(mod), data=dat)
+pre(p, data=dat)
+```
+
+```
+## mod1:  sd_fac ~ cwarcow + iwarcow + logpop + logpcgnp + poly(vanadd, 2) 
+## mod2:  sd_fac ~ 1 
+## 
+## Analytical Results
+##  PMC =  0.306 
+##  PCP =  0.529 
+##  PRE =  0.321 
+## ePMC =  0.255 
+## ePCP =  0.404 
+## ePRE =  0.200
+```
+
+---
+
+## Comparative Model Fit
+
+The same options that exist for the binary model work here, too. 
+- Likelihood ratio tests for nested models. 
+- AIC, AICc and BIC for non-nested models. 
+- Clarke Test for non-nested models. 
+
+---
+
+## Ordered Model vs Linear Model
+
+Sometimes, we wonder whether we _could_ estimate a linear model rather than the ordered model. 
+- Interpretation is much easier. 
+- Effects are not conditional unless specified as such. 
+
+Problem: 
+- No information in categorical variable to estimate the residual variance from the linear model. 
+- Residual variance from the linear model estimated on the categories will not be the residual variance from the linear model. 
+
+
+---
+
+## Methematically
+
+Assume the latent variable `\(y^*\)` has the following equation: 
+
+`$$y^* = b_0 + b_1x + b_2z + e\quad e\sim N(0,\sigma^2)$$`
+If we knew the residual variance, we could assume that in our model and all would be good.  Instead we set it at 1 (with probit). If we wanted to re-write the above to force the residual variance to 1, we would write. 
+
+`$$\begin{aligned}
+y^* &amp;= b_0 + b_1x + b_2z + \sigma e\quad e\sim N(0,1)\\
+\frac{y^*}{\sigma} &amp;= \frac{b_0}{\sigma}+ \frac{b_1}{\sigma}x + \frac{b_2}{\sigma}z + e\quad e\sim N(0,1)
+\end{aligned}$$`
+
+So, what we are actually estimating in the ordinal model is a scaled version of the true coefficients, but the scale factor is unknown. 
+
+---
+
+## Parallel Regressions Assumption
+
+There is one additional assumption we make with these types of models - the *Parallel Regressions Assumption*.
+
+- Assumes that the relationship between `\(x\)` and `\(y\)` doesn't change from one value of `\(y\)` to another.  
+
+- The coefficient relating `\(x\)` to `\(y\)` is the same for all categories. 
+
+
+The Null and Alternative Hypotheses are: 
+
+- `\(H_{0}\)`: The parallel regressions assumption holds. 
+
+- `\(H_{A}\)`: The parallel regressions assumption doesn't hold. 
+
+---
+
+
+## Brant Test
+.pull-left[
+
+``` r
+library(brant)
+dat$vascale &lt;- scale(dat$vanadd)
+bmod  &lt;- MASS::polr(sd_fac ~ cwarcow + iwarcow + logpop +
+        logpcgnp + vascale + I(vascale^2), data=dat)
+```
+]
+.pull-right[
+
+``` r
+library(brant)
+brant(bmod)
+```
+
+```
+## -------------------------------------------- 
+## Test for	X2	df	probability 
+## -------------------------------------------- 
+## Omnibus		227.21	18	0
+## cwarcow		3.81	3	0.28
+## iwarcow		7.08	3	0.07
+## logpop		20.63	3	0
+## logpcgnp	67.36	3	0
+## vascale		56.27	3	0
+## I(vascale^2)	27.06	3	0
+## -------------------------------------------- 
+## 
+## H0: Parallel Regression Assumption holds
+```
+]
+
+---
+
+## Simulation for Brant Test
+
+
+.pull-left[
+
+``` r
+X &lt;- model.matrix(bmod)[,-1]
+b &lt;- coef(bmod)
+
+xb &lt;- X %*% b
+tau &lt;- c(-Inf, bmod$zeta, Inf)
+q &lt;- sapply(tau, function(t)plogis(t-xb))
+D &lt;- matrix(0, nrow=ncol(q), ncol = ncol(q)-1)
+D[c(1,2), 1] &lt;- c(-1,1)
+D[c(2,3), 2] &lt;- c(-1,1)
+D[c(3,4), 3] &lt;- c(-1,1)
+D[c(4,5), 4] &lt;- c(-1,1)
+D[c(5,6), 5] &lt;- c(-1,1)
+
+probs &lt;- q %*% D
+
+brant_stats &lt;- NULL
+sink(tempfile())
+for(i in 1:2500){
+  newy &lt;- as.factor(apply(probs, 1, function(x)
+            which.max(rmultinom(1, 1, x))))
+  u &lt;- update(bmod, newy ~ .)
+  brant_stats &lt;- c(brant_stats, brant(u)[1])
+}
+sink()
+```
+]
+.pull-right-shift2[
+
+``` r
+load("data/brant_stats.rda")
+ggplot() + 
+  stat_density(aes(x=brant_stats, colour="Empirical"), geom="line") + 
+  stat_function(fun = function(x)dchisq(x, 18), aes(colour="Theoretical"), geom="line") + 
+  theme_classic() + 
+  theme(legend.position=c(.85, .85)) + 
+  labs(x="Brant Statistic", y = "Density", colour="")
+```
+
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-14-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+## What Next? 
+
+If, as above, we reject `\(H_{0}\)` for the Brant Test, we must re-estimate a more flexible model. 
+
+- We can do this with what we'll learn next - multinomial logit. 
+
+---
+
+## Review
+
+1. Ordinal Model Estimation
+2. Effects and Effect Displays
+3. Model Fit and Evaluation
+4. Parallel Regressions Assumption
+
+
+---
+
+## Exercises 
+
+.pull-left[
+
+1. Choose some variables as independent variables and estimate an ordered logit model of `demsat` using your chosen independent variables.
+    - How does the model fit?
+    - What are the effects of the variables in the model?
+2. Does this model meet the assumptions of the ordered logit model (particularly, the parallel regressions assumption)?
+
+]
+.pull-right-shift[
+- `vote`  Party of vote
+- `votenum`  Party number of chosen party
+- `male`  R gender (0=female, 1=male)
+- `age`  Age of R
+- `urban`  size of city in which R lives
+- `soclass`  Subjective social class
+- `hhincome`  Household income (in francs/month)
+- `union`  Member of a union
+- `retnat`  Retrospective national economic evaluations
+- `demsat`  satisfaction with the functioning of democracy
+- `eusup`  Good choice for France to belong to EU
+- `lrself` position on left-right scale (0-10)
+
+]
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

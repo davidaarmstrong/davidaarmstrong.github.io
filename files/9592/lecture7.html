@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9592</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9592
+]
+.subtitle[
+## Lecture 7: Count Data Models
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+
+.tiny {
+  font-size: 1rem;
+}
+&lt;/style&gt;
+
+## Goals for This Session
+
+1. Develop Count models - poisson, negative binomial, binomial
+2. Effects and Effect Displays
+3. Model Fit and Evaluation
+4. Discuss Overdispersion
+5. Zero-inflation and hurdle models
+
+---
+
+## Count outcomes
+
+- Non-negative, integer values (i.e., the number of times the outcome happened).
+- May also have a variable that measures potential count (i.e., the number of times the outcome could have happened.)
+
+Under the right circumstances, the linear model could be applied to these data.
+- under the wrong circumstances, the linear model (i.e., the wrong distributional assumptions) can induce inefficiency, inconsistency and bias.
+
+
+---
+
+
+## Modeling counts
+
+- We want to know, what is the probability that `\(y\)` takes on the count we observe given some variables `\(\mathbf{X}\)`.
+- To know anything about the probability of something happening, we need to know its probability distribution.
+
+The simplest model for count outcomes is the Poisson model.  The PMF (discrete analog to PDF) of the poisson distribution is:
+
+`\begin{equation*}
+	Pr(y|\mu) = \frac{\exp(-\mu)\mu^{y}}{y!}
+\end{equation*}`
+
+where the only parameter in the model is `\(\mu\)`, the mean (sometimes called the rate).
+
+
+---
+
+
+## Properties of Poisson Distribution
+
+1. As `\(\mu\)` increases, the bulk of the distribution moves to the right, with less probability given to zero.
+1. `\(var(y) = \mu\)`, the variance and the mean are the same (called equidispersion).  We will talk about models for overdispersed count data later.
+1. As `\(\mu\)` increases `\(Pr(y=0)\)` decreases, so often times, more zeros are observed than predicted
+1. As `\(\mu\)` increases, the poisson distribution becomes approximately normal.
+
+
+---
+
+
+## Poisson Regression Model
+ The Poisson Regression model parameterizes `\(\mu_{i}\)` from the poisson PDF in the following way:
+
+`\begin{equation}
+	\mu_{i} = \exp(\mathbf{x}_{i}\beta)
+\end{equation}`
+
+ So, then:
+
+`$$\begin{aligned}
+	Pr(y_{i}|\mathbf{x}_{i}) &amp;= \frac{\exp(-\mu_{i})\mu_{i}^{y_{i}}}{y_{i}!}\\
+	&amp;= \frac{\exp(-\exp(\mathbf{x}_{i}\beta))\exp(\mathbf{x}_{i}\beta)^{y_{i}}}{y_{i}!}
+\end{aligned}$$`
+
+
+---
+
+
+## Likelihood Function
+
+
+`\begin{equation}
+	L(\mu) = \prod_{i=1}^{N}\frac{\exp(-\exp(\mathbf{x}_{i}\beta))\exp(\mathbf{x}_{i}\beta)^{y_{i}}}{y_{i}!}
+\end{equation}`
+
+ and the log-likelihood function is:
+
+`\begin{equation}
+	lnL(\mu) = -n\exp(\mathbf{x}_{i}\beta) + \left(\sum_{i=1}^{n}y_{i}\right)ln(\exp(\mathbf{x}_{i}\beta)) - \sum_{i=1}^{n}ln(y_{i}!)
+\end{equation}`
+
+or ...
+
+`$$LL = \sum_{i=1}^{n}log\left(f\left(y_i, e^{\mathbf{x}_{i}\beta}\right)\right)$$`
+where `\(f(y, \mu)\)` is the poisson PDF of `\(y\)` evaluated at `\(\mu\)`. 
+
+---
+
+
+## Example
+
+.pull-left[
+
+``` r
+library(rio)
+dat &lt;- import("data/count.dta")
+dat &lt;- dat %&gt;% 
+  mutate(across(c("unemployed", "religimp"), factorize))
+mod &lt;- glm(volorgs ~ age + educ + unemployed + hhincome_num + 
+             leftright + numkids + religimp, 
+           data=dat, 
+           family=poisson)
+```
+]
+.pull-right-shift[
+
+``` r
+summary(mod)
+```
+
+```
+## 
+## Call:
+## glm(formula = volorgs ~ age + educ + unemployed + hhincome_num + 
+##     leftright + numkids + religimp, family = poisson, data = dat)
+## 
+## Coefficients:
+##                         Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)            -3.052300   0.308804  -9.884  &lt; 2e-16 ***
+## age                     0.010045   0.002528   3.973 7.08e-05 ***
+## educ                    0.170059   0.018214   9.337  &lt; 2e-16 ***
+## unemployedNot Employed -1.230194   0.292337  -4.208 2.57e-05 ***
+## hhincome_num            0.021967   0.007534   2.916  0.00355 ** 
+## leftright              -0.044094   0.014646  -3.011  0.00261 ** 
+## numkids                 0.045372   0.031955   1.420  0.15566    
+## religimpimportant       0.074319   0.082740   0.898  0.36906    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 1613.1  on 885  degrees of freedom
+## Residual deviance: 1356.1  on 878  degrees of freedom
+##   (707 observations deleted due to missingness)
+## AIC: 2438.9
+## 
+## Number of Fisher Scoring iterations: 6
+```
+]
+---
+
+
+## Interpretation
+
+Let's imagine changing `\(x_{k}\)` from some specified value to that value plus `\(\delta\)`, holding all of the other `\(x\)` variables constant at some value.  Then,
+
+`\begin{equation*}
+	\frac{E(y|\mathbf{x},x_{k} + \delta)}{E(y|\mathbf{x},x_{k})} = \exp(\beta_{k}\delta)
+\end{equation*}`
+
+ where `\(E(y|\mathbf{x})\)` is simply `\(\mu = \exp(\mathbf{x}_{i}\beta)\)`.  So, the count will increase by a factor of `\(\exp(\beta_{k}\delta)\)` for a `\(\delta\)` unit increase in variable `\(x_{k}\)`.
+- We expect the number of voluntary organizations to increase by a factor of 1.185 for every additional year of formal education.
+- If we predicted 3 voluntary organizations for someone with 12 years of education, we would expect someone with 13 years of education to join `\(3\times 1.185 = 3.56\)` voluntary organizations. 
+
+
+
+---
+
+
+## Illustration
+
+
+
+``` r
+tmpdf &lt;- data.frame(
+    age = 45,
+    educ = c(11,12,16,17),
+    unemployed = factor(0, levels=c(0,1), labels=levels(dat$unemployed)),
+    hhincome_num = 15,
+    leftright = 5,
+    numkids = 0,
+    religimp = factor(1, levels=0:1, labels=levels(dat$religimp)))
+preds &lt;- predict(mod, newdata=tmpdf, type="response")
+preds
+```
+
+```
+##         1         2         3         4 
+## 0.5791113 0.6864639 1.3553155 1.6065568
+```
+
+``` r
+preds[2]/preds[1]
+```
+
+```
+##        2 
+## 1.185375
+```
+
+``` r
+preds[4]/preds[3]
+```
+
+```
+##        4 
+## 1.185375
+```
+
+
+---
+
+
+## Interpretation II
+
+We can also figure out by how many percent your count will increase for a `\(\delta\)` unit change in `\(x_{k}\)`:
+
+`\begin{equation*}
+	100\times \frac{E(y|\mathbf{x},x_{k}+\delta) - E(y|\mathbf{x},x_{k})}{E(y|\mathbf{x},x_{k})} = 100\times \left\{\exp(\beta_{k}\delta)-1\right\}
+\end{equation*}`
+- We expect the number of voluntary organizations to increase by `\(18.54\%\)` for every additional year of formal education.
+
+
+
+``` r
+100*(preds[2] - preds[1])/preds[1]
+```
+
+```
+##        2 
+## 18.53748
+```
+
+``` r
+100*(preds[4] - preds[3])/preds[3]
+```
+
+```
+##        4 
+## 18.53748
+```
+---
+
+
+## Discrete Changes (MERs)
+
+
+
+``` r
+library(marginaleffects)
+comparisons(mod, 
+            newdata = "median", 
+            variables=list(
+              age = "2sd", 
+              educ = c(12,16),
+              unemployed= "minmax", 
+              hhincome_num = "2sd", 
+              leftright = c(2,8), 
+              numkids =c(0,2), 
+              religimp = "minmax")) %&gt;% 
+  select(1:7)
+```
+
+```
+## 
+##          Term                  Contrast Estimate Std. Error      z Pr(&gt;|z|)
+##  age          (x + sd) - (x - sd)         0.3025     0.0726  4.164  &lt; 0.001
+##  educ         16 - 12                     0.6755     0.0769  8.786  &lt; 0.001
+##  hhincome_num (x + sd) - (x - sd)         0.2320     0.0795  2.919  0.00351
+##  leftright    8 - 2                      -0.2701     0.0954 -2.831  0.00464
+##  numkids      2 - 0                       0.0925     0.0654  1.415  0.15702
+##  religimp     important - not important   0.0698     0.0764  0.914  0.36097
+##  unemployed   Not Employed - Employed    -0.6895     0.0942 -7.321  &lt; 0.001
+## 
+## Columns: rowid, term, contrast, estimate, std.error, statistic, p.value
+```
+
+
+---
+
+
+## Discrete Changes (AMEs)
+
+
+
+``` r
+avg_comparisons(mod, 
+            variables=list(
+              age = "2sd", 
+              educ = c(12,16),
+              unemployed= "minmax", 
+              hhincome_num = "2sd", 
+              leftright = c(2,8), 
+              numkids =c(0,2), 
+              religimp = "minmax")) %&gt;% 
+  select(1:6)
+```
+
+```
+## 
+##          Term                              Contrast Estimate Std. Error      z
+##  age          mean(x + sd) - mean(x - sd)             0.3065     0.0775  3.958
+##  educ         mean(16) - mean(12)                     0.6650     0.0720  9.235
+##  hhincome_num mean(x + sd) - mean(x - sd)             0.2354     0.0788  2.988
+##  leftright    mean(8) - mean(2)                      -0.2760     0.0958 -2.882
+##  numkids      mean(2) - mean(0)                       0.0917     0.0652  1.406
+##  religimp     mean(important) - mean(not important)   0.0730     0.0798  0.915
+##  unemployed   mean(Not Employed) - mean(Employed)    -0.7318     0.0946 -7.739
+##  Pr(&gt;|z|)
+##   &lt; 0.001
+##   &lt; 0.001
+##   0.00281
+##   0.00395
+##   0.15964
+##   0.36017
+##   &lt; 0.001
+## 
+## Columns: term, contrast, estimate, std.error, statistic, p.value
+```
+
+
+---
+
+
+## Effects Plot 
+
+
+.pull-left[
+
+``` r
+preds &lt;- predictions(mod, 
+            newdata="median", 
+            variables = list(educ = 1:17))
+ggplot(preds, 
+       aes(x=educ, y=estimate, 
+           ymin=conf.low, 
+           ymax=conf.high)) + 
+  geom_ribbon(fill="gray75") + 
+  geom_line() + 
+  theme_classic() + 
+  labs(x="Years of Education", y="Expected Number of Voluntary Organizations")
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture7_files/figure-html/unnamed-chunk-3-1.png" width="100%" /&gt;
+]
+
+---
+
+
+## Effects Plot (AME)
+
+.pull-left[
+
+``` r
+apreds &lt;- avg_predictions(mod, 
+            variables = list(educ = 1:17))
+ggplot(apreds, 
+       aes(x=educ, y=estimate, 
+           ymin=conf.low, 
+           ymax=conf.high)) + 
+  geom_ribbon(fill="gray75") + 
+  geom_line() + 
+  theme_classic() + 
+  labs(x="Years of Education", y="Expected Number of Voluntary Organizations")
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture7_files/figure-html/unnamed-chunk-4-1.png" width="100%" /&gt;
+]
+
+
+---
+
+
+## Model Fit
+
+
+
+``` r
+poisfit(mod)
+```
+
+```
+##                            Estimate p-value
+## GOF (Pearson)              1552.688 0.000  
+## GOF (Deviance)             1356.087 0.000  
+## ML R2                      0.252    NA     
+## McFadden R2                0.096    NA     
+## McFadden R2 (Adj)          0.090    NA     
+## Cragg-Uhler(Nagelkerke) R2 0.265    NA
+```
+---
+
+## Predicted vs. Actual
+
+.pull-left[
+
+``` r
+yhat &lt;- predict(mod, type="response")
+draw &lt;- rpois(length(yhat), yhat)
+fitdat &lt;- tibble::tibble(
+  val = c(model.response(model.frame(mod)), draw), 
+  type = factor(rep(c("observed", "predicted"), each=length(draw)))
+)
+ggplot(fitdat, 
+       aes(x=val, fill=type)) + 
+  geom_bar(position="dodge") + 
+  theme_classic() + 
+  scale_fill_brewer(palette="Set1") + 
+  labs(x="Voluntary Organizations", fill="") + 
+  theme(legend.position = "top")
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture7_files/figure-html/unnamed-chunk-5-1.png" width="100%" /&gt;
+]
+---
+
+## Negative Binomial model
+The negative binomial model is used when we have an overdispersed variable.
+- Overdispersion is when variance is *greater than* the mean.
+- Overdispersion is an attribute of the outcome variable *and* a model.  Data are not themselves overdispersed, independent of a particular model.
+- It is possible to model away some of the overdispersion, but usually only if the variance is 2 or 3 times the mean.
+
+The NBRM adds an error term to the linear predictor that has expectation 0 and is assumed uncorrelated with the remainder of the `\(X\)` variables.
+
+`\begin{align*}
+	\mu &amp;= \exp(\mathbf{X}\beta + \varepsilon)\\
+	&amp;= \exp(\mathbf{X}\beta)\exp(\varepsilon)\\
+	&amp;= \exp(\mathbf{X}\beta)\delta
+\end{align*}`
+
+---
+
+## NBRM Example
+
+.pull-left[
+
+``` r
+mod2 &lt;- MASS::glm.nb(volorgs ~ age + educ + unemployed + 
+                 hhincome_num + leftright + numkids + 
+                 religimp, 
+               data=dat)
+```
+
+- The `Theta` term here is the overdispersion parameter.
+]
+.pull-right-shift[
+
+``` r
+summary(mod2)
+```
+
+```
+## 
+## Call:
+## MASS::glm.nb(formula = volorgs ~ age + educ + unemployed + hhincome_num + 
+##     leftright + numkids + religimp, data = dat, init.theta = 1.559916402, 
+##     link = log)
+## 
+## Coefficients:
+##                         Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)            -2.972767   0.396719  -7.493 6.71e-14 ***
+## age                     0.009092   0.003299   2.756  0.00585 ** 
+## educ                    0.168377   0.023401   7.195 6.23e-13 ***
+## unemployedNot Employed -1.251872   0.319325  -3.920 8.84e-05 ***
+## hhincome_num            0.022505   0.009686   2.323  0.02016 *  
+## leftright              -0.047494   0.019456  -2.441  0.01465 *  
+## numkids                 0.042735   0.041668   1.026  0.30508    
+## religimpimportant       0.078662   0.110603   0.711  0.47695    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for Negative Binomial(1.5599) family taken to be 1)
+## 
+##     Null deviance: 1046.47  on 885  degrees of freedom
+## Residual deviance:  886.68  on 878  degrees of freedom
+##   (707 observations deleted due to missingness)
+## AIC: 2333
+## 
+## Number of Fisher Scoring iterations: 1
+## 
+## 
+##               Theta:  1.560 
+##           Std. Err.:  0.236 
+## 
+##  2 x log-likelihood:  -2314.991
+```
+]
+
+---
+
+## Predicted vs. Actual
+
+.pull-left[
+
+``` r
+yhat &lt;- predict(mod2, type="response")
+draw &lt;- MASS::rnegbin(length(yhat), yhat, theta=mod2$theta)
+fitdat &lt;- tibble::tibble(
+  val = c(model.response(model.frame(mod)), draw), 
+  type = factor(rep(c("observed", "predicted"), each=length(draw)))
+)
+ggplot(fitdat, 
+       aes(x=val, fill=type)) + 
+  geom_bar(position="dodge") + 
+  theme_classic() + 
+  scale_fill_brewer(palette="Set1") + 
+  labs(x="Voluntary Organizations", fill="") + 
+  theme(legend.position = "top")
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture7_files/figure-html/unnamed-chunk-7-1.png" width="100%" /&gt;
+]
+
+---
+
+## Hurdles and Zero-inflation
+
+Sometimes, there are even more zeros than we would expect taking account of overdispersion.  We can deal with this in two ways: 
+- Hurdle - assumes that one process governs zero vs non-zero and then a separate count process (poisson or NB) governs the positive counts. 
+- Zero-inflation - assumes that the zeros can come from one of two processes - a hurdle-like process that separates zeros from non-zeros and zero from the count part of the model.  
+
+---
+
+## Hurdle Model 
+
+The hurdle model estimates the probability of zero as a separate process from the non-zero counts. 
+
+`$$\begin{aligned}
+LL_i &amp;= I(y_i = 0)\log(1-F_1(\mathbf{z}_i\gamma)) + I(y_i = 1)log(F_1(\mathbf{z}_i\gamma)) \\&amp;+  \left[log(f_2(y_i, \mathbf{x}_i\beta)) - log(F_2(\mathbf{x}_i\beta))\right]\end{aligned}$$`
+Let's break it down: 
+- `\(I(y_i = 0)\log(1-F_1(\mathbf{z}_i\gamma))\)` is the log of the probability that `\(y_i=0\)` given a logistic regression of `\(y\)` on `\(\mathbf{Z}\)` for the zeros. 
+- `\(I(y_i = 1)log(F_1(\mathbf{z}_i\gamma))\)` is the log of the probability that `\(y_i \neq 0\)` given a logistic regression of `\(y\)` on `\(\mathbf{Z}\)` for the non-zeros. 
+- `\(\left[log(f_2(y_i, \mathbf{x}_i\beta)) - log(F_2(\mathbf{x}_i\beta))\right]\)` is the log of the probability that `\(y\)` takes on its observed value in the _truncated_ poisson (or NB) pdf for the non-zeros.  
+
+---
+
+## Estimation in R
+
+By assumption, the hurdle and count models are specified the same way.  
+
+
+``` r
+library(pscl)
+mod &lt;- hurdle(volorgs ~ age + educ + unemployed + hhincome_num + 
+             leftright + numkids + religimp, 
+           data=dat, 
+           dist="negbin", 
+           zero.dist = "binomial")
+```
+
+---
+
+## Result 
+
+.pull-left[
+```
+Count model coefficients (truncated negbin with log link):
+                        Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)            -1.664714   0.465743  -3.574 0.000351 ***
+age                     0.002547   0.003665   0.695 0.487053    
+educ                    0.121929   0.027608   4.416 1.00e-05 ***
+unemployedNot Employed  0.356697   0.406697   0.877 0.380455    
+hhincome_num            0.024343   0.011375   2.140 0.032356 *  
+leftright              -0.030925   0.020674  -1.496 0.134687    
+numkids                -0.031557   0.047376  -0.666 0.505344    
+religimpimportant      -0.017834   0.117368  -0.152 0.879229    
+Log(theta)              1.970148   0.494974   3.980 6.88e-05 ***
+```
+]
+.pull-right[
+```
+Zero hurdle model coefficients (binomial with logit link):
+                        Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)            -3.900897   0.630429  -6.188 6.11e-10 ***
+age                     0.017152   0.005247   3.269  0.00108 ** 
+educ                    0.213338   0.037019   5.763 8.26e-09 ***
+unemployedNot Employed -2.034148   0.483148  -4.210 2.55e-05 ***
+hhincome_num            0.020330   0.014975   1.358  0.17457    
+leftright              -0.065082   0.031646  -2.057  0.03973 *  
+numkids                 0.120404   0.066174   1.820  0.06883 .  
+religimpimportant       0.198351   0.181361   1.094  0.27410    
+```
+]
+
+---
+
+## Effects
+
+With the `marginaleffects` package, you can specify that you want effects on the scale of: 
+1. `\(Pr(y_i \neq 0)\)` with `"zero"`
+2. `\(\hat{y}_{i}^{(c)}\)`, the predicted count from the truncated count part of the equation with `"count"`
+3. `\(Pr(y_i = j)\)` for `\(j = \{0, \ldots, J\}\)`, the predicted probability of being in each count with `"prob"`
+4. `\(\hat{y}_{i}\)`, the predicted count multiplied by the probability of getting non-zero counts with `"response"`
+
+---
+
+## Effect of Unemployment
+
+.pull-left[
+
+``` r
+avg_predictions(mod, variables="unemployed", type="zero") %&gt;% 
+  as_tibble() %&gt;% 
+  select(unemployed, estimate, conf.low, conf.high)
+```
+
+```
+## # A tibble: 2 × 4
+##   unemployed   estimate conf.low conf.high
+##   &lt;fct&gt;           &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 Employed        0.702   0.633      0.772
+## 2 Not Employed    0.155   0.0272     0.283
+```
+
+``` r
+avg_predictions(mod, variables="unemployed", type="count") %&gt;% 
+  as_tibble() %&gt;% 
+  select(unemployed, estimate, conf.low, conf.high)
+```
+
+```
+## # A tibble: 2 × 4
+##   unemployed   estimate conf.low conf.high
+##   &lt;fct&gt;           &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 Employed         1.42    1.25       1.59
+## 2 Not Employed     2.03    0.426      3.63
+```
+]
+.pull-right[
+
+``` r
+avg_predictions(mod, variables="unemployed", type="prob") %&gt;% head(n=2) %&gt;%
+  as_tibble() %&gt;% 
+  select(unemployed, estimate, conf.low, conf.high)
+```
+
+```
+## # A tibble: 2 × 4
+##   unemployed   estimate conf.low conf.high
+##   &lt;fct&gt;           &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 Employed        0.503    0.470     0.535
+## 2 Not Employed    0.870    0.769     0.972
+```
+
+``` r
+avg_predictions(mod, variables="unemployed", type="response")  %&gt;% 
+  as_tibble() %&gt;% 
+  select(unemployed, estimate, conf.low, conf.high)
+```
+
+```
+## # A tibble: 2 × 4
+##   unemployed   estimate conf.low conf.high
+##   &lt;fct&gt;           &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 Employed        1.04    0.939      1.13 
+## 2 Not Employed    0.359   0.0103     0.707
+```
+]
+
+---
+
+## Zero-Inflated Models
+
+Zero-inflated models are the same as hurdles, but the zeros can come from both the binomial and the count processes.  
+
+
+``` r
+mod &lt;- zeroinfl(volorgs ~ age + educ + unemployed + hhincome_num + 
+             leftright + numkids + religimp, 
+           data=dat, 
+           dist="negbin", 
+           zero.dist = "binomial")
+```
+
+---
+
+## Result 
+
+.pull-left[
+```
+Count model coefficients (negbin with log link):
+                        Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)            -1.688558   0.451092  -3.743 0.000182 ***
+age                     0.002845   0.003523   0.808 0.419317    
+educ                    0.123809   0.026611   4.653 3.28e-06 ***
+unemployedNot Employed  0.312325   0.405264   0.771 0.440902    
+hhincome_num            0.024697   0.011396   2.167 0.030220 *  
+leftright              -0.037220   0.020046  -1.857 0.063355 .  
+numkids                -0.030886   0.045406  -0.680 0.496364    
+religimpimportant       0.002097   0.117832   0.018 0.985803    
+Log(theta)              2.017537   0.500049   4.035 5.47e-05 ***
+```
+]
+.pull-right[
+```
+Zero-inflation model coefficients (binomial with logit link):
+                        Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)             2.425815   1.142650   2.123   0.0338 *  
+age                    -0.022918   0.009753  -2.350   0.0188 *  
+educ                   -0.157369   0.068972  -2.282   0.0225 *  
+unemployedNot Employed  2.705893   0.571393   4.736 2.18e-06 ***
+hhincome_num            0.004193   0.030855   0.136   0.8919    
+leftright               0.037771   0.057988   0.651   0.5148    
+numkids                -0.255842   0.149640  -1.710   0.0873 .  
+religimpimportant      -0.269086   0.325316  -0.827   0.4082    
+```
+]
+
+The zero equation is interpreted differently here. 
+- Hurdle - DV in hurdle equation is 1 if you are in the count part and 0 if you're in the always zero part. 
+- Zero-inflated - DV in zero inflation is 1 for observations that are 0 and 0 for observations in the count part of the model. 
+
+
+---
+
+## Effect of Unemployment
+
+.pull-left[
+
+``` r
+avg_predictions(mod, variables="unemployed", type="zero") %&gt;% 
+  as_tibble() %&gt;% 
+  select(unemployed, estimate, conf.low, conf.high)
+```
+
+```
+## # A tibble: 2 × 4
+##   unemployed   estimate conf.low conf.high
+##   &lt;fct&gt;           &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 Employed        0.297    0.215     0.380
+## 2 Not Employed    0.846    0.713     0.979
+```
+
+``` r
+avg_predictions(mod, variables="unemployed", type="count") %&gt;% 
+  as_tibble() %&gt;% 
+  select(unemployed, estimate, conf.low, conf.high)
+```
+
+```
+## # A tibble: 2 × 4
+##   unemployed   estimate conf.low conf.high
+##   &lt;fct&gt;           &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 Employed         1.42    1.25       1.59
+## 2 Not Employed     1.94    0.410      3.48
+```
+]
+.pull-right[
+
+``` r
+avg_predictions(mod, variables="unemployed", type="prob") %&gt;% head(n=2) %&gt;%
+  as_tibble() %&gt;% 
+  select(unemployed, group, estimate, conf.low, conf.high)
+```
+
+```
+## # A tibble: 2 × 5
+##   unemployed   group estimate conf.low conf.high
+##   &lt;fct&gt;        &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 Employed     0        0.503    0.466     0.540
+## 2 Not Employed 0        0.874    0.773     0.976
+```
+
+``` r
+avg_predictions(mod, variables="unemployed", type="response")  %&gt;% 
+  as_tibble() %&gt;% 
+  select(unemployed, estimate, conf.low, conf.high)
+```
+
+```
+## # A tibble: 2 × 4
+##   unemployed   estimate conf.low conf.high
+##   &lt;fct&gt;           &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 Employed        1.04    0.948      1.12 
+## 2 Not Employed    0.330   0.0181     0.642
+```
+]
+
+
+
+---
+## Example: Modeling Manifestos
+
+The Comparative Manifestos Project has data on the number of statements in a party's manifesto devoted to various different topics.  We want to model the number of "freedom and human rights" statements.
+
+
+
+``` r
+man &lt;- import("data/man2014.dta")
+man$num201 &lt;- floor((man$per201/100)*man$total)
+```
+---
+
+
+## Histogram of Statements
+
+
+
+``` r
+ggplot(man, aes(x=num201)) + geom_histogram() + theme_classic() + labs(x="Human Rights Statements")
+```
+
+&lt;img src="lecture7_files/figure-html/histfree-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Offsets (exposure)
+
+An offset (or exposure) term is a way of building into the model that observations have differential abilities to generate positive counts.  
+- Usually, the offset is the log of the maximum possible count (or exposure time).  
+
+In the Poisson model: 
+
+`$$\log(E(Y|X)) = Xb$$`
+With an exposure term: 
+
+`$$\begin{aligned}
+\log\left(\frac{E(Y|X)}{\text{Exopsure}}\right) &amp;= Xb\\
+\log(E(Y|X)) - \log(\text{Exposure}) &amp;= Xb\\
+\log(E(Y|X)) &amp;= \log(Xb) + \log(\text{Exposure})
+\end{aligned}$$`
+
+---
+
+## Poisson Model
+
+.pull-left[
+
+``` r
+# Without Exposure
+tmp &lt;- na.omit(man[,c("num201", "total", "rile")])
+mod &lt;- glm(num201 ~ rile, 
+           data=tmp, 
+           family=poisson)
+mode0 &lt;- glm(num201 ~ 1 + offset(log(total)), 
+             data=tmp, 
+             family=poisson)
+mode &lt;- glm(num201 ~ 1 + rile + offset(log(total)), 
+             data=tmp, 
+             family=poisson)
+AIC(mod, mode0, mode)
+```
+
+```
+##       df       AIC
+## mod    2 109874.28
+## mode0  1  53591.16
+## mode   2  52566.84
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture7_files/figure-html/unnamed-chunk-14-1.png" width="100%" /&gt;
+
+
+
+]
+
+---
+
+
+## Negative Binomial Model
+
+.pull-left[
+
+``` r
+# Without exposure 
+mod2 &lt;- MASS::glm.nb(num201 ~ rile, data=tmp)
+mod2e0 &lt;- MASS::glm.nb(num201 ~ 1 + 
+                 offset(log(total)),
+               data=tmp)
+
+mod2e &lt;- MASS::glm.nb(num201 ~ rile + 
+                 offset(log(total)),
+               data=tmp)
+AIC(mod2, mod2e0, mod2e)
+```
+
+```
+##        df      AIC
+## mod2    3 24763.78
+## mod2e0  2 22361.96
+## mod2e   3 22256.06
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture7_files/figure-html/nbfree2-1.png" width="100%" /&gt;
+
+]
+
+
+---
+
+
+## Binomial Model
+
+When we know the number of possibilities for each count (in this case, the number of sentences in the party's manifesto), then we can use that information.  Recall the Binomial distribution.
+
+`\begin{equation*}
+    Pr(y = k) = {n \choose k} p^{k}(1-p)^{n-k}
+\end{equation*}`
+
+Here, we're using a regression model where we parameterize `\(p\)`.
+
+`\begin{align*}
+    Pr(y_{i} = k_{i}) &amp;= {n_{i} \choose k_{i}} p_{i}^{k_{i}}(1-p_{i})^{n_{i}-k_{i}}
+    \text{logit}(p_{i}) &amp;= \mathbf{x}_{i}\mathbf{\beta}
+\end{align*}`
+
+
+---
+
+## Binomial Model Example
+
+.pull-left[
+
+``` r
+tmp$other &lt;- floor(tmp$total - tmp$num201)
+mod3 &lt;- glm(cbind(num201, other) ~ rile, data=tmp, family=binomial)
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture7_files/figure-html/unnamed-chunk-15-1.png" width="100%" /&gt;
+]
+
+---
+
+## Quasi-Binomial Model Example
+
+.pull-left[
+
+The `quasibinomial` link accounts for overdispersion in the binomial data. With binomial data, `\(E(y_i) = n_ip_i\)` and the variance is `\(\text{var}(y_i) = n_ip_i(1-p_i)\)`.  The quasibinomial adds a dispersion parameter, like the negative binomial does. 
+
+
+``` r
+mod3q &lt;- glm(cbind(num201, other) ~ rile, data=tmp, family=quasibinomial)
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture7_files/figure-html/unnamed-chunk-16-1.png" width="100%" /&gt;
+]
+
+---
+
+
+
+## Effects
+
+
+``` r
+s &lt;- seq(-75, 90, length=100)
+mode &lt;- glm(num201 ~ 1 + rile + offset(log(total)), 
+             data=tmp, 
+             family=poisson)
+mod2e &lt;- MASS::glm.nb(num201 ~ rile + 
+                 offset(log(total)),
+               data=tmp)
+mod3 &lt;- glm(cbind(num201, other) ~ rile, data=tmp, family=quasibinomial)
+ap1 &lt;- avg_predictions(mode, variables=list(rile = s))
+ap2 &lt;- avg_predictions(mod2e, variables=list(rile = s))
+ap3 &lt;- avg_predictions(mod3, variables=list(rile = s))
+ap3q &lt;- avg_predictions(mod3q, variables=list(rile = s))
+plot.dat &lt;- ap1 %&gt;% 
+  as_tibble() %&gt;% 
+  mutate(method = "Poisson (E)") %&gt;% 
+  bind_rows(ap2 %&gt;% as_tibble() %&gt;% mutate(method="NB (E)"), 
+            ap3 %&gt;% as_tibble() %&gt;% 
+              mutate(method="Binom",
+                     across(c(estimate, conf.low, conf.high), 
+                            ~.x * median(tmp$total))), 
+            ap3q %&gt;% as_tibble() %&gt;% 
+              mutate(method="Quasi-Binom",
+                     across(c(estimate, conf.low, conf.high), 
+                            ~.x * median(tmp$total))))
+
+ggplot(plot.dat, aes(x=rile,y=estimate)) + 
+  geom_ribbon(aes(ymin = conf.low, ymax=conf.high, fill
+                  =method), 
+              alpha=.25) + 
+  geom_line(aes(color = method)) + 
+  theme_classic()
+```
+
+&lt;img src="lecture7_files/figure-html/unnamed-chunk-17-1.png" width="504" /&gt;
+
+---
+
+## Recap
+
+1. Develop Count models - poisson, negative binomial, binomial
+2. Effects and Effect Displays
+3. Model Fit and Evaluation
+4. Discuss Overdispersion
+5. Zero-inflation and hurdle models
+
+---
+
+## Exercise
+
+A while back, I collected some data on scientific literacy in the US (along with a bunch of other stuff).  We asked 12 True-False questions about science and recorded peoples' answers.  In the `data/science.dta` file, you'll find the answers to those questions, along with the number of correct answers each respondent gave and the respondent's age, education, income, race and region of residence. Using the data, do the following.  
+
+
+``` r
+library(rio)
+library(dplyr)
+sci &lt;- import("data/science.dta")
+sci &lt;- sci %&gt;%
+  mutate(across(age_group:income, factorize))
+```
+
+Estimate these models: 
+  1. Poisson without offset
+  2. Poisson with offset of `log(n_ans)` 
+  3. Binomial with `n=n_ans
+  4. OLS where `\(y\)` is the number of right answers. 
+
+How do the models fit the data - which one do you think is best? 
+
+What are the effects of the variables from the different models. 
+
+---
+
+## Variables
+.pull-left[
+.tiny[
+- age_group - What is your Age                                                                                               
+- education - What is the highest level of education you have attained?                                                      
+- race - With which race do you most closely identify?                                                                  
+- region - In what region do you live?                                                                                    
+- income - In what range does your gross household income fall?                                                           
+- Q47 - The Sun goes around the Earth                                                                                  
+- Q48 - The center of the Earth is very hot                                                                            
+- Q49 - The oxygen we breathe comes from plants                                                                        
+- Q50 - Radioactive milk can be made safe by boiling it                                                                
+- Q51 - The continents on which we live have been moving for millions of years and will continue to move
+]
+]
+.pull-right[
+.tiny[
+- Q52 - It is the mother's genes that decide whether the baby is a boy or a girl                                       
+- Q53 - The earliest humans lived at the same time as the dinosaurs                                                    
+- Q54 - Antibiotics kill viruses as well as bacteria                                                                   
+- Q55 - Lasers work by focusing sound waves                                                                            
+- Q56 - All radioactivity is man-made                                                                                  
+- Q57 - Human beings, as we know them today, developed from earlier species of animals                                 
+- Q58 - It takes one month for the Earth go to around the Sun                                                          
+- n_right - Number of correct answers
+- n_ans - Number of questions answered                                                                                                             
+- n_asked - Number of questions asked                                                                                                             
+- n_wrong - Number of questions answered incorrectly    
+]
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

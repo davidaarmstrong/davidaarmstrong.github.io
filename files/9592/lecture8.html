@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9592</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9592
+]
+.subtitle[
+## Lecture 8: Distributional Regression and Smoothing Splines
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+
+.tiny {
+  font-size: 1rem;
+}
+&lt;/style&gt;
+
+## Goals for This Session
+
+1. Distributional Regression Models
+2. Splines
+3. Penalized Splines
+4. GAMLSS
+
+
+---
+
+## Distributional Regression Models
+
+Model not just `\(E(y_i|\mathbf{x}_i)\)` (i.e., the first _moment_ of the distribution), but higher moments, too. 
+- GLMs make assumptions about the variance (e.g., in the Poisson `\(\mu_i = E(y_i|\mathbf{x}_i) = V(y_i|\mathbf{x}_i)\)`. 
+- We can relax these assumptions by parameterizing higher moments.  
+
+---
+
+## Heteroskedastic Linear Model 
+
+`$$\begin{aligned}
+y_i &amp;= \mathbf{x}_i\mathbf{b} + e_i\\
+\log(\text{var}(e_i)) &amp;= \mathbf{x}_i\mathbf{g} + w_i
+\end{aligned}$$`
+
+Here, instead of assuming `\(\text{var}(e_i) = \sigma_e\)` for all observations, we can parameterize the variance and have it change as a function of `\(\mathbf{x}\)`. 
+
+---
+
+## Example
+
+
+
+
+
+``` r
+library(gamlss)
+library(psre)
+data(wvs)
+wvs2 &lt;- wvs %&gt;% 
+  select(resemaval, pct_high_rel_imp, pct_univ_degree) %&gt;% na.omit()
+g1 &lt;- gamlss(resemaval ~ pct_high_rel_imp + pct_univ_degree, data=wvs2)
+```
+
+```
+## GAMLSS-RS iteration 1: Global Deviance = -326.1249 
+## GAMLSS-RS iteration 2: Global Deviance = -326.1249
+```
+
+``` r
+g2 &lt;- gamlss(resemaval ~ pct_high_rel_imp + pct_univ_degree, 
+             sigma.formula =  ~ pct_high_rel_imp + pct_univ_degree,
+             data=wvs2)
+```
+
+```
+## GAMLSS-RS iteration 1: Global Deviance = -340.5837 
+## GAMLSS-RS iteration 2: Global Deviance = -343.1948 
+## GAMLSS-RS iteration 3: Global Deviance = -343.2899 
+## GAMLSS-RS iteration 4: Global Deviance = -343.2929 
+## GAMLSS-RS iteration 5: Global Deviance = -343.293
+```
+
+``` r
+VC.test(g1, g2)
+```
+
+```
+##  Vuong's test: -0.715 it is not possible to discriminate between models: g1 and g2 
+## Clarke's test: 59 p-value= 0.0014 g2 is preferred over g1
+```
+---
+
+## Summaries
+.pull-left[
+
+``` r
+# Constant Variance
+brief(g1)
+```
+
+```
+##                   Estimate Std. Error  t value  Pr(&gt;|t|)    
+## (Intercept)       0.559886   0.022378  25.0194 &lt; 2.2e-16 ***
+## pct_high_rel_imp -0.240816   0.027268  -8.8313  2.09e-15 ***
+## pct_univ_degree   0.083562   0.039645   2.1077   0.03666 *  
+## (Intercept)      -2.444488   0.056077 -43.5915 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+.pull-right[
+
+``` r
+# Parameterized Variance
+brief(g2)
+```
+
+```
+##                   Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept)       0.601693   0.028168 21.3606 &lt; 2.2e-16 ***
+## pct_high_rel_imp -0.284923   0.030756 -9.2639 &lt; 2.2e-16 ***
+## pct_univ_degree   0.039818   0.038172  1.0431    0.2985    
+## (Intercept)      -1.777345   0.199637 -8.9029 1.475e-15 ***
+## pct_high_rel_imp -0.948363   0.233877 -4.0550 7.962e-05 ***
+## pct_univ_degree  -0.371108   0.330964 -1.1213    0.2639    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+---
+
+## Effects
+
+.pull-left[
+
+``` r
+library(patchwork)
+p1 &lt;- plot_predictions(g2, 
+                       condition="pct_high_rel_imp", 
+                       what="mu") + 
+  theme_classic() + 
+  ggtitle("Expected Value")
+p2 &lt;- plot_predictions(g2, 
+                       condition="pct_high_rel_imp", 
+                       what="sigma") + 
+  theme_classic() + 
+  ggtitle("Residual Variane")
+p1 + p2 + plot_layout(ncol=1)
+```
+]
+.pull-right-shift[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-6-1.png" width="504" /&gt;
+]
+
+---
+
+## Splines
+
+&gt; ... piecewise regression functions we constrain to join at points called knots (Keele 2007, 70)
+
+- In their simplest form, they are dummy regressors that we use to force the regression line to change direction at some value(s) of `\(X\)`.
+- These are similar in spirit to LPR models where we use a subset of data to fit local regressions (but the window doesn't move here).
+- These are also allowed to take any particular functional form, but they are a bit more constrained than the LPR model.
+
+---
+
+## Simple Example
+
+.pull-left[
+It is easy to figure out what sort of model we want.  It appears that the relationship between `\(x\)` and `\(y\)` would be well-characterized by two lines.
+- One with a negative slope in the range 0-60
+- One with a positive slope in the range 60-100
+]
+.pull-right-shift2[
+&lt;img src="lecture8_files/figure-html/simplespline-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+
+# Basis Functions
+
+A basis function is really just a function that transforms the values of X. So, instead of estimating:
+
+`$$y_i = \beta_0 + \beta_1x_i + \varepsilon_i$$`
+
+we estimate:
+
+`$$y_i = \beta_0 + \beta_1b_1(x_i) + \beta_2b_2(x_i) + \ldots +\beta_kb_k(x_i) + \varepsilon_i$$`
+
+The basis functions `\(b_k(\cdot)\)` are known ahead of time (not estimated by the model).
+- We can think of polynomials as basis functions where `\(b_j(x_i) = x_i^j\)`
+
+
+---
+
+# Truncated Power Basis Functions
+
+The easiest set of Spline functions to consider (for knot location `\(k\)`) and power `\(p\)` are called truncated power functions, defined as:
+
+`$$h(x, k) = (x - k)_{+}^{p} = \left\{\begin{array}{ll}(x-k)^{p} &amp; \text{if } x &gt; k\\ 0 &amp; \text{otherwise}\end{array}\right.$$`
+
+When using these basis functions in, we put the full (i.e., global) parametric function in and a truncated power function of degree `\(n\)` for each knot.
+
+---
+
+
+# Linear Truncated Power Functions
+
+To use the truncated power basis for our problem, we need:
+- The global linear model
+- One truncated power function for the `\(x\)` values greater than the knot location (60).
+
+
+`$$y = b_{0} + b_{1}x + b_{2}(x-60)_{+}^{1} + e$$`
+
+This sets up essentially 2 equations:
+
+`$$\begin{aligned}
+   x \leq 60:&amp; y = b_{0} + b_{1}x\\
+   x &gt; 60:&amp; y = b_{0} + b_{1}x + b_{2}(x-60) = (b_{0} - 60b_{2}) + (b_{1}+b_{2})x
+\end{aligned}$$`
+
+Notice that here we are only estimating 3 parameters, where the interaction would estimate 4 parameters.  Thus, this is a constrained version of the interaction.
+
+---
+
+## Estimating the Model 
+
+
+
+
+.pull-left[
+
+``` r
+mod &lt;- lm(y ~ x + tpb(x, 1, 1, knot_loc=60))
+summary(mod)
+```
+
+```
+## 
+## Call:
+## lm(formula = y ~ x + tpb(x, 1, 1, knot_loc = 60))
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -11.6543  -3.2447  -0.4566   3.0872  11.8296 
+## 
+## Coefficients:
+##                             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                 62.58109    1.23841   50.53   &lt;2e-16 ***
+## x                           -1.02121    0.03138  -32.55   &lt;2e-16 ***
+## tpb(x, 1, 1, knot_loc = 60)  2.00017    0.07295   27.42   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4.982 on 97 degrees of freedom
+## Multiple R-squared:  0.9161,	Adjusted R-squared:  0.9144 
+## F-statistic: 529.8 on 2 and 97 DF,  p-value: &lt; 2.2e-16
+```
+]
+.pull-right[
+
+``` r
+car::linearHypothesis(mod, 
+                      "x + tpb(x, 1, 1, knot_loc = 60) = 0")
+```
+
+```
+## Linear hypothesis test
+## 
+## Hypothesis:
+## x  + tpb(x,1, knot_loc = 60) = 0
+## 
+## Model 1: restricted model
+## Model 2: y ~ x + tpb(x, 1, 1, knot_loc = 60)
+## 
+##   Res.Df     RSS Df Sum of Sq      F    Pr(&gt;F)    
+## 1     98 11989.6                                  
+## 2     97  2407.9  1    9581.7 385.99 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+]
+
+---
+
+
+# Example: Cubic Spline
+
+Consider the following relationship:
+
+&lt;img src="lecture8_files/figure-html/simnl-1.png" width="432" height="75%" style="display: block; margin: auto;" /&gt;
+
+
+
+
+---
+
+
+# Cubic Spline
+
+`$$y = b_{0} + b_{1}x + b_{2}x^2 + b_{3}x^{3} + \sum_{m-1}^{\text{# knots}}b_{k+3}(x-k_m)_{+}^{3}$$`
+
+Let's consider our example with 3 knots `\(k = \{.2, .4, .6, .8\}\)`
+
+
+```
+## Coefficients:
+##                                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                     8.602e-02  6.836e-01   0.126   0.8999    
+## x                              -3.885e+00  1.894e+01  -0.205   0.8376    
+## I(x^2)                          5.772e+02  1.386e+02   4.164 3.84e-05 ***
+## I(x^3)                         -1.703e+03  2.877e+02  -5.921 6.99e-09 ***
+## tpb(x, 3, 4, knot_loc = k)tpb1  2.771e+03  3.789e+02   7.314 1.48e-12 ***
+## tpb(x, 3, 4, knot_loc = k)tpb2 -1.474e+03  1.821e+02  -8.094 7.36e-15 ***
+## tpb(x, 3, 4, knot_loc = k)tpb3  3.866e+02  1.821e+02   2.123   0.0344 *  
+## tpb(x, 3, 4, knot_loc = k)tpb4  7.080e+02  3.789e+02   1.869   0.0624 .  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard deviation: 1.951 on 392 degrees of freedom
+## Multiple R-squared: 0.6665
+## F-statistic: 111.9 on 7 and 392 DF,  p-value: &lt; 2.2e-16 
+##     AIC     BIC 
+## 1679.71 1715.63
+```
+
+---
+
+
+# Predictions
+
+.shift[
+&lt;img src="lecture8_files/figure-html/csp1-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# Example 
+
+.pull-left[
+
+
+
+
+``` r
+df &lt;- data.frame(x=x, y=y, f=f)
+mod &lt;- lm(y ~ poly(x, 3, raw=TRUE) + tpb(x, 3, 20), data=df)
+D &lt;- diag(24)
+D[1:4,1:4] &lt;- 0
+X &lt;- model.matrix(mod)
+y &lt;- model.response(model.frame(mod))
+
+lambda &lt;- .0025
+b.constr &lt;- solve(t(X) %*% X + lambda^2*D) %*% t(X) %*% y
+
+fit0 &lt;- X %*% mod$coef
+fit1 &lt;- X %*% b.constr
+```
+]
+.pull-right-shift[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-11-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# GAMLSS
+
+We usually don't do the penalizing ourselves, we embed it in a regression model.  GAMLSS is a framework for doing this (and many other things). 
+
+
+``` r
+library(gamlss)
+dframe &lt;- data.frame(x=x, y=y, f=f)
+mod &lt;- gamlss(y ~ pb(x, control=pb.control(inter=50)), data=dframe)
+```
+
+```
+## GAMLSS-RS iteration 1: Global Deviance = 1653.742 
+## GAMLSS-RS iteration 2: Global Deviance = 1653.742
+```
+
+``` r
+brief(mod)
+```
+
+```
+##                                          Estimate Std. Error t value  Pr(&gt;|t|)
+## (Intercept)                              6.278467   0.190859  32.896 &lt; 2.2e-16
+## pb(x, control = pb.control(inter = 50)) -5.630961   0.330371 -17.044 &lt; 2.2e-16
+## (Intercept)                              0.648239   0.035355  18.335 &lt; 2.2e-16
+##                                            
+## (Intercept)                             ***
+## pb(x, control = pb.control(inter = 50)) ***
+## (Intercept)                             ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+# Smooth Term
+
+
+``` r
+mod$mu.coefSmo[[1]]
+```
+
+```
+## P-spline fit using the gamlss function pb() 
+## Degrees of Freedom for the fit : 12.20499 
+## Random effect parameter sigma_b: 0.305637 
+## Smoothing parameter lambda     : 11.0419
+```
+
+
+``` r
+# coefficients
+c(mod$mu.coefSmo[[1]]$coef)
+```
+
+```
+##  [1] -7.83987429 -7.08205107 -6.32457123 -5.55820839 -4.70740312 -3.68229997
+##  [7] -2.43287518 -1.03781110  0.35715821  1.60436780  2.61615758  3.38244095
+## [13]  3.91032869  4.13602021  4.05122654  3.69165811  3.07079075  2.29463666
+## [19]  1.50317191  0.86189153  0.44471923  0.22884823  0.09157514 -0.07175075
+## [25] -0.27758536 -0.44039906 -0.50226767 -0.52506893 -0.53208246 -0.45276313
+## [31] -0.23082974  0.09126013  0.39642799  0.62672623  0.75195622  0.78664018
+## [37]  0.75948287  0.68688824  0.53768191  0.26689779 -0.10429152 -0.48475629
+## [43] -0.81851329 -1.05911040 -1.20412029 -1.29184188 -1.32162509 -1.22834632
+## [49] -1.02434386 -0.76913754 -0.47207051 -0.16491794  0.14260257
+```
+
+---
+
+# Plot
+.left-code[
+
+``` r
+term.plot(mod)
+```
+]
+.right-plot-shift[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-15-1.png" width="432" height="75%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Replicating Ourselves
+
+Let's do some of the same things we've done already in this framework: 
+
+1. Modeling non-linearity in the Jacobson Data. 
+2. Monotone smoothing of democracy and vote choice. 
+
+---
+
+## Jacobson Data 
+
+
+``` r
+library(gamlss)
+library(car)
+dat &lt;- import("data/jacob.dta")
+
+gmod &lt;- gamlss(chal_vote ~ pb(perotvote) + pb(chal_spend) + 
+    exp_chal, data=dat)
+
+invx &lt;- function(x)(1/x)
+spline.mod &lt;- gamlss(chal_vote ~ invx(perotvote) + 
+                   bs(chal_spend, df=4) + 
+                   exp_chal, data=dat)
+
+tp &lt;- termplot(gmod, se=TRUE, plot=FALSE)
+tp2 &lt;- termplot(spline.mod, se=TRUE, plot=FALSE)
+tp_pv &lt;- bind_rows(tp[[1]], tp2[[1]])
+tp_pv$model &lt;- factor(rep(1:2, each=nrow(tp[[1]])), 
+                      labels=c("GAMLSS", "OLS Spline"))
+tp_cs &lt;- bind_rows(tp[[2]], tp2[[2]])
+tp_cs$model &lt;- factor(rep(1:2, each=nrow(tp[[2]])), 
+                      labels=c("GAMLSS", "OLS Spline"))
+```
+
+---
+
+## plots
+
+.pull-left[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-17-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-18-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Testing the models
+
+We can use the Clarke test to evaluate the difference between the two models. 
+
+
+``` r
+VC.test(gmod, spline.mod)
+```
+
+```
+##  Vuong's test: -2.475 model spline.mod is preferred over gmod 
+## Clarke's test: 95 p-value= 0 spline.mod is preferred over gmod
+```
+
+In this case, the spline model is better - generally similar parametric models will be preferred to non-parametric models. 
+
+---
+
+## Monotonic Democracy
+
+
+.pull-left[
+We could use `gamlss()` to estimate a monotonic relationship. 
+
+
+``` r
+library(foreign)
+dat &lt;- import("data/linear_ex.dta")
+dat$polity_dem_fac &lt;- as.factor(dat$polity_dem)
+unrestricted.mod1 &lt;- gamlss(rep1 ~ polity_dem_fac + iwar +
+    cwar + logpop + gdppc,data=dat)
+mono.mod1 &lt;- gamlss(rep1 ~ pbm(polity_dem, mono="down") + 
+    iwar + cwar + logpop + gdppc,data=dat)
+nonmono.mod1 &lt;- gamlss(rep1 ~ pb(polity_dem) + iwar +
+    cwar + logpop + gdppc,data=dat)
+mod.2p &lt;- gamlss(rep1 ~ polity_dem + 
+    I((polity_dem - 9)*(polity_dem &gt;= 9)) + iwar +
+    cwar + logpop + gdppc,data=dat)
+```
+]
+.pull-right-shift[
+
+``` r
+VC.test(unrestricted.mod1, mono.mod1)
+```
+
+```
+##  Vuong's test: -5.305 model mono.mod1 is preferred over unrestricted.mod1 
+## Clarke's test: 679 p-value= 0 mono.mod1 is preferred over unrestricted.mod1
+```
+
+``` r
+VC.test(mod.2p, nonmono.mod1)
+```
+
+```
+##  Vuong's test: 8.167 model mod.2p is preferred over nonmono.mod1 
+## Clarke's test: 2192 p-value= 0 mod.2p is preferred over nonmono.mod1
+```
+
+``` r
+VC.test(mono.mod1, nonmono.mod1)
+```
+
+```
+##  Vuong's test: 5.324 model mono.mod1 is preferred over nonmono.mod1 
+## Clarke's test: 1998 p-value= 0 mono.mod1 is preferred over nonmono.mod1
+```
+
+``` r
+VC.test(mono.mod1, mod.2p)
+```
+
+```
+##  Vuong's test: -7.701 model mod.2p is preferred over mono.mod1 
+## Clarke's test: 795 p-value= 0 mod.2p is preferred over mono.mod1
+```
+]
+
+---
+
+## Monotone Party ID
+
+
+``` r
+anes &lt;- import("data/anes1992.dta")
+anes$pidfac &lt;- as.factor(anes$pid)
+unrestricted.mod2 &lt;- gamlss(votedem ~ retnat + pidfac + age + male +
+	 educ + black + south, data=anes, family=BI)
+```
+
+```
+## GAMLSS-RS iteration 1: Global Deviance = 769.7147 
+## GAMLSS-RS iteration 2: Global Deviance = 769.7147
+```
+
+``` r
+mono.mod2 &lt;- gamlss(votedem ~ retnat + pbm(pid, mono="down") + 
+  age + male + educ + black + south, data=anes, family=BI)
+```
+
+```
+## GAMLSS-RS iteration 1: Global Deviance = 774.5032 
+## GAMLSS-RS iteration 2: Global Deviance = 774.5039
+```
+
+``` r
+VC.test(unrestricted.mod2, mono.mod2)
+```
+
+```
+##  Vuong's test: -3.648 model mono.mod2 is preferred over unrestricted.mod2 
+## Clarke's test: 328 p-value= 0 mono.mod2 is preferred over unrestricted.mod2
+```
+
+
+---
+
+## Plots
+
+.pull-left[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-23-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-24-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Effect Plot Data
+.pull-left[
+
+``` r
+library(gamlss.ggplots)
+moddat &lt;- get_all_vars(mono.mod1, dat)
+cen_moddat &lt;- lapply(moddat, \(x)DAMisc::central(x))
+cen_moddat$polity_dem &lt;- 0:10
+cen_moddat &lt;- do.call(data.frame, cen_moddat)
+
+registerDoParallel(cores = 10)
+B1 &lt;- BayesianBoot(mono.mod1, B=100, newdata=cen_moddat)
+stopImplicitCluster()
+post_sum &lt;- t(apply(B1$par$mu, 1, \(x)c(mean(x), quantile(x, c(.025,.975)))))
+colnames(post_sum) &lt;- c("fit", "lwr", "upr")
+
+cen_moddat &lt;- cbind(cen_moddat, post_sum)
+```
+
+``` r
+ggplot(cen_moddat, 
+       aes(x=polity_dem, y=fit, 
+           ymin=lwr, ymax=upr)) + 
+  geom_ribbon(fill="gray75", alpha=.25) + 
+  geom_line(color="black") + 
+  theme_bw() + 
+  labs(x="Fitted Values", y="Polity")
+```
+
+
+]
+.pull-right[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-27-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## First Difference
+
+
+``` r
+moddat &lt;- get_all_vars(mono.mod1, dat)
+cen_moddat &lt;- lapply(moddat, \(x)DAMisc::central(x))
+cen_moddat$polity_dem &lt;- c(0,10)
+
+cen_moddat &lt;- do.call(data.frame, cen_moddat)
+
+registerDoParallel(cores = 10)
+B1 &lt;- BayesianBoot(mono.mod1, B=100, newdata=cen_moddat)
+stopImplicitCluster()
+post &lt;- B1$par$mu
+
+psum &lt;- t(apply(post, 1, \(x)c(mean(x), quantile(x, c(.025, .975)))))
+fd &lt;- apply(post, 2, diff)
+fd &lt;- c(mean(fd), quantile(fd, c(.025, .975)))
+out &lt;- rbind(psum, fd) %&gt;% 
+  as_tibble() %&gt;% 
+  setNames(c("fit", "lwr", "upr")) %&gt;% 
+  mutate(condition = c("Polity = 0", "Polity = 10", "Difference"), .before="fit")
+out
+```
+
+```
+## # A tibble: 3 × 4
+##   condition      fit    lwr    upr
+##   &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Polity = 0   0.233  0.189  0.276
+## 2 Polity = 10 -1.70  -1.82  -1.59 
+## 3 Difference  -1.93  -2.06  -1.80
+```
+
+
+
+
+---
+
+## Models Supported
+
+Here are the models we've talked about that are supported by GAMLSS. 
+
+- Normal (family `NO`) - mean and variance
+- Binomial (family `BI`) - mean
+- Ordinal (family `ocat`) - mean (only using `gam()` from the `mgcv` package). 
+- Multinomial (family `MN3`, `MN4` or `MN5`) - mean and variance (3,4 or 5 categories only)
+- Poisson (family `PO`) - mean
+- Negative Binomial (family `NBI` or `NBII`) - mean and variance
+- Exponential (family `EXP`) - mean 
+- Weibull (family `WEI`) - mean and variance
+- Cox PH (family `cox.ph`) - mean (only using `gam()` from the `mgcv` package)
+
+---
+
+## Problems With Linear Interactions
+
+Consider the following model:
+
+`$$y = a + b_{1}X + b_{2}D + b_{3}X\times D + e$$`
+
+Hainmueller, Mummolo and Xu argue that our linear interaction models like above suffer from two potential problems:
+
+- The conditional partial effect of each variable is a linear function of the other: `\(b_{D|X} = b_{2} + b_{3}X\)`.  Thus for every additional unit of `\(X\)` the effect of `\(D\)` changes by the same amount.
+
+- Support - most political scientists do not pay attention to the joint density of the interacting variables and what the implies about our ability to make inferences.
+
+
+---
+
+## Linearity
+
+Again, using the same model
+
+`$$y = a + b_{1}X + b_{2}D + b_{3}X\times D + e$$`
+
+Consider two different values of `\(D: \{d_{1}, d_{2}\}\)`, the effect of this contrast is:
+
+`$$\begin{aligned}
+    \hat{Y}(D=d_{1}|X) - \hat{Y}(D=d_{2}|X) =&amp;  (a + b_{1}X + b_{2}d_{1} + b_{3}Xd_{1})\\
+    &amp; - (a + b_{1}X + b_{2}d_{2} + b_{3}Xd_{2})\\
+    =&amp; b_{2}(d_{1}-d_{2}) + b_{3}X(d_{1}-d_{2})
+\end{aligned}$$`
+
+The effect will only be appropriately estimated if *both* functions of `\(X\)` (for `\(d_{1}\)` and `\(d_{2}\)` are linear).
+
+
+
+---
+
+## Support
+
+`$$b_{2}(d_{1}-d_{2}) + b_{3}X(d_{1}-d_{2})$$`
+
+
+The equation above makes it clear that to reliably estimate the treatment:
+
+
+- We must have reasonable data density at both `\(d_{1}\)` and `\(d_{2}\)` for each value of `\(X\)`.
+
+- Failure of this condition results in interaction effects that are a function of interpolation and extrapolation.
+
+
+
+
+---
+
+## Diagnostics I
+
+.left-code[
+
+``` r
+library(interflex)
+set.seed(43901)
+X1 &lt;- rnorm(200, 3, 1)
+X2 &lt;- runif(200, -3, 3)
+e &lt;- rnorm(200, 0, 4)
+D1 &lt;- rbinom(200, 1, .5)
+Y1 &lt;- 5-4*X1 -9*D1 + 3*D1*X1 + e
+Y2 &lt;- 2.5- X2^2 -5*D1 + 2*D1*X2^2  + e
+dat &lt;- as.data.frame(cbind(Y1,Y2,D1,X1, X2))
+dat$D10 &lt;- 1-dat$D1
+i1 &lt;- interflex(estimator="raw", 
+               dat, 
+               "Y1", 
+               "D1", 
+               "X1", 
+               treat.type="discrete")
+
+plot(i1)
+```
+]
+.right-plot-shift[
+
+```
+## Baseline group not specified; choose treat = 0 as the baseline group.
+```
+
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-29-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+
+## Diagnostics II
+
+.left-code[
+
+``` r
+library(interflex)
+i2 &lt;- interflex(estimator="raw", 
+               dat, 
+               "Y2", 
+               "D1", 
+               "X2", 
+               treat.type="discrete")
+
+plot(i2)
+```
+]
+.right-plot-shift[
+
+```
+## Baseline group not specified; choose treat = 0 as the baseline group.
+```
+
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-30-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+
+---
+
+## Binning Estimator for Interaction Effects
+
+- Discretize `\(X\)` using its three terciles.
+
+`$$G_{1}=\left\{\begin{array}{ll}
+        1, &amp;\text{ if }X &lt; \delta_{\frac{1}{3}}\\
+        0, &amp;\text{ Otherwise }
+    \end{array}\right. \text{ }
+    G_{2}=\left\{\begin{array}{ll}
+        1, &amp;\text{ if }\delta_{\frac{1}{3}} \geq X &lt; \delta_{\frac{2}{3}}\\
+        0, &amp;\text{ Otherwise }
+    \end{array}\right.\text{ }
+    G_{3}=\left\{\begin{array}{ll}
+        1, &amp;\text{ if }\delta_{\frac{2}{3}} \geq X\\
+        0, &amp;\text{ Otherwise }
+    \end{array}\right.$$`
+
+
+- Pick an evaluation point, `\(x_{j}\)`, in each of the `\(J\)` bins (usually the median of the `\(x\)` values within the bin)
+
+- Estimate the model:
+
+`$$Y = \sum_{j=1}^{J} \left\{u_{j} + \alpha_{j}D +\eta_{j}(X-x_{j}) + \beta_{j}(X-x_{j})D\right\}G_{j} + \ldots + \varepsilon$$`
+
+
+---
+
+## Advantages over Linear Interaction Effect
+
+
+- More flexible for non-linear functional forms.  It fits separate interactions to each bin.
+
+- Since `\((X-x_{j}) = 0\)` at the evaluation point, the partial conditional effect within each bin is just `\(\alpha_{j}\)`.
+
+- Binning ensures that there is sufficient joint support on `\(X\)` and `\(D\)` since they are constructed from `\(X\)`.
+
+- This model nests the linear interaction model, so it can serve as a test of the linear interaction effect model.
+
+---
+
+## Binning Estimator
+
+.left-code[
+
+``` r
+b1 &lt;- interflex(estimator="binning", 
+                dat, 
+                "Y1",
+                "D1", 
+                "X1", 
+                treat.type="discrete") 
+plot(b1)
+```
+]
+.right-plot-shift2[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-31-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Binning Estimator II
+
+.left-code[
+
+``` r
+b2 &lt;- interflex(estimator="binning", 
+                dat, 
+                "Y2",
+                "D1", 
+                "X2", 
+                treat.type="discrete") 
+plot(b2)
+```
+]
+.right-plot-shift2[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-32-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Testing for Linear Interaction Effect
+
+We could recast the model above (the binning estimator one) to be:
+
+`$$\begin{aligned}
+    Y =&amp; \mu + \alpha D + \eta X + \beta DX + G_{2}(\mu_{2^{\prime}} + \alpha_{2^{\prime}} D + \eta_{2^{\prime}} X + \beta_{2^{\prime}} DX)\\
+       &amp; + G_{3}(\mu_{3^{\prime}} + \alpha_{3^{\prime}} D + \eta_{3^{\prime}} X + \beta_{3^{\prime}} DX)
+\end{aligned}$$`
+
+We can then use a Wald test (i.e., F-test) to test whether all of the `\(\theta_{2^{\prime}}\)` and `\(\theta_{3^{\prime}}\)` terms are simultaneously zero
+
+---
+
+## On Prestige Data
+
+
+``` r
+data(Prestige)
+interflex("raw", Prestige, "prestige", "income", "education", ncols=3)
+```
+
+&lt;img src="lecture8_files/figure-html/praw-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Binning Estimator: Prestige Data
+.left-code[
+
+``` r
+pres.b &lt;- interflex("binning", 
+                    Prestige, 
+                    "prestige", 
+                    "income", 
+                    "education",
+                    Z = c("type", 
+                          "women"), 
+                    na.rm=T, 
+                    figure=FALSE)
+```
+
+
+``` r
+pres.b$tests
+```
+
+```
+## $treat.type
+## [1] "continuous"
+## 
+## $X.Lkurtosis
+## [1] "0.023"
+## 
+## $p.wald
+## [1] "0.000"
+## 
+## $p.lr
+## [1] "0.024"
+## 
+## $formula.restrict
+## prestige ~ education + income + DX + women + Dummy.Covariate.1 + 
+##     Dummy.Covariate.2
+## &lt;environment: 0x13facf1b0&gt;
+## 
+## $formula.full
+## prestige ~ education + income + DX + G.2 + G.2.X + DG.2 + DG.2.X + 
+##     G.3 + G.3.X + DG.3 + DG.3.X + women + Dummy.Covariate.1 + 
+##     Dummy.Covariate.2
+## &lt;environment: 0x13facf1b0&gt;
+## 
+## $sub.test
+## NULL
+```
+]
+.right-plot-shift2[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-34-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## GAMs for the Fake Data I
+
+
+
+``` r
+library(gamlss.add)
+mod1 &lt;- gamlss(Y1 ~ D1 + 
+                 pb(X1) + 
+                 pb(I(X1*(D1 == 1))),  
+               data=dat)
+```
+
+```
+## GAMLSS-RS iteration 1: Global Deviance = 1105.683 
+## GAMLSS-RS iteration 2: Global Deviance = 1105.683
+```
+
+``` r
+mod2 &lt;- gamlss(Y1 ~ X1*D1, data=dat)
+```
+
+```
+## GAMLSS-RS iteration 1: Global Deviance = 1105.683 
+## GAMLSS-RS iteration 2: Global Deviance = 1105.683
+```
+
+``` r
+VC.test(mod1, mod2)
+```
+
+```
+##  Vuong's test: -5.8 model mod2 is preferred over mod1 
+## Clarke's test: 29 p-value= 0 mod2 is preferred over mod1
+```
+
+---
+
+## GAMs for the Fake Data II
+
+
+
+``` r
+library(gamlss.add)
+mod1 &lt;- gamlss(Y2 ~ ga(~ D1 + 
+                 s(X2, by=D1, bs="ts")+ 
+                 s(X2, by=D10, bs="ts")),
+               data=dat)
+```
+
+```
+## GAMLSS-RS iteration 1: Global Deviance = 1094.086 
+## GAMLSS-RS iteration 2: Global Deviance = 1094.086
+```
+
+``` r
+mod2 &lt;- gamlss(Y2 ~ X2*D1, data=dat)
+```
+
+```
+## GAMLSS-RS iteration 1: Global Deviance = 1214.533 
+## GAMLSS-RS iteration 2: Global Deviance = 1214.533
+```
+
+``` r
+VC.test(mod1, mod2)
+```
+
+```
+##  Vuong's test: 4.793 model mod1 is preferred over mod2 
+## Clarke's test: 155 p-value= 0 mod1 is preferred over mod2
+```
+
+---
+
+## Treatment Effect Code
+
+
+``` r
+fake.dat &lt;- expand.grid(
+  X2 = seq(min(dat$X2), max(dat$X2), length=100), 
+  D1 = c(0,1)
+)
+fake.dat$D10 &lt;- 1-fake.dat$D1
+lbx2 &lt;- max(min(dat$X2[which(dat$D1 == 0)]), 
+            min(dat$X2[which(dat$D1 == 1)]))
+ubx2 &lt;- min(max(dat$X2[which(dat$D1 == 0)]), 
+            max(dat$X2[which(dat$D1 == 1)]))
+fake.dat &lt;- fake.dat %&gt;% 
+  filter(X2 &gt; lbx2 &amp; X2 &lt; ubx2)
+X &lt;- model.matrix(mod1$mu.coefSmo[[1]], newdata=fake.dat)
+fit &lt;- X %*% mod1$mu.coefSmo[[1]]$coefficients
+b &lt;- MASS::mvrnorm(1500, 
+                   coef(mod1$mu.coefSmo[[1]]), 
+                   vcov(mod1$mu.coefSmo[[1]]))
+Xb &lt;- X %*% t(b)
+diff &lt;- Xb[99:196, ] - Xb[1:98, ]
+mean.diff &lt;- rowMeans(diff)
+diff.ci &lt;- apply(diff, 1, quantile, c(.025,.975))
+fake.dat$diff &lt;- fit[99:196]-fit[1:98]
+fake.dat$lower &lt;- diff.ci[1,]
+fake.dat$upper &lt;- diff.ci[2,] 
+fake.dat &lt;- fake.dat[which(fake.dat$D1 == 0), ]
+```
+
+---
+
+## Treatment Effect Plot
+
+.left-code[
+
+``` r
+ggplot(fake.dat, aes(x=X2, y=diff, 
+                     ymin=lower, ymax=upper)) + 
+  geom_ribbon(alpha=.2, col="transparent") + 
+  geom_line() + 
+  theme_xaringan() + 
+  labs(x="X2", y="Predicted Treatment Effect")
+```
+]
+.right-plot-shift2[
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-36-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## GAMs for the Prestige Data
+
+
+
+``` r
+library(mgcv)
+Prestige &lt;- na.omit(Prestige)
+mod1 &lt;- gamlss(prestige ~ log(income)*education + 
+    women + type, data=Prestige)
+```
+
+```
+## GAMLSS-RS iteration 1: Global Deviance = 632.6185 
+## GAMLSS-RS iteration 2: Global Deviance = 632.6185
+```
+
+``` r
+mod2 &lt;- gamlss(prestige ~ 
+    ga(~ ti(income) + ti(education) + ti(income, education)) + 
+    women + type, data=Prestige)
+```
+
+```
+## GAMLSS-RS iteration 1: Global Deviance = 627.3067 
+## GAMLSS-RS iteration 2: Global Deviance = 627.3019 
+## GAMLSS-RS iteration 3: Global Deviance = 627.3011
+```
+
+``` r
+VC.test(mod1, mod2)
+```
+
+```
+##  Vuong's test: 2.75 model mod1 is preferred over mod2 
+## Clarke's test: 72 p-value= 0 mod1 is preferred over mod2
+```
+
+---
+
+## Two 3-D Surfaces for the Two Models
+.pull-left[
+
+``` r
+s_inc &lt;- with(Prestige, seq(min(income), max(income), length=25))
+s_ed &lt;- with(Prestige, seq(min(education), max(education), length=25))
+s_linc &lt;- log(s_inc)              
+
+p1 &lt;- Vectorize(function(x, y, ...){
+  d &lt;- data.frame(type = factor(1, levels=1:3, labels=c("bc", "prof", "wc")), 
+                  women = 29, 
+                  income = x, 
+                  education = y)
+  predict(mod1, newdata=d)
+})
+p2 &lt;- Vectorize(function(x, y, ...){
+  d &lt;- data.frame(type = factor(1, levels=1:3, 
+                    labels=c("bc", "prof", "wc")), 
+                  women = 29, 
+                  income = x, 
+                  education = y)
+  predict(mod2, newdata=d)
+})
+
+o1 &lt;- outer(s_inc, s_ed, p1)
+o2 &lt;- outer(s_inc, s_ed, p2)
+
+plot_ly() %&gt;% 
+  add_trace(x=~s_inc, y=~s_ed, z=~t(o1), type="surface", 
+    colorscale=list(c(0,1), 
+      RColorBrewer::brewer.pal(9, "Blues")[c(1,9)])) %&gt;% 
+  add_trace(x=~s_inc, y=~s_ed, z=~t(o2), type="surface", 
+    colorscale=list(c(0,1), 
+      RColorBrewer::brewer.pal(9, "Reds")[c(1,9)]))  
+```
+]
+.pull-right[
+&lt;img src="images/3d.png" width="100%" /&gt;
+]
+
+
+---
+
+## Review
+
+1. Distributional Regression Models
+2. Splines
+3. Penalized Splines
+4. GAMLSS
+
+---
+
+## Exercise
+
+Using the Fearon and Laitin data, estimate the baseline model below and then estimate the model in the GAMLSS framework with penalized splines on the continuous variables.  How robust are the relationships to these changes?
+
+
+``` r
+fldat &lt;- rio::import("fl_repdata.dta")
+fldat$onset &lt;- ifelse(fldat$onset &gt; 1, 1, fldat$onset)
+bmod &lt;- glm(onset ~ warl + gdpenl + lpopl1 + 
+      lmtnest + ncontig + Oil + nwstate + instab + 
+      polity2l + ethfrac + relfrac, 
+    data=fldat, family=binomial)
+```
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

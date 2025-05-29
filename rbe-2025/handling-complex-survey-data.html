@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 6 Handling Complex Survey Data | R: Learning by Example</title>
+  <meta name="description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 6 Handling Complex Survey Data | R: Learning by Example" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 6 Handling Complex Survey Data | R: Learning by Example" />
+  
+  <meta name="twitter:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+<meta name="author" content="David A. Armstrong II and William Poirier" />
+
+
+<meta name="date" content="2025-05-29" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="ordered-and-multinomial-logit.html"/>
+<link rel="next" href="multilevel-models.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<link href="libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.33/datatables.js"></script>
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">R: Learning by Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preliminaries</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#license"><i class="fa fa-check"></i>License</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#getting-r-and-rstudio"><i class="fa fa-check"></i>Getting R and Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#keeping-track-of-your-work"><i class="fa fa-check"></i>Keeping Track of Your Work</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#overview-of-rstudio"><i class="fa fa-check"></i>Overview of Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#using-r"><i class="fa fa-check"></i>Using <em>R</em></a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#assigning-output-to-objects"><i class="fa fa-check"></i>Assigning Output to Objects</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#vectors-and-matrices"><i class="fa fa-check"></i>Vectors and Matrices</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#function-arguments"><i class="fa fa-check"></i>Function Arguments</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#importing-data"><i class="fa fa-check"></i>Importing Data</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#data-types-in-r"><i class="fa fa-check"></i>Data Types in <em>R</em></a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#examining-data"><i class="fa fa-check"></i>Examining Data</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#missing-values"><i class="fa fa-check"></i>Missing Values</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#filtering-with-logical-expressions-and-sorting"><i class="fa fa-check"></i>Filtering with Logical Expressions and Sorting</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#workhorse-functions"><i class="fa fa-check"></i>Workhorse Functions</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#exercises"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html"><i class="fa fa-check"></i>Datasets</a>
+<ul>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo"><i class="fa fa-check"></i><code>colo</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo_covid"><i class="fa fa-check"></i><code>colo_covid</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gss-canada"><i class="fa fa-check"></i><code>gss</code> (Canada)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gsss16-usa"><i class="fa fa-check"></i><code>gsss16</code> (USA)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#davenport-soule-armstrong-data"><i class="fa fa-check"></i>Davenport-Soule-Armstrong Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#france-2004"><i class="fa fa-check"></i>France 2004</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#ces19"><i class="fa fa-check"></i><code>ces19</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#snijders-and-bosker-multileve-school-data"><i class="fa fa-check"></i>Snijders and Bosker Multileve School Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-multilevel"><i class="fa fa-check"></i>World Values Survey (multilevel)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#repression-data"><i class="fa fa-check"></i>Repression Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#oil-and-democracy-dataset"><i class="fa fa-check"></i>Oil and Democracy Dataset</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#politicaldemocracy"><i class="fa fa-check"></i><code>PoliticalDemocracy</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-measurement"><i class="fa fa-check"></i>World Values Survey (measurement)</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="viz.html"><a href="viz.html"><i class="fa fa-check"></i><b>1</b> Visualizing</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="viz.html"><a href="viz.html#wrangling-data"><i class="fa fa-check"></i><b>1.1</b> Wrangling data</a>
+<ul>
+<li class="chapter" data-level="1.1.1" data-path="viz.html"><a href="viz.html#merging-datasets"><i class="fa fa-check"></i><b>1.1.1</b> Merging Datasets</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="viz.html"><a href="viz.html#ggplot"><i class="fa fa-check"></i><b>1.2</b> GGplot</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="viz.html"><a href="viz.html#bar-plots"><i class="fa fa-check"></i><b>1.2.1</b> Bar Plots</a></li>
+<li class="chapter" data-level="1.2.2" data-path="viz.html"><a href="viz.html#line-graphs"><i class="fa fa-check"></i><b>1.2.2</b> Line Graphs</a></li>
+<li class="chapter" data-level="1.2.3" data-path="viz.html"><a href="viz.html#histograms"><i class="fa fa-check"></i><b>1.2.3</b> Histograms</a></li>
+<li class="chapter" data-level="1.2.4" data-path="viz.html"><a href="viz.html#scatterplots"><i class="fa fa-check"></i><b>1.2.4</b> Scatterplots</a></li>
+<li class="chapter" data-level="1.2.5" data-path="viz.html"><a href="viz.html#multiple-series"><i class="fa fa-check"></i><b>1.2.5</b> Multiple Series</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="viz.html"><a href="viz.html#recap"><i class="fa fa-check"></i><b>1.3</b> Recap</a></li>
+<li class="chapter" data-level="" data-path="viz.html"><a href="viz.html#exercises-1"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html"><i class="fa fa-check"></i><b>2</b> Describing Relationships in the General Social Survey</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#the-canadian-gss."><i class="fa fa-check"></i><b>2.1</b> The Canadian GSS.</a></li>
+<li class="chapter" data-level="2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#looking-at-the-data."><i class="fa fa-check"></i><b>2.2</b> Looking at the data.</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#cross-tabulations"><i class="fa fa-check"></i><b>2.2.1</b> Cross-tabulations</a></li>
+<li class="chapter" data-level="2.2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#permutation-tests-in-r."><i class="fa fa-check"></i><b>2.2.2</b> Permutation Tests in R.</a></li>
+<li class="chapter" data-level="2.2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#back-to-the-data"><i class="fa fa-check"></i><b>2.2.3</b> Back to the Data</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#descriptive-output-in-knitr"><i class="fa fa-check"></i><b>2.3</b> Descriptive Output in knitr</a></li>
+<li class="chapter" data-level="" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#exercises-2"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="linear-models.html"><a href="linear-models.html"><i class="fa fa-check"></i><b>3</b> Linear Models</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="linear-models.html"><a href="linear-models.html#effects-plots"><i class="fa fa-check"></i><b>3.1</b> Effects Plots</a></li>
+<li class="chapter" data-level="3.2" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-linearity"><i class="fa fa-check"></i><b>3.2</b> Diagnostic Tools: Linearity</a></li>
+<li class="chapter" data-level="3.3" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-heteroskedasticity"><i class="fa fa-check"></i><b>3.3</b> Diagnostic Tools: Heteroskedasticity</a></li>
+<li class="chapter" data-level="3.4" data-path="linear-models.html"><a href="linear-models.html#diagnostics-outliers-and-influential-data"><i class="fa fa-check"></i><b>3.4</b> Diagnostics: Outliers and Influential Data</a></li>
+<li class="chapter" data-level="3.5" data-path="linear-models.html"><a href="linear-models.html#diagnostics-for-normality"><i class="fa fa-check"></i><b>3.5</b> Diagnostics for Normality</a>
+<ul>
+<li class="chapter" data-level="3.5.1" data-path="linear-models.html"><a href="linear-models.html#bootstrapping-regression-models"><i class="fa fa-check"></i><b>3.5.1</b> Bootstrapping Regression Models</a></li>
+</ul></li>
+<li class="chapter" data-level="3.6" data-path="linear-models.html"><a href="linear-models.html#interactions"><i class="fa fa-check"></i><b>3.6</b> Interactions</a></li>
+<li class="chapter" data-level="" data-path="linear-models.html"><a href="linear-models.html#exercises-3"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html"><i class="fa fa-check"></i><b>4</b> Generalized Linear Models - Logit.</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#evaluating-model-fit"><i class="fa fa-check"></i><b>4.1</b> Evaluating Model Fit</a></li>
+<li class="chapter" data-level="4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effects"><i class="fa fa-check"></i><b>4.2</b> Marginal Effects</a></li>
+<li class="chapter" data-level="4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effect-plots"><i class="fa fa-check"></i><b>4.3</b> Marginal Effect Plots</a></li>
+<li class="chapter" data-level="4.4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#interactions-in-binary-dv-models"><i class="fa fa-check"></i><b>4.4</b> Interactions in Binary DV Models</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-binary"><i class="fa fa-check"></i><b>4.4.1</b> Both binary</a></li>
+<li class="chapter" data-level="4.4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#one-binary-one-continuous."><i class="fa fa-check"></i><b>4.4.2</b> One binary, one continuous.</a></li>
+<li class="chapter" data-level="4.4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-continuous"><i class="fa fa-check"></i><b>4.4.3</b> Both Continuous</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#other-glms."><i class="fa fa-check"></i><b>4.5</b> Other GLMs.</a></li>
+<li class="chapter" data-level="" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#exercises-4"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html"><i class="fa fa-check"></i><b>5</b> Ordered and Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#ordinal-dv-models"><i class="fa fa-check"></i><b>5.1</b> Ordinal DV Models</a></li>
+<li class="chapter" data-level="5.2" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#multinomial-logit"><i class="fa fa-check"></i><b>5.2</b> Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#parametric-bootstrap-for-confidence-intervals."><i class="fa fa-check"></i><b>5.2.1</b> Parametric Bootstrap for Confidence Intervals.</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#conclusion"><i class="fa fa-check"></i><b>5.3</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html"><i class="fa fa-check"></i><b>6</b> Handling Complex Survey Data</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#frequency-distributions-and-contingency-tables"><i class="fa fa-check"></i><b>6.1</b> Frequency Distributions and Contingency Tables</a></li>
+<li class="chapter" data-level="6.2" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#summary-statistics"><i class="fa fa-check"></i><b>6.2</b> Summary Statistics</a></li>
+<li class="chapter" data-level="6.3" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#estimating-models"><i class="fa fa-check"></i><b>6.3</b> Estimating Models</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="multilevel-models.html"><a href="multilevel-models.html"><i class="fa fa-check"></i><b>7</b> Multilevel Models</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="multilevel-models.html"><a href="multilevel-models.html#data-structure."><i class="fa fa-check"></i><b>7.1</b> Data Structure.</a></li>
+<li class="chapter" data-level="7.2" data-path="multilevel-models.html"><a href="multilevel-models.html#clustering-standard-errors"><i class="fa fa-check"></i><b>7.2</b> Clustering Standard Errors</a></li>
+<li class="chapter" data-level="7.3" data-path="multilevel-models.html"><a href="multilevel-models.html#between-vs-within-relationships."><i class="fa fa-check"></i><b>7.3</b> Between vs Within Relationships.</a></li>
+<li class="chapter" data-level="7.4" data-path="multilevel-models.html"><a href="multilevel-models.html#random-intercepts"><i class="fa fa-check"></i><b>7.4</b> Random Intercepts</a></li>
+<li class="chapter" data-level="7.5" data-path="multilevel-models.html"><a href="multilevel-models.html#estimating-the-multilevel-model"><i class="fa fa-check"></i><b>7.5</b> Estimating the Multilevel Model</a>
+<ul>
+<li class="chapter" data-level="7.5.1" data-path="multilevel-models.html"><a href="multilevel-models.html#p-values-in-lmer-output"><i class="fa fa-check"></i><b>7.5.1</b> P-values in LMER Output</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="multilevel-models.html"><a href="multilevel-models.html#other-random-effects-models"><i class="fa fa-check"></i><b>7.6</b> Other Random-Effects Models</a></li>
+<li class="chapter" data-level="7.7" data-path="multilevel-models.html"><a href="multilevel-models.html#bayesian-models-with-brms"><i class="fa fa-check"></i><b>7.7</b> Bayesian Models with BRMS</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html"><i class="fa fa-check"></i><b>8</b> Time-Series Cross-Sectional Models</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#preliminaries-and-assumptions"><i class="fa fa-check"></i><b>8.1</b> Preliminaries and Assumptions</a></li>
+<li class="chapter" data-level="8.2" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#unit-effects"><i class="fa fa-check"></i><b>8.2</b> Unit Effects</a></li>
+<li class="chapter" data-level="8.3" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#the-plm-package"><i class="fa fa-check"></i><b>8.3</b> The plm Package</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="measurement-issues.html"><a href="measurement-issues.html"><i class="fa fa-check"></i><b>9</b> Measurement Issues</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="measurement-issues.html"><a href="measurement-issues.html#reliability-analysis"><i class="fa fa-check"></i><b>9.1</b> Reliability Analysis</a></li>
+<li class="chapter" data-level="9.2" data-path="measurement-issues.html"><a href="measurement-issues.html#exploratory-factor-analysis-and-principal-components-analysis"><i class="fa fa-check"></i><b>9.2</b> Exploratory Factor Analysis and Principal Components Analysis</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="measurement-issues.html"><a href="measurement-issues.html#rotations"><i class="fa fa-check"></i><b>9.2.1</b> Rotations</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="measurement-issues.html"><a href="measurement-issues.html#cfa-and-sem"><i class="fa fa-check"></i><b>9.3</b> CFA and SEM</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">R: Learning by Example</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="handling-complex-survey-data" class="section level1 hasAnchor" number="6">
+<h1><span class="header-section-number">Chapter 6</span> Handling Complex Survey Data<a href="handling-complex-survey-data.html#handling-complex-survey-data" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>The models we have talked about already assumed a simple random sample. Obviously, simple random sampling does not always reflect how the data were collected, especially for surveys. Surveys often use stratified or cluster random sampling to reduce costs and increase precision. In these settings, the models need to accommodate themselves to this different sampling structure. The <code>survey</code> package in R allows you to specify the particulars of your survey design and then use the survey design object as data to some models that are specifically designed to deal with complex survey data. Here, we’ll work through some of the options.</p>
+<p>The <code>svydesign()</code> function in the <code>survey</code> package defines your sampling design for the data. There are a few arguments that make this possible.</p>
+<ol style="list-style-type: decimal">
+<li><code>ids</code> are the primary sampling unit (PSU) for cluster-random sampling. If you’re doing doing cluster-random sampling, then use <code>ids=~1</code> to indicate no PSU.</li>
+<li><code>strata</code> are the strata used. The assumption is that the population is put in groups (strata) and that sampling is done within each one of those groups. If you haven’t stratified, then you can use <code>strata=~1</code>.<br />
+</li>
+<li><code>weights</code> are probability weights - the inverse of the probability of being selected into the sample. If instead of probability weights, you are using replicate weights, you should use <code>svrepdesign()</code>.</li>
+</ol>
+<p>We’re going to use some data from the Canadian Election Study. The weights here account for both province of respondent and phone ownership rates (land line, wireless, both). In this case, the stratum is the province and weights are based on phone ownership typology.</p>
+<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="handling-complex-survey-data.html#cb363-1" tabindex="-1"></a><span class="fu">load</span>(<span class="st">&quot;data/ces19.rda&quot;</span>)</span>
+<span id="cb363-2"><a href="handling-complex-survey-data.html#cb363-2" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
+<span id="cb363-3"><a href="handling-complex-survey-data.html#cb363-3" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids=</span><span class="sc">~</span><span class="dv">1</span>, <span class="at">strata=</span><span class="sc">~</span>province19, <span class="at">weights=</span><span class="sc">~</span>weight_CES, <span class="at">data=</span>ces19)</span>
+<span id="cb363-4"><a href="handling-complex-survey-data.html#cb363-4" tabindex="-1"></a>d</span></code></pre></div>
+<pre><code>## Stratified Independent Sampling design (with replacement)
+## svydesign(ids = ~1, strata = ~province19, weights = ~weight_CES, 
+##     data = ces19)</code></pre>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Using the GSS 2016 data, identify the appropriate survey design object. Note that the weights we are going to use are <code>wtssnr</code> and we are not going to specify the <code>strata</code> argument.</p>
+</div>
+<div id="frequency-distributions-and-contingency-tables" class="section level2 hasAnchor" number="6.1">
+<h2><span class="header-section-number">6.1</span> Frequency Distributions and Contingency Tables<a href="handling-complex-survey-data.html#frequency-distributions-and-contingency-tables" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Now, we can use the <code>d</code> object as input data to functions meant to deal with survey data. We can start with the descriptive functions. Two of the functions we’ve already looked at work here, too. The <code>xt()</code> and <code>sumStats()</code> functions from the <code>DAMisc</code> package take survey weights objects as input. For example, if we wanted to make a weighted frequency distribution of the <code>pid</code> variable (party id), we could do the following:</p>
+<div class="sourceCode" id="cb365"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb365-1"><a href="handling-complex-survey-data.html#cb365-1" tabindex="-1"></a><span class="fu">library</span>(DAMisc)</span>
+<span id="cb365-2"><a href="handling-complex-survey-data.html#cb365-2" tabindex="-1"></a><span class="fu">xt</span>(d, <span class="st">&quot;pid&quot;</span>)</span></code></pre></div>
+<pre><code>## $tab
+## $tab[[1]]
+##       pid         Freq
+##       Lib  32%   (704)
+##       Con  32%   (714)
+##       NDP  18%   (401)
+##        BQ   6%   (136)
+##     Green   9%   (192)
+##  Other/DK   2%    (53)
+##     Total 100% (2,200)
+## 
+## 
+## $chisq
+## NULL
+## 
+## $stats
+## list()
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;xt&quot;</code></pre>
+<p>The frequencies are weighted frequencies rounded to the nearest integer value. We could compare this to the unweighted frequencies:</p>
+<div class="sourceCode" id="cb367"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb367-1"><a href="handling-complex-survey-data.html#cb367-1" tabindex="-1"></a><span class="fu">xt</span>(ces19, <span class="st">&quot;pid&quot;</span>)</span></code></pre></div>
+<pre><code>## $tab
+## $tab[[1]]
+##      Var1         Freq
+##       Lib  31%   (674)
+##       Con  32%   (709)
+##       NDP  19%   (426)
+##        BQ   5%   (115)
+##     Green  10%   (218)
+##  Other/DK   2%    (51)
+##     Total 100% (2,193)
+## 
+## 
+## $chisq
+## NULL
+## 
+## $stats
+## list()
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;xt&quot;</code></pre>
+<p>The <code>xt()</code> function is just a wrapper to the <code>svytable()</code> function which produces cross-tabulations from survey design objects. For example, we could do the same thing with:</p>
+<div class="sourceCode" id="cb369"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb369-1"><a href="handling-complex-survey-data.html#cb369-1" tabindex="-1"></a><span class="fu">svytable</span>(<span class="sc">~</span>pid, d)</span></code></pre></div>
+<pre><code>## pid
+##       Lib       Con       NDP        BQ     Green  Other/DK 
+## 704.02534 714.45985 401.07926 135.62555 191.91618  52.51284</code></pre>
+<p>The benefit of the <code>xt()</code> function is more aesthetic than anything in that it takes the information and presents it in a way that is easier to digest (focusing on proportions/percentages, rather than counts).</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Replicate our earlier descriptive analysis with weights. Look at the distribution of two variables we’re going to consider - <code>aidhouse</code> (the government should provide housing to the poor) and <code>partyid</code> (partisan identification).<br />
+- For now, just look at the univariate distributions.
+- Make a bar plot of <code>aidhouse</code> and of <code>partyid</code>, each independently.</p>
+</div>
+<p>If we wanted to make a contingency table of <code>pid</code> by <code>agegrp</code> (age group), we could do that with <code>xt()</code>.</p>
+<div class="sourceCode" id="cb371"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb371-1"><a href="handling-complex-survey-data.html#cb371-1" tabindex="-1"></a><span class="fu">xt</span>(d, <span class="st">&quot;pid&quot;</span>, <span class="at">byvar=</span><span class="st">&quot;agegrp&quot;</span>)</span></code></pre></div>
+<pre><code>## $tab
+## $tab[[1]]
+##  pid/agegrp      18-34      35-54          55+        Total
+##         Lib  20%  (69)  32% (228)  36%   (407)  32%   (704)
+##         Con  24%  (82)  31% (220)  36%   (412)  32%   (714)
+##         NDP  37% (128)  18% (131)  13%   (142)  18%   (401)
+##          BQ   3%  (11)   7%  (54)   6%    (71)   6%   (136)
+##       Green  14%  (47)   9%  (67)   7%    (78)   9%   (192)
+##    Other/DK   3%   (9)   3%  (21)   2%    (22)   2%    (52)
+##       Total 100% (346) 100% (721) 100% (1,132) 100% (2,199)
+## 
+## 
+## $chisq
+## $chisq[[1]]
+## 
+##  Pearson&#39;s X^2: Rao &amp; Scott adjustment
+## 
+## data:  svychisq(as.formula(paste0(&quot;~&quot;, var, &quot;+&quot;, byvar)), d)
+## F = 11.102, ndf = 9.9149, ddf = 27652.7701, p-value &lt; 2.2e-16
+## 
+## 
+## 
+## $stats
+## $stats[[1]]
+##                statistic p-value
+## Chi-squared 145.45405382   0.000
+## Cramers V     0.18185921   0.000
+## Lambda        0.03636364   0.002
+## 
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;xt&quot;</code></pre>
+<p>As people get older, they get more likely to identify with the mainstream Liberal, BQ, and Conservative parties and less likely to identify with NDP and Green parties. Again, the <code>svytable()</code> function could be used here, too, along with the <code>svychisq()</code> function to calculate the appropriate <span class="math inline">\(\chi^2\)</span> statistic.</p>
+<div class="sourceCode" id="cb373"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb373-1"><a href="handling-complex-survey-data.html#cb373-1" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">svytable</span>(<span class="sc">~</span>pid <span class="sc">+</span> agegrp, d)</span>
+<span id="cb373-2"><a href="handling-complex-survey-data.html#cb373-2" tabindex="-1"></a><span class="fu">svychisq</span>(<span class="sc">~</span>pid <span class="sc">+</span> agegrp, d)</span></code></pre></div>
+<pre><code>## 
+##  Pearson&#39;s X^2: Rao &amp; Scott adjustment
+## 
+## data:  svychisq(~pid + agegrp, d)
+## F = 11.102, ndf = 9.9149, ddf = 27652.7701, p-value &lt; 2.2e-16</code></pre>
+<p>The time when <code>svytable()</code> might be more useful is if you wanted to make a graph of the responses. For example, let’s imagine we wanted to visualize these proportions. We could use a mosaic plot or a stacked bar chart of which people seem to be so enamored. Let’s look at a couple of examples.</p>
+<div class="sourceCode" id="cb375"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb375-1"><a href="handling-complex-survey-data.html#cb375-1" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
+<span id="cb375-2"><a href="handling-complex-survey-data.html#cb375-2" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb375-3"><a href="handling-complex-survey-data.html#cb375-3" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb375-4"><a href="handling-complex-survey-data.html#cb375-4" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(tab)</span>
+<span id="cb375-5"><a href="handling-complex-survey-data.html#cb375-5" tabindex="-1"></a><span class="fu">ggplot</span>(tab, <span class="fu">aes</span>(<span class="at">x=</span>agegrp, <span class="at">y=</span>n, <span class="at">fill=</span><span class="fu">reorder</span>(pid, n, mean))) <span class="sc">+</span> </span>
+<span id="cb375-6"><a href="handling-complex-survey-data.html#cb375-6" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="at">position=</span><span class="st">&quot;fill&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb375-7"><a href="handling-complex-survey-data.html#cb375-7" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb375-8"><a href="handling-complex-survey-data.html#cb375-8" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb375-9"><a href="handling-complex-survey-data.html#cb375-9" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span>percent) <span class="sc">+</span> </span>
+<span id="cb375-10"><a href="handling-complex-survey-data.html#cb375-10" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Age Group&quot;</span>, </span>
+<span id="cb375-11"><a href="handling-complex-survey-data.html#cb375-11" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;&quot;</span>, </span>
+<span id="cb375-12"><a href="handling-complex-survey-data.html#cb375-12" tabindex="-1"></a>       <span class="at">fill=</span><span class="st">&quot;Party ID&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb375-13"><a href="handling-complex-survey-data.html#cb375-13" tabindex="-1"></a>  <span class="fu">coord_flip</span>() </span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-213-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>In the example above, note that we were able to reorder the categories based on average sample size. This put the biggest category first and the smallest category last.</p>
+<p>We could also make a side-by-side barplot with the following. Note that we turn the counts into percentages in the data by using the <code>group_by()</code> and <code>mutate()</code> functions.</p>
+<div class="sourceCode" id="cb376"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb376-1"><a href="handling-complex-survey-data.html#cb376-1" tabindex="-1"></a>tab <span class="ot">&lt;-</span> tab <span class="sc">%&gt;%</span> </span>
+<span id="cb376-2"><a href="handling-complex-survey-data.html#cb376-2" tabindex="-1"></a>  <span class="fu">group_by</span>(agegrp) <span class="sc">%&gt;%</span> </span>
+<span id="cb376-3"><a href="handling-complex-survey-data.html#cb376-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pct =</span> n<span class="sc">/</span><span class="fu">sum</span>(n)) </span>
+<span id="cb376-4"><a href="handling-complex-survey-data.html#cb376-4" tabindex="-1"></a><span class="fu">ggplot</span>(tab, <span class="fu">aes</span>(<span class="at">x=</span>agegrp, <span class="at">y=</span>pct, <span class="at">fill=</span><span class="fu">reorder</span>(pid, n, mean))) <span class="sc">+</span> </span>
+<span id="cb376-5"><a href="handling-complex-survey-data.html#cb376-5" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">&quot;identity&quot;</span>, <span class="at">position=</span><span class="st">&quot;dodge&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb376-6"><a href="handling-complex-survey-data.html#cb376-6" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb376-7"><a href="handling-complex-survey-data.html#cb376-7" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb376-8"><a href="handling-complex-survey-data.html#cb376-8" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels=</span>percent) <span class="sc">+</span> </span>
+<span id="cb376-9"><a href="handling-complex-survey-data.html#cb376-9" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Age Group&quot;</span>, </span>
+<span id="cb376-10"><a href="handling-complex-survey-data.html#cb376-10" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;&quot;</span>, </span>
+<span id="cb376-11"><a href="handling-complex-survey-data.html#cb376-11" tabindex="-1"></a>       <span class="at">fill=</span><span class="st">&quot;Party ID&quot;</span>) </span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-214-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Make the bar plots of <code>partyid</code> by <code>college_ed</code></p>
+</div>
+</div>
+<div id="summary-statistics" class="section level2 hasAnchor" number="6.2">
+<h2><span class="header-section-number">6.2</span> Summary Statistics<a href="handling-complex-survey-data.html#summary-statistics" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <code>sumStats()</code> function from the <code>DAMisc</code> package also takes a survey design object as data. Just like the <code>xt()</code> function is a wrapper to the <code>survey.table()</code> and related functions, the <code>sumStats()</code> function is a wrapper to <code>svymean()</code>, <code>svyquantile()</code>, <code>svyvar()</code> and <code>svyby()</code> functions. Let’s look at the summary statistics for thoughts on market capitalism, the <code>market</code> variable.</p>
+<div class="sourceCode" id="cb377"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb377-1"><a href="handling-complex-survey-data.html#cb377-1" tabindex="-1"></a><span class="fu">sumStats</span>(d, <span class="at">vars=</span><span class="st">&quot;market&quot;</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 1 × 10
+##   variable   mean    sd   min    q25 median   q75   max     n   nNA
+##   &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 market   -0.285 0.414    -1 -0.553 -0.330     0     1 2743.  34.5</code></pre>
+<p>We could even get summary statistics by some other variable, say <code>agegrp</code>:</p>
+<div class="sourceCode" id="cb379"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb379-1"><a href="handling-complex-survey-data.html#cb379-1" tabindex="-1"></a><span class="fu">sumStats</span>(d, <span class="st">&quot;market&quot;</span>, <span class="at">byvar =</span> <span class="st">&quot;agegrp&quot;</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 3 × 11
+##   agegrp variable   mean    sd   min    q25 median    q75   max     n    nNA
+##   &lt;fct&gt;  &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+## 1 18-34  market   -0.418 0.420    -1 -0.777 -0.443 -0.110 0.777  436.  0.315
+## 2 35-54  market   -0.286 0.414    -1 -0.553 -0.330  0     1      935. 15.7  
+## 3 55+    market   -0.242 0.404    -1 -0.553 -0.223  0     1     1372. 18.6</code></pre>
+<p>You can even get summary statistics for more than one variable by age group.</p>
+<div class="sourceCode" id="cb381"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb381-1"><a href="handling-complex-survey-data.html#cb381-1" tabindex="-1"></a><span class="fu">sumStats</span>(d, <span class="fu">c</span>(<span class="st">&quot;market&quot;</span>, <span class="st">&quot;continent&quot;</span>), <span class="at">byvar=</span><span class="st">&quot;agegrp&quot;</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 11
+##   agegrp variable    mean    sd   min    q25 median    q75   max     n    nNA
+##   &lt;fct&gt;  &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+## 1 18-34  continent  0.103 0.473    -1  0      0      0.330 1      434.  2.24 
+## 2 35-54  continent  0.118 0.470    -1  0      0      0.330 1      946.  4.08 
+## 3 55+    continent  0.100 0.473    -1  0      0      0.330 1     1381.  9.48 
+## 4 18-34  market    -0.418 0.420    -1 -0.777 -0.443 -0.110 0.777  436.  0.315
+## 5 35-54  market    -0.286 0.414    -1 -0.553 -0.330  0     1      935. 15.7  
+## 6 55+    market    -0.242 0.404    -1 -0.553 -0.223  0     1     1372. 18.6</code></pre>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Make a graph of the means of <code>aid_scale</code> with <span class="math inline">\(95\%\)</span> confidence bounds as a function of <code>partyid</code> from the US GSS data.</p>
+</div>
+<p>Just like above, it might be that you’re better off using <code>svymean()</code> and <code>svyby()</code> if you wanted to make a graph, because <code>svymean()</code> returns not only the mean, but the standard error as well. We could make a dot plot of means and confidence intervals like this:</p>
+<div class="sourceCode" id="cb383"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb383-1"><a href="handling-complex-survey-data.html#cb383-1" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">svyby</span>(<span class="sc">~</span>market, <span class="at">by=</span><span class="sc">~</span>pid, d, svymean, <span class="at">na.rm=</span><span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb383-2"><a href="handling-complex-survey-data.html#cb383-2" tabindex="-1"></a>  as_tibble <span class="sc">%&gt;%</span> </span>
+<span id="cb383-3"><a href="handling-complex-survey-data.html#cb383-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lower =</span> market <span class="sc">-</span> <span class="fl">1.96</span><span class="sc">*</span>se, </span>
+<span id="cb383-4"><a href="handling-complex-survey-data.html#cb383-4" tabindex="-1"></a>         <span class="at">upper =</span> market <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span>se)</span>
+<span id="cb383-5"><a href="handling-complex-survey-data.html#cb383-5" tabindex="-1"></a><span class="fu">ggplot</span>(out, <span class="fu">aes</span>(<span class="at">x=</span><span class="fu">reorder</span>(pid, market, mean), <span class="at">y=</span>market)) <span class="sc">+</span> </span>
+<span id="cb383-6"><a href="handling-complex-survey-data.html#cb383-6" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>lower, <span class="at">ymax=</span>upper)) <span class="sc">+</span> </span>
+<span id="cb383-7"><a href="handling-complex-survey-data.html#cb383-7" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb383-8"><a href="handling-complex-survey-data.html#cb383-8" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb383-9"><a href="handling-complex-survey-data.html#cb383-9" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Party ID&quot;</span>, </span>
+<span id="cb383-10"><a href="handling-complex-survey-data.html#cb383-10" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Market Liberalism&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-218-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>We could compare this to the un-weighted one if we wanted.</p>
+<div class="sourceCode" id="cb384"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb384-1"><a href="handling-complex-survey-data.html#cb384-1" tabindex="-1"></a>d0 <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids=</span><span class="sc">~</span><span class="dv">1</span>, <span class="at">weights=</span><span class="sc">~</span><span class="dv">1</span>, <span class="at">data=</span>ces19)</span>
+<span id="cb384-2"><a href="handling-complex-survey-data.html#cb384-2" tabindex="-1"></a>out0 <span class="ot">&lt;-</span> <span class="fu">svyby</span>(<span class="sc">~</span>market, <span class="at">by=</span><span class="sc">~</span>pid, d0, svymean, <span class="at">na.rm=</span><span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb384-3"><a href="handling-complex-survey-data.html#cb384-3" tabindex="-1"></a>  as_tibble <span class="sc">%&gt;%</span> </span>
+<span id="cb384-4"><a href="handling-complex-survey-data.html#cb384-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lower =</span> market <span class="sc">-</span> <span class="fl">1.96</span><span class="sc">*</span>se, </span>
+<span id="cb384-5"><a href="handling-complex-survey-data.html#cb384-5" tabindex="-1"></a>         <span class="at">upper =</span> market <span class="sc">+</span> <span class="fl">1.96</span><span class="sc">*</span>se)</span>
+<span id="cb384-6"><a href="handling-complex-survey-data.html#cb384-6" tabindex="-1"></a>out0 <span class="ot">&lt;-</span> out0 <span class="sc">%&gt;%</span> </span>
+<span id="cb384-7"><a href="handling-complex-survey-data.html#cb384-7" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">weighted =</span> <span class="fu">factor</span>(<span class="dv">1</span>, <span class="at">levels=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;No&quot;</span>, <span class="st">&quot;Yes&quot;</span>)))</span>
+<span id="cb384-8"><a href="handling-complex-survey-data.html#cb384-8" tabindex="-1"></a>out <span class="ot">&lt;-</span> out <span class="sc">%&gt;%</span> </span>
+<span id="cb384-9"><a href="handling-complex-survey-data.html#cb384-9" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">weighted =</span> <span class="fu">factor</span>(<span class="dv">2</span>, <span class="at">levels=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;No&quot;</span>, <span class="st">&quot;Yes&quot;</span>)))</span>
+<span id="cb384-10"><a href="handling-complex-survey-data.html#cb384-10" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(out0, out)</span></code></pre></div>
+<div class="sourceCode" id="cb385"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb385-1"><a href="handling-complex-survey-data.html#cb385-1" tabindex="-1"></a><span class="fu">ggplot</span>(out, <span class="fu">aes</span>(<span class="at">x=</span><span class="fu">reorder</span>(pid, market, mean), </span>
+<span id="cb385-2"><a href="handling-complex-survey-data.html#cb385-2" tabindex="-1"></a>                <span class="at">y=</span>market, </span>
+<span id="cb385-3"><a href="handling-complex-survey-data.html#cb385-3" tabindex="-1"></a>                <span class="at">colour=</span>weighted)) <span class="sc">+</span> </span>
+<span id="cb385-4"><a href="handling-complex-survey-data.html#cb385-4" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>lower, <span class="at">ymax=</span>upper), </span>
+<span id="cb385-5"><a href="handling-complex-survey-data.html#cb385-5" tabindex="-1"></a>                  <span class="at">position=</span><span class="fu">position_dodge</span>(<span class="at">width=</span>.<span class="dv">3</span>)) <span class="sc">+</span> </span>
+<span id="cb385-6"><a href="handling-complex-survey-data.html#cb385-6" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">position=</span><span class="fu">position_dodge</span>(<span class="at">width=</span>.<span class="dv">3</span>)) <span class="sc">+</span> </span>
+<span id="cb385-7"><a href="handling-complex-survey-data.html#cb385-7" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb385-8"><a href="handling-complex-survey-data.html#cb385-8" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Party ID&quot;</span>, </span>
+<span id="cb385-9"><a href="handling-complex-survey-data.html#cb385-9" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Market Liberalism&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-220-1.png" width="65%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="estimating-models" class="section level2 hasAnchor" number="6.3">
+<h2><span class="header-section-number">6.3</span> Estimating Models<a href="handling-complex-survey-data.html#estimating-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The main modeling function for survey design objects is <code>svyglm()</code>. This will estimate linear binary and count models. The <code>svykm()</code> and <code>svycoxph()</code> function will do survival analysis models. The <code>svyolr()</code> function does ordered logit survey models. There is also a <code>svymle()</code> function that would allow you to maximize any likelihood function, so you could program other models as well.</p>
+<p>tl;dr - these generally work with the post-estimation tools we’ve encountered so far. Rather than belaboring those points again, I’ll point you back to the sections on linear models and binary dependent variable models.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Use the last model you estimated in the linear models section and estimate it again here using survey weights.</p>
+</div>
+
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="ordered-and-multinomial-logit.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="multilevel-models.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["RBE.pdf", "RBE.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 4 Generalized Linear Models - Logit. | R: Learning by Example</title>
+  <meta name="description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 4 Generalized Linear Models - Logit. | R: Learning by Example" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 4 Generalized Linear Models - Logit. | R: Learning by Example" />
+  
+  <meta name="twitter:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+<meta name="author" content="David A. Armstrong II and William Poirier" />
+
+
+<meta name="date" content="2025-05-29" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="linear-models.html"/>
+<link rel="next" href="ordered-and-multinomial-logit.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<link href="libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.33/datatables.js"></script>
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">R: Learning by Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preliminaries</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#license"><i class="fa fa-check"></i>License</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#getting-r-and-rstudio"><i class="fa fa-check"></i>Getting R and Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#keeping-track-of-your-work"><i class="fa fa-check"></i>Keeping Track of Your Work</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#overview-of-rstudio"><i class="fa fa-check"></i>Overview of Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#using-r"><i class="fa fa-check"></i>Using <em>R</em></a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#assigning-output-to-objects"><i class="fa fa-check"></i>Assigning Output to Objects</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#vectors-and-matrices"><i class="fa fa-check"></i>Vectors and Matrices</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#function-arguments"><i class="fa fa-check"></i>Function Arguments</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#importing-data"><i class="fa fa-check"></i>Importing Data</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#data-types-in-r"><i class="fa fa-check"></i>Data Types in <em>R</em></a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#examining-data"><i class="fa fa-check"></i>Examining Data</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#missing-values"><i class="fa fa-check"></i>Missing Values</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#filtering-with-logical-expressions-and-sorting"><i class="fa fa-check"></i>Filtering with Logical Expressions and Sorting</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#workhorse-functions"><i class="fa fa-check"></i>Workhorse Functions</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#exercises"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html"><i class="fa fa-check"></i>Datasets</a>
+<ul>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo"><i class="fa fa-check"></i><code>colo</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo_covid"><i class="fa fa-check"></i><code>colo_covid</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gss-canada"><i class="fa fa-check"></i><code>gss</code> (Canada)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gsss16-usa"><i class="fa fa-check"></i><code>gsss16</code> (USA)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#davenport-soule-armstrong-data"><i class="fa fa-check"></i>Davenport-Soule-Armstrong Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#france-2004"><i class="fa fa-check"></i>France 2004</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#ces19"><i class="fa fa-check"></i><code>ces19</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#snijders-and-bosker-multileve-school-data"><i class="fa fa-check"></i>Snijders and Bosker Multileve School Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-multilevel"><i class="fa fa-check"></i>World Values Survey (multilevel)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#repression-data"><i class="fa fa-check"></i>Repression Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#oil-and-democracy-dataset"><i class="fa fa-check"></i>Oil and Democracy Dataset</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#politicaldemocracy"><i class="fa fa-check"></i><code>PoliticalDemocracy</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-measurement"><i class="fa fa-check"></i>World Values Survey (measurement)</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="viz.html"><a href="viz.html"><i class="fa fa-check"></i><b>1</b> Visualizing</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="viz.html"><a href="viz.html#wrangling-data"><i class="fa fa-check"></i><b>1.1</b> Wrangling data</a>
+<ul>
+<li class="chapter" data-level="1.1.1" data-path="viz.html"><a href="viz.html#merging-datasets"><i class="fa fa-check"></i><b>1.1.1</b> Merging Datasets</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="viz.html"><a href="viz.html#ggplot"><i class="fa fa-check"></i><b>1.2</b> GGplot</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="viz.html"><a href="viz.html#bar-plots"><i class="fa fa-check"></i><b>1.2.1</b> Bar Plots</a></li>
+<li class="chapter" data-level="1.2.2" data-path="viz.html"><a href="viz.html#line-graphs"><i class="fa fa-check"></i><b>1.2.2</b> Line Graphs</a></li>
+<li class="chapter" data-level="1.2.3" data-path="viz.html"><a href="viz.html#histograms"><i class="fa fa-check"></i><b>1.2.3</b> Histograms</a></li>
+<li class="chapter" data-level="1.2.4" data-path="viz.html"><a href="viz.html#scatterplots"><i class="fa fa-check"></i><b>1.2.4</b> Scatterplots</a></li>
+<li class="chapter" data-level="1.2.5" data-path="viz.html"><a href="viz.html#multiple-series"><i class="fa fa-check"></i><b>1.2.5</b> Multiple Series</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="viz.html"><a href="viz.html#recap"><i class="fa fa-check"></i><b>1.3</b> Recap</a></li>
+<li class="chapter" data-level="" data-path="viz.html"><a href="viz.html#exercises-1"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html"><i class="fa fa-check"></i><b>2</b> Describing Relationships in the General Social Survey</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#the-canadian-gss."><i class="fa fa-check"></i><b>2.1</b> The Canadian GSS.</a></li>
+<li class="chapter" data-level="2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#looking-at-the-data."><i class="fa fa-check"></i><b>2.2</b> Looking at the data.</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#cross-tabulations"><i class="fa fa-check"></i><b>2.2.1</b> Cross-tabulations</a></li>
+<li class="chapter" data-level="2.2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#permutation-tests-in-r."><i class="fa fa-check"></i><b>2.2.2</b> Permutation Tests in R.</a></li>
+<li class="chapter" data-level="2.2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#back-to-the-data"><i class="fa fa-check"></i><b>2.2.3</b> Back to the Data</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#descriptive-output-in-knitr"><i class="fa fa-check"></i><b>2.3</b> Descriptive Output in knitr</a></li>
+<li class="chapter" data-level="" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#exercises-2"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="linear-models.html"><a href="linear-models.html"><i class="fa fa-check"></i><b>3</b> Linear Models</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="linear-models.html"><a href="linear-models.html#effects-plots"><i class="fa fa-check"></i><b>3.1</b> Effects Plots</a></li>
+<li class="chapter" data-level="3.2" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-linearity"><i class="fa fa-check"></i><b>3.2</b> Diagnostic Tools: Linearity</a></li>
+<li class="chapter" data-level="3.3" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-heteroskedasticity"><i class="fa fa-check"></i><b>3.3</b> Diagnostic Tools: Heteroskedasticity</a></li>
+<li class="chapter" data-level="3.4" data-path="linear-models.html"><a href="linear-models.html#diagnostics-outliers-and-influential-data"><i class="fa fa-check"></i><b>3.4</b> Diagnostics: Outliers and Influential Data</a></li>
+<li class="chapter" data-level="3.5" data-path="linear-models.html"><a href="linear-models.html#diagnostics-for-normality"><i class="fa fa-check"></i><b>3.5</b> Diagnostics for Normality</a>
+<ul>
+<li class="chapter" data-level="3.5.1" data-path="linear-models.html"><a href="linear-models.html#bootstrapping-regression-models"><i class="fa fa-check"></i><b>3.5.1</b> Bootstrapping Regression Models</a></li>
+</ul></li>
+<li class="chapter" data-level="3.6" data-path="linear-models.html"><a href="linear-models.html#interactions"><i class="fa fa-check"></i><b>3.6</b> Interactions</a></li>
+<li class="chapter" data-level="" data-path="linear-models.html"><a href="linear-models.html#exercises-3"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html"><i class="fa fa-check"></i><b>4</b> Generalized Linear Models - Logit.</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#evaluating-model-fit"><i class="fa fa-check"></i><b>4.1</b> Evaluating Model Fit</a></li>
+<li class="chapter" data-level="4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effects"><i class="fa fa-check"></i><b>4.2</b> Marginal Effects</a></li>
+<li class="chapter" data-level="4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effect-plots"><i class="fa fa-check"></i><b>4.3</b> Marginal Effect Plots</a></li>
+<li class="chapter" data-level="4.4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#interactions-in-binary-dv-models"><i class="fa fa-check"></i><b>4.4</b> Interactions in Binary DV Models</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-binary"><i class="fa fa-check"></i><b>4.4.1</b> Both binary</a></li>
+<li class="chapter" data-level="4.4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#one-binary-one-continuous."><i class="fa fa-check"></i><b>4.4.2</b> One binary, one continuous.</a></li>
+<li class="chapter" data-level="4.4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-continuous"><i class="fa fa-check"></i><b>4.4.3</b> Both Continuous</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#other-glms."><i class="fa fa-check"></i><b>4.5</b> Other GLMs.</a></li>
+<li class="chapter" data-level="" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#exercises-4"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html"><i class="fa fa-check"></i><b>5</b> Ordered and Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#ordinal-dv-models"><i class="fa fa-check"></i><b>5.1</b> Ordinal DV Models</a></li>
+<li class="chapter" data-level="5.2" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#multinomial-logit"><i class="fa fa-check"></i><b>5.2</b> Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#parametric-bootstrap-for-confidence-intervals."><i class="fa fa-check"></i><b>5.2.1</b> Parametric Bootstrap for Confidence Intervals.</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#conclusion"><i class="fa fa-check"></i><b>5.3</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html"><i class="fa fa-check"></i><b>6</b> Handling Complex Survey Data</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#frequency-distributions-and-contingency-tables"><i class="fa fa-check"></i><b>6.1</b> Frequency Distributions and Contingency Tables</a></li>
+<li class="chapter" data-level="6.2" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#summary-statistics"><i class="fa fa-check"></i><b>6.2</b> Summary Statistics</a></li>
+<li class="chapter" data-level="6.3" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#estimating-models"><i class="fa fa-check"></i><b>6.3</b> Estimating Models</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="multilevel-models.html"><a href="multilevel-models.html"><i class="fa fa-check"></i><b>7</b> Multilevel Models</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="multilevel-models.html"><a href="multilevel-models.html#data-structure."><i class="fa fa-check"></i><b>7.1</b> Data Structure.</a></li>
+<li class="chapter" data-level="7.2" data-path="multilevel-models.html"><a href="multilevel-models.html#clustering-standard-errors"><i class="fa fa-check"></i><b>7.2</b> Clustering Standard Errors</a></li>
+<li class="chapter" data-level="7.3" data-path="multilevel-models.html"><a href="multilevel-models.html#between-vs-within-relationships."><i class="fa fa-check"></i><b>7.3</b> Between vs Within Relationships.</a></li>
+<li class="chapter" data-level="7.4" data-path="multilevel-models.html"><a href="multilevel-models.html#random-intercepts"><i class="fa fa-check"></i><b>7.4</b> Random Intercepts</a></li>
+<li class="chapter" data-level="7.5" data-path="multilevel-models.html"><a href="multilevel-models.html#estimating-the-multilevel-model"><i class="fa fa-check"></i><b>7.5</b> Estimating the Multilevel Model</a>
+<ul>
+<li class="chapter" data-level="7.5.1" data-path="multilevel-models.html"><a href="multilevel-models.html#p-values-in-lmer-output"><i class="fa fa-check"></i><b>7.5.1</b> P-values in LMER Output</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="multilevel-models.html"><a href="multilevel-models.html#other-random-effects-models"><i class="fa fa-check"></i><b>7.6</b> Other Random-Effects Models</a></li>
+<li class="chapter" data-level="7.7" data-path="multilevel-models.html"><a href="multilevel-models.html#bayesian-models-with-brms"><i class="fa fa-check"></i><b>7.7</b> Bayesian Models with BRMS</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html"><i class="fa fa-check"></i><b>8</b> Time-Series Cross-Sectional Models</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#preliminaries-and-assumptions"><i class="fa fa-check"></i><b>8.1</b> Preliminaries and Assumptions</a></li>
+<li class="chapter" data-level="8.2" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#unit-effects"><i class="fa fa-check"></i><b>8.2</b> Unit Effects</a></li>
+<li class="chapter" data-level="8.3" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#the-plm-package"><i class="fa fa-check"></i><b>8.3</b> The plm Package</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="measurement-issues.html"><a href="measurement-issues.html"><i class="fa fa-check"></i><b>9</b> Measurement Issues</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="measurement-issues.html"><a href="measurement-issues.html#reliability-analysis"><i class="fa fa-check"></i><b>9.1</b> Reliability Analysis</a></li>
+<li class="chapter" data-level="9.2" data-path="measurement-issues.html"><a href="measurement-issues.html#exploratory-factor-analysis-and-principal-components-analysis"><i class="fa fa-check"></i><b>9.2</b> Exploratory Factor Analysis and Principal Components Analysis</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="measurement-issues.html"><a href="measurement-issues.html#rotations"><i class="fa fa-check"></i><b>9.2.1</b> Rotations</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="measurement-issues.html"><a href="measurement-issues.html#cfa-and-sem"><i class="fa fa-check"></i><b>9.3</b> CFA and SEM</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">R: Learning by Example</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="generalized-linear-models---logit." class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">Chapter 4</span> Generalized Linear Models - Logit.<a href="generalized-linear-models---logit..html#generalized-linear-models---logit." class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Next, we can talk about generalized linear models (GLMs). The GLM is how we estimate the logistic and probit regression model in R as well as the poisson and negative binomial models. We are going to focus on the logistic regression model. As a substantive example, we’re going to look at some work that I’ve done in the past. In particular, this is data that I used with Christian Davenport and Sarah Soule in an article called <em>Protesting While Black</em> published in the <em>American Sociological Review</em> in 2011. We were particularly interested in the use of arrests or violence on the part of police at protests that were characterized as either largely African American or not.</p>
+<p>First, we can read in the data:</p>
+<div class="sourceCode" id="cb247"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb247-1"><a href="generalized-linear-models---logit..html#cb247-1" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb247-2"><a href="generalized-linear-models---logit..html#cb247-2" tabindex="-1"></a><span class="fu">library</span>(rio)</span>
+<span id="cb247-3"><a href="generalized-linear-models---logit..html#cb247-3" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">import</span>(<span class="st">&quot;data/Davenport_Soule_ASR.dta&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb247-4"><a href="generalized-linear-models---logit..html#cb247-4" tabindex="-1"></a>  <span class="do">## chose variables we need for the model</span></span>
+<span id="cb247-5"><a href="generalized-linear-models---logit..html#cb247-5" tabindex="-1"></a>  <span class="fu">select</span>(police1, afam, arrdum, police5, </span>
+<span id="cb247-6"><a href="generalized-linear-models---logit..html#cb247-6" tabindex="-1"></a>         pre65, iblackpre65, ny, south, logpart, </span>
+<span id="cb247-7"><a href="generalized-linear-models---logit..html#cb247-7" tabindex="-1"></a>         propdam, counterd, standard2, extcont2, </span>
+<span id="cb247-8"><a href="generalized-linear-models---logit..html#cb247-8" tabindex="-1"></a>         govtarg, stratvar, viold, evyy) <span class="sc">%&gt;%</span></span>
+<span id="cb247-9"><a href="generalized-linear-models---logit..html#cb247-9" tabindex="-1"></a>  <span class="do">## turn afam into a factor</span></span>
+<span id="cb247-10"><a href="generalized-linear-models---logit..html#cb247-10" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">afam =</span> <span class="fu">factor</span>(afam, <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;No&quot;</span>,<span class="st">&quot;Yes&quot;</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb247-11"><a href="generalized-linear-models---logit..html#cb247-11" tabindex="-1"></a>  <span class="do">## keep only those where police were present</span></span>
+<span id="cb247-12"><a href="generalized-linear-models---logit..html#cb247-12" tabindex="-1"></a>  <span class="fu">filter</span>(police1 <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb247-13"><a href="generalized-linear-models---logit..html#cb247-13" tabindex="-1"></a>  <span class="do">## listwise delete</span></span>
+<span id="cb247-14"><a href="generalized-linear-models---logit..html#cb247-14" tabindex="-1"></a>  <span class="fu">na.omit</span>()</span></code></pre></div>
+<p>Now, let’s estimate a model of arrests (<code>arrdum</code>) on a set of controls and the important variables <code>afam</code> identifying whether or not it was an African American protest and <code>evyy</code>, the event year. For now, we’re not going to make an interaction between these two variables. Specifying <code>family=binomial</code> indicates a 0/1 variable (or that you want to use n choose k data where your dependent variable is a two columns - successes and failures). The default link is the logit link, but you can switch to probit with <code>family=binomial(link="probit")</code>.</p>
+<div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb248-1"><a href="generalized-linear-models---logit..html#cb248-1" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">glm</span>(arrdum <span class="sc">~</span>  <span class="fu">poly</span>(evyy,<span class="dv">3</span>) <span class="sc">+</span> afam  <span class="sc">+</span> ny <span class="sc">+</span> south <span class="sc">+</span> </span>
+<span id="cb248-2"><a href="generalized-linear-models---logit..html#cb248-2" tabindex="-1"></a>             logpart <span class="sc">+</span> propdam <span class="sc">+</span> counterd <span class="sc">+</span> standard2 <span class="sc">+</span> </span>
+<span id="cb248-3"><a href="generalized-linear-models---logit..html#cb248-3" tabindex="-1"></a>             extcont2 <span class="sc">+</span> govtarg <span class="sc">+</span> stratvar <span class="sc">+</span> viold, </span>
+<span id="cb248-4"><a href="generalized-linear-models---logit..html#cb248-4" tabindex="-1"></a>    <span class="at">data=</span>dat, <span class="at">family=</span>binomial)</span>
+<span id="cb248-5"><a href="generalized-linear-models---logit..html#cb248-5" tabindex="-1"></a><span class="fu">summary</span>(mod)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = arrdum ~ poly(evyy, 3) + afam + ny + south + logpart + 
+##     propdam + counterd + standard2 + extcont2 + govtarg + stratvar + 
+##     viold, family = binomial, data = dat)
+## 
+## Coefficients:
+##                Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)     0.53652    0.11649   4.606 4.11e-06 ***
+## poly(evyy, 3)1  7.74804    2.32726   3.329 0.000871 ***
+## poly(evyy, 3)2  8.39345    2.26072   3.713 0.000205 ***
+## poly(evyy, 3)3  5.05174    2.16950   2.329 0.019884 *  
+## afamYes         0.31330    0.06688   4.685 2.80e-06 ***
+## ny             -0.51309    0.06676  -7.686 1.52e-14 ***
+## south          -0.24535    0.07522  -3.262 0.001107 ** 
+## logpart        -0.11038    0.01475  -7.485 7.14e-14 ***
+## propdam         0.23645    0.08492   2.784 0.005364 ** 
+## counterd       -0.41626    0.08963  -4.644 3.41e-06 ***
+## standard2       0.20604    0.10020   2.056 0.039750 *  
+## extcont2       -0.10711    0.11257  -0.952 0.341332    
+## govtarg        -0.23341    0.05748  -4.061 4.89e-05 ***
+## stratvar        0.29818    0.05346   5.577 2.45e-08 ***
+## viold           0.16939    0.08799   1.925 0.054220 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 7719.0  on 5701  degrees of freedom
+## Residual deviance: 7461.1  on 5687  degrees of freedom
+## AIC: 7491.1
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Using the 2016 GSS data again:</p>
+<ul>
+<li>Make a new variable called <code>inews</code> from <code>newsfrom</code> that is 1 if the respondent gets news primarily from the internet and 0 for any other source. Make sure to keep the missing values missing.</li>
+<li>Make a variable called <code>college_ed</code> from <code>educ</code> which is coded such that 0-12 = none, 13:15 = some and 16+ = degree.</li>
+<li>Estimate and summarise a logit model of <code>inews</code> on <code>age</code>, <code>sei10</code>, <code>college_ed</code> and <code>sex</code>.</li>
+</ul>
+</div>
+<div id="evaluating-model-fit" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Evaluating Model Fit<a href="generalized-linear-models---logit..html#evaluating-model-fit" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>With all non-linear models, we need to figure out how to interpret the coefficients and figure out how well the model fits. Let’s think about model fit, first. There are a few different things that we can do. The <code>DAMisc</code> package has a function called <code>binfit()</code> which produces measure of fit for binary models:</p>
+<div class="sourceCode" id="cb250"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb250-1"><a href="generalized-linear-models---logit..html#cb250-1" tabindex="-1"></a><span class="fu">library</span>(DAMisc)</span>
+<span id="cb250-2"><a href="generalized-linear-models---logit..html#cb250-2" tabindex="-1"></a><span class="fu">binfit</span>(mod) </span></code></pre></div>
+<pre><code>##                    Names1     vals1                       Names2     vals2
+## 1 Log-Lik Intercept Only: -3859.513          Log-Lik Full Model: -3730.537
+## 2                D(5687):  7461.075                      LR(14):   257.951
+## 3                                                     Prob &gt; LR:     0.000
+## 4          McFadden&#39;s R2:     0.033           McFadden&#39;s Adk R2:     0.030
+## 5      ML (Cox-Snell) R2:     0.044 Cragg-Uhler (Nagelkerke) R2:     0.060
+## 6  McKelvey &amp; Zavoina R2:     0.057                  Efron&#39;s R2:     0.046
+## 7               Count R2:     0.626                Adj Count R2:     0.088
+## 8                    BIC:  7590.804                         AIC:  7491.075</code></pre>
+<p>This produces a number of different pseudo <span class="math inline">\(R^2\)</span> measures that all have some analogy to the computation of <span class="math inline">\(R^2\)</span> from the linear model. The only one that’s not really appropriate as a measure of fit is the “Count R2”. This is really just the proportion correctly predicted and needs to be adjusted for the number in the modal category to be useful - that’s what the “Adj Count R2” does.</p>
+<p>There’s another measure of fit that may be useful, too - the proportional reduction in error (PRE) and the expected PRE (or ePRE). These can be obtained with the <code>pre()</code> function from <code>DAMisc</code>. Specifying <code>sim=TRUE</code> will use a parametric bootstrap to get confidence bounds for the proportional reduction in error.</p>
+<div class="sourceCode" id="cb252"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb252-1"><a href="generalized-linear-models---logit..html#cb252-1" tabindex="-1"></a><span class="fu">pre</span>(mod, <span class="at">sim=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>## mod1:  arrdum ~ poly(evyy, 3) + afam + ny + south + logpart + propdam + counterd + standard2 + extcont2 + govtarg + stratvar + viold 
+## mod2:  arrdum ~ 1 
+## 
+## Analytical Results
+##  PMC =  0.590 
+##  PCP =  0.626 
+##  PRE =  0.088 
+## ePMC =  0.516 
+## ePCP =  0.538 
+## ePRE =  0.045 
+## 
+## Simulated Results
+##      median lower upper
+##  PRE 0.084  0.068 0.098
+## ePRE 0.045  0.037 0.053</code></pre>
+<p>If you wanted to look at the ROC for the model, you could do the following:</p>
+<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="generalized-linear-models---logit..html#cb254-1" tabindex="-1"></a><span class="fu">library</span>(pROC)</span>
+<span id="cb254-2"><a href="generalized-linear-models---logit..html#cb254-2" tabindex="-1"></a><span class="fu">roc</span>(dat<span class="sc">$</span>arrdum <span class="sc">~</span> <span class="fu">predict</span>(mod, <span class="at">type=</span><span class="st">&quot;response&quot;</span>), </span>
+<span id="cb254-3"><a href="generalized-linear-models---logit..html#cb254-3" tabindex="-1"></a>    <span class="at">print.auc=</span><span class="cn">TRUE</span>, <span class="at">plot=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-137-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<pre><code>## 
+## Call:
+## roc.formula(formula = dat$arrdum ~ predict(mod, type = &quot;response&quot;),     print.auc = TRUE, plot = TRUE)
+## 
+## Data: predict(mod, type = &quot;response&quot;) in 2338 controls (dat$arrdum 0) &lt; 3364 cases (dat$arrdum 1).
+## Area under the curve: 0.623</code></pre>
+<p>The model doesn’t provide us a lot of value-added, but more than zero, so we’ll move on. Note that these models are not built to maximize predictive capacity, though considering the predictive accuracy isn’t the worst thing ever.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>How does the model you estimated above fit? Use the methods discussed above to evaluate the model of <code>inews</code>.</p>
+</div>
+</div>
+<div id="marginal-effects" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Marginal Effects<a href="generalized-linear-models---logit..html#marginal-effects" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The next thing to do is to figure out what the parameter estimates mean. There are lots of ways to do this. In the logit model, like we’ve estimated here, we could exponentiate the coefficients to get the odds ratio. These can be useful for single coefficient terms, but are less useful for things like the polynomial in year where one coefficient cannot really be interpreted independent of the others.</p>
+<div class="sourceCode" id="cb256"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb256-1"><a href="generalized-linear-models---logit..html#cb256-1" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">coef</span>(mod))</span></code></pre></div>
+<pre><code>##    (Intercept) poly(evyy, 3)1 poly(evyy, 3)2 poly(evyy, 3)3        afamYes             ny 
+##      1.7100374   2317.0322566   4418.0303543    156.2936582      1.3679333      0.5986400 
+##          south        logpart        propdam       counterd      standard2       extcont2 
+##      0.7824287      0.8954906      1.2667435      0.6595099      1.2287974      0.8984265 
+##        govtarg       stratvar          viold 
+##      0.7918282      1.3473985      1.1845790</code></pre>
+<p>The <code>glmChange()</code> function in the <code>DAMisc</code> package calculates first differences for each of the variables. It uses a parametric bootstrap to generate confidence intervals for the differences.</p>
+<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb258-1"><a href="generalized-linear-models---logit..html#cb258-1" tabindex="-1"></a><span class="fu">glmChange</span>(mod, <span class="at">data=</span>dat, <span class="at">diffchange =</span> <span class="st">&quot;unit&quot;</span>, <span class="at">sim=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 12 × 8
+##    focal     val_Low  val_High fit_Low fit_High     diff      q_2.5     q_97.5
+##    &lt;chr&gt;     &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;
+##  1 evyy      1968.500 1969.500   0.624    0.621 -0.00296 -0.00594   -0.0000125
+##  2 afam      No       Yes        0.623    0.693  0.0703   0.0427     0.0976   
+##  3 ny        -0.500   0.500      0.681    0.561 -0.120   -0.149     -0.0912   
+##  4 south     -0.500   0.500      0.651    0.594 -0.0576  -0.0926    -0.0237   
+##  5 logpart   3.831    4.831      0.636    0.610 -0.0259  -0.0325    -0.0192   
+##  6 propdam   -0.500   0.500      0.595    0.650  0.0555   0.0161     0.0938   
+##  7 counterd  -0.500   0.500      0.670    0.573 -0.0975  -0.136     -0.0555   
+##  8 standard2 0.500    1.500      0.598    0.647  0.0484   0.0000680  0.0907   
+##  9 extcont2  -0.500   0.500      0.635    0.610 -0.0252  -0.0767     0.0243   
+## 10 govtarg   -0.500   0.500      0.650    0.595 -0.0548  -0.0805    -0.0273   
+## 11 stratvar  0.500    1.500      0.587    0.657  0.0699   0.0452     0.0941   
+## 12 viold     -0.500   0.500      0.603    0.643  0.0398  -0.00303    0.0824</code></pre>
+<div class="sourceCode" id="cb260"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb260-1"><a href="generalized-linear-models---logit..html#cb260-1" tabindex="-1"></a>marginaleffects<span class="sc">::</span><span class="fu">comparisons</span>(mod, <span class="at">newdata=</span><span class="st">&quot;median&quot;</span>, <span class="at">comparison =</span> <span class="st">&quot;difference&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+##       Term Contrast Estimate Std. Error      z Pr(&gt;|z|)    S     2.5 %    97.5 %
+##  afam      Yes - No   0.0703    0.01474  4.770  &lt; 0.001 19.1  0.041418  0.099193
+##  counterd  1 - 0     -0.1015    0.02226 -4.560  &lt; 0.001 17.6 -0.145134 -0.057876
+##  evyy      +1        -0.0030    0.00165 -1.816  0.06929  3.9 -0.006244  0.000237
+##  extcont2  1 - 0     -0.0255    0.02712 -0.939  0.34766  1.5 -0.078623  0.027684
+##  govtarg   1 - 0     -0.0562    0.01373 -4.091  &lt; 0.001 14.5 -0.083097 -0.029266
+##  logpart   +1        -0.0263    0.00355 -7.405  &lt; 0.001 42.8 -0.033207 -0.019307
+##  ny        1 - 0     -0.1257    0.01620 -7.760  &lt; 0.001 46.7 -0.157451 -0.093950
+##  propdam   1 - 0      0.0537    0.01871  2.871  0.00409  7.9  0.017047  0.090403
+##  south     1 - 0     -0.0591    0.01827 -3.235  0.00122  9.7 -0.094931 -0.023300
+##  standard2 1 - 0      0.0495    0.02432  2.034  0.04192  4.6  0.001808  0.097137
+##  stratvar  +1         0.0671    0.01193  5.623  &lt; 0.001 25.7  0.043698  0.090461
+##  viold     1 - 0      0.0389    0.01987  1.956  0.05042  4.3 -0.000071  0.077837
+## 
+## Type: response</code></pre>
+<p>The output above shows a number of things. In the <code>diffs</code> element are the differences. The <code>min</code> column gives the predicted probability when the variable is held constant at the value given in the <code>min</code> row for the corresponding variable in the <code>minmax</code> element. For example, the <code>min</code> column entry for the <code>logpart</code> variable is calculated holding <code>logpart</code> at 0.00 and all of the other variables at the values that are in the <code>typical</code> row. The <code>max</code> column entry for the <code>logpart</code> variable is calculated holding <code>logpart</code> at 11.51 and holding all of the other variables constant at the values in the <code>typical</code> row. The <code>diff</code> column just calculates the difference in those two <code>min</code> and <code>max</code> values. The <code>lower</code> and <code>upper</code> columns (which you get if you specify <code>sim=TRUE</code>) are the lower and upper <span class="math inline">\(95\%\)</span> confidence bounds.</p>
+<p>There is a debate in the literature about what kind of effects are most representative of the “true” effect of the variable (if it even makes sense to talk about that). One approach is the one mentioned above - usually referred to as the marginal effect at means (MEM) or marginal effect at reasonable values (MER) approach. The main feature of this approach is that all of the other covariates (save the one you’re changing) are held constant at a single value. Another approach is called the average marginal effect (AME) appoach. The main feature of this approach is that one variable is changed and all other variables are held constant at their observed values. So, instead of calculating a single effect, you calculate <span class="math inline">\(n\)</span> different effects. These different effects are then averaged across all of the <span class="math inline">\(n\)</span> values. The <code>glmChange2()</code> function calculates AMEs in R.</p>
+<div class="sourceCode" id="cb262"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb262-1"><a href="generalized-linear-models---logit..html#cb262-1" tabindex="-1"></a><span class="fu">glmChange2</span>(mod, <span class="st">&quot;logpart&quot;</span>, <span class="at">data=</span>dat, <span class="at">diffchange=</span><span class="st">&quot;sd&quot;</span>)</span></code></pre></div>
+<pre><code>##                mean       lower       upper
+## logpart -0.05177293 -0.06545373 -0.03827276</code></pre>
+<div class="sourceCode" id="cb264"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb264-1"><a href="generalized-linear-models---logit..html#cb264-1" tabindex="-1"></a>marginaleffects<span class="sc">::</span><span class="fu">avg_comparisons</span>(mod,<span class="at">variables =</span> <span class="fu">list</span>(<span class="st">&quot;logpart&quot;</span> <span class="ot">=</span> <span class="st">&quot;sd&quot;</span>), <span class="at">comparison =</span> <span class="st">&quot;difference&quot;</span>) <span class="co"># ???</span></span></code></pre></div>
+<pre><code>## 
+##  Estimate Std. Error     z Pr(&gt;|z|)    S   2.5 %  97.5 %
+##   -0.0524    0.00697 -7.52   &lt;0.001 44.1 -0.0661 -0.0388
+## 
+## Term: logpart
+## Type: response
+## Comparison: (x + sd/2) - (x - sd/2)</code></pre>
+<p>Note here that the estimate of the difference is about the same, but the confidence bounds are a lot narrower here. This isn’t a generalizable result, but it does happen to be the case here. Both of these results are first differences. These tell us how the predicted probability changes as a function of a discrete change in the independent variable of interest.</p>
+<p>The mathematical expression for the first difference is as below. For example, we could write the model above as:</p>
+<p><span class="math display">\[\log\left(\frac{Pr(\text{Arrest})}{Pr(\text{No Arrest})}\right) = a + d\text{logPart} + XB\]</span></p>
+<p>where logPart is the log of protest participation with coefficient <span class="math inline">\(d\)</span> and <span class="math inline">\(X\)</span> are all of the other covariates with coefficient vector <span class="math inline">\(B\)</span>. A discrete change, is:</p>
+<p><span class="math display">\[D = F(a + b(\overline{\text{logPart}} + .5\delta) + x_{h}B) - F(a + b(\overline{\text{logPart}} - .5\delta) + x_{h}B)\]</span></p>
+<p>where <span class="math inline">\(\delta\)</span> is the amount of change being evaluated (often either a unit or a standard deviation) and <span class="math inline">\(x_h\)</span> is a vector of hypothetical values for the other covriates and <span class="math inline">\(F()\)</span> is the CDF of the probability distribution. This was for the MER approach. The AME approach is:</p>
+<p><span class="math display">\[\bar{D} = \frac{1}{n}\sum_{i}^{n}\left(F(a + b(\text{logPart}_i + .5\delta) + x_{i}B) - F(a + b(\text{logPart}_i - .5\delta) + x_{i}B)\right)\]</span></p>
+<p>An alternative approach, particularly for continuous covariates, is to calculate the marginal effect - the partial first derivative of the predicted probabilities with respect to the variable of interest. In this case, it would be:</p>
+<p><span class="math display">\[M = \frac{\partial \hat{p}}{\partial \text{logPart}} = b\times f\left(a + b\text{logPart}_{h} + x_hB\right)\]</span></p>
+<p>where <span class="math inline">\(f()\)</span> is the PDF of the appropriate distribution (logistic for logit or normal for probit) and the <span class="math inline">\(h\)</span> subscript identifies a hypothetical value (or vector of values). The above would be the MER approach and the AME approach would be:</p>
+<p><span class="math display">\[M = \frac{\partial \hat{p}}{\partial \text{logPart}} = \frac{1}{n}\sum_{i}b\times f\left(a + b\text{logPart}_{i} + x_iB\right)\]</span></p>
+<p>This finds the slope of the line tangent to the logit curve at the vector of covariate values in the calculation. The <code>marginaleffects</code> package helps us calculate these values. The <code>avg_comparisons()</code> function uses the average marginal effect approach.</p>
+<div class="sourceCode" id="cb266"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb266-1"><a href="generalized-linear-models---logit..html#cb266-1" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">glm</span>(arrdum <span class="sc">~</span>  stats<span class="sc">::</span><span class="fu">poly</span>(evyy,<span class="dv">3</span>) <span class="sc">+</span> afam  <span class="sc">+</span> ny <span class="sc">+</span> south <span class="sc">+</span> </span>
+<span id="cb266-2"><a href="generalized-linear-models---logit..html#cb266-2" tabindex="-1"></a>             logpart <span class="sc">+</span> propdam <span class="sc">+</span> counterd <span class="sc">+</span> standard2 <span class="sc">+</span> </span>
+<span id="cb266-3"><a href="generalized-linear-models---logit..html#cb266-3" tabindex="-1"></a>             extcont2 <span class="sc">+</span> govtarg <span class="sc">+</span> stratvar <span class="sc">+</span> viold, </span>
+<span id="cb266-4"><a href="generalized-linear-models---logit..html#cb266-4" tabindex="-1"></a>    <span class="at">data=</span>dat, <span class="at">family=</span>binomial)</span>
+<span id="cb266-5"><a href="generalized-linear-models---logit..html#cb266-5" tabindex="-1"></a></span>
+<span id="cb266-6"><a href="generalized-linear-models---logit..html#cb266-6" tabindex="-1"></a>marginaleffects<span class="sc">::</span><span class="fu">avg_comparisons</span>(mod,<span class="at">variables=</span><span class="st">&quot;logpart&quot;</span>,<span class="at">comparison=</span><span class="st">&quot;dydx&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+##  Estimate Std. Error     z Pr(&gt;|z|)    S   2.5 % 97.5 %
+##   -0.0255    0.00334 -7.63   &lt;0.001 45.3 -0.0321 -0.019
+## 
+## Term: logpart
+## Type: response
+## Comparison: dY/dX</code></pre>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Use the methods discussed above to understand the substantive impact of the variables in the <code>inews</code> model.</p>
+</div>
+</div>
+<div id="marginal-effect-plots" class="section level2 hasAnchor" number="4.3">
+<h2><span class="header-section-number">4.3</span> Marginal Effect Plots<a href="generalized-linear-models---logit..html#marginal-effect-plots" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Marginal effect plots work the same way here as they do in linear models. We could either use the <code>effects</code> package or the <code>ggeffects</code> package to make predictions and plot them. We will focus on the <code>ggeffects</code> package. Let’s look at the effect of <code>logpart</code>.</p>
+<div class="sourceCode" id="cb268"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb268-1"><a href="generalized-linear-models---logit..html#cb268-1" tabindex="-1"></a><span class="fu">library</span>(ggeffects)</span>
+<span id="cb268-2"><a href="generalized-linear-models---logit..html#cb268-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb268-3"><a href="generalized-linear-models---logit..html#cb268-3" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggpredict</span>(mod, <span class="at">terms=</span><span class="st">&quot;logpart [n=50]&quot;</span>)</span>
+<span id="cb268-4"><a href="generalized-linear-models---logit..html#cb268-4" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> marginaleffects<span class="sc">::</span><span class="fu">predictions</span>(mod,<span class="at">newdata=</span>marginaleffects<span class="sc">::</span><span class="fu">datagrid</span>(<span class="at">logpart=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="fl">11.51293</span>,<span class="fl">0.1</span>)))</span>
+<span id="cb268-5"><a href="generalized-linear-models---logit..html#cb268-5" tabindex="-1"></a><span class="fu">ggplot</span>(g) <span class="sc">+</span> </span>
+<span id="cb268-6"><a href="generalized-linear-models---logit..html#cb268-6" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, </span>
+<span id="cb268-7"><a href="generalized-linear-models---logit..html#cb268-7" tabindex="-1"></a>                  <span class="at">y=</span>predicted, </span>
+<span id="cb268-8"><a href="generalized-linear-models---logit..html#cb268-8" tabindex="-1"></a>                  <span class="at">ymin=</span>conf.low, </span>
+<span id="cb268-9"><a href="generalized-linear-models---logit..html#cb268-9" tabindex="-1"></a>                  <span class="at">ymax=</span>conf.high), </span>
+<span id="cb268-10"><a href="generalized-linear-models---logit..html#cb268-10" tabindex="-1"></a>              <span class="at">alpha=</span>.<span class="dv">25</span>) <span class="sc">+</span> </span>
+<span id="cb268-11"><a href="generalized-linear-models---logit..html#cb268-11" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>predicted)) <span class="sc">+</span> </span>
+<span id="cb268-12"><a href="generalized-linear-models---logit..html#cb268-12" tabindex="-1"></a>  <span class="fu">geom_rug</span>(<span class="at">data=</span>dat, </span>
+<span id="cb268-13"><a href="generalized-linear-models---logit..html#cb268-13" tabindex="-1"></a>           <span class="fu">aes</span>(<span class="at">x=</span>logpart), </span>
+<span id="cb268-14"><a href="generalized-linear-models---logit..html#cb268-14" tabindex="-1"></a>           <span class="at">sides=</span><span class="st">&quot;b&quot;</span>, </span>
+<span id="cb268-15"><a href="generalized-linear-models---logit..html#cb268-15" tabindex="-1"></a>           <span class="at">alpha=</span>.<span class="dv">25</span>) <span class="sc">+</span> </span>
+<span id="cb268-16"><a href="generalized-linear-models---logit..html#cb268-16" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb268-17"><a href="generalized-linear-models---logit..html#cb268-17" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;log(Participation)&quot;</span>, </span>
+<span id="cb268-18"><a href="generalized-linear-models---logit..html#cb268-18" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Predicted Pr(Arrest)&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-142-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb269"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb269-1"><a href="generalized-linear-models---logit..html#cb269-1" tabindex="-1"></a><span class="fu">ggplot</span>(g2) <span class="sc">+</span> </span>
+<span id="cb269-2"><a href="generalized-linear-models---logit..html#cb269-2" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x=</span>logpart, <span class="at">y=</span>estimate, </span>
+<span id="cb269-3"><a href="generalized-linear-models---logit..html#cb269-3" tabindex="-1"></a>                  <span class="at">ymax=</span>conf.high, </span>
+<span id="cb269-4"><a href="generalized-linear-models---logit..html#cb269-4" tabindex="-1"></a>                  <span class="at">ymin=</span>conf.low),<span class="at">alpha=</span>.<span class="dv">25</span>) <span class="sc">+</span> </span>
+<span id="cb269-5"><a href="generalized-linear-models---logit..html#cb269-5" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span>logpart, <span class="at">y=</span>estimate)) <span class="sc">+</span> </span>
+<span id="cb269-6"><a href="generalized-linear-models---logit..html#cb269-6" tabindex="-1"></a>  <span class="fu">geom_rug</span>(<span class="at">data=</span>dat, </span>
+<span id="cb269-7"><a href="generalized-linear-models---logit..html#cb269-7" tabindex="-1"></a>           <span class="fu">aes</span>(<span class="at">x=</span>logpart), </span>
+<span id="cb269-8"><a href="generalized-linear-models---logit..html#cb269-8" tabindex="-1"></a>           <span class="at">sides=</span><span class="st">&quot;b&quot;</span>, </span>
+<span id="cb269-9"><a href="generalized-linear-models---logit..html#cb269-9" tabindex="-1"></a>           <span class="at">alpha=</span>.<span class="dv">25</span>) <span class="sc">+</span></span>
+<span id="cb269-10"><a href="generalized-linear-models---logit..html#cb269-10" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb269-11"><a href="generalized-linear-models---logit..html#cb269-11" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;log(Participation)&quot;</span>, </span>
+<span id="cb269-12"><a href="generalized-linear-models---logit..html#cb269-12" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Predicted Pr(Arrest)&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-142-2.png" width="65%" style="display: block; margin: auto;" />
+If you prefer the average marginal effect approach, there are fewer options for making a marginal effect plot. The <code>aveEffPlot()</code> function in the <code>DAMisc</code> package will do this. By default, the function will make the plot for you using R’s base graphics package. You can also use the argument <code>plot=FALSE</code> and <code>returnSim=TRUE</code> and then the data for plotting will be returned.</p>
+<div class="sourceCode" id="cb270"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb270-1"><a href="generalized-linear-models---logit..html#cb270-1" tabindex="-1"></a>ap <span class="ot">&lt;-</span> <span class="fu">aveEffPlot</span>(mod, <span class="at">data=</span>dat, <span class="at">varname =</span> <span class="st">&quot;logpart&quot;</span>, <span class="at">nvals =</span> <span class="dv">35</span>, <span class="at">plot=</span><span class="cn">FALSE</span>, <span class="at">returnSim=</span><span class="cn">TRUE</span>)</span>
+<span id="cb270-2"><a href="generalized-linear-models---logit..html#cb270-2" tabindex="-1"></a>ap2 <span class="ot">&lt;-</span> marginaleffects<span class="sc">::</span><span class="fu">avg_predictions</span>(mod,<span class="at">variables=</span><span class="fu">list</span>(<span class="at">logpart=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="fl">11.51293</span>,<span class="fl">0.1</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb271"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb271-1"><a href="generalized-linear-models---logit..html#cb271-1" tabindex="-1"></a><span class="fu">ggplot</span>(ap<span class="sc">$</span>ci) <span class="sc">+</span> </span>
+<span id="cb271-2"><a href="generalized-linear-models---logit..html#cb271-2" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x=</span>s, </span>
+<span id="cb271-3"><a href="generalized-linear-models---logit..html#cb271-3" tabindex="-1"></a>                  <span class="at">y=</span>mean, </span>
+<span id="cb271-4"><a href="generalized-linear-models---logit..html#cb271-4" tabindex="-1"></a>                  <span class="at">ymin=</span>lower, </span>
+<span id="cb271-5"><a href="generalized-linear-models---logit..html#cb271-5" tabindex="-1"></a>                  <span class="at">ymax=</span>upper), </span>
+<span id="cb271-6"><a href="generalized-linear-models---logit..html#cb271-6" tabindex="-1"></a>              <span class="at">alpha=</span>.<span class="dv">15</span>) <span class="sc">+</span> </span>
+<span id="cb271-7"><a href="generalized-linear-models---logit..html#cb271-7" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span>s, </span>
+<span id="cb271-8"><a href="generalized-linear-models---logit..html#cb271-8" tabindex="-1"></a>                <span class="at">y=</span>mean)) <span class="sc">+</span> </span>
+<span id="cb271-9"><a href="generalized-linear-models---logit..html#cb271-9" tabindex="-1"></a>  <span class="fu">geom_rug</span>(<span class="at">data=</span>dat, </span>
+<span id="cb271-10"><a href="generalized-linear-models---logit..html#cb271-10" tabindex="-1"></a>           <span class="fu">aes</span>(<span class="at">x=</span>logpart), </span>
+<span id="cb271-11"><a href="generalized-linear-models---logit..html#cb271-11" tabindex="-1"></a>           <span class="at">sides=</span><span class="st">&quot;b&quot;</span>, </span>
+<span id="cb271-12"><a href="generalized-linear-models---logit..html#cb271-12" tabindex="-1"></a>           <span class="at">alpha=</span>.<span class="dv">25</span>) <span class="sc">+</span> </span>
+<span id="cb271-13"><a href="generalized-linear-models---logit..html#cb271-13" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb271-14"><a href="generalized-linear-models---logit..html#cb271-14" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;log(Participation)&quot;</span>, </span>
+<span id="cb271-15"><a href="generalized-linear-models---logit..html#cb271-15" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Predicted Pr(Arrest)&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-144-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb272"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb272-1"><a href="generalized-linear-models---logit..html#cb272-1" tabindex="-1"></a><span class="fu">ggplot</span>(ap2) <span class="sc">+</span> </span>
+<span id="cb272-2"><a href="generalized-linear-models---logit..html#cb272-2" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x=</span>logpart, <span class="at">y=</span>estimate, </span>
+<span id="cb272-3"><a href="generalized-linear-models---logit..html#cb272-3" tabindex="-1"></a>                  <span class="at">ymax=</span>conf.high, </span>
+<span id="cb272-4"><a href="generalized-linear-models---logit..html#cb272-4" tabindex="-1"></a>                  <span class="at">ymin=</span>conf.low), <span class="at">alpha=</span>.<span class="dv">25</span>) <span class="sc">+</span> </span>
+<span id="cb272-5"><a href="generalized-linear-models---logit..html#cb272-5" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span>logpart, <span class="at">y=</span>estimate)) <span class="sc">+</span></span>
+<span id="cb272-6"><a href="generalized-linear-models---logit..html#cb272-6" tabindex="-1"></a>  <span class="fu">geom_rug</span>(<span class="at">data=</span>dat, </span>
+<span id="cb272-7"><a href="generalized-linear-models---logit..html#cb272-7" tabindex="-1"></a>           <span class="fu">aes</span>(<span class="at">x=</span>logpart), </span>
+<span id="cb272-8"><a href="generalized-linear-models---logit..html#cb272-8" tabindex="-1"></a>           <span class="at">sides=</span><span class="st">&quot;b&quot;</span>, </span>
+<span id="cb272-9"><a href="generalized-linear-models---logit..html#cb272-9" tabindex="-1"></a>           <span class="at">alpha=</span>.<span class="dv">25</span>) <span class="sc">+</span> </span>
+<span id="cb272-10"><a href="generalized-linear-models---logit..html#cb272-10" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb272-11"><a href="generalized-linear-models---logit..html#cb272-11" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;log(Participation)&quot;</span>, </span>
+<span id="cb272-12"><a href="generalized-linear-models---logit..html#cb272-12" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Predicted Pr(Arrest)&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-144-2.png" width="65%" style="display: block; margin: auto;" />
+Let’s look at both of the effects together.</p>
+<div class="sourceCode" id="cb273"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb273-1"><a href="generalized-linear-models---logit..html#cb273-1" tabindex="-1"></a>g <span class="ot">&lt;-</span> g <span class="sc">%&gt;%</span> </span>
+<span id="cb273-2"><a href="generalized-linear-models---logit..html#cb273-2" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb273-3"><a href="generalized-linear-models---logit..html#cb273-3" tabindex="-1"></a>  <span class="fu">select</span>(x, predicted, conf.low, conf.high) <span class="sc">%&gt;%</span> </span>
+<span id="cb273-4"><a href="generalized-linear-models---logit..html#cb273-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">type =</span> <span class="fu">factor</span>(<span class="dv">1</span>, <span class="at">levels=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;MER&quot;</span>, <span class="st">&quot;AME&quot;</span>)))</span>
+<span id="cb273-5"><a href="generalized-linear-models---logit..html#cb273-5" tabindex="-1"></a>ap<span class="sc">$</span>ci <span class="sc">%&gt;%</span> </span>
+<span id="cb273-6"><a href="generalized-linear-models---logit..html#cb273-6" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="st">&quot;x&quot;</span> <span class="ot">=</span> <span class="st">&quot;s&quot;</span>, </span>
+<span id="cb273-7"><a href="generalized-linear-models---logit..html#cb273-7" tabindex="-1"></a>    <span class="st">&quot;predicted&quot;</span> <span class="ot">=</span> <span class="st">&quot;mean&quot;</span>, </span>
+<span id="cb273-8"><a href="generalized-linear-models---logit..html#cb273-8" tabindex="-1"></a>    <span class="st">&quot;conf.low&quot;</span> <span class="ot">=</span> <span class="st">&quot;lower&quot;</span>, </span>
+<span id="cb273-9"><a href="generalized-linear-models---logit..html#cb273-9" tabindex="-1"></a>    <span class="st">&quot;conf.high&quot;</span> <span class="ot">=</span> <span class="st">&quot;upper&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb273-10"><a href="generalized-linear-models---logit..html#cb273-10" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">type =</span> <span class="fu">factor</span>(<span class="dv">2</span>, <span class="at">levels=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;MER&quot;</span>, <span class="st">&quot;AME&quot;</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb273-11"><a href="generalized-linear-models---logit..html#cb273-11" tabindex="-1"></a>  <span class="fu">bind_rows</span>(g, .) <span class="sc">%&gt;%</span> </span>
+<span id="cb273-12"><a href="generalized-linear-models---logit..html#cb273-12" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>predicted)) <span class="sc">+</span> </span>
+<span id="cb273-13"><a href="generalized-linear-models---logit..html#cb273-13" tabindex="-1"></a>    <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>conf.low, </span>
+<span id="cb273-14"><a href="generalized-linear-models---logit..html#cb273-14" tabindex="-1"></a>                    <span class="at">ymax=</span>conf.high, </span>
+<span id="cb273-15"><a href="generalized-linear-models---logit..html#cb273-15" tabindex="-1"></a>                    <span class="at">fill=</span>type), </span>
+<span id="cb273-16"><a href="generalized-linear-models---logit..html#cb273-16" tabindex="-1"></a>                <span class="at">alpha=</span>.<span class="dv">15</span>, </span>
+<span id="cb273-17"><a href="generalized-linear-models---logit..html#cb273-17" tabindex="-1"></a>                <span class="at">col=</span><span class="st">&quot;transparent&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb273-18"><a href="generalized-linear-models---logit..html#cb273-18" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">colour=</span>type)) <span class="sc">+</span> </span>
+<span id="cb273-19"><a href="generalized-linear-models---logit..html#cb273-19" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb273-20"><a href="generalized-linear-models---logit..html#cb273-20" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb273-21"><a href="generalized-linear-models---logit..html#cb273-21" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;log(Participation)&quot;</span>, </span>
+<span id="cb273-22"><a href="generalized-linear-models---logit..html#cb273-22" tabindex="-1"></a>         <span class="at">y=</span><span class="st">&quot;Predicted Arrests&quot;</span>, </span>
+<span id="cb273-23"><a href="generalized-linear-models---logit..html#cb273-23" tabindex="-1"></a>         <span class="at">colour =</span> <span class="st">&quot;Effect Type&quot;</span>, </span>
+<span id="cb273-24"><a href="generalized-linear-models---logit..html#cb273-24" tabindex="-1"></a>         <span class="at">fill =</span> <span class="st">&quot;Effect Type&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-145-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb274-1"><a href="generalized-linear-models---logit..html#cb274-1" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> g2 <span class="sc">%&gt;%</span> </span>
+<span id="cb274-2"><a href="generalized-linear-models---logit..html#cb274-2" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb274-3"><a href="generalized-linear-models---logit..html#cb274-3" tabindex="-1"></a>  <span class="fu">select</span>(logpart, estimate, conf.low, conf.high) <span class="sc">%&gt;%</span> </span>
+<span id="cb274-4"><a href="generalized-linear-models---logit..html#cb274-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">type =</span> <span class="fu">factor</span>(<span class="dv">1</span>, <span class="at">levels=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;MER&quot;</span>, <span class="st">&quot;AME&quot;</span>)))</span>
+<span id="cb274-5"><a href="generalized-linear-models---logit..html#cb274-5" tabindex="-1"></a>ap2 <span class="sc">%&gt;%</span> </span>
+<span id="cb274-6"><a href="generalized-linear-models---logit..html#cb274-6" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb274-7"><a href="generalized-linear-models---logit..html#cb274-7" tabindex="-1"></a>  <span class="fu">select</span>(logpart, estimate, conf.low, conf.high) <span class="sc">%&gt;%</span> </span>
+<span id="cb274-8"><a href="generalized-linear-models---logit..html#cb274-8" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">type =</span> <span class="fu">factor</span>(<span class="dv">2</span>, <span class="at">levels=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;MER&quot;</span>, <span class="st">&quot;AME&quot;</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb274-9"><a href="generalized-linear-models---logit..html#cb274-9" tabindex="-1"></a>  <span class="fu">bind_rows</span>(g2, .) <span class="sc">%&gt;%</span> </span>
+<span id="cb274-10"><a href="generalized-linear-models---logit..html#cb274-10" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>logpart, <span class="at">y=</span>estimate)) <span class="sc">+</span> </span>
+<span id="cb274-11"><a href="generalized-linear-models---logit..html#cb274-11" tabindex="-1"></a>    <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>conf.low, </span>
+<span id="cb274-12"><a href="generalized-linear-models---logit..html#cb274-12" tabindex="-1"></a>                    <span class="at">ymax=</span>conf.high, </span>
+<span id="cb274-13"><a href="generalized-linear-models---logit..html#cb274-13" tabindex="-1"></a>                    <span class="at">fill=</span>type), </span>
+<span id="cb274-14"><a href="generalized-linear-models---logit..html#cb274-14" tabindex="-1"></a>                <span class="at">alpha=</span>.<span class="dv">15</span>, </span>
+<span id="cb274-15"><a href="generalized-linear-models---logit..html#cb274-15" tabindex="-1"></a>                <span class="at">col=</span><span class="st">&quot;transparent&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb274-16"><a href="generalized-linear-models---logit..html#cb274-16" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">colour=</span>type)) <span class="sc">+</span> </span>
+<span id="cb274-17"><a href="generalized-linear-models---logit..html#cb274-17" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb274-18"><a href="generalized-linear-models---logit..html#cb274-18" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb274-19"><a href="generalized-linear-models---logit..html#cb274-19" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;log(Participation)&quot;</span>, </span>
+<span id="cb274-20"><a href="generalized-linear-models---logit..html#cb274-20" tabindex="-1"></a>         <span class="at">y=</span><span class="st">&quot;Predicted Arrests&quot;</span>, </span>
+<span id="cb274-21"><a href="generalized-linear-models---logit..html#cb274-21" tabindex="-1"></a>         <span class="at">colour =</span> <span class="st">&quot;Effect Type&quot;</span>, </span>
+<span id="cb274-22"><a href="generalized-linear-models---logit..html#cb274-22" tabindex="-1"></a>         <span class="at">fill =</span> <span class="st">&quot;Effect Type&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-145-2.png" width="65%" style="display: block; margin: auto;" />
+We could also plot this by two different conditions (say the effect of year for <code>afam</code>=“No”, and <code>afam</code>=“Yes”).</p>
+<div class="sourceCode" id="cb275"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb275-1"><a href="generalized-linear-models---logit..html#cb275-1" tabindex="-1"></a><span class="fu">library</span>(ggeffects)</span>
+<span id="cb275-2"><a href="generalized-linear-models---logit..html#cb275-2" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggpredict</span>(mod, <span class="at">terms=</span><span class="fu">c</span>(<span class="st">&quot;evyy [n=50]&quot;</span>, <span class="st">&quot;afam&quot;</span>))</span>
+<span id="cb275-3"><a href="generalized-linear-models---logit..html#cb275-3" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> marginaleffects<span class="sc">::</span><span class="fu">predictions</span>(mod,</span>
+<span id="cb275-4"><a href="generalized-linear-models---logit..html#cb275-4" tabindex="-1"></a>                                   marginaleffects<span class="sc">::</span><span class="fu">datagrid</span>(<span class="at">evyy =</span> <span class="fu">seq</span>(<span class="dv">1960</span>,<span class="dv">1990</span>,<span class="fl">0.5</span>), </span>
+<span id="cb275-5"><a href="generalized-linear-models---logit..html#cb275-5" tabindex="-1"></a>                                                             <span class="at">afam =</span> <span class="fu">c</span>(<span class="st">&quot;No&quot;</span>,<span class="st">&quot;Yes&quot;</span>)))</span>
+<span id="cb275-6"><a href="generalized-linear-models---logit..html#cb275-6" tabindex="-1"></a></span>
+<span id="cb275-7"><a href="generalized-linear-models---logit..html#cb275-7" tabindex="-1"></a><span class="fu">ggplot</span>(g) <span class="sc">+</span> </span>
+<span id="cb275-8"><a href="generalized-linear-models---logit..html#cb275-8" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, </span>
+<span id="cb275-9"><a href="generalized-linear-models---logit..html#cb275-9" tabindex="-1"></a>                  <span class="at">y=</span>predicted, </span>
+<span id="cb275-10"><a href="generalized-linear-models---logit..html#cb275-10" tabindex="-1"></a>                  <span class="at">ymin=</span>conf.low, </span>
+<span id="cb275-11"><a href="generalized-linear-models---logit..html#cb275-11" tabindex="-1"></a>                  <span class="at">ymax=</span>conf.high, </span>
+<span id="cb275-12"><a href="generalized-linear-models---logit..html#cb275-12" tabindex="-1"></a>                  <span class="at">fill=</span>group), </span>
+<span id="cb275-13"><a href="generalized-linear-models---logit..html#cb275-13" tabindex="-1"></a>              <span class="at">alpha=</span>.<span class="dv">25</span>, </span>
+<span id="cb275-14"><a href="generalized-linear-models---logit..html#cb275-14" tabindex="-1"></a>              <span class="at">col=</span><span class="st">&quot;transparent&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb275-15"><a href="generalized-linear-models---logit..html#cb275-15" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>predicted, <span class="at">colour=</span>group)) <span class="sc">+</span> </span>
+<span id="cb275-16"><a href="generalized-linear-models---logit..html#cb275-16" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb275-17"><a href="generalized-linear-models---logit..html#cb275-17" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb275-18"><a href="generalized-linear-models---logit..html#cb275-18" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Year&quot;</span>, </span>
+<span id="cb275-19"><a href="generalized-linear-models---logit..html#cb275-19" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Predicted Pr(Arrest)&quot;</span>, </span>
+<span id="cb275-20"><a href="generalized-linear-models---logit..html#cb275-20" tabindex="-1"></a>       <span class="at">colour=</span><span class="st">&quot;African American</span><span class="sc">\n</span><span class="st">Protest&quot;</span>,</span>
+<span id="cb275-21"><a href="generalized-linear-models---logit..html#cb275-21" tabindex="-1"></a>       <span class="at">fill=</span><span class="st">&quot;African American</span><span class="sc">\n</span><span class="st">Protest&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-146-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb276"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb276-1"><a href="generalized-linear-models---logit..html#cb276-1" tabindex="-1"></a><span class="fu">ggplot</span>(g2) <span class="sc">+</span> </span>
+<span id="cb276-2"><a href="generalized-linear-models---logit..html#cb276-2" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x=</span>evyy, </span>
+<span id="cb276-3"><a href="generalized-linear-models---logit..html#cb276-3" tabindex="-1"></a>                  <span class="at">y=</span>estimate, </span>
+<span id="cb276-4"><a href="generalized-linear-models---logit..html#cb276-4" tabindex="-1"></a>                  <span class="at">ymin=</span>conf.low, </span>
+<span id="cb276-5"><a href="generalized-linear-models---logit..html#cb276-5" tabindex="-1"></a>                  <span class="at">ymax=</span>conf.high, </span>
+<span id="cb276-6"><a href="generalized-linear-models---logit..html#cb276-6" tabindex="-1"></a>                  <span class="at">fill=</span>afam), </span>
+<span id="cb276-7"><a href="generalized-linear-models---logit..html#cb276-7" tabindex="-1"></a>              <span class="at">alpha=</span>.<span class="dv">25</span>, </span>
+<span id="cb276-8"><a href="generalized-linear-models---logit..html#cb276-8" tabindex="-1"></a>              <span class="at">col=</span><span class="st">&quot;transparent&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb276-9"><a href="generalized-linear-models---logit..html#cb276-9" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span>evyy, <span class="at">y=</span>estimate, <span class="at">colour=</span>afam)) <span class="sc">+</span> </span>
+<span id="cb276-10"><a href="generalized-linear-models---logit..html#cb276-10" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb276-11"><a href="generalized-linear-models---logit..html#cb276-11" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb276-12"><a href="generalized-linear-models---logit..html#cb276-12" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Year&quot;</span>, </span>
+<span id="cb276-13"><a href="generalized-linear-models---logit..html#cb276-13" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Predicted Pr(Arrest)&quot;</span>, </span>
+<span id="cb276-14"><a href="generalized-linear-models---logit..html#cb276-14" tabindex="-1"></a>       <span class="at">colour=</span><span class="st">&quot;African American</span><span class="sc">\n</span><span class="st">Protest&quot;</span>,</span>
+<span id="cb276-15"><a href="generalized-linear-models---logit..html#cb276-15" tabindex="-1"></a>       <span class="at">fill=</span><span class="st">&quot;African American</span><span class="sc">\n</span><span class="st">Protest&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-146-2.png" width="65%" style="display: block; margin: auto;" />
+As you can see, African American protests were more likely to experience arrests than primarily white protests over the entire period, though the gap seems to close with both groups seeing more arrests toward the end of the period in the late 1980s. You can see that the difference between the two is bigger at the beginning of the period than later in the period. This is due to the effects of “compression” which brings up the debate about how interactions work in non-linear models like this. We turn to that below.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Plot the effect of <code>sei10</code> and <code>age</code> for different values of <code>college_ed</code>.<br />
+- How do the effects differ based on different methods?</p>
+</div>
+</div>
+<div id="interactions-in-binary-dv-models" class="section level2 hasAnchor" number="4.4">
+<h2><span class="header-section-number">4.4</span> Interactions in Binary DV Models<a href="generalized-linear-models---logit..html#interactions-in-binary-dv-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Interactions in binary DV models are more complicated than in linear models. In addition to the general added complexity - there is some debate about a) the right method for calculating the effect and b) whether or not a product term is required. We will discuss the different methods for dealing with the first issue below.</p>
+<p>As for whether a product term is required initially hinged on whether the user believed that “compression” indicating an interesting interaction. Compression is the phenomenon where marginal effects get smaller in the extremes of the distribution. If <span class="math inline">\(Pr(y=1) = .99\)</span> already, then the positive effect of any variable is constrained to a really small value (i.e., can’t be more than .01 in terms of a first difference). Those same sorts of constraints are less interesting when <span class="math inline">\(Pr(y=1) = .5\)</span>, where there is lots of room for a variable to have a bigger effect. The two schools of thought are</p>
+<ol style="list-style-type: decimal">
+<li>Compression is an artifact of the model and as such doesn’t represent a statistically interesting phenomenon. To model a truly conditional relationship, a product term is required (e.g., Bartels).</li>
+<li>Compression does, in fact, identify a certain kind of interaction and as such is statistically meaningful (e.g., Berry, Demeritt and Esarey).</li>
+</ol>
+<p>These two sides of the debate are extremes with the right answer probably being somewhere in the middle. For example, without a product term, we showed above that the marginal effect of a variable <span class="math inline">\(x_j\)</span> is:</p>
+<p><span class="math display">\[\frac{\partial \hat{p}}{\partial x_j} = b_j\times f\left(a + bx_j + x_hB\right)\]</span></p>
+<p>Note that since the <span class="math inline">\(f(\cdot)\)</span> is the evaluation of a probability density function, it’s values are non-negative. So if <span class="math inline">\(b_j\)</span> is positive, the equation above could not possibly generate a negative effect. I could generate differently sized positive effects, which would be one form of interaction, but the effect could not be negative. So, to have conditional effects that switch signs, you would need a product term in the model.</p>
+<p>Carlisle Rainey has an interesting article suggesting, counterintuitively, that including the product term actually allows the model to look more like an additive model by mitigating the effects of compression if the patterns in the data are such. So, here, the inclusion of the product term is not only to “allow for” a conditional effect, it’s also to allow for a more nearly additive effect.</p>
+<p>All of this is to say that you can include a product term or not and still potentially have interesting interactivity. Those questions should be addressed by following the procedures described below. In what follows, we’ll consider three different scenarios. In each scenario, I will simulate some data to demonstrate the method’s properties.</p>
+<ol style="list-style-type: decimal">
+<li>Both variables in the interaction are dummy variables.</li>
+<li>One variable in the interaction is continuous and one is binary.</li>
+<li>Both variables in the interaction are continuous.</li>
+</ol>
+<div id="both-binary" class="section level3 hasAnchor" number="4.4.1">
+<h3><span class="header-section-number">4.4.1</span> Both binary<a href="generalized-linear-models---logit..html#both-binary" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Let’s make some data first and then estimate the model.</p>
+<div class="sourceCode" id="cb277"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb277-1"><a href="generalized-linear-models---logit..html#cb277-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb277-2"><a href="generalized-linear-models---logit..html#cb277-2" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb277-3"><a href="generalized-linear-models---logit..html#cb277-3" tabindex="-1"></a>  <span class="at">x1 =</span> <span class="fu">as.factor</span>(<span class="fu">rbinom</span>(<span class="dv">1000</span>, <span class="dv">1</span>, .<span class="dv">5</span>)), </span>
+<span id="cb277-4"><a href="generalized-linear-models---logit..html#cb277-4" tabindex="-1"></a>  <span class="at">x2 =</span> <span class="fu">as.factor</span>(<span class="fu">rbinom</span>(<span class="dv">1000</span>, <span class="dv">1</span>, .<span class="dv">4</span>)), </span>
+<span id="cb277-5"><a href="generalized-linear-models---logit..html#cb277-5" tabindex="-1"></a>  <span class="at">z =</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>),</span>
+<span id="cb277-6"><a href="generalized-linear-models---logit..html#cb277-6" tabindex="-1"></a>  <span class="at">ystar =</span> <span class="dv">0</span> <span class="sc">+</span> <span class="fu">as.numeric</span>(x1 <span class="sc">==</span> <span class="st">&quot;1&quot;</span>) <span class="sc">-</span> <span class="fu">as.numeric</span>(x2 <span class="sc">==</span> <span class="st">&quot;1&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb277-7"><a href="generalized-linear-models---logit..html#cb277-7" tabindex="-1"></a>    <span class="dv">2</span><span class="sc">*</span><span class="fu">as.numeric</span>(x1<span class="sc">==</span><span class="st">&quot;1&quot;</span>)<span class="sc">*</span><span class="fu">as.numeric</span>(x2<span class="sc">==</span><span class="st">&quot;1&quot;</span>) <span class="sc">+</span> z, </span>
+<span id="cb277-8"><a href="generalized-linear-models---logit..html#cb277-8" tabindex="-1"></a>  <span class="at">p =</span> <span class="fu">plogis</span>(ystar), </span>
+<span id="cb277-9"><a href="generalized-linear-models---logit..html#cb277-9" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">rbinom</span>(<span class="dv">1000</span>, <span class="dv">1</span>, p)</span>
+<span id="cb277-10"><a href="generalized-linear-models---logit..html#cb277-10" tabindex="-1"></a>)</span>
+<span id="cb277-11"><a href="generalized-linear-models---logit..html#cb277-11" tabindex="-1"></a></span>
+<span id="cb277-12"><a href="generalized-linear-models---logit..html#cb277-12" tabindex="-1"></a>mod1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> x1<span class="sc">*</span>x2 <span class="sc">+</span> z, <span class="at">data=</span>df1, <span class="at">family=</span>binomial)</span></code></pre></div>
+<p>The Norton, Wang and Ai discussion suggests taking the discrete double-difference of the model above with respect to <code>x1</code> and <code>x2</code>. This is just the probability where <code>x1</code> and <code>x2</code> are equal to 1, minus the probability where <code>x1</code> is 1 and <code>x2</code> is 0 minus the probability where <code>x2</code> is 1 and <code>x1</code> is 0 plus the probability where <code>x1</code> and <code>x2</code> are both 0. We could calculate this “by hand” as:</p>
+<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="generalized-linear-models---logit..html#cb278-1" tabindex="-1"></a><span class="do">## make the model matrix for all conditions</span></span>
+<span id="cb278-2"><a href="generalized-linear-models---logit..html#cb278-2" tabindex="-1"></a>X11 <span class="ot">&lt;-</span> X10 <span class="ot">&lt;-</span> X01 <span class="ot">&lt;-</span> X00 <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(mod1)</span>
+<span id="cb278-3"><a href="generalized-linear-models---logit..html#cb278-3" tabindex="-1"></a><span class="do">## set the conditions for each of the four different</span></span>
+<span id="cb278-4"><a href="generalized-linear-models---logit..html#cb278-4" tabindex="-1"></a><span class="do">## scenarios above</span></span>
+<span id="cb278-5"><a href="generalized-linear-models---logit..html#cb278-5" tabindex="-1"></a></span>
+<span id="cb278-6"><a href="generalized-linear-models---logit..html#cb278-6" tabindex="-1"></a><span class="do">## x1 = 1, x2=1</span></span>
+<span id="cb278-7"><a href="generalized-linear-models---logit..html#cb278-7" tabindex="-1"></a>X11[,<span class="st">&quot;x11&quot;</span>] <span class="ot">&lt;-</span> X11[,<span class="st">&quot;x21&quot;</span>] <span class="ot">&lt;-</span> X11[,<span class="st">&quot;x11:x21&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">1</span> </span>
+<span id="cb278-8"><a href="generalized-linear-models---logit..html#cb278-8" tabindex="-1"></a></span>
+<span id="cb278-9"><a href="generalized-linear-models---logit..html#cb278-9" tabindex="-1"></a><span class="do">## x1=1, x2=0</span></span>
+<span id="cb278-10"><a href="generalized-linear-models---logit..html#cb278-10" tabindex="-1"></a>X10[,<span class="st">&quot;x11&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb278-11"><a href="generalized-linear-models---logit..html#cb278-11" tabindex="-1"></a>X10[,<span class="st">&quot;x21&quot;</span>] <span class="ot">&lt;-</span> X10[,<span class="st">&quot;x11:x21&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb278-12"><a href="generalized-linear-models---logit..html#cb278-12" tabindex="-1"></a></span>
+<span id="cb278-13"><a href="generalized-linear-models---logit..html#cb278-13" tabindex="-1"></a><span class="do">## x1=0, x2=1</span></span>
+<span id="cb278-14"><a href="generalized-linear-models---logit..html#cb278-14" tabindex="-1"></a>X01[,<span class="st">&quot;x21&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb278-15"><a href="generalized-linear-models---logit..html#cb278-15" tabindex="-1"></a>X01[,<span class="st">&quot;x11&quot;</span>] <span class="ot">&lt;-</span> X01[,<span class="st">&quot;x11:x21&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb278-16"><a href="generalized-linear-models---logit..html#cb278-16" tabindex="-1"></a></span>
+<span id="cb278-17"><a href="generalized-linear-models---logit..html#cb278-17" tabindex="-1"></a><span class="do">## x1=0, x2=0</span></span>
+<span id="cb278-18"><a href="generalized-linear-models---logit..html#cb278-18" tabindex="-1"></a>X00[,<span class="st">&quot;x11&quot;</span>] <span class="ot">&lt;-</span> X00[,<span class="st">&quot;x21&quot;</span>] <span class="ot">&lt;-</span>  X00[,<span class="st">&quot;x11:x21&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb278-19"><a href="generalized-linear-models---logit..html#cb278-19" tabindex="-1"></a> </span>
+<span id="cb278-20"><a href="generalized-linear-models---logit..html#cb278-20" tabindex="-1"></a><span class="do">## calculate the probabilities</span></span>
+<span id="cb278-21"><a href="generalized-linear-models---logit..html#cb278-21" tabindex="-1"></a>p11 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(X11 <span class="sc">%*%</span> <span class="fu">coef</span>(mod1))</span>
+<span id="cb278-22"><a href="generalized-linear-models---logit..html#cb278-22" tabindex="-1"></a>p10 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(X10 <span class="sc">%*%</span> <span class="fu">coef</span>(mod1))</span>
+<span id="cb278-23"><a href="generalized-linear-models---logit..html#cb278-23" tabindex="-1"></a>p01 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(X01 <span class="sc">%*%</span> <span class="fu">coef</span>(mod1))</span>
+<span id="cb278-24"><a href="generalized-linear-models---logit..html#cb278-24" tabindex="-1"></a>p00 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(X00 <span class="sc">%*%</span> <span class="fu">coef</span>(mod1))</span>
+<span id="cb278-25"><a href="generalized-linear-models---logit..html#cb278-25" tabindex="-1"></a></span>
+<span id="cb278-26"><a href="generalized-linear-models---logit..html#cb278-26" tabindex="-1"></a>eff1 <span class="ot">&lt;-</span> p11 <span class="sc">-</span> p10 <span class="sc">-</span> p01 <span class="sc">+</span> p00</span></code></pre></div>
+<p>This is just what the <code>intEff()</code> function does.</p>
+<div class="sourceCode" id="cb279"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb279-1"><a href="generalized-linear-models---logit..html#cb279-1" tabindex="-1"></a>i1 <span class="ot">&lt;-</span> <span class="fu">intEff</span>(mod1, <span class="fu">c</span>(<span class="st">&quot;x1&quot;</span>, <span class="st">&quot;x2&quot;</span>), df1)</span></code></pre></div>
+<p>The <code>byob$int</code> element of the <code>i1</code> object above gives the interaction effect, particularly the first column. We can just plot that relative to the effect calculated above to see that they’re the same.</p>
+<div class="sourceCode" id="cb280"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb280-1"><a href="generalized-linear-models---logit..html#cb280-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb280-2"><a href="generalized-linear-models---logit..html#cb280-2" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">e1 =</span> eff1, <span class="at">i1 =</span> i1<span class="sc">$</span>byobs<span class="sc">$</span>int<span class="sc">$</span>int_eff) <span class="sc">%&gt;%</span> </span>
+<span id="cb280-3"><a href="generalized-linear-models---logit..html#cb280-3" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">mapping=</span> <span class="fu">aes</span>(<span class="at">x=</span>e1, <span class="at">y=</span>i1)) <span class="sc">+</span> </span>
+<span id="cb280-4"><a href="generalized-linear-models---logit..html#cb280-4" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">pch=</span><span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb280-5"><a href="generalized-linear-models---logit..html#cb280-5" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb280-6"><a href="generalized-linear-models---logit..html#cb280-6" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Calculated by Hand&quot;</span>, <span class="at">y=</span><span class="st">&quot;intEff Function Output&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-150-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>So, the <code>byobs</code> list has two elements - the <code>int</code> element holds the interaction effects for each individual observation. The <code>X</code> element holds the original data. These data were used to calculate the interaction effect, except that the variables involved in the interaction effect were changed as we did above. Here, you could plot a histogram of the effects:</p>
+<div class="sourceCode" id="cb281"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb281-1"><a href="generalized-linear-models---logit..html#cb281-1" tabindex="-1"></a>i1<span class="sc">$</span>byobs<span class="sc">$</span>int <span class="sc">%&gt;%</span> </span>
+<span id="cb281-2"><a href="generalized-linear-models---logit..html#cb281-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>int_eff)) <span class="sc">+</span> </span>
+<span id="cb281-3"><a href="generalized-linear-models---logit..html#cb281-3" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span> </span>
+<span id="cb281-4"><a href="generalized-linear-models---logit..html#cb281-4" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb281-5"><a href="generalized-linear-models---logit..html#cb281-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Interaction Effect&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-151-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>In this case, all of the effects are significant, but you could also break these out by significant and not significant effects:</p>
+<div class="sourceCode" id="cb282"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb282-1"><a href="generalized-linear-models---logit..html#cb282-1" tabindex="-1"></a>i1<span class="sc">$</span>byobs<span class="sc">$</span>int <span class="sc">%&gt;%</span> </span>
+<span id="cb282-2"><a href="generalized-linear-models---logit..html#cb282-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sig =</span> <span class="fu">ifelse</span>(<span class="fu">abs</span>(i1<span class="sc">$</span>byobs<span class="sc">$</span>int<span class="sc">$</span>zstat) <span class="sc">&gt;</span> <span class="fl">1.96</span>, <span class="dv">1</span>, <span class="dv">0</span>), </span>
+<span id="cb282-3"><a href="generalized-linear-models---logit..html#cb282-3" tabindex="-1"></a>         <span class="at">sig =</span> <span class="fu">factor</span>(sig, <span class="at">levels=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;No&quot;</span>, <span class="st">&quot;Yes&quot;</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb282-4"><a href="generalized-linear-models---logit..html#cb282-4" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>int_eff)) <span class="sc">+</span> </span>
+<span id="cb282-5"><a href="generalized-linear-models---logit..html#cb282-5" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span> </span>
+<span id="cb282-6"><a href="generalized-linear-models---logit..html#cb282-6" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb282-7"><a href="generalized-linear-models---logit..html#cb282-7" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>sig) <span class="sc">+</span> </span>
+<span id="cb282-8"><a href="generalized-linear-models---logit..html#cb282-8" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Interaction Effect&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-152-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>The function <code>avg_predictions</code> in the <code>marginaleffects</code> package does this more generally. This function calculates second differences at user-defined values. and summarises all of the individual second differences like those created above.</p>
+<div class="sourceCode" id="cb283"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb283-1"><a href="generalized-linear-models---logit..html#cb283-1" tabindex="-1"></a>marginaleffects<span class="sc">::</span><span class="fu">avg_predictions</span>(mod1, <span class="at">variables=</span><span class="fu">list</span>(<span class="at">x1=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">x2=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)), </span>
+<span id="cb283-2"><a href="generalized-linear-models---logit..html#cb283-2" tabindex="-1"></a>                                 <span class="at">hypothesis =</span> <span class="st">&quot;(b2-b1)-(b4-b3)=0&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+##         Hypothesis Estimate Std. Error     z Pr(&gt;|z|)    S  2.5 % 97.5 %  Df
+##  (b2-b1)-(b4-b3)=0    -0.32     0.0548 -5.84   &lt;0.001 27.5 -0.427 -0.212 Inf
+## 
+## Type: response</code></pre>
+<p>These results all tell us about the change in probability when <code>x2</code> changes from 0 to 1 under two conditions one when <code>x1</code> is 1 and one when it is 0. For example, the first row of the <code>byobs$int</code> element of the output from <code>intEff()</code>:</p>
+<div class="sourceCode" id="cb285"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb285-1"><a href="generalized-linear-models---logit..html#cb285-1" tabindex="-1"></a>i1<span class="sc">$</span>byobs<span class="sc">$</span>int[<span class="dv">1</span>,]</span></code></pre></div>
+<pre><code>##     int_eff    linear      phat se_int_eff    zstat
+## 1 0.3584801 0.2141966 0.1384038 0.06166805 5.813061</code></pre>
+<p>suggests that for the first observation, as <code>x2</code> changes from 0 to 1, the first difference is .35 higher when <code>x1</code> is 1 than when <code>x1</code> is 0. The <code>atmean</code> element of <code>i1</code> shows what this difference is at the average of all of the covariates:</p>
+<div class="sourceCode" id="cb287"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb287-1"><a href="generalized-linear-models---logit..html#cb287-1" tabindex="-1"></a>i1<span class="sc">$</span>atmean</span></code></pre></div>
+<pre><code>## [[1]]
+##     int_eff    linear      phat se_int_eff    zstat
+## 1 0.3446747 0.4126915 0.6422852 0.05928781 5.813584
+## 
+## $X
+##      (Intercept)   x11   x21          z x11:x21
+## [1,]           1 0.518 0.381 0.01450824    0.21</code></pre>
+</div>
+<div id="one-binary-one-continuous." class="section level3 hasAnchor" number="4.4.2">
+<h3><span class="header-section-number">4.4.2</span> One binary, one continuous.<a href="generalized-linear-models---logit..html#one-binary-one-continuous." class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>With one binary and one continuous variable, the Norton, Wang and Ai model would have us calculate the slope of the line tangent to the logit curve for the continuous variable at both of the values of the categorical variable.</p>
+<p>First, let’s make the data and run the model:</p>
+<div class="sourceCode" id="cb289"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb289-1"><a href="generalized-linear-models---logit..html#cb289-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb289-2"><a href="generalized-linear-models---logit..html#cb289-2" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb289-3"><a href="generalized-linear-models---logit..html#cb289-3" tabindex="-1"></a>  <span class="at">x2 =</span> <span class="fu">as.factor</span>(<span class="fu">rbinom</span>(<span class="dv">1000</span>, <span class="dv">1</span>, .<span class="dv">5</span>)), </span>
+<span id="cb289-4"><a href="generalized-linear-models---logit..html#cb289-4" tabindex="-1"></a>  <span class="at">x1 =</span> <span class="fu">runif</span>(<span class="dv">1000</span>, <span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>), </span>
+<span id="cb289-5"><a href="generalized-linear-models---logit..html#cb289-5" tabindex="-1"></a>  <span class="at">z =</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>),</span>
+<span id="cb289-6"><a href="generalized-linear-models---logit..html#cb289-6" tabindex="-1"></a>  <span class="at">ystar =</span> <span class="dv">0</span> <span class="sc">+</span> <span class="fu">as.numeric</span>(x2 <span class="sc">==</span> <span class="st">&quot;1&quot;</span>) <span class="sc">-</span> x1 <span class="sc">+</span> </span>
+<span id="cb289-7"><a href="generalized-linear-models---logit..html#cb289-7" tabindex="-1"></a>    .<span class="dv">75</span><span class="sc">*</span><span class="fu">as.numeric</span>(x2<span class="sc">==</span><span class="st">&quot;1&quot;</span>)<span class="sc">*</span>x1 <span class="sc">+</span> z, </span>
+<span id="cb289-8"><a href="generalized-linear-models---logit..html#cb289-8" tabindex="-1"></a>  <span class="at">p =</span> <span class="fu">plogis</span>(ystar), </span>
+<span id="cb289-9"><a href="generalized-linear-models---logit..html#cb289-9" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">rbinom</span>(<span class="dv">1000</span>, <span class="dv">1</span>, p)</span>
+<span id="cb289-10"><a href="generalized-linear-models---logit..html#cb289-10" tabindex="-1"></a>)</span>
+<span id="cb289-11"><a href="generalized-linear-models---logit..html#cb289-11" tabindex="-1"></a></span>
+<span id="cb289-12"><a href="generalized-linear-models---logit..html#cb289-12" tabindex="-1"></a>mod2 <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> x1<span class="sc">*</span>x2 <span class="sc">+</span> z, <span class="at">data=</span>df2, <span class="at">family=</span>binomial)</span></code></pre></div>
+<p>Norton, Wang and Ai show that the interaction effect is the difference in the first derivatives of the probability with respect to <code>x1</code> when <code>x2</code> changes from 0 to 1. In the following model:</p>
+<p><span class="math display">\[\begin{aligned}
+log\left(\frac{p_i}{1-p_{i}}\right) &amp;= u_i\\
+log\left(\frac{p_i}{1-p_{i}}\right) &amp;= b_0 + b_1x_{1i} + b_2x_{2i} + b_3x_{1i}x_{2i} + \mathbf{Z\theta},
+\end{aligned}\]</span></p>
+<p>The first derivative of the probability with respect to <code>x1</code> when `x2 is equal to 1 is:</p>
+<p><span class="math display">\[\frac{\partial F(u_i)}{\partial x_{1i}} = (b_1 + b_3)f(u_i)\]</span></p>
+<p>where <span class="math inline">\(F(u_i)\)</span> is the predicted probability for observation <span class="math inline">\(i\)</span> (i.e., the CDF of the logistic distribution evaluated at <span class="math inline">\(u_i\)</span>) and <span class="math inline">\(f(u_{i})\)</span> is the PDF of the logistic distribution distribution evaluated at <span class="math inline">\(u_i\)</span>. We could also calculate this for the condition when <code>x2</code> = 0:</p>
+<p><span class="math display">\[\frac{\partial F(u_i)}{\partial x_{1i}} = b_1f(u_i)\]</span></p>
+<p>In both cases, this assumes that the values of <span class="math inline">\(\mathbf{x}_{i}\)</span> are consistent with the condition. For example in the first partial derivative above, <span class="math inline">\(x_{2i}\)</span> would have to equal 1 and in the second partial derivative, <span class="math inline">\(x_{2i}\)</span> would have to equal zero. We could do this by hand just to see how it works:</p>
+<div class="sourceCode" id="cb290"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb290-1"><a href="generalized-linear-models---logit..html#cb290-1" tabindex="-1"></a>X0 <span class="ot">&lt;-</span> X1 <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(mod2)</span>
+<span id="cb290-2"><a href="generalized-linear-models---logit..html#cb290-2" tabindex="-1"></a><span class="do">## set the conditions for each of the four different</span></span>
+<span id="cb290-3"><a href="generalized-linear-models---logit..html#cb290-3" tabindex="-1"></a><span class="do">## scenarios above</span></span>
+<span id="cb290-4"><a href="generalized-linear-models---logit..html#cb290-4" tabindex="-1"></a></span>
+<span id="cb290-5"><a href="generalized-linear-models---logit..html#cb290-5" tabindex="-1"></a><span class="do">## x1 = 1, x2=1</span></span>
+<span id="cb290-6"><a href="generalized-linear-models---logit..html#cb290-6" tabindex="-1"></a>X1[,<span class="st">&quot;x21&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb290-7"><a href="generalized-linear-models---logit..html#cb290-7" tabindex="-1"></a>X1[,<span class="st">&quot;x1:x21&quot;</span>] <span class="ot">&lt;-</span> X1[,<span class="st">&quot;x1&quot;</span>]</span>
+<span id="cb290-8"><a href="generalized-linear-models---logit..html#cb290-8" tabindex="-1"></a></span>
+<span id="cb290-9"><a href="generalized-linear-models---logit..html#cb290-9" tabindex="-1"></a><span class="do">## x1=1, x2=0</span></span>
+<span id="cb290-10"><a href="generalized-linear-models---logit..html#cb290-10" tabindex="-1"></a>X0[,<span class="st">&quot;x21&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb290-11"><a href="generalized-linear-models---logit..html#cb290-11" tabindex="-1"></a>X0[,<span class="st">&quot;x1:x21&quot;</span>] <span class="ot">&lt;-</span>  <span class="dv">0</span></span>
+<span id="cb290-12"><a href="generalized-linear-models---logit..html#cb290-12" tabindex="-1"></a></span>
+<span id="cb290-13"><a href="generalized-linear-models---logit..html#cb290-13" tabindex="-1"></a></span>
+<span id="cb290-14"><a href="generalized-linear-models---logit..html#cb290-14" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">coef</span>(mod2)</span>
+<span id="cb290-15"><a href="generalized-linear-models---logit..html#cb290-15" tabindex="-1"></a></span>
+<span id="cb290-16"><a href="generalized-linear-models---logit..html#cb290-16" tabindex="-1"></a><span class="do">## print the coefficients to show that the two coefficients</span></span>
+<span id="cb290-17"><a href="generalized-linear-models---logit..html#cb290-17" tabindex="-1"></a><span class="do">## we want are the second and fifth ones. </span></span>
+<span id="cb290-18"><a href="generalized-linear-models---logit..html#cb290-18" tabindex="-1"></a>b</span></code></pre></div>
+<pre><code>## (Intercept)          x1         x21           z      x1:x21 
+##   0.3414514  -0.8653259   0.6186529   0.8542471   0.6109292</code></pre>
+<div class="sourceCode" id="cb292"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb292-1"><a href="generalized-linear-models---logit..html#cb292-1" tabindex="-1"></a><span class="do">## calculate the first effect</span></span>
+<span id="cb292-2"><a href="generalized-linear-models---logit..html#cb292-2" tabindex="-1"></a>e1 <span class="ot">&lt;-</span> (b[<span class="dv">2</span>] <span class="sc">+</span> b[<span class="dv">5</span>])<span class="sc">*</span><span class="fu">dlogis</span>(X1 <span class="sc">%*%</span> b)</span>
+<span id="cb292-3"><a href="generalized-linear-models---logit..html#cb292-3" tabindex="-1"></a></span>
+<span id="cb292-4"><a href="generalized-linear-models---logit..html#cb292-4" tabindex="-1"></a><span class="do">## calculate the second effect</span></span>
+<span id="cb292-5"><a href="generalized-linear-models---logit..html#cb292-5" tabindex="-1"></a>e2 <span class="ot">&lt;-</span> (b[<span class="dv">2</span>] )<span class="sc">*</span><span class="fu">dlogis</span>(X0 <span class="sc">%*%</span> b)</span>
+<span id="cb292-6"><a href="generalized-linear-models---logit..html#cb292-6" tabindex="-1"></a></span>
+<span id="cb292-7"><a href="generalized-linear-models---logit..html#cb292-7" tabindex="-1"></a></span>
+<span id="cb292-8"><a href="generalized-linear-models---logit..html#cb292-8" tabindex="-1"></a><span class="do">## calculate the probabilities</span></span>
+<span id="cb292-9"><a href="generalized-linear-models---logit..html#cb292-9" tabindex="-1"></a>eff2 <span class="ot">&lt;-</span> e1 <span class="sc">-</span> e2</span></code></pre></div>
+<p>Just like before, we can also estimate the same effect with <code>intEff()</code> and show that the two are the same.</p>
+<div class="sourceCode" id="cb293"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb293-1"><a href="generalized-linear-models---logit..html#cb293-1" tabindex="-1"></a>i2 <span class="ot">&lt;-</span> <span class="fu">intEff</span>(mod2, <span class="fu">c</span>(<span class="st">&quot;x1&quot;</span>, <span class="st">&quot;x2&quot;</span>), df2)</span>
+<span id="cb293-2"><a href="generalized-linear-models---logit..html#cb293-2" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">y =</span> i2<span class="sc">$</span>byobs<span class="sc">$</span>int[,<span class="dv">1</span>], <span class="at">x=</span>eff2)) <span class="sc">+</span> </span>
+<span id="cb293-3"><a href="generalized-linear-models---logit..html#cb293-3" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">pch=</span><span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb293-4"><a href="generalized-linear-models---logit..html#cb293-4" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb293-5"><a href="generalized-linear-models---logit..html#cb293-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Calculated by hand&quot;</span>, <span class="at">y=</span> <span class="st">&quot;intEff Output&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-158-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>Looking at the first line of the output of <code>i2$byobs$int</code>,</p>
+<div class="sourceCode" id="cb294"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb294-1"><a href="generalized-linear-models---logit..html#cb294-1" tabindex="-1"></a>i2<span class="sc">$</span>byobs<span class="sc">$</span>int[<span class="dv">1</span>,]</span></code></pre></div>
+<pre><code>##      int_eff     linear      phat se_int_eff    zstat
+## 1 0.04013175 0.07137251 0.1350701  0.0233773 1.716697</code></pre>
+<p>We see that the slope of the line tangent to the logit curve when <code>x1</code> takes on the value of the first observation (1.350536) is 0.04 higher when <code>x2</code> = 1 than when <code>x2</code> = 0. We could visualize this as in the figure below. The solid lines are the logit curves and the dotted lines are the lines tangent to the curves at <span class="math inline">\(x_1 = 1.350536\)</span>. The slope of the blue dotted line is -0.060961 and the slope of the orange dotted line is -0.1010927. You can see that the difference 0.0401317 is the first entry in the <code>int_eff</code> column displayed above.</p>
+<div class="sourceCode" id="cb296"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb296-1"><a href="generalized-linear-models---logit..html#cb296-1" tabindex="-1"></a>tmpX1 <span class="ot">&lt;-</span> X1[<span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">51</span>), ]</span>
+<span id="cb296-2"><a href="generalized-linear-models---logit..html#cb296-2" tabindex="-1"></a>tmpX0 <span class="ot">&lt;-</span> X0[<span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">51</span>), ]</span>
+<span id="cb296-3"><a href="generalized-linear-models---logit..html#cb296-3" tabindex="-1"></a>tmpX1[,<span class="st">&quot;x1&quot;</span>] <span class="ot">&lt;-</span> tmpX1[,<span class="st">&quot;x1:x21&quot;</span>] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>, <span class="at">length=</span><span class="dv">50</span>), <span class="fl">1.350536</span>)</span>
+<span id="cb296-4"><a href="generalized-linear-models---logit..html#cb296-4" tabindex="-1"></a>tmpX0[,<span class="st">&quot;x1&quot;</span>] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>, <span class="at">length=</span><span class="dv">50</span>), <span class="fl">1.350536</span>)</span>
+<span id="cb296-5"><a href="generalized-linear-models---logit..html#cb296-5" tabindex="-1"></a>tmpX0[,<span class="st">&quot;x1:x21&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb296-6"><a href="generalized-linear-models---logit..html#cb296-6" tabindex="-1"></a></span>
+<span id="cb296-7"><a href="generalized-linear-models---logit..html#cb296-7" tabindex="-1"></a>phat1 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(tmpX1 <span class="sc">%*%</span> b)</span>
+<span id="cb296-8"><a href="generalized-linear-models---logit..html#cb296-8" tabindex="-1"></a>phat0 <span class="ot">&lt;-</span> <span class="fu">plogis</span>(tmpX0 <span class="sc">%*%</span> b)</span>
+<span id="cb296-9"><a href="generalized-linear-models---logit..html#cb296-9" tabindex="-1"></a>plot.df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">phat =</span> <span class="fu">c</span>(phat0[<span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>], phat1[<span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>]), </span>
+<span id="cb296-10"><a href="generalized-linear-models---logit..html#cb296-10" tabindex="-1"></a>                  <span class="at">x =</span> <span class="fu">rep</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>,<span class="at">length=</span><span class="dv">50</span>), <span class="dv">2</span>), </span>
+<span id="cb296-11"><a href="generalized-linear-models---logit..html#cb296-11" tabindex="-1"></a>                  <span class="at">x2 =</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">each=</span><span class="dv">50</span>), <span class="at">levels=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;x2 = 0&quot;</span>, <span class="st">&quot;x2 = 1&quot;</span>)))</span>
+<span id="cb296-12"><a href="generalized-linear-models---logit..html#cb296-12" tabindex="-1"></a></span>
+<span id="cb296-13"><a href="generalized-linear-models---logit..html#cb296-13" tabindex="-1"></a>yint1 <span class="ot">&lt;-</span> phat1[<span class="dv">51</span>] <span class="sc">-</span> e1[<span class="dv">1</span>]<span class="sc">*</span>tmpX1[<span class="dv">51</span>, <span class="st">&quot;x1&quot;</span>]</span>
+<span id="cb296-14"><a href="generalized-linear-models---logit..html#cb296-14" tabindex="-1"></a>yint0 <span class="ot">&lt;-</span> phat0[<span class="dv">51</span>] <span class="sc">-</span> e2[<span class="dv">1</span>]<span class="sc">*</span>tmpX0[<span class="dv">51</span>, <span class="st">&quot;x1&quot;</span>]</span>
+<span id="cb296-15"><a href="generalized-linear-models---logit..html#cb296-15" tabindex="-1"></a></span>
+<span id="cb296-16"><a href="generalized-linear-models---logit..html#cb296-16" tabindex="-1"></a></span>
+<span id="cb296-17"><a href="generalized-linear-models---logit..html#cb296-17" tabindex="-1"></a>plot.df <span class="sc">%&gt;%</span> </span>
+<span id="cb296-18"><a href="generalized-linear-models---logit..html#cb296-18" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>phat, <span class="at">colour =</span> x2)) <span class="sc">+</span> </span>
+<span id="cb296-19"><a href="generalized-linear-models---logit..html#cb296-19" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb296-20"><a href="generalized-linear-models---logit..html#cb296-20" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">&quot;#0072B2&quot;</span>, <span class="st">&quot;#D55E00&quot;</span>)) <span class="sc">+</span> </span>
+<span id="cb296-21"><a href="generalized-linear-models---logit..html#cb296-21" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope=</span>e1[<span class="dv">1</span>], <span class="at">intercept=</span>yint1, <span class="at">colour=</span><span class="st">&quot;#D55E00&quot;</span>, <span class="at">lty=</span><span class="dv">3</span>) <span class="sc">+</span> </span>
+<span id="cb296-22"><a href="generalized-linear-models---logit..html#cb296-22" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope=</span>e2[<span class="dv">1</span>], <span class="at">intercept=</span>yint0, <span class="at">colour=</span><span class="st">&quot;#0072B2&quot;</span>, <span class="at">lty=</span><span class="dv">3</span>) <span class="sc">+</span> </span>
+<span id="cb296-23"><a href="generalized-linear-models---logit..html#cb296-23" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb296-24"><a href="generalized-linear-models---logit..html#cb296-24" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;x1&quot;</span>, <span class="at">y=</span><span class="st">&quot;Predicted Probability of y=1&quot;</span>, <span class="at">colour=</span><span class="st">&quot;x2&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-160-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>From the <code>zstat</code> entry, we see that the effect is not significant. We can plot the effects by significance.</p>
+<div class="sourceCode" id="cb297"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb297-1"><a href="generalized-linear-models---logit..html#cb297-1" tabindex="-1"></a>i2<span class="sc">$</span>byobs<span class="sc">$</span>int <span class="sc">%&gt;%</span> </span>
+<span id="cb297-2"><a href="generalized-linear-models---logit..html#cb297-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sig =</span> <span class="fu">ifelse</span>(<span class="fu">abs</span>(zstat) <span class="sc">&gt;</span> <span class="fl">1.96</span>, <span class="dv">1</span>, <span class="dv">0</span>), </span>
+<span id="cb297-3"><a href="generalized-linear-models---logit..html#cb297-3" tabindex="-1"></a>         <span class="at">sig =</span> <span class="fu">factor</span>(sig, <span class="at">levels=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;No&quot;</span>, <span class="st">&quot;Yes&quot;</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb297-4"><a href="generalized-linear-models---logit..html#cb297-4" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>int_eff)) <span class="sc">+</span> </span>
+<span id="cb297-5"><a href="generalized-linear-models---logit..html#cb297-5" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span> </span>
+<span id="cb297-6"><a href="generalized-linear-models---logit..html#cb297-6" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb297-7"><a href="generalized-linear-models---logit..html#cb297-7" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>sig) <span class="sc">+</span> </span>
+<span id="cb297-8"><a href="generalized-linear-models---logit..html#cb297-8" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Interaction Effect&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb297-9"><a href="generalized-linear-models---logit..html#cb297-9" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio=</span><span class="dv">1</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-161-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>Another option here is to do a second difference. Instead of looking at the difference in the slope of the line tangent to the curve for <code>x1</code>, it looks at how the effect of a discrete change in <code>x1</code> differs across two values of <code>x2</code>. Using the minimum and maximum as the two values to make the change for <code>x1</code> is the default. But let’s say that we wanted to see how changing <code>x1</code> from -2 to -1 change the predicted probability of success for <code>x2=0</code> and <code>x2=1</code>. The result here is the first</p>
+<p><span class="math display">\[\begin{aligned}
+&amp; \left\{Pr(y=1|x_1=\text{high}, x_2=\text{high}) - Pr(y=1|x_1=\text{low}, x_2=\text{high})\right\} - \\
+&amp; \left\{Pr(y=1|x_1=\text{high}, x_2=\text{low}) - Pr(y=1|x_1=\text{low}, x_2=\text{low})\right\}
+\end{aligned}\]</span></p>
+<div class="sourceCode" id="cb298"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb298-1"><a href="generalized-linear-models---logit..html#cb298-1" tabindex="-1"></a>marginaleffects<span class="sc">::</span><span class="fu">avg_predictions</span>(mod2, <span class="at">variables=</span><span class="fu">list</span>(<span class="at">x1=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="sc">-</span><span class="dv">1</span>), <span class="at">x2=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)), </span>
+<span id="cb298-2"><a href="generalized-linear-models---logit..html#cb298-2" tabindex="-1"></a>                                 <span class="at">hypothesis =</span> <span class="st">&quot;(b4-b3)-(b2-b1)=0&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+##         Hypothesis Estimate Std. Error    z Pr(&gt;|z|)    S  2.5 % 97.5 %  Df
+##  (b4-b3)-(b2-b1)=0   0.0792     0.0148 5.36   &lt;0.001 23.5 0.0503  0.108 Inf
+## 
+## Type: response</code></pre>
+<p>The output shows that the change in probabilities is bigger when x2 is low than when x2 is high. This corroborates what we saw in the plot above.</p>
+</div>
+<div id="both-continuous" class="section level3 hasAnchor" number="4.4.3">
+<h3><span class="header-section-number">4.4.3</span> Both Continuous<a href="generalized-linear-models---logit..html#both-continuous" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>With two continuous variables using this model:</p>
+<p><span class="math display">\[\begin{aligned}
+log\left(\frac{p_i}{1-p_{i}}\right) &amp;= u_i\\
+log\left(\frac{p_i}{1-p_{i}}\right) &amp;= b_0 + b_1x_{1i} + b_2x_{2i} + b_3x_{1i}x_{2i} + \mathbf{Z\theta},
+\end{aligned}\]</span></p>
+<p>Norton, Wang and Ai show that the cross-derivative, rate of change in the probabilities as a function of <code>x1</code> changes as the rate of change in <code>x2</code> changes.</p>
+<p><span class="math display">\[\frac{\partial^2 F(u_{i})}{\partial x_{1i} \partial x_{2i}} = b_3f(u_i) + (b1 + b_3x_{2i})(b_2+b_3x_{1i})f&#39;(u_i)\]</span>
+where <span class="math inline">\(f&#39;(u_i) = f(u_i)\times (1-2F(u_{i}))\)</span>. We could calculate this “by hand” as:</p>
+<div class="sourceCode" id="cb300"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb300-1"><a href="generalized-linear-models---logit..html#cb300-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb300-2"><a href="generalized-linear-models---logit..html#cb300-2" tabindex="-1"></a>df3 <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb300-3"><a href="generalized-linear-models---logit..html#cb300-3" tabindex="-1"></a>  <span class="at">x2 =</span> <span class="fu">runif</span>(<span class="dv">1000</span>, <span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>), </span>
+<span id="cb300-4"><a href="generalized-linear-models---logit..html#cb300-4" tabindex="-1"></a>  <span class="at">x1 =</span> <span class="fu">runif</span>(<span class="dv">1000</span>, <span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>), </span>
+<span id="cb300-5"><a href="generalized-linear-models---logit..html#cb300-5" tabindex="-1"></a>  <span class="at">z =</span> <span class="fu">rnorm</span>(<span class="dv">1000</span>),</span>
+<span id="cb300-6"><a href="generalized-linear-models---logit..html#cb300-6" tabindex="-1"></a>  <span class="at">ystar =</span> <span class="dv">0</span> <span class="sc">+</span> <span class="fu">as.numeric</span>(x2 <span class="sc">==</span> <span class="st">&quot;1&quot;</span>) <span class="sc">-</span> x1 <span class="sc">+</span> </span>
+<span id="cb300-7"><a href="generalized-linear-models---logit..html#cb300-7" tabindex="-1"></a>    .<span class="dv">75</span><span class="sc">*</span><span class="fu">as.numeric</span>(x2<span class="sc">==</span><span class="st">&quot;1&quot;</span>)<span class="sc">*</span>x1 <span class="sc">+</span> z, </span>
+<span id="cb300-8"><a href="generalized-linear-models---logit..html#cb300-8" tabindex="-1"></a>  <span class="at">p =</span> <span class="fu">plogis</span>(ystar), </span>
+<span id="cb300-9"><a href="generalized-linear-models---logit..html#cb300-9" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">rbinom</span>(<span class="dv">1000</span>, <span class="dv">1</span>, p)</span>
+<span id="cb300-10"><a href="generalized-linear-models---logit..html#cb300-10" tabindex="-1"></a>)</span>
+<span id="cb300-11"><a href="generalized-linear-models---logit..html#cb300-11" tabindex="-1"></a></span>
+<span id="cb300-12"><a href="generalized-linear-models---logit..html#cb300-12" tabindex="-1"></a>mod3 <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> x1<span class="sc">*</span>x2 <span class="sc">+</span> z, <span class="at">data=</span>df3, <span class="at">family=</span>binomial)</span></code></pre></div>
+<div class="sourceCode" id="cb301"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb301-1"><a href="generalized-linear-models---logit..html#cb301-1" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(mod3)</span>
+<span id="cb301-2"><a href="generalized-linear-models---logit..html#cb301-2" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">coef</span>(mod3)</span>
+<span id="cb301-3"><a href="generalized-linear-models---logit..html#cb301-3" tabindex="-1"></a>e3 <span class="ot">&lt;-</span> b[<span class="dv">5</span>]<span class="sc">*</span><span class="fu">dlogis</span>(X<span class="sc">%*%</span> b) <span class="sc">+</span> (b[<span class="dv">2</span>] <span class="sc">+</span> b[<span class="dv">5</span>]<span class="sc">*</span>X[,<span class="st">&quot;x2&quot;</span>])<span class="sc">*</span>(b[<span class="dv">3</span>] <span class="sc">+</span> b[<span class="dv">5</span>]<span class="sc">*</span>X[,<span class="st">&quot;x1&quot;</span>])<span class="sc">*</span><span class="fu">dlogis</span>(X<span class="sc">%*%</span>b)<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>(<span class="dv">2</span><span class="sc">*</span><span class="fu">plogis</span>(X <span class="sc">%*%</span> b)))</span></code></pre></div>
+<div class="sourceCode" id="cb302"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb302-1"><a href="generalized-linear-models---logit..html#cb302-1" tabindex="-1"></a>i3 <span class="ot">&lt;-</span> <span class="fu">intEff</span>(mod3, <span class="fu">c</span>(<span class="st">&quot;x1&quot;</span>, <span class="st">&quot;x2&quot;</span>), <span class="at">data=</span>df3)</span></code></pre></div>
+<p>We can content ourselves that these are the same:</p>
+<div class="sourceCode" id="cb303"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb303-1"><a href="generalized-linear-models---logit..html#cb303-1" tabindex="-1"></a>e3[<span class="dv">1</span>]</span></code></pre></div>
+<pre><code>## [1] 0.002296147</code></pre>
+<div class="sourceCode" id="cb305"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb305-1"><a href="generalized-linear-models---logit..html#cb305-1" tabindex="-1"></a>i3<span class="sc">$</span>byobs<span class="sc">$</span>int[<span class="dv">1</span>,]</span></code></pre></div>
+<pre><code>##       int_eff      linear      phat  se_int_eff     zstat
+## 1 0.002296147 -0.01145364 0.1248453 0.005366089 0.4278994</code></pre>
+<p>So, the effects are the cross-derivative with respect to both <code>x1</code> and <code>x2</code>. I don’t find this to be a particularly intuitive metric, though we can consider the significance of these values and look at their distribution. I find the second difference metric to be a bit more intuitive because it still gives the difference in change in predicted probabilities for a change in another variable. For example, we could do:</p>
+<div class="sourceCode" id="cb307"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb307-1"><a href="generalized-linear-models---logit..html#cb307-1" tabindex="-1"></a>marginaleffects<span class="sc">::</span><span class="fu">avg_predictions</span>(mod3, <span class="at">variables=</span><span class="fu">list</span>(<span class="at">x1=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">0</span>), <span class="at">x2=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>)), </span>
+<span id="cb307-2"><a href="generalized-linear-models---logit..html#cb307-2" tabindex="-1"></a>                                 <span class="at">hypothesis =</span> <span class="st">&quot;(b4-b3)-(b2-b1)=0&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+##         Hypothesis Estimate Std. Error     z Pr(&gt;|z|)   S  2.5 %  97.5 %  Df
+##  (b4-b3)-(b2-b1)=0  -0.0832     0.0451 -1.85    0.065 3.9 -0.172 0.00517 Inf
+## 
+## Type: response</code></pre>
+<p>This shows us what happens when we change <code>x1</code> from -1 to 0 for the two conditions - when <code>x2</code> is at its minmum versus its maximum. We see that on average the second difference is around -.08 and about 20% of the differences are statistically significant. The average second difference is not, itself, significant. The -0.083 number means the same thing here as it did above. It’s the difference in the first difference of <code>x1</code> when <code>x2</code> is high and when <code>x2</code> is low.</p>
+<p>Now, let’s move back to the interaction of year and African American status that we discussed above. We can estimate the model with an interaction between the year polynomial and <code>afam</code> and then look at the analysis of deviance table to evaluate the improvement in fit.</p>
+<div class="sourceCode" id="cb309"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb309-1"><a href="generalized-linear-models---logit..html#cb309-1" tabindex="-1"></a>mod2 <span class="ot">&lt;-</span> <span class="fu">glm</span>(arrdum <span class="sc">~</span>  stats<span class="sc">::</span><span class="fu">poly</span>(evyy,<span class="dv">3</span>)<span class="sc">*</span>afam  <span class="sc">+</span> ny <span class="sc">+</span> south <span class="sc">+</span> </span>
+<span id="cb309-2"><a href="generalized-linear-models---logit..html#cb309-2" tabindex="-1"></a>             logpart <span class="sc">+</span> propdam <span class="sc">+</span> counterd <span class="sc">+</span> standard2 <span class="sc">+</span> </span>
+<span id="cb309-3"><a href="generalized-linear-models---logit..html#cb309-3" tabindex="-1"></a>             extcont2 <span class="sc">+</span> govtarg <span class="sc">+</span> stratvar <span class="sc">+</span> viold, </span>
+<span id="cb309-4"><a href="generalized-linear-models---logit..html#cb309-4" tabindex="-1"></a>    <span class="at">data=</span>dat, <span class="at">family=</span>binomial)</span>
+<span id="cb309-5"><a href="generalized-linear-models---logit..html#cb309-5" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">Anova</span>(mod2)</span></code></pre></div>
+<pre><code>## Analysis of Deviance Table (Type II tests)
+## 
+## Response: arrdum
+##                           LR Chisq Df Pr(&gt;Chisq)    
+## stats::poly(evyy, 3)        33.730  3  2.259e-07 ***
+## afam                        22.074  1  2.623e-06 ***
+## ny                          51.173  1  8.456e-13 ***
+## south                       15.001  1  0.0001074 ***
+## logpart                     58.439  1  2.097e-14 ***
+## propdam                      6.199  1  0.0127846 *  
+## counterd                    19.643  1  9.333e-06 ***
+## standard2                    2.998  1  0.0833841 .  
+## extcont2                     0.388  1  0.5331956    
+## govtarg                     22.367  1  2.252e-06 ***
+## stratvar                    34.081  1  5.287e-09 ***
+## viold                        5.657  1  0.0173847 *  
+## stats::poly(evyy, 3):afam   65.918  3  3.192e-14 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Note here that the interaction regressors are jointly significant (as evidenced by the last line of the output). We can now look at the second difference. For this to work, we’ll have to use the raw polynomials.</p>
+<div class="sourceCode" id="cb311"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb311-1"><a href="generalized-linear-models---logit..html#cb311-1" tabindex="-1"></a>dat<span class="sc">$</span>evyy2 <span class="ot">&lt;-</span> dat<span class="sc">$</span>evyy <span class="sc">-</span> <span class="dv">1975</span></span>
+<span id="cb311-2"><a href="generalized-linear-models---logit..html#cb311-2" tabindex="-1"></a>mod2 <span class="ot">&lt;-</span> <span class="fu">glm</span>(arrdum <span class="sc">~</span>  stats<span class="sc">::</span><span class="fu">poly</span>(evyy2,<span class="dv">3</span>, <span class="at">raw=</span><span class="cn">TRUE</span>)<span class="sc">*</span>afam  <span class="sc">+</span> ny <span class="sc">+</span> south <span class="sc">+</span> </span>
+<span id="cb311-3"><a href="generalized-linear-models---logit..html#cb311-3" tabindex="-1"></a>             logpart <span class="sc">+</span> propdam <span class="sc">+</span> counterd <span class="sc">+</span> standard2 <span class="sc">+</span> </span>
+<span id="cb311-4"><a href="generalized-linear-models---logit..html#cb311-4" tabindex="-1"></a>             extcont2 <span class="sc">+</span> govtarg <span class="sc">+</span> stratvar <span class="sc">+</span> viold, </span>
+<span id="cb311-5"><a href="generalized-linear-models---logit..html#cb311-5" tabindex="-1"></a>    <span class="at">data=</span>dat, <span class="at">family=</span>binomial)</span></code></pre></div>
+<p>Let’s see what the effect looks like here:</p>
+<div class="sourceCode" id="cb312"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb312-1"><a href="generalized-linear-models---logit..html#cb312-1" tabindex="-1"></a><span class="fu">library</span>(ggeffects)</span>
+<span id="cb312-2"><a href="generalized-linear-models---logit..html#cb312-2" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggpredict</span>(mod2, <span class="at">terms=</span><span class="fu">c</span>(<span class="st">&quot;evyy2&quot;</span>, <span class="st">&quot;afam&quot;</span>))</span>
+<span id="cb312-3"><a href="generalized-linear-models---logit..html#cb312-3" tabindex="-1"></a><span class="fu">ggplot</span>(g) <span class="sc">+</span> </span>
+<span id="cb312-4"><a href="generalized-linear-models---logit..html#cb312-4" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x=</span>x<span class="sc">+</span><span class="dv">1975</span>, </span>
+<span id="cb312-5"><a href="generalized-linear-models---logit..html#cb312-5" tabindex="-1"></a>                  <span class="at">y=</span>predicted, </span>
+<span id="cb312-6"><a href="generalized-linear-models---logit..html#cb312-6" tabindex="-1"></a>                  <span class="at">ymin=</span>conf.low, </span>
+<span id="cb312-7"><a href="generalized-linear-models---logit..html#cb312-7" tabindex="-1"></a>                  <span class="at">ymax=</span>conf.high, </span>
+<span id="cb312-8"><a href="generalized-linear-models---logit..html#cb312-8" tabindex="-1"></a>                  <span class="at">fill=</span>group), </span>
+<span id="cb312-9"><a href="generalized-linear-models---logit..html#cb312-9" tabindex="-1"></a>              <span class="at">alpha=</span>.<span class="dv">25</span>, </span>
+<span id="cb312-10"><a href="generalized-linear-models---logit..html#cb312-10" tabindex="-1"></a>              <span class="at">col=</span><span class="st">&quot;transparent&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb312-11"><a href="generalized-linear-models---logit..html#cb312-11" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span>x<span class="sc">+</span><span class="dv">1975</span>, <span class="at">y=</span>predicted, <span class="at">colour=</span>group)) <span class="sc">+</span> </span>
+<span id="cb312-12"><a href="generalized-linear-models---logit..html#cb312-12" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb312-13"><a href="generalized-linear-models---logit..html#cb312-13" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb312-14"><a href="generalized-linear-models---logit..html#cb312-14" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Year&quot;</span>, </span>
+<span id="cb312-15"><a href="generalized-linear-models---logit..html#cb312-15" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Predicted Pr(Arrest)&quot;</span>, </span>
+<span id="cb312-16"><a href="generalized-linear-models---logit..html#cb312-16" tabindex="-1"></a>       <span class="at">colour=</span><span class="st">&quot;African American</span><span class="sc">\n</span><span class="st">Protest&quot;</span>,</span>
+<span id="cb312-17"><a href="generalized-linear-models---logit..html#cb312-17" tabindex="-1"></a>       <span class="at">fill=</span><span class="st">&quot;African American</span><span class="sc">\n</span><span class="st">Protest&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-170-1.png" width="65%" style="display: block; margin: auto;" />
+We can look at the output of the second difference function, too:</p>
+<div class="sourceCode" id="cb313"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb313-1"><a href="generalized-linear-models---logit..html#cb313-1" tabindex="-1"></a>marginaleffects<span class="sc">::</span><span class="fu">avg_predictions</span>(mod2, <span class="at">variables=</span><span class="fu">list</span>(<span class="at">evyy2=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">15</span>,<span class="dv">15</span>), <span class="at">afam=</span><span class="fu">c</span>(<span class="st">&quot;No&quot;</span>,<span class="st">&quot;Yes&quot;</span>)), </span>
+<span id="cb313-2"><a href="generalized-linear-models---logit..html#cb313-2" tabindex="-1"></a>                                 <span class="at">hypothesis =</span> <span class="st">&quot;(b2-b1)-(b4-b3)=0&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+##         Hypothesis Estimate Std. Error    z Pr(&gt;|z|)    S 2.5 % 97.5 %  Df
+##  (b2-b1)-(b4-b3)=0    0.428      0.099 4.32   &lt;0.001 16.0 0.233  0.622 Inf
+## 
+## Type: response</code></pre>
+<p>The average second difference here is .428, indicating:</p>
+<p><span class="math display">\[\begin{eqnarray}\left(Pr(\text{Arrest}|\text{AfAm=Y}, 1990) - Pr(\text{Arrest}|\text{AfAm=N}, 1990)\right) &amp;-&amp;  \\
+\left(Pr(\text{Arrest}|\text{AfAm=Y}, 1960) - Pr(\text{Arrest}|\text{AfAm=N}, 1960)\right) &amp;&gt;&amp; 0 \end{eqnarray}\]</span></p>
+<p>Thus, there is a significant interaction here of a quite large magnitude. If we had looked at the second difference for the model without the product regressors, here’s what we would have seen.</p>
+<div class="sourceCode" id="cb315"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb315-1"><a href="generalized-linear-models---logit..html#cb315-1" tabindex="-1"></a>mod1a <span class="ot">&lt;-</span> <span class="fu">glm</span>(arrdum <span class="sc">~</span>  stats<span class="sc">::</span><span class="fu">poly</span>(evyy2,<span class="dv">3</span>, <span class="at">raw=</span><span class="cn">TRUE</span>) <span class="sc">+</span> afam  <span class="sc">+</span> ny <span class="sc">+</span> south <span class="sc">+</span> </span>
+<span id="cb315-2"><a href="generalized-linear-models---logit..html#cb315-2" tabindex="-1"></a>             logpart <span class="sc">+</span> propdam <span class="sc">+</span> counterd <span class="sc">+</span> standard2 <span class="sc">+</span> </span>
+<span id="cb315-3"><a href="generalized-linear-models---logit..html#cb315-3" tabindex="-1"></a>             extcont2 <span class="sc">+</span> govtarg <span class="sc">+</span> stratvar <span class="sc">+</span> viold, </span>
+<span id="cb315-4"><a href="generalized-linear-models---logit..html#cb315-4" tabindex="-1"></a>    <span class="at">data=</span>dat, <span class="at">family=</span>binomial)</span>
+<span id="cb315-5"><a href="generalized-linear-models---logit..html#cb315-5" tabindex="-1"></a></span>
+<span id="cb315-6"><a href="generalized-linear-models---logit..html#cb315-6" tabindex="-1"></a>marginaleffects<span class="sc">::</span><span class="fu">avg_predictions</span>(mod1a, <span class="at">variables=</span><span class="fu">list</span>(<span class="at">evyy2=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">15</span>,<span class="dv">15</span>), <span class="at">afam=</span><span class="fu">c</span>(<span class="st">&quot;No&quot;</span>,<span class="st">&quot;Yes&quot;</span>)), </span>
+<span id="cb315-7"><a href="generalized-linear-models---logit..html#cb315-7" tabindex="-1"></a>                                 <span class="at">hypothesis =</span> <span class="st">&quot;(b4-b3)-(b2-b1)=0&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+##         Hypothesis Estimate Std. Error     z Pr(&gt;|z|)   S   2.5 %   97.5 %  Df
+##  (b4-b3)-(b2-b1)=0  -0.0165    0.00563 -2.93  0.00342 8.2 -0.0275 -0.00545 Inf
+## 
+## Type: response</code></pre>
+<p>The significant negative interaction is a function of the constraints placed on the model by only having additive regressors and letting compression do the work. The fact that the model with the product regressors fits better means that the positive interaction effect is the one we should pay attention to.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Let’s say that we wanted to evaluate whether or not there is an interaction between <code>age</code> and <code>college_ed</code>.
+- Do you need a product term?
+- Is there a significant second difference?
+- What does the effect look like?</p>
+</div>
+<p>The <code>probci()</code> function in the <code>DAMisc</code> package will calculate AMEs for any number of variables changing at the same time. Here is the code we could use:</p>
+<div class="sourceCode" id="cb317"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb317-1"><a href="generalized-linear-models---logit..html#cb317-1" tabindex="-1"></a>pci <span class="ot">&lt;-</span> <span class="fu">probci</span>(mod2, <span class="at">data=</span>dat, </span>
+<span id="cb317-2"><a href="generalized-linear-models---logit..html#cb317-2" tabindex="-1"></a>              <span class="at">changeX =</span> <span class="fu">c</span>(<span class="st">&quot;evyy2&quot;</span>, <span class="st">&quot;afam&quot;</span>), </span>
+<span id="cb317-3"><a href="generalized-linear-models---logit..html#cb317-3" tabindex="-1"></a>              <span class="at">xvals =</span> <span class="fu">list</span>(<span class="st">&quot;evyy2&quot;</span> <span class="ot">=</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">15</span>, <span class="dv">15</span>, <span class="at">length=</span><span class="dv">12</span>)), </span>
+<span id="cb317-4"><a href="generalized-linear-models---logit..html#cb317-4" tabindex="-1"></a>              <span class="at">returnProbs=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<p>Now, we could use the <code>plot.data</code> element of the <code>pci</code> object to make a plot:</p>
+<div class="sourceCode" id="cb318"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb318-1"><a href="generalized-linear-models---logit..html#cb318-1" tabindex="-1"></a>pci<span class="sc">$</span>plot.data <span class="sc">%&gt;%</span> </span>
+<span id="cb318-2"><a href="generalized-linear-models---logit..html#cb318-2" tabindex="-1"></a>  <span class="fu">setNames</span>(<span class="fu">c</span>(<span class="st">&quot;evyy2&quot;</span>, <span class="st">&quot;afam&quot;</span>, <span class="st">&quot;pred_prob&quot;</span>, <span class="st">&quot;lower&quot;</span>, <span class="st">&quot;upper&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb318-3"><a href="generalized-linear-models---logit..html#cb318-3" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>evyy2<span class="sc">+</span><span class="dv">1975</span>, </span>
+<span id="cb318-4"><a href="generalized-linear-models---logit..html#cb318-4" tabindex="-1"></a>                          <span class="at">y=</span>pred_prob, </span>
+<span id="cb318-5"><a href="generalized-linear-models---logit..html#cb318-5" tabindex="-1"></a>                          <span class="at">colour =</span> afam)) <span class="sc">+</span> </span>
+<span id="cb318-6"><a href="generalized-linear-models---logit..html#cb318-6" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span>lower, </span>
+<span id="cb318-7"><a href="generalized-linear-models---logit..html#cb318-7" tabindex="-1"></a>                  <span class="at">ymax=</span>upper, </span>
+<span id="cb318-8"><a href="generalized-linear-models---logit..html#cb318-8" tabindex="-1"></a>                  <span class="at">fill=</span>afam), </span>
+<span id="cb318-9"><a href="generalized-linear-models---logit..html#cb318-9" tabindex="-1"></a>              <span class="at">alpha=</span>.<span class="dv">1</span>, </span>
+<span id="cb318-10"><a href="generalized-linear-models---logit..html#cb318-10" tabindex="-1"></a>              <span class="at">col=</span><span class="st">&quot;transparent&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb318-11"><a href="generalized-linear-models---logit..html#cb318-11" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb318-12"><a href="generalized-linear-models---logit..html#cb318-12" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb318-13"><a href="generalized-linear-models---logit..html#cb318-13" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb318-14"><a href="generalized-linear-models---logit..html#cb318-14" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Year&quot;</span>, </span>
+<span id="cb318-15"><a href="generalized-linear-models---logit..html#cb318-15" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Predicted Pr(Arrest)&quot;</span>, </span>
+<span id="cb318-16"><a href="generalized-linear-models---logit..html#cb318-16" tabindex="-1"></a>       <span class="at">colour=</span><span class="st">&quot;African American</span><span class="sc">\n</span><span class="st">Protest&quot;</span>, </span>
+<span id="cb318-17"><a href="generalized-linear-models---logit..html#cb318-17" tabindex="-1"></a>       <span class="at">fill=</span><span class="st">&quot;African American</span><span class="sc">\n</span><span class="st">Protest&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-174-1.png" width="65%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="other-glms." class="section level2 hasAnchor" number="4.5">
+<h2><span class="header-section-number">4.5</span> Other GLMs.<a href="generalized-linear-models---logit..html#other-glms." class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The methods discussed above generally work for other GLMs as well. The discussion of interactions in other GLMs should have a similar flavor. The methods described above should be general enough to handle any model estimated with the <code>glm()</code> function. Much of the literature on interactions in non-linear models is really based on what happens in logistic regression models, though. That said, it is not obvious why these same ideas would apply differently for other probability distributions and likelihood functions.</p>
+<p>There is a <code>poisfit()</code> function that returns scalar measures of fit for the Poisson and Negative Binomial models. There is also a <code>poisGOF()</code> function that returns a test of <span class="math inline">\(V(y) = \mu\)</span> that would identify whether the model has an overdispersed outcome.</p>
+<p>The <code>glmChange()</code> and <code>glmChange2()</code> function should also work as do the <code>ggeffect</code> package functions. Because the functions perform in similar ways with other GLMs, I will not belabor them here.</p>
+</div>
+<div id="exercises-4" class="section level2 unnumbered hasAnchor">
+<h2>Exercises<a href="generalized-linear-models---logit..html#exercises-4" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li><p>Model the relationship between thinking imagination is a good quality in kids (<code>I_IMAGIN</code>) and secular values, including the same controls as for exercise 4 of chapter 3, using a logit model.</p></li>
+<li><p>Evaluate the model’s fit using the <code>binfit</code> and <code>pre</code> functions from the <code>DAMisc</code> package and plot the ROC of the model using the <code>pROC</code> package.</p></li>
+<li><p>Produce odds ratio for the model.</p></li>
+<li><p>Produce the MER and AME for <code>sacsecval</code> using the functions <code>glmChange</code> and <code>glmChange2</code> from the <code>DAMisc</code> package.</p></li>
+<li><p>Create a graph comparing the MER and AME effects for <code>sacsecval</code>.</p></li>
+<li><p>Create a graph of the MER when we vary <code>sacsecval</code> and <code>age_51p</code>.</p></li>
+<li><p>Now let’s add an interaction between <code>sacsecval</code> and <code>trustInsti</code> in the model. Vizualise this effect for low (0), neutral (0.5), and high (1) trust on the <code>trustInsti</code> scale.</p></li>
+</ol>
+
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="linear-models.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="ordered-and-multinomial-logit.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["RBE.pdf", "RBE.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 7 Multilevel Models | R: Learning by Example</title>
+  <meta name="description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 7 Multilevel Models | R: Learning by Example" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 7 Multilevel Models | R: Learning by Example" />
+  
+  <meta name="twitter:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+<meta name="author" content="David A. Armstrong II and William Poirier" />
+
+
+<meta name="date" content="2025-05-29" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="handling-complex-survey-data.html"/>
+<link rel="next" href="time-series-cross-sectional-models.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<link href="libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.33/datatables.js"></script>
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">R: Learning by Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preliminaries</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#license"><i class="fa fa-check"></i>License</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#getting-r-and-rstudio"><i class="fa fa-check"></i>Getting R and Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#keeping-track-of-your-work"><i class="fa fa-check"></i>Keeping Track of Your Work</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#overview-of-rstudio"><i class="fa fa-check"></i>Overview of Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#using-r"><i class="fa fa-check"></i>Using <em>R</em></a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#assigning-output-to-objects"><i class="fa fa-check"></i>Assigning Output to Objects</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#vectors-and-matrices"><i class="fa fa-check"></i>Vectors and Matrices</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#function-arguments"><i class="fa fa-check"></i>Function Arguments</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#importing-data"><i class="fa fa-check"></i>Importing Data</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#data-types-in-r"><i class="fa fa-check"></i>Data Types in <em>R</em></a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#examining-data"><i class="fa fa-check"></i>Examining Data</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#missing-values"><i class="fa fa-check"></i>Missing Values</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#filtering-with-logical-expressions-and-sorting"><i class="fa fa-check"></i>Filtering with Logical Expressions and Sorting</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#workhorse-functions"><i class="fa fa-check"></i>Workhorse Functions</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#exercises"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html"><i class="fa fa-check"></i>Datasets</a>
+<ul>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo"><i class="fa fa-check"></i><code>colo</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo_covid"><i class="fa fa-check"></i><code>colo_covid</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gss-canada"><i class="fa fa-check"></i><code>gss</code> (Canada)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gsss16-usa"><i class="fa fa-check"></i><code>gsss16</code> (USA)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#davenport-soule-armstrong-data"><i class="fa fa-check"></i>Davenport-Soule-Armstrong Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#france-2004"><i class="fa fa-check"></i>France 2004</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#ces19"><i class="fa fa-check"></i><code>ces19</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#snijders-and-bosker-multileve-school-data"><i class="fa fa-check"></i>Snijders and Bosker Multileve School Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-multilevel"><i class="fa fa-check"></i>World Values Survey (multilevel)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#repression-data"><i class="fa fa-check"></i>Repression Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#oil-and-democracy-dataset"><i class="fa fa-check"></i>Oil and Democracy Dataset</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#politicaldemocracy"><i class="fa fa-check"></i><code>PoliticalDemocracy</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-measurement"><i class="fa fa-check"></i>World Values Survey (measurement)</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="viz.html"><a href="viz.html"><i class="fa fa-check"></i><b>1</b> Visualizing</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="viz.html"><a href="viz.html#wrangling-data"><i class="fa fa-check"></i><b>1.1</b> Wrangling data</a>
+<ul>
+<li class="chapter" data-level="1.1.1" data-path="viz.html"><a href="viz.html#merging-datasets"><i class="fa fa-check"></i><b>1.1.1</b> Merging Datasets</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="viz.html"><a href="viz.html#ggplot"><i class="fa fa-check"></i><b>1.2</b> GGplot</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="viz.html"><a href="viz.html#bar-plots"><i class="fa fa-check"></i><b>1.2.1</b> Bar Plots</a></li>
+<li class="chapter" data-level="1.2.2" data-path="viz.html"><a href="viz.html#line-graphs"><i class="fa fa-check"></i><b>1.2.2</b> Line Graphs</a></li>
+<li class="chapter" data-level="1.2.3" data-path="viz.html"><a href="viz.html#histograms"><i class="fa fa-check"></i><b>1.2.3</b> Histograms</a></li>
+<li class="chapter" data-level="1.2.4" data-path="viz.html"><a href="viz.html#scatterplots"><i class="fa fa-check"></i><b>1.2.4</b> Scatterplots</a></li>
+<li class="chapter" data-level="1.2.5" data-path="viz.html"><a href="viz.html#multiple-series"><i class="fa fa-check"></i><b>1.2.5</b> Multiple Series</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="viz.html"><a href="viz.html#recap"><i class="fa fa-check"></i><b>1.3</b> Recap</a></li>
+<li class="chapter" data-level="" data-path="viz.html"><a href="viz.html#exercises-1"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html"><i class="fa fa-check"></i><b>2</b> Describing Relationships in the General Social Survey</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#the-canadian-gss."><i class="fa fa-check"></i><b>2.1</b> The Canadian GSS.</a></li>
+<li class="chapter" data-level="2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#looking-at-the-data."><i class="fa fa-check"></i><b>2.2</b> Looking at the data.</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#cross-tabulations"><i class="fa fa-check"></i><b>2.2.1</b> Cross-tabulations</a></li>
+<li class="chapter" data-level="2.2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#permutation-tests-in-r."><i class="fa fa-check"></i><b>2.2.2</b> Permutation Tests in R.</a></li>
+<li class="chapter" data-level="2.2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#back-to-the-data"><i class="fa fa-check"></i><b>2.2.3</b> Back to the Data</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#descriptive-output-in-knitr"><i class="fa fa-check"></i><b>2.3</b> Descriptive Output in knitr</a></li>
+<li class="chapter" data-level="" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#exercises-2"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="linear-models.html"><a href="linear-models.html"><i class="fa fa-check"></i><b>3</b> Linear Models</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="linear-models.html"><a href="linear-models.html#effects-plots"><i class="fa fa-check"></i><b>3.1</b> Effects Plots</a></li>
+<li class="chapter" data-level="3.2" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-linearity"><i class="fa fa-check"></i><b>3.2</b> Diagnostic Tools: Linearity</a></li>
+<li class="chapter" data-level="3.3" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-heteroskedasticity"><i class="fa fa-check"></i><b>3.3</b> Diagnostic Tools: Heteroskedasticity</a></li>
+<li class="chapter" data-level="3.4" data-path="linear-models.html"><a href="linear-models.html#diagnostics-outliers-and-influential-data"><i class="fa fa-check"></i><b>3.4</b> Diagnostics: Outliers and Influential Data</a></li>
+<li class="chapter" data-level="3.5" data-path="linear-models.html"><a href="linear-models.html#diagnostics-for-normality"><i class="fa fa-check"></i><b>3.5</b> Diagnostics for Normality</a>
+<ul>
+<li class="chapter" data-level="3.5.1" data-path="linear-models.html"><a href="linear-models.html#bootstrapping-regression-models"><i class="fa fa-check"></i><b>3.5.1</b> Bootstrapping Regression Models</a></li>
+</ul></li>
+<li class="chapter" data-level="3.6" data-path="linear-models.html"><a href="linear-models.html#interactions"><i class="fa fa-check"></i><b>3.6</b> Interactions</a></li>
+<li class="chapter" data-level="" data-path="linear-models.html"><a href="linear-models.html#exercises-3"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html"><i class="fa fa-check"></i><b>4</b> Generalized Linear Models - Logit.</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#evaluating-model-fit"><i class="fa fa-check"></i><b>4.1</b> Evaluating Model Fit</a></li>
+<li class="chapter" data-level="4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effects"><i class="fa fa-check"></i><b>4.2</b> Marginal Effects</a></li>
+<li class="chapter" data-level="4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effect-plots"><i class="fa fa-check"></i><b>4.3</b> Marginal Effect Plots</a></li>
+<li class="chapter" data-level="4.4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#interactions-in-binary-dv-models"><i class="fa fa-check"></i><b>4.4</b> Interactions in Binary DV Models</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-binary"><i class="fa fa-check"></i><b>4.4.1</b> Both binary</a></li>
+<li class="chapter" data-level="4.4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#one-binary-one-continuous."><i class="fa fa-check"></i><b>4.4.2</b> One binary, one continuous.</a></li>
+<li class="chapter" data-level="4.4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-continuous"><i class="fa fa-check"></i><b>4.4.3</b> Both Continuous</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#other-glms."><i class="fa fa-check"></i><b>4.5</b> Other GLMs.</a></li>
+<li class="chapter" data-level="" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#exercises-4"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html"><i class="fa fa-check"></i><b>5</b> Ordered and Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#ordinal-dv-models"><i class="fa fa-check"></i><b>5.1</b> Ordinal DV Models</a></li>
+<li class="chapter" data-level="5.2" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#multinomial-logit"><i class="fa fa-check"></i><b>5.2</b> Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#parametric-bootstrap-for-confidence-intervals."><i class="fa fa-check"></i><b>5.2.1</b> Parametric Bootstrap for Confidence Intervals.</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#conclusion"><i class="fa fa-check"></i><b>5.3</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html"><i class="fa fa-check"></i><b>6</b> Handling Complex Survey Data</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#frequency-distributions-and-contingency-tables"><i class="fa fa-check"></i><b>6.1</b> Frequency Distributions and Contingency Tables</a></li>
+<li class="chapter" data-level="6.2" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#summary-statistics"><i class="fa fa-check"></i><b>6.2</b> Summary Statistics</a></li>
+<li class="chapter" data-level="6.3" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#estimating-models"><i class="fa fa-check"></i><b>6.3</b> Estimating Models</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="multilevel-models.html"><a href="multilevel-models.html"><i class="fa fa-check"></i><b>7</b> Multilevel Models</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="multilevel-models.html"><a href="multilevel-models.html#data-structure."><i class="fa fa-check"></i><b>7.1</b> Data Structure.</a></li>
+<li class="chapter" data-level="7.2" data-path="multilevel-models.html"><a href="multilevel-models.html#clustering-standard-errors"><i class="fa fa-check"></i><b>7.2</b> Clustering Standard Errors</a></li>
+<li class="chapter" data-level="7.3" data-path="multilevel-models.html"><a href="multilevel-models.html#between-vs-within-relationships."><i class="fa fa-check"></i><b>7.3</b> Between vs Within Relationships.</a></li>
+<li class="chapter" data-level="7.4" data-path="multilevel-models.html"><a href="multilevel-models.html#random-intercepts"><i class="fa fa-check"></i><b>7.4</b> Random Intercepts</a></li>
+<li class="chapter" data-level="7.5" data-path="multilevel-models.html"><a href="multilevel-models.html#estimating-the-multilevel-model"><i class="fa fa-check"></i><b>7.5</b> Estimating the Multilevel Model</a>
+<ul>
+<li class="chapter" data-level="7.5.1" data-path="multilevel-models.html"><a href="multilevel-models.html#p-values-in-lmer-output"><i class="fa fa-check"></i><b>7.5.1</b> P-values in LMER Output</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="multilevel-models.html"><a href="multilevel-models.html#other-random-effects-models"><i class="fa fa-check"></i><b>7.6</b> Other Random-Effects Models</a></li>
+<li class="chapter" data-level="7.7" data-path="multilevel-models.html"><a href="multilevel-models.html#bayesian-models-with-brms"><i class="fa fa-check"></i><b>7.7</b> Bayesian Models with BRMS</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html"><i class="fa fa-check"></i><b>8</b> Time-Series Cross-Sectional Models</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#preliminaries-and-assumptions"><i class="fa fa-check"></i><b>8.1</b> Preliminaries and Assumptions</a></li>
+<li class="chapter" data-level="8.2" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#unit-effects"><i class="fa fa-check"></i><b>8.2</b> Unit Effects</a></li>
+<li class="chapter" data-level="8.3" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#the-plm-package"><i class="fa fa-check"></i><b>8.3</b> The plm Package</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="measurement-issues.html"><a href="measurement-issues.html"><i class="fa fa-check"></i><b>9</b> Measurement Issues</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="measurement-issues.html"><a href="measurement-issues.html#reliability-analysis"><i class="fa fa-check"></i><b>9.1</b> Reliability Analysis</a></li>
+<li class="chapter" data-level="9.2" data-path="measurement-issues.html"><a href="measurement-issues.html#exploratory-factor-analysis-and-principal-components-analysis"><i class="fa fa-check"></i><b>9.2</b> Exploratory Factor Analysis and Principal Components Analysis</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="measurement-issues.html"><a href="measurement-issues.html#rotations"><i class="fa fa-check"></i><b>9.2.1</b> Rotations</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="measurement-issues.html"><a href="measurement-issues.html#cfa-and-sem"><i class="fa fa-check"></i><b>9.3</b> CFA and SEM</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">R: Learning by Example</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="multilevel-models" class="section level1 hasAnchor" number="7">
+<h1><span class="header-section-number">Chapter 7</span> Multilevel Models<a href="multilevel-models.html#multilevel-models" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Multilevel data structures are very prevalent in the social sciences and beyond. Depending on how you’re thinking about your data, they show up not only in the classical nested hierarchical format (e.g., kids in classrooms in schools), but we can also think about longitudinal data as having multilevel structure as well. In this chapter we will restrict our discussion to the more classical hierarchical data structure and in the next chapter, we’ll discuss models for panel/longitudinal/TSCS data.</p>
+<div id="data-structure." class="section level2 hasAnchor" number="7.1">
+<h2><span class="header-section-number">7.1</span> Data Structure.<a href="multilevel-models.html#data-structure." class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The classical multilevel data structure is to have observations nested in higher level groups. For example, we could be interested in both the characteristics of voters and the districts in which they live to predict how the people will vote. We could be interested in the characteristics of elementary school students and their teachers to help understand performance.</p>
+<p>One of the key features of data like these is that observations within groups are often more similar than they are with observations from other groups. This measure of inter-group (relative to across-group) similarity is called the <em>intraclass correlation</em>. To the extent that this is non-zero, it suggests that naive assumptions about our observations being exchangeable (or conditionally independent) will not hold. If observations are more alike those in their group, then their residuals will be correlated with the residuals of those in their group. There may also be heteroskedasticity because variation is coming not just from the individual level, but also from the group level.</p>
+<p>We’re going to use the <code>mlbook</code> data from the second edition of Tom Snijders and Roel Bosker’s book “Multilevel Analysis”. For those interested, there are great ML resources for R on the book’s <a href="https://www.stats.ox.ac.uk/~snijders/mlbook.htm#data">website</a>.</p>
+<div class="sourceCode" id="cb386"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb386-1"><a href="multilevel-models.html#cb386-1" tabindex="-1"></a><span class="fu">library</span>(rio)</span>
+<span id="cb386-2"><a href="multilevel-models.html#cb386-2" tabindex="-1"></a>mlbook <span class="ot">&lt;-</span> <span class="fu">import</span>(<span class="st">&quot;data/mlbook2_r.txt&quot;</span>)</span></code></pre></div>
+<p>The dependent variable of interest here is <code>langpost</code> - the language post-test score. We are interested in the student and school verbal IQ scores <code>iq_verb</code> and <code>sch_iqv</code>, respectively as well as some demographic information about the students and schools.</p>
+</div>
+<div id="clustering-standard-errors" class="section level2 hasAnchor" number="7.2">
+<h2><span class="header-section-number">7.2</span> Clustering Standard Errors<a href="multilevel-models.html#clustering-standard-errors" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>One thing that people often consider is just clustering their standard errors (or estimating cluster-robust standard errors). These are standard errors that will give approximately right inferences in the presence of arbitrary non-independence within clusters, but assuming independence between clusters. These solve one problem, but as we will discuss later, there remain other problems that could inhibit your ability to make inferences from the model.</p>
+<p>The <code>multiwayvcov</code> package has what you need to generate clustered standard errors for GLMs.</p>
+<p>Let’s consider a linear model of language post-test score, first without considering the non-independence problem.</p>
+<div class="sourceCode" id="cb387"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb387-1"><a href="multilevel-models.html#cb387-1" tabindex="-1"></a><span class="fu">library</span>(lmtest)</span>
+<span id="cb387-2"><a href="multilevel-models.html#cb387-2" tabindex="-1"></a>mod.lm <span class="ot">&lt;-</span> <span class="fu">glm</span>(langPOST <span class="sc">~</span> IQ_verb <span class="sc">+</span> ses<span class="sc">+</span> sex <span class="sc">+</span> Minority, <span class="at">data=</span>mlbook)</span>
+<span id="cb387-3"><a href="multilevel-models.html#cb387-3" tabindex="-1"></a>ct.lm <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(mod.lm)</span>
+<span id="cb387-4"><a href="multilevel-models.html#cb387-4" tabindex="-1"></a>ct.lm</span></code></pre></div>
+<pre><code>## 
+## z test of coefficients:
+## 
+##              Estimate Std. Error  z value Pr(&gt;|z|)    
+## (Intercept) 40.095979   0.156561 256.1038   &lt;2e-16 ***
+## IQ_verb      2.399263   0.057741  41.5523   &lt;2e-16 ***
+## ses          0.149206   0.010770  13.8542   &lt;2e-16 ***
+## sex          2.496239   0.221021  11.2941   &lt;2e-16 ***
+## Minority    -0.264290   0.531290  -0.4974   0.6189    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Now, let’s see what happens when we use clustered standard errors.</p>
+<div class="sourceCode" id="cb389"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb389-1"><a href="multilevel-models.html#cb389-1" tabindex="-1"></a><span class="fu">library</span>(multiwayvcov)</span>
+<span id="cb389-2"><a href="multilevel-models.html#cb389-2" tabindex="-1"></a>ct.cluster <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(mod.lm, <span class="at">vcov. =</span> <span class="fu">cluster.vcov</span>(mod.lm, <span class="at">cluster=</span>mlbook<span class="sc">$</span>schoolnr))</span>
+<span id="cb389-3"><a href="multilevel-models.html#cb389-3" tabindex="-1"></a>ct.cluster</span></code></pre></div>
+<pre><code>## 
+## z test of coefficients:
+## 
+##              Estimate Std. Error  z value Pr(&gt;|z|)    
+## (Intercept) 40.095979   0.280367 143.0125   &lt;2e-16 ***
+## IQ_verb      2.399263   0.074535  32.1898   &lt;2e-16 ***
+## ses          0.149206   0.013553  11.0090   &lt;2e-16 ***
+## sex          2.496239   0.220226  11.3349   &lt;2e-16 ***
+## Minority    -0.264290   0.668792  -0.3952   0.6927    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>We could see how different the standard errors are (note that the coefficients don’t change, this is a post hoc fix to the standard errors).</p>
+<div class="sourceCode" id="cb391"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb391-1"><a href="multilevel-models.html#cb391-1" tabindex="-1"></a>ct.cluster[,<span class="dv">2</span>]<span class="sc">/</span>ct.lm[,<span class="dv">2</span>]</span></code></pre></div>
+<pre><code>## (Intercept)     IQ_verb         ses         sex    Minority 
+##   1.7907791   1.2908548   1.2584485   0.9964031   1.2588071</code></pre>
+<p>For everything except the <code>sex</code> variable, the clustered standard errors are about <span class="math inline">\(25\%\)</span> to <span class="math inline">\(30\%\)</span> bigger than their corresponding un-clustered counterparts. This is what we would imagine would be the case because essentially we are arguing that we have fewer pieces of independent information that it would seem. That should generally result in larger standard errors, as it did here.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>We’re going to be using data from wave 6 of the World Values Survey. I’ve chosen just a few variables and 50 observations from each country to make things a bit quicker to run. You can load in the data with</p>
+<div class="sourceCode" id="cb393"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb393-1"><a href="multilevel-models.html#cb393-1" tabindex="-1"></a><span class="fu">load</span>(<span class="st">&quot;data/wvs6.rda&quot;</span>)</span></code></pre></div>
+<p>This will make an object called <code>wvs</code> in your workspace.</p>
+<ul>
+<li>Estimate a model of <code>resemaval</code> on <code>moral</code>, <code>sacsecval</code>, <code>income</code>, <code>educ</code>, <code>pr</code>, <code>cl</code>, <code>gdppc</code> and <code>civ</code>.<br />
+</li>
+<li>See what happens when you use standard errors clustered on <code>country</code>.</li>
+</ul>
+</div>
+</div>
+<div id="between-vs-within-relationships." class="section level2 hasAnchor" number="7.3">
+<h2><span class="header-section-number">7.3</span> Between vs Within Relationships.<a href="multilevel-models.html#between-vs-within-relationships." class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Lots of people think lots of different ways about why we might use a multilevel model and what it could do for us. The way I like to think about this choice is by considering what kind of effect you want to see. Here’s a toy example from the Snijders and Bosker book that will help motivate the discussion. Here’s what the data look like:</p>
+<table style="width:100%;">
+<colgroup>
+<col width="16%" />
+<col width="16%" />
+<col width="16%" />
+<col width="16%" />
+<col width="16%" />
+<col width="16%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center"><span class="math inline">\(j\)</span></th>
+<th align="center"><span class="math inline">\(i\)</span></th>
+<th align="center"><span class="math inline">\(X_{ij}\)</span></th>
+<th align="center"><span class="math inline">\(\bar{X}_{\cdot j}\)</span></th>
+<th align="center"><span class="math inline">\(Y_{ij}\)</span></th>
+<th align="center"><span class="math inline">\(\bar{Y}_{\cdot j}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">5</td>
+<td align="center">6</td>
+</tr>
+<tr class="even">
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">3</td>
+<td align="center">2</td>
+<td align="center">7</td>
+<td align="center">6</td>
+</tr>
+<tr class="odd">
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">3</td>
+<td align="center">4</td>
+<td align="center">5</td>
+</tr>
+<tr class="even">
+<td align="center">2</td>
+<td align="center">2</td>
+<td align="center">4</td>
+<td align="center">3</td>
+<td align="center">6</td>
+<td align="center">5</td>
+</tr>
+<tr class="odd">
+<td align="center">3</td>
+<td align="center">1</td>
+<td align="center">3</td>
+<td align="center">4</td>
+<td align="center">3</td>
+<td align="center">4</td>
+</tr>
+<tr class="even">
+<td align="center">3</td>
+<td align="center">2</td>
+<td align="center">5</td>
+<td align="center">4</td>
+<td align="center">5</td>
+<td align="center">4</td>
+</tr>
+<tr class="odd">
+<td align="center">4</td>
+<td align="center">1</td>
+<td align="center">4</td>
+<td align="center">5</td>
+<td align="center">2</td>
+<td align="center">3</td>
+</tr>
+<tr class="even">
+<td align="center">4</td>
+<td align="center">2</td>
+<td align="center">6</td>
+<td align="center">5</td>
+<td align="center">4</td>
+<td align="center">3</td>
+</tr>
+<tr class="odd">
+<td align="center">5</td>
+<td align="center">1</td>
+<td align="center">5</td>
+<td align="center">6</td>
+<td align="center">1</td>
+<td align="center">2</td>
+</tr>
+<tr class="even">
+<td align="center">5</td>
+<td align="center">2</td>
+<td align="center">7</td>
+<td align="center">6</td>
+<td align="center">3</td>
+<td align="center">2</td>
+</tr>
+</tbody>
+</table>
+<p>where <span class="math inline">\(j\)</span> is the individual identifier and <span class="math inline">\(i\)</span> is the group identifier. l <span class="math inline">\(X_{ij}\)</span> is an individual-level variable and <span class="math inline">\(\bar{X}_{\cdot j}\)</span> is the group-mean of <span class="math inline">\(X\)</span>. The same convention is used for <span class="math inline">\(Y\)</span>. If we looked at these points without knowing there was a grouping variable and fit a line, we would see the following:</p>
+<div class="sourceCode" id="cb394"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb394-1"><a href="multilevel-models.html#cb394-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb394-2"><a href="multilevel-models.html#cb394-2" tabindex="-1"></a><span class="fu">ggplot</span>(sbex, <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y)) <span class="sc">+</span> </span>
+<span id="cb394-3"><a href="multilevel-models.html#cb394-3" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb394-4"><a href="multilevel-models.html#cb394-4" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">&quot;lm&quot;</span>, <span class="at">se=</span><span class="cn">FALSE</span>) <span class="sc">+</span> </span>
+<span id="cb394-5"><a href="multilevel-models.html#cb394-5" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-226-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>It looks like that describes the points reasonably well. However, if we recognize that there is a grouping variable maybe we would think differently.</p>
+<div class="sourceCode" id="cb395"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb395-1"><a href="multilevel-models.html#cb395-1" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb395-2"><a href="multilevel-models.html#cb395-2" tabindex="-1"></a><span class="fu">ggplot</span>(sbex, <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, </span>
+<span id="cb395-3"><a href="multilevel-models.html#cb395-3" tabindex="-1"></a>                 <span class="at">colour=</span>j, </span>
+<span id="cb395-4"><a href="multilevel-models.html#cb395-4" tabindex="-1"></a>                 <span class="at">shape=</span>j)) <span class="sc">+</span> </span>
+<span id="cb395-5"><a href="multilevel-models.html#cb395-5" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb395-6"><a href="multilevel-models.html#cb395-6" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">&quot;lm&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb395-7"><a href="multilevel-models.html#cb395-7" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-227-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>The lines connecting each of the points are the <strong>within</strong> relationship - these tell us within each group, how much we expect <span class="math inline">\(y\)</span> to change as a function of a one-unit change in <span class="math inline">\(x\)</span>. We could estimate this relationship by using a within transformation, which simply subtracts the group means from each variable in the model:</p>
+<div class="sourceCode" id="cb396"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb396-1"><a href="multilevel-models.html#cb396-1" tabindex="-1"></a>sbex <span class="ot">&lt;-</span> sbex <span class="sc">%&gt;%</span> </span>
+<span id="cb396-2"><a href="multilevel-models.html#cb396-2" tabindex="-1"></a>  <span class="fu">group_by</span>(j) <span class="sc">%&gt;%</span> </span>
+<span id="cb396-3"><a href="multilevel-models.html#cb396-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Xw =</span> X <span class="sc">-</span> Xm, </span>
+<span id="cb396-4"><a href="multilevel-models.html#cb396-4" tabindex="-1"></a>         <span class="at">Yw  =</span> Y <span class="sc">-</span> Ym)</span></code></pre></div>
+<p>Here’s the original model:</p>
+<div class="sourceCode" id="cb397"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb397-1"><a href="multilevel-models.html#cb397-1" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>sbex)</span>
+<span id="cb397-2"><a href="multilevel-models.html#cb397-2" tabindex="-1"></a><span class="fu">summary</span>(m1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = Y ~ X, data = sbex)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -2.667 -1.167  0.000  1.167  2.667 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)   5.3333     1.4530   3.671   0.0063 **
+## X            -0.3333     0.3333  -1.000   0.3466   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.826 on 8 degrees of freedom
+## Multiple R-squared:  0.1111, Adjusted R-squared:  2.22e-16 
+## F-statistic:     1 on 1 and 8 DF,  p-value: 0.3466</code></pre>
+<p>and here’s the within model:</p>
+<div class="sourceCode" id="cb399"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb399-1"><a href="multilevel-models.html#cb399-1" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Yw <span class="sc">~</span> Xw, <span class="at">data=</span>sbex)</span>
+<span id="cb399-2"><a href="multilevel-models.html#cb399-2" tabindex="-1"></a><span class="fu">summary</span>(m2)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = Yw ~ Xw, data = sbex)
+## 
+## Residuals:
+##        Min         1Q     Median         3Q        Max 
+## -2.690e-16  1.056e-17  1.056e-17  6.724e-17  6.724e-17 
+## 
+## Coefficients:
+##              Estimate Std. Error   t value Pr(&gt;|t|)    
+## (Intercept) 0.000e+00  3.403e-17 0.000e+00        1    
+## Xw          1.000e+00  3.403e-17 2.938e+16   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.076e-16 on 8 degrees of freedom
+## Multiple R-squared:      1,  Adjusted R-squared:      1 
+## F-statistic: 8.633e+32 on 1 and 8 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Note that the within effect is exactly 1 and the original effect is actually in the opposite direction.</p>
+<p>Another effect we could be interested in is the <strong>between effect</strong>. This is the regression of the group means of <span class="math inline">\(Y\)</span> on the group means of <span class="math inline">\(X\)</span>. This tells us what the expected difference between groups on <span class="math inline">\(Y\)</span> is for a one-unit mean difference across groups on <span class="math inline">\(X\)</span>. This is both interesting in its own right (at least sometimes) and can be quite different. Let’s have a look:</p>
+<div class="sourceCode" id="cb401"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb401-1"><a href="multilevel-models.html#cb401-1" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> sbex <span class="sc">%&gt;%</span> </span>
+<span id="cb401-2"><a href="multilevel-models.html#cb401-2" tabindex="-1"></a>  <span class="fu">group_by</span>(j) <span class="sc">%&gt;%</span> </span>
+<span id="cb401-3"><a href="multilevel-models.html#cb401-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">X =</span> <span class="fu">mean</span>(X), <span class="at">Y =</span> <span class="fu">mean</span>(Y))</span>
+<span id="cb401-4"><a href="multilevel-models.html#cb401-4" tabindex="-1"></a>m3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X , <span class="at">data=</span>tmp)</span>
+<span id="cb401-5"><a href="multilevel-models.html#cb401-5" tabindex="-1"></a><span class="fu">summary</span>(m3)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = Y ~ X, data = tmp)
+## 
+## Residuals:
+##          1          2          3          4          5 
+##  1.749e-16 -1.329e-16 -1.289e-16 -4.328e-17  1.301e-16 
+## 
+## Coefficients:
+##               Estimate Std. Error    t value Pr(&gt;|t|)    
+## (Intercept)  8.000e+00  2.241e-16  3.570e+16   &lt;2e-16 ***
+## X           -1.000e+00  5.281e-17 -1.894e+16   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.67e-16 on 3 degrees of freedom
+## Multiple R-squared:      1,  Adjusted R-squared:      1 
+## F-statistic: 3.585e+32 on 1 and 3 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Here, the effect is the same size, but in the opposite direction as the within effect.</p>
+<p>Which one of these effects do we want? Well, it depends on the research hypothesis/question. Sometimes within, sometimes between, maybe sometimes both. As you can see, it would be hard to estimate the between and within effects in the same model. Plus, the degrees of freedom are even different for the two models. For the between effect, we only have <span class="math inline">\(\# \text{groups}\)</span> degrees of freedom, but for the within effect, we have <span class="math inline">\(\# \text{Individuals}\)</span> degrees of freedom. The mutlilevel model is built to deal with just this situation.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Estimate the within and between relationships for the model you estimated above.</p>
+</div>
+</div>
+<div id="random-intercepts" class="section level2 hasAnchor" number="7.4">
+<h2><span class="header-section-number">7.4</span> Random Intercepts<a href="multilevel-models.html#random-intercepts" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In its simplest form, the multilevel model is one that allows for a <strong>random intercept</strong>. That is, it allows for a different intercept for each group. The mathematical notation for the model is:</p>
+<p><span class="math display">\[\begin{aligned}
+y_{ij} &amp;= \alpha_{j} + \beta_{1}X_{ij} + \varepsilon_{ij}\\
+\alpha_{j} &amp;= \gamma_{00} + \nu_{j}
+\end{aligned}\]</span></p>
+<p>where <span class="math inline">\(X_{ij}\)</span> is an individual-level covariate with coefficient <span class="math inline">\(\beta\)</span>. <span class="math inline">\(\alpha_{j}\)</span> is the group level intercept. This is clear because it is indexed by the group-indicator <span class="math inline">\(j\)</span>. <span class="math inline">\(\gamma_{00}\)</span> is the overall or global intercept (essentailly the average of the group intercepts). <span class="math inline">\(\varepsilon_{ij}\)</span> and <span class="math inline">\(\nu_{j}\)</span> are idiosyncratic residuals at the individual and group levels respectively. The form of the equation above is called the “structural form”. We often see it in “reduced form” where we substitute the equation for <span class="math inline">\(\alpha_j\)</span> into the equation for <span class="math inline">\(y\)</span>.</p>
+<p><span class="math display">\[y_{ij} = \gamma_{00} +  \beta_{1}X_{ij} + \nu_{j} + \varepsilon_{ij}\]</span></p>
+<p>Now, we can think of the term <span class="math inline">\(\nu_{j} + \varepsilon_{ij}\)</span> as our composite error term that captures variability from both the group and individual levels. It is important to note here that we don’t actually estimate <span class="math inline">\(\nu_{j}\)</span>. Instead, we directly estimate <span class="math inline">\(\sigma_{\nu}\)</span> where <span class="math inline">\(\nu_{j} \sim N(0, \sigma_{\nu})\)</span>. That is, we estimate the variance of the individual intercepts. Bigger values mean bigger baseline differences in <span class="math inline">\(Y\)</span> across groups.</p>
+</div>
+<div id="estimating-the-multilevel-model" class="section level2 hasAnchor" number="7.5">
+<h2><span class="header-section-number">7.5</span> Estimating the Multilevel Model<a href="multilevel-models.html#estimating-the-multilevel-model" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The main package for estimating multilevel models (in the frequentist context, at least) is the <code>lme4</code> package. First, we’ll just talk about estimating a two-level model with only level-1 covariates.</p>
+<div class="sourceCode" id="cb403"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb403-1"><a href="multilevel-models.html#cb403-1" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb403-2"><a href="multilevel-models.html#cb403-2" tabindex="-1"></a>mlm <span class="ot">&lt;-</span> <span class="fu">lmer</span>(Y <span class="sc">~</span> X <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>j), <span class="at">data=</span>sbex)</span>
+<span id="cb403-3"><a href="multilevel-models.html#cb403-3" tabindex="-1"></a><span class="fu">summary</span>(mlm)</span></code></pre></div>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: Y ~ X + (1 | j)
+##    Data: sbex
+## 
+## REML criterion at convergence: -45.3
+## 
+## Scaled residuals: 
+##        Min         1Q     Median         3Q        Max 
+## -2.893e-05 -1.266e-05  0.000e+00  1.266e-05  2.893e-05 
+## 
+## Random effects:
+##  Groups   Name        Variance  Std.Dev. 
+##  j        (Intercept) 5.000e+00 2.236e+00
+##  Residual             1.308e-09 3.617e-05
+## Number of obs: 10, groups:  j, 5
+## 
+## Fixed effects:
+##              Estimate Std. Error t value
+## (Intercept) 2.093e-09  1.000e+00       0
+## X           1.000e+00  1.144e-05   87433
+## 
+## Correlation of Fixed Effects:
+##   (Intr)
+## X 0.000 
+## optimizer (nloptwrap) convergence code: -4 (NLOPT_ROUNDOFF_LIMITED: Roundoff errors led to a breakdown of the optimization algorithm. In this case, the returned minimum may still be useful. (e.g. this error occurs in NEWUOA if one tries to achieve a tolerance too close to machine precision.))
+## unable to evaluate scaled gradient
+## Model failed to converge: degenerate  Hessian with 1 negative eigenvalues</code></pre>
+<p>Above, you’ll see a couple of things. For example, you see that the effect of <span class="math inline">\(X\)</span> is essentially the within-unit effect of 1. Also, you’ll notice that under the “Random effects:” heading, the Groups: j row shows a variance of 5, meaning that the group level intercepts are quite variable while the level 1 residuals have basically no variance. If we wanted to estimate the between relationship, too, we could add the group-mean of <span class="math inline">\(X\)</span> in to the model.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Use <code>lmer()</code> to estimate a multilevel model similar to the one you estimated above.
+- What are the differences?</p>
+</div>
+<p>This would result in a somewhat different model than above, at least from a mathematical point of view. In this case, we would be estimating:</p>
+<p><span class="math display">\[\begin{aligned}
+y_{ij} &amp;= \alpha_{j} + \beta_{1}X_{ij} + \varepsilon_{ij}\\
+\alpha_{j} &amp;= \gamma_{00} + \gamma_{01}\bar{X}_{j} + \nu_{j}
+\end{aligned}\]</span></p>
+<p>Or in the reduced form:</p>
+<p><span class="math display">\[y_{ij} = \gamma_{00} + \gamma_{01}\bar{X}_{j} +  \beta_{1}X_{ij} + \nu_{j} + \varepsilon_{ij}\]</span></p>
+<div class="sourceCode" id="cb405"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb405-1"><a href="multilevel-models.html#cb405-1" tabindex="-1"></a>mlm2 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(Y <span class="sc">~</span> X <span class="sc">+</span> Xm <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>j), <span class="at">data=</span>sbex)</span>
+<span id="cb405-2"><a href="multilevel-models.html#cb405-2" tabindex="-1"></a><span class="fu">summary</span>(mlm2)</span></code></pre></div>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: Y ~ X + Xm + (1 | j)
+##    Data: sbex
+## 
+## REML criterion at convergence: -450.9
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -0.8693 -0.8693 -0.8693 -0.5433  0.4347 
+## 
+## Random effects:
+##  Groups   Name        Variance  Std.Dev. 
+##  j        (Intercept) 2.088e-30 1.445e-15
+##  Residual             1.044e-30 1.022e-15
+## Number of obs: 10, groups:  j, 5
+## 
+## Fixed effects:
+##               Estimate Std. Error    t value
+## (Intercept)  8.000e+00  2.167e-15  3.691e+15
+## X            1.000e+00  3.231e-16  3.095e+15
+## Xm          -2.000e+00  6.044e-16 -3.309e+15
+## 
+## Correlation of Fixed Effects:
+##    (Intr) X     
+## X   0.000       
+## Xm -0.797 -0.535
+## optimizer (nloptwrap) convergence code: 0 (OK)
+## Model failed to converge with max|grad| = 0.531251 (tol = 0.002, component 1)
+## Model is nearly unidentifiable: very large eigenvalue
+##  - Rescale variables?</code></pre>
+<p>In the model above, the between effect would actually be calculated by taking group means on both sides of the equation.</p>
+<p><span class="math display">\[\bar{y}_{j} = \gamma_{00} + \gamma_{01}\bar{X}_{j} +  \beta_{1}\bar{X}_{j} + \nu_{j} + \bar{\varepsilon}_{j}\]</span></p>
+<p>So the between effect is really just: <span class="math inline">\(\gamma_{01} + \beta_1\)</span>, which we can see is -1, just like it was in the model above.</p>
+<p>In this toy example, the model automatically estimated the within effect for you. The effects in MLMs outside of perfectly-fitting models are not <em>exactly</em> the within effects, though they are generally quite close if the groups are of reasonable size.</p>
+<p>Let’s go back to the example about the language test from Snijders and Bosker. To make the previous point clear, just look at the true within effect model:</p>
+<div class="sourceCode" id="cb407"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb407-1"><a href="multilevel-models.html#cb407-1" tabindex="-1"></a>mlb <span class="ot">&lt;-</span> mlbook <span class="sc">%&gt;%</span> </span>
+<span id="cb407-2"><a href="multilevel-models.html#cb407-2" tabindex="-1"></a>  <span class="fu">group_by</span>(schoolnr) <span class="sc">%&gt;%</span> </span>
+<span id="cb407-3"><a href="multilevel-models.html#cb407-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">iq_w =</span> IQ_verb <span class="sc">-</span> <span class="fu">mean</span>(IQ_verb), </span>
+<span id="cb407-4"><a href="multilevel-models.html#cb407-4" tabindex="-1"></a>         <span class="at">ses_w =</span> ses <span class="sc">-</span> <span class="fu">mean</span>(ses), </span>
+<span id="cb407-5"><a href="multilevel-models.html#cb407-5" tabindex="-1"></a>         <span class="at">sex_w =</span> sex <span class="sc">-</span> <span class="fu">mean</span>(sex), </span>
+<span id="cb407-6"><a href="multilevel-models.html#cb407-6" tabindex="-1"></a>         <span class="at">Minority_w =</span> Minority <span class="sc">-</span> <span class="fu">mean</span>(Minority), </span>
+<span id="cb407-7"><a href="multilevel-models.html#cb407-7" tabindex="-1"></a>         <span class="at">lp_w =</span> langPOST <span class="sc">-</span> <span class="fu">mean</span>(langPOST))</span>
+<span id="cb407-8"><a href="multilevel-models.html#cb407-8" tabindex="-1"></a><span class="fu">summary</span>(wmod <span class="ot">&lt;-</span> <span class="fu">lm</span>(lp_w <span class="sc">~</span> iq_w <span class="sc">+</span> ses_w <span class="sc">+</span> sex_w <span class="sc">+</span> Minority_w, <span class="at">data=</span>mlb))</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = lp_w ~ iq_w + ses_w + sex_w + Minority_w, data = mlb)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -24.425  -3.808   0.330   4.191  20.271 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  4.896e-16  9.611e-02   0.000    1.000    
+## iq_w         2.250e+00  5.397e-02  41.691   &lt;2e-16 ***
+## ses_w        1.651e-01  1.115e-02  14.804   &lt;2e-16 ***
+## sex_w        2.389e+00  1.985e-01  12.033   &lt;2e-16 ***
+## Minority_w  -6.974e-02  5.588e-01  -0.125    0.901    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 5.892 on 3753 degrees of freedom
+## Multiple R-squared:  0.414,  Adjusted R-squared:  0.4134 
+## F-statistic: 662.9 on 4 and 3753 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>versus the MLM:</p>
+<div class="sourceCode" id="cb409"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb409-1"><a href="multilevel-models.html#cb409-1" tabindex="-1"></a>mod.mlm <span class="ot">&lt;-</span> <span class="fu">lmer</span>(langPOST <span class="sc">~</span> IQ_verb <span class="sc">+</span> ses<span class="sc">+</span> sex <span class="sc">+</span> Minority <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>schoolnr), <span class="at">data=</span>mlbook)</span>
+<span id="cb409-2"><a href="multilevel-models.html#cb409-2" tabindex="-1"></a><span class="fu">summary</span>(mod.mlm)</span></code></pre></div>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: langPOST ~ IQ_verb + ses + sex + Minority + (1 | schoolnr)
+##    Data: mlbook
+## 
+## REML criterion at convergence: 24571.6
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -4.1036 -0.6321  0.0704  0.6913  3.4538 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  schoolnr (Intercept)  9.403   3.066   
+##  Residual             36.804   6.067   
+## Number of obs: 3758, groups:  schoolnr, 211
+## 
+## Fixed effects:
+##             Estimate Std. Error t value
+## (Intercept) 39.94788    0.25775 154.984
+## IQ_verb      2.28643    0.05474  41.772
+## ses          0.16281    0.01108  14.691
+## sex          2.40778    0.20301  11.860
+## Minority    -0.14197    0.55032  -0.258
+## 
+## Correlation of Fixed Effects:
+##          (Intr) IQ_vrb ses    sex   
+## IQ_verb  -0.028                     
+## ses       0.013 -0.276              
+## sex      -0.379  0.034 -0.030       
+## Minority -0.115  0.129  0.092  0.007</code></pre>
+<p>You’ll note that the effects are very close for most of the variables, though the one for <code>Minority</code> is reasonably different in the MLM versus the true within effect. In fact, what Andrew Bell and Kelvyn Jones (PSRM) suggest is to calculate both the within and between transformations on the variables and then put them both in. This will ensure that you are able to calculate the appropriate effect.</p>
+<p>In this particular example with all numeric variables, it’s quite easy, though we’ll talk later on about how it gets more difficult.</p>
+<div class="sourceCode" id="cb411"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb411-1"><a href="multilevel-models.html#cb411-1" tabindex="-1"></a>mlb <span class="ot">&lt;-</span> mlbook <span class="sc">%&gt;%</span> </span>
+<span id="cb411-2"><a href="multilevel-models.html#cb411-2" tabindex="-1"></a>  <span class="fu">select</span>(schoolnr, IQ_verb, ses, sex, Minority, langPOST) <span class="sc">%&gt;%</span> </span>
+<span id="cb411-3"><a href="multilevel-models.html#cb411-3" tabindex="-1"></a>  <span class="fu">group_by</span>(schoolnr) <span class="sc">%&gt;%</span> </span>
+<span id="cb411-4"><a href="multilevel-models.html#cb411-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), </span>
+<span id="cb411-5"><a href="multilevel-models.html#cb411-5" tabindex="-1"></a>                <span class="at">.fns =</span> <span class="fu">list</span>(<span class="at">w =</span> <span class="cf">function</span>(x)x<span class="sc">-</span><span class="fu">mean</span>(x), </span>
+<span id="cb411-6"><a href="multilevel-models.html#cb411-6" tabindex="-1"></a>                            <span class="at">b =</span> mean)))</span>
+<span id="cb411-7"><a href="multilevel-models.html#cb411-7" tabindex="-1"></a>mod.mlm2 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(langPOST <span class="sc">~</span> IQ_verb_w <span class="sc">+</span> IQ_verb_b <span class="sc">+</span> </span>
+<span id="cb411-8"><a href="multilevel-models.html#cb411-8" tabindex="-1"></a>                   ses_w <span class="sc">+</span> ses_b <span class="sc">+</span> sex_w <span class="sc">+</span> sex_b <span class="sc">+</span> </span>
+<span id="cb411-9"><a href="multilevel-models.html#cb411-9" tabindex="-1"></a>                   Minority_w <span class="sc">+</span> Minority_b <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>schoolnr), </span>
+<span id="cb411-10"><a href="multilevel-models.html#cb411-10" tabindex="-1"></a>                 <span class="at">data=</span>mlb)</span></code></pre></div>
+<p>You can verify by looking above that the <code>_w</code> variables have the same coefficients as those from the within model estimated with the <code>lm()</code> function above.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Estimate the multilevel model with both the between and within variables.</p>
+</div>
+<div id="p-values-in-lmer-output" class="section level3 hasAnchor" number="7.5.1">
+<h3><span class="header-section-number">7.5.1</span> P-values in LMER Output<a href="multilevel-models.html#p-values-in-lmer-output" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>One thing you’ll notice is that by default, there are no <span class="math inline">\(p\)</span>-values in the output. This is considered a feature rather than a flaw by the creator of the function (Douglas Bates). There is an <a href="https://stat.ethz.ch/pipermail/r-help/2006-May/094765.html">interesting exchange</a> on the R listserv about just this point. To save you the time of reading, Bates’ point is that the appropriate reference distribution for the <span class="math inline">\(p\)</span>-value remains an open question and just because other software produces <span class="math inline">\(p\)</span>-values, doesn’t mean that R should, too. If, like lots of people, you want <span class="math inline">\(p\)</span>-values anyway, there are a <a href="http://mindingthebrain.blogspot.com/2014/02/three-ways-to-get-parameter-specific-p.html">few ways</a> you can accomplish this. We’ll focus on the one that’s implemented in the <code>lmerTest</code> package for now. The <code>lmerTest</code> package loads an alternative version of <code>lmer</code> that produces standard errors. Here’s how it would work.</p>
+<div class="sourceCode" id="cb412"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb412-1"><a href="multilevel-models.html#cb412-1" tabindex="-1"></a><span class="fu">library</span>(lmerTest)</span>
+<span id="cb412-2"><a href="multilevel-models.html#cb412-2" tabindex="-1"></a>mod.mlm2 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(langPOST <span class="sc">~</span> IQ_verb_w <span class="sc">+</span> IQ_verb_b <span class="sc">+</span> </span>
+<span id="cb412-3"><a href="multilevel-models.html#cb412-3" tabindex="-1"></a>                   ses_w <span class="sc">+</span> ses_b <span class="sc">+</span> sex_w <span class="sc">+</span> sex_b <span class="sc">+</span> </span>
+<span id="cb412-4"><a href="multilevel-models.html#cb412-4" tabindex="-1"></a>                   Minority_w <span class="sc">+</span> Minority_b <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>schoolnr), </span>
+<span id="cb412-5"><a href="multilevel-models.html#cb412-5" tabindex="-1"></a>                 <span class="at">data=</span>mlb)</span>
+<span id="cb412-6"><a href="multilevel-models.html#cb412-6" tabindex="-1"></a><span class="fu">summary</span>(mod.mlm2)</span></code></pre></div>
+<pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s method [&#39;lmerModLmerTest&#39;]
+## Formula: langPOST ~ IQ_verb_w + IQ_verb_b + ses_w + ses_b + sex_w + sex_b +  
+##     Minority_w + Minority_b + (1 | schoolnr)
+##    Data: mlb
+## 
+## REML criterion at convergence: 24555.3
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -4.1048 -0.6299  0.0708  0.6891  3.4571 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  schoolnr (Intercept)  8.838   2.973   
+##  Residual             36.793   6.066   
+## Number of obs: 3758, groups:  schoolnr, 211
+## 
+## Fixed effects:
+##               Estimate Std. Error         df t value Pr(&gt;|t|)    
+## (Intercept)   39.35372    0.87775  224.14387  44.835   &lt;2e-16 ***
+## IQ_verb_w      2.25023    0.05557 3541.36099  40.495   &lt;2e-16 ***
+## IQ_verb_b      3.47030    0.31195  219.02545  11.125   &lt;2e-16 ***
+## ses_w          0.16513    0.01148 3541.36099  14.380   &lt;2e-16 ***
+## ses_b          0.06908    0.04421  199.21218   1.562    0.120    
+## sex_w          2.38858    0.20436 3541.36099  11.688   &lt;2e-16 ***
+## sex_b          3.54642    1.72557  224.87064   2.055    0.041 *  
+## Minority_w    -0.06974    0.57535 3541.36099  -0.121    0.904    
+## Minority_b     0.56204    1.89904  222.00697   0.296    0.768    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Correlation of Fixed Effects:
+##            (Intr) IQ_vrb_w IQ_vrb_b ses_w  ses_b  sex_w  sex_b  Mnrty_w
+## IQ_verb_w   0.000                                                      
+## IQ_verb_b  -0.058  0.000                                               
+## ses_w       0.000 -0.264    0.000                                      
+## ses_b       0.106  0.000   -0.498    0.000                             
+## sex_w       0.000  0.035    0.000   -0.027  0.000                      
+## sex_b      -0.958  0.000    0.027    0.000 -0.108  0.000               
+## Minority_w  0.000  0.122    0.000    0.085  0.000  0.003  0.000        
+## Minority_b -0.214  0.000    0.258    0.000  0.074  0.000  0.107  0.000</code></pre>
+<p>In the summary above, you can see that the degrees of freedom are different for each of the <code>_b</code> variables. These are close to the number of groups (211).</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Use the <code>lmerTest</code> package to get <span class="math inline">\(p\)</span>-values for your coefficients in the previous model.</p>
+</div>
+<p>We can use the <code>ggeffects</code> package to help us plot the effects here.</p>
+<div class="sourceCode" id="cb414"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb414-1"><a href="multilevel-models.html#cb414-1" tabindex="-1"></a><span class="fu">library</span>(ggeffects)</span>
+<span id="cb414-2"><a href="multilevel-models.html#cb414-2" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> <span class="fu">ggpredict</span>(mod.mlm2, <span class="st">&quot;IQ_verb_w&quot;</span>, <span class="at">type=</span><span class="st">&quot;random&quot;</span>)</span>
+<span id="cb414-3"><a href="multilevel-models.html#cb414-3" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">ggpredict</span>(mod.mlm2, <span class="st">&quot;IQ_verb_w&quot;</span>, <span class="at">type=</span><span class="st">&quot;fixed&quot;</span>)</span>
+<span id="cb414-4"><a href="multilevel-models.html#cb414-4" tabindex="-1"></a>g1<span class="sc">$</span>type <span class="ot">=</span> <span class="fu">factor</span>(<span class="dv">1</span>, <span class="at">levels=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;Fixed&quot;</span>, <span class="st">&quot;Random&quot;</span>))</span>
+<span id="cb414-5"><a href="multilevel-models.html#cb414-5" tabindex="-1"></a>g2<span class="sc">$</span>type <span class="ot">=</span> <span class="fu">factor</span>(<span class="dv">2</span>, <span class="at">levels=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;Fixed&quot;</span>, <span class="st">&quot;Random&quot;</span>))</span>
+<span id="cb414-6"><a href="multilevel-models.html#cb414-6" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(g1, g2)</span></code></pre></div>
+<p>Let’s look at the two effect types:</p>
+<div class="sourceCode" id="cb415"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb415-1"><a href="multilevel-models.html#cb415-1" tabindex="-1"></a><span class="fu">ggplot</span>(g, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>predicted, </span>
+<span id="cb415-2"><a href="multilevel-models.html#cb415-2" tabindex="-1"></a>              <span class="at">colour=</span>type, </span>
+<span id="cb415-3"><a href="multilevel-models.html#cb415-3" tabindex="-1"></a>              <span class="at">fill=</span>type)) <span class="sc">+</span> </span>
+<span id="cb415-4"><a href="multilevel-models.html#cb415-4" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>conf.low, </span>
+<span id="cb415-5"><a href="multilevel-models.html#cb415-5" tabindex="-1"></a>                  <span class="at">ymax=</span>conf.high), </span>
+<span id="cb415-6"><a href="multilevel-models.html#cb415-6" tabindex="-1"></a>              <span class="at">alpha=</span>.<span class="dv">15</span>, </span>
+<span id="cb415-7"><a href="multilevel-models.html#cb415-7" tabindex="-1"></a>              <span class="at">col=</span><span class="st">&quot;transparent&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb415-8"><a href="multilevel-models.html#cb415-8" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb415-9"><a href="multilevel-models.html#cb415-9" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb415-10"><a href="multilevel-models.html#cb415-10" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb415-11"><a href="multilevel-models.html#cb415-11" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Verbal IQ (within)&quot;</span>, </span>
+<span id="cb415-12"><a href="multilevel-models.html#cb415-12" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Predicted Language Post-test Score&quot;</span>, </span>
+<span id="cb415-13"><a href="multilevel-models.html#cb415-13" tabindex="-1"></a>       <span class="at">colour=</span><span class="st">&quot;Interval Type&quot;</span>, </span>
+<span id="cb415-14"><a href="multilevel-models.html#cb415-14" tabindex="-1"></a>       <span class="at">fill=</span><span class="st">&quot;Interval Type&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-239-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>We can add random coefficients to the model - these allow the coefficients of variables to vary by group. The model would look like this:</p>
+<p><span class="math display">\[\begin{aligned}
+y_{ij} &amp;= \alpha_{j} + \beta_{1j}X_{ij} + \varepsilon_{ij}\\
+\alpha_{j} &amp;= \gamma_{00} + \gamma_{01}\bar{X}_{j} + \nu_{1j}\\
+\beta_{1j} &amp;= \gamma_{10} + \gamma_{11}\bar{X}_{j} + \nu_{2j}
+\end{aligned}\]</span></p>
+<p>Or in the reduced form:</p>
+<p><span class="math display">\[y_{ij} = \gamma_{00} + \gamma_{01}\bar{X}_{j} +  \gamma_{10}X_{ij} + \gamma_{11}X_{ij}\bar{X}_{j} + \nu_{2j}X_{ij} + \nu_{j} + \varepsilon_{ij}\]</span></p>
+<p>There are a few things to note here. First, it is assumed that <span class="math inline">\(\nu_{j}\sim N_{2}\left(\mathbf{\mu}, \mathbf{\Sigma}\right)\)</span>. Also you can see some heteroskedasticity built in to the model as the residuals are a function of <span class="math inline">\(X\)</span> through the <span class="math inline">\(\nu_{2j}X_{ij}\)</span> term. Finally, you can see that the way that level-2 variables effect the random coefficients is through an intercation (in this context, called a “cross-level interaction”) between the level-1 variable that has the random coefficient and the level-2 variable meant to predict that random coefficient.</p>
+<p>We could do this with the verbal IQ score and its school-level mean.</p>
+<div class="sourceCode" id="cb416"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb416-1"><a href="multilevel-models.html#cb416-1" tabindex="-1"></a>mod.mlm3 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(langPOST <span class="sc">~</span> IQ_verb_w<span class="sc">*</span>IQ_verb_b <span class="sc">+</span> </span>
+<span id="cb416-2"><a href="multilevel-models.html#cb416-2" tabindex="-1"></a>                   ses_w <span class="sc">+</span> ses_b <span class="sc">+</span> sex_w <span class="sc">+</span> sex_b <span class="sc">+</span> </span>
+<span id="cb416-3"><a href="multilevel-models.html#cb416-3" tabindex="-1"></a>                   Minority_w <span class="sc">+</span> Minority_b <span class="sc">+</span> </span>
+<span id="cb416-4"><a href="multilevel-models.html#cb416-4" tabindex="-1"></a>                   (<span class="dv">1</span><span class="sc">+</span> IQ_verb_w<span class="sc">|</span> schoolnr), </span>
+<span id="cb416-5"><a href="multilevel-models.html#cb416-5" tabindex="-1"></a>                 <span class="at">data=</span>mlb)</span>
+<span id="cb416-6"><a href="multilevel-models.html#cb416-6" tabindex="-1"></a><span class="fu">summary</span>(mod.mlm3)</span></code></pre></div>
+<pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s method [&#39;lmerModLmerTest&#39;]
+## Formula: langPOST ~ IQ_verb_w * IQ_verb_b + ses_w + ses_b + sex_w + sex_b +  
+##     Minority_w + Minority_b + (1 + IQ_verb_w | schoolnr)
+##    Data: mlb
+## 
+## REML criterion at convergence: 24526.7
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -4.1201 -0.6297  0.0726  0.6835  3.0316 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev. Corr 
+##  schoolnr (Intercept)  8.946   2.9910        
+##           IQ_verb_w    0.188   0.4335   -0.70
+##  Residual             36.083   6.0069        
+## Number of obs: 3758, groups:  schoolnr, 211
+## 
+## Fixed effects:
+##                       Estimate Std. Error         df t value Pr(&gt;|t|)    
+## (Intercept)           39.22722    0.84962  232.30831  46.170   &lt;2e-16 ***
+## IQ_verb_w              2.27104    0.06397  197.15338  35.500   &lt;2e-16 ***
+## IQ_verb_b              3.43997    0.30715  228.15952  11.200   &lt;2e-16 ***
+## ses_w                  0.16626    0.01143 3536.93552  14.545   &lt;2e-16 ***
+## ses_b                  0.04483    0.04210  196.29448   1.065   0.2882    
+## sex_w                  2.37629    0.20346 3536.35974  11.680   &lt;2e-16 ***
+## sex_b                  3.97564    1.66790  232.32685   2.384   0.0179 *  
+## Minority_w             0.12227    0.58238 3273.74604   0.210   0.8337    
+## Minority_b            -1.19277    1.78364  194.44191  -0.669   0.5045    
+## IQ_verb_w:IQ_verb_b   -0.13398    0.06995  211.18343  -1.915   0.0568 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Correlation of Fixed Effects:
+##             (Intr) IQ_vrb_w IQ_vrb_b ses_w  ses_b  sex_w  sex_b  Mnrty_w Mnrty_b
+## IQ_verb_w   -0.068                                                              
+## IQ_verb_b   -0.049 -0.009                                                       
+## ses_w        0.006 -0.229    0.008                                              
+## ses_b        0.101 -0.001   -0.484   -0.015                                     
+## sex_w        0.000  0.030    0.004   -0.025 -0.006                              
+## sex_b       -0.956 -0.013    0.020   -0.006 -0.102  0.000                       
+## Minority_w  -0.010  0.101    0.019    0.084 -0.008  0.006  0.005                
+## Minority_b  -0.205 -0.013    0.247   -0.002  0.070  0.000  0.101  0.047         
+## IQ_vr_:IQ__ -0.003  0.023   -0.227   -0.017 -0.028 -0.022  0.004 -0.101  -0.029</code></pre>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Estimate the multilevel model with a random coefficient on the within effect of <code>democ_max</code> and a cross-level interaction with <code>pr</code> and <code>cl</code></p>
+</div>
+<p>We could then plot out the different random coefficients.</p>
+<div class="sourceCode" id="cb418"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb418-1"><a href="multilevel-models.html#cb418-1" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">ggpredict</span>(mod.mlm3, </span>
+<span id="cb418-2"><a href="multilevel-models.html#cb418-2" tabindex="-1"></a>                <span class="at">terms=</span><span class="fu">c</span>(<span class="st">&quot;IQ_verb_w&quot;</span>, </span>
+<span id="cb418-3"><a href="multilevel-models.html#cb418-3" tabindex="-1"></a>                        <span class="st">&quot;IQ_verb_b [.04]&quot;</span>, </span>
+<span id="cb418-4"><a href="multilevel-models.html#cb418-4" tabindex="-1"></a>                        <span class="st">&quot;schoolnr [sample=10]&quot;</span>), </span>
+<span id="cb418-5"><a href="multilevel-models.html#cb418-5" tabindex="-1"></a>                <span class="at">type=</span><span class="st">&quot;random&quot;</span>)</span>
+<span id="cb418-6"><a href="multilevel-models.html#cb418-6" tabindex="-1"></a><span class="fu">ggplot</span>(g2, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>predicted, <span class="at">colour=</span>facet)) <span class="sc">+</span> </span>
+<span id="cb418-7"><a href="multilevel-models.html#cb418-7" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb418-8"><a href="multilevel-models.html#cb418-8" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb418-9"><a href="multilevel-models.html#cb418-9" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb418-10"><a href="multilevel-models.html#cb418-10" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;IQ Verbal Score (within)&quot;</span>, </span>
+<span id="cb418-11"><a href="multilevel-models.html#cb418-11" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Predicted Language Post-test Score&quot;</span>, </span>
+<span id="cb418-12"><a href="multilevel-models.html#cb418-12" tabindex="-1"></a>       <span class="at">colour=</span><span class="st">&quot;School&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-241-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Plot out some of the random effects from the model above.</p>
+</div>
+</div>
+</div>
+<div id="other-random-effects-models" class="section level2 hasAnchor" number="7.6">
+<h2><span class="header-section-number">7.6</span> Other Random-Effects Models<a href="multilevel-models.html#other-random-effects-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <code>lme4</code> package also has a function <code>glmer()</code> which estimates random-effect GLMs in R with exactly the same syntax and the addition of a <code>family=</code> argument which takes as values any of the GLM families in R.</p>
+<p>The <code>ordinal</code> package has a function <code>clmm()</code> which has similar syntax to the <code>lmer()</code> function, but for ordinal logistic and probit models. Here, the thershold parameters are all shifted up or down by the same amount by the random effect.</p>
+<p>The <code>mlogit()</code> function in the <code>mlogit</code> package can estimate a random-effect multinomial logit through the <code>rpar</code> argument.</p>
+</div>
+<div id="bayesian-models-with-brms" class="section level2 hasAnchor" number="7.7">
+<h2><span class="header-section-number">7.7</span> Bayesian Models with BRMS<a href="multilevel-models.html#bayesian-models-with-brms" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>One of the potential problems above is that with random effects the frequentist models do not produce confidence intervals for the predictions. The <code>brms</code> package has a function <code>brm</code>, which uses the same syntax as <code>glmer()</code>, but estimates a Bayesian model with Stan. If you look at the help for <code>brmsfamily()</code>, you will see all of the different families you can use. These include all of the GLM families and many others including multinomial and cumulative links - unifying all of the models we’ve talked about before.</p>
+<p>Let’s look at the same model as above, but using the <code>brm()</code> function.</p>
+<div class="sourceCode" id="cb419"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb419-1"><a href="multilevel-models.html#cb419-1" tabindex="-1"></a><span class="fu">library</span>(brms)</span>
+<span id="cb419-2"><a href="multilevel-models.html#cb419-2" tabindex="-1"></a>b.mlm3 <span class="ot">&lt;-</span> <span class="fu">brm</span>(langPOST <span class="sc">~</span> IQ_verb_w<span class="sc">*</span>IQ_verb_b <span class="sc">+</span> </span>
+<span id="cb419-3"><a href="multilevel-models.html#cb419-3" tabindex="-1"></a>                   ses_w <span class="sc">+</span> ses_b <span class="sc">+</span> sex_w <span class="sc">+</span> sex_b <span class="sc">+</span> </span>
+<span id="cb419-4"><a href="multilevel-models.html#cb419-4" tabindex="-1"></a>                   Minority_w <span class="sc">+</span> Minority_b <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>schoolnr), </span>
+<span id="cb419-5"><a href="multilevel-models.html#cb419-5" tabindex="-1"></a>                 <span class="at">data=</span>mlb)</span></code></pre></div>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Use the <code>brms</code> package to estimate the above model in the Bayesian context.</p>
+</div>
+<p>We can plot marginal effects from this model either by using the <code>conditional_effects()</code> function or by using the <code>predict()</code> function handing the new data. Here is the effect if <code>IQ_verb_w</code> on <code>langPOST</code> for a few different values of <code>IQ_verb_b</code>, just considering the fixed effect parameters.</p>
+<div class="sourceCode" id="cb420"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb420-1"><a href="multilevel-models.html#cb420-1" tabindex="-1"></a>c1 <span class="ot">&lt;-</span> <span class="fu">conditional_effects</span>(b.mlm3, <span class="at">effects=</span><span class="st">&quot;IQ_verb_w:IQ_verb_b&quot;</span>)</span>
+<span id="cb420-2"><a href="multilevel-models.html#cb420-2" tabindex="-1"></a><span class="fu">plot</span>(c1)<span class="sc">$</span><span class="st">`</span><span class="at">IQ_verb_w:IQ_verb_b</span><span class="st">`</span> <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-244-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>We could do the same thing, but including the random effect variance.</p>
+<div class="sourceCode" id="cb421"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb421-1"><a href="multilevel-models.html#cb421-1" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> <span class="fu">conditional_effects</span>(b.mlm3, <span class="at">effects=</span><span class="st">&quot;IQ_verb_w:IQ_verb_b&quot;</span>, </span>
+<span id="cb421-2"><a href="multilevel-models.html#cb421-2" tabindex="-1"></a>                          <span class="at">re_formula =</span> <span class="sc">~</span> (<span class="dv">1</span><span class="sc">|</span>schoolnr))</span>
+<span id="cb421-3"><a href="multilevel-models.html#cb421-3" tabindex="-1"></a><span class="fu">plot</span>(c2)<span class="sc">$</span><span class="st">`</span><span class="at">IQ_verb_w:IQ_verb_b</span><span class="st">`</span> <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-245-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>Here, the intervals are understandably larger. We could also look at a few schools in particular. In the code below, we are picking three schools (numbered 1, 2 and 3) and we’re also going to supply their specific values of <code>IQ_verb_b</code> as conditions to plot.</p>
+<div class="sourceCode" id="cb422"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb422-1"><a href="multilevel-models.html#cb422-1" tabindex="-1"></a>conditions <span class="ot">&lt;-</span> mlb <span class="sc">%&gt;%</span> </span>
+<span id="cb422-2"><a href="multilevel-models.html#cb422-2" tabindex="-1"></a>  <span class="fu">filter</span>(schoolnr <span class="sc">%in%</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb422-3"><a href="multilevel-models.html#cb422-3" tabindex="-1"></a>  <span class="fu">select</span>(schoolnr, IQ_verb_b) <span class="sc">%&gt;%</span> </span>
+<span id="cb422-4"><a href="multilevel-models.html#cb422-4" tabindex="-1"></a>  <span class="fu">group_by</span>(schoolnr) <span class="sc">%&gt;%</span> </span>
+<span id="cb422-5"><a href="multilevel-models.html#cb422-5" tabindex="-1"></a>  <span class="fu">summarise_all</span>(mean)</span>
+<span id="cb422-6"><a href="multilevel-models.html#cb422-6" tabindex="-1"></a></span>
+<span id="cb422-7"><a href="multilevel-models.html#cb422-7" tabindex="-1"></a>c3 <span class="ot">&lt;-</span> <span class="fu">conditional_effects</span>(b.mlm3, <span class="at">effects=</span><span class="st">&quot;IQ_verb_w&quot;</span>, </span>
+<span id="cb422-8"><a href="multilevel-models.html#cb422-8" tabindex="-1"></a>                          <span class="at">re_formula =</span> <span class="sc">~</span> (<span class="dv">1</span><span class="sc">|</span>schoolnr), </span>
+<span id="cb422-9"><a href="multilevel-models.html#cb422-9" tabindex="-1"></a>                          <span class="at">conditions =</span> conditions)</span>
+<span id="cb422-10"><a href="multilevel-models.html#cb422-10" tabindex="-1"></a><span class="fu">plot</span>(c3)<span class="sc">$</span><span class="st">`</span><span class="at">IQ_verb_w</span><span class="st">`</span> <span class="sc">+</span> </span>
+<span id="cb422-11"><a href="multilevel-models.html#cb422-11" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb422-12"><a href="multilevel-models.html#cb422-12" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio=</span><span class="dv">1</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-246-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>The <code>IQ_verb_w</code> element of <code>c3</code> holds all of the data for plotting. You could make your own plot if you wanted.</p>
+<div class="sourceCode" id="cb423"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb423-1"><a href="multilevel-models.html#cb423-1" tabindex="-1"></a><span class="fu">ggplot</span>(c3<span class="sc">$</span>IQ_verb_w, <span class="fu">aes</span>(<span class="at">x=</span>IQ_verb_w, </span>
+<span id="cb423-2"><a href="multilevel-models.html#cb423-2" tabindex="-1"></a>                         <span class="at">y=</span>estimate__, </span>
+<span id="cb423-3"><a href="multilevel-models.html#cb423-3" tabindex="-1"></a>                         <span class="at">colour=</span>cond__, </span>
+<span id="cb423-4"><a href="multilevel-models.html#cb423-4" tabindex="-1"></a>                         <span class="at">fill =</span> cond__)) <span class="sc">+</span> </span>
+<span id="cb423-5"><a href="multilevel-models.html#cb423-5" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>lower__, </span>
+<span id="cb423-6"><a href="multilevel-models.html#cb423-6" tabindex="-1"></a>                  <span class="at">ymax=</span>upper__), </span>
+<span id="cb423-7"><a href="multilevel-models.html#cb423-7" tabindex="-1"></a>              <span class="at">alpha=</span>.<span class="dv">15</span>, </span>
+<span id="cb423-8"><a href="multilevel-models.html#cb423-8" tabindex="-1"></a>              <span class="at">col=</span><span class="st">&quot;transparent&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb423-9"><a href="multilevel-models.html#cb423-9" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb423-10"><a href="multilevel-models.html#cb423-10" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb423-11"><a href="multilevel-models.html#cb423-11" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb423-12"><a href="multilevel-models.html#cb423-12" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;IQ Verbal Score (within)&quot;</span>, </span>
+<span id="cb423-13"><a href="multilevel-models.html#cb423-13" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Predicted Language Post-test Score&quot;</span>, </span>
+<span id="cb423-14"><a href="multilevel-models.html#cb423-14" tabindex="-1"></a>       <span class="at">colour=</span><span class="st">&quot;School&quot;</span>, </span>
+<span id="cb423-15"><a href="multilevel-models.html#cb423-15" tabindex="-1"></a>       <span class="at">fill=</span><span class="st">&quot;School&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-247-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Calculate and plot the conditional effect of <code>democ_max</code> from the model above.</p>
+</div>
+<p>This is a quite powerful tool for understanding the variability of effects in a way that is quite difficult in the frequentist inferential paradigm.</p>
+
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="handling-complex-survey-data.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="time-series-cross-sectional-models.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["RBE.pdf", "RBE.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

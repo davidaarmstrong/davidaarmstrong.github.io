@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 5 Ordered and Multinomial Logit | R: Learning by Example</title>
+  <meta name="description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 5 Ordered and Multinomial Logit | R: Learning by Example" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 5 Ordered and Multinomial Logit | R: Learning by Example" />
+  
+  <meta name="twitter:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+<meta name="author" content="David A. Armstrong II and William Poirier" />
+
+
+<meta name="date" content="2025-05-29" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="generalized-linear-models---logit..html"/>
+<link rel="next" href="handling-complex-survey-data.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<link href="libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.33/datatables.js"></script>
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">R: Learning by Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preliminaries</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#license"><i class="fa fa-check"></i>License</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#getting-r-and-rstudio"><i class="fa fa-check"></i>Getting R and Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#keeping-track-of-your-work"><i class="fa fa-check"></i>Keeping Track of Your Work</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#overview-of-rstudio"><i class="fa fa-check"></i>Overview of Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#using-r"><i class="fa fa-check"></i>Using <em>R</em></a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#assigning-output-to-objects"><i class="fa fa-check"></i>Assigning Output to Objects</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#vectors-and-matrices"><i class="fa fa-check"></i>Vectors and Matrices</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#function-arguments"><i class="fa fa-check"></i>Function Arguments</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#importing-data"><i class="fa fa-check"></i>Importing Data</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#data-types-in-r"><i class="fa fa-check"></i>Data Types in <em>R</em></a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#examining-data"><i class="fa fa-check"></i>Examining Data</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#missing-values"><i class="fa fa-check"></i>Missing Values</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#filtering-with-logical-expressions-and-sorting"><i class="fa fa-check"></i>Filtering with Logical Expressions and Sorting</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#workhorse-functions"><i class="fa fa-check"></i>Workhorse Functions</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#exercises"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html"><i class="fa fa-check"></i>Datasets</a>
+<ul>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo"><i class="fa fa-check"></i><code>colo</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo_covid"><i class="fa fa-check"></i><code>colo_covid</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gss-canada"><i class="fa fa-check"></i><code>gss</code> (Canada)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gsss16-usa"><i class="fa fa-check"></i><code>gsss16</code> (USA)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#davenport-soule-armstrong-data"><i class="fa fa-check"></i>Davenport-Soule-Armstrong Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#france-2004"><i class="fa fa-check"></i>France 2004</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#ces19"><i class="fa fa-check"></i><code>ces19</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#snijders-and-bosker-multileve-school-data"><i class="fa fa-check"></i>Snijders and Bosker Multileve School Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-multilevel"><i class="fa fa-check"></i>World Values Survey (multilevel)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#repression-data"><i class="fa fa-check"></i>Repression Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#oil-and-democracy-dataset"><i class="fa fa-check"></i>Oil and Democracy Dataset</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#politicaldemocracy"><i class="fa fa-check"></i><code>PoliticalDemocracy</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-measurement"><i class="fa fa-check"></i>World Values Survey (measurement)</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="viz.html"><a href="viz.html"><i class="fa fa-check"></i><b>1</b> Visualizing</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="viz.html"><a href="viz.html#wrangling-data"><i class="fa fa-check"></i><b>1.1</b> Wrangling data</a>
+<ul>
+<li class="chapter" data-level="1.1.1" data-path="viz.html"><a href="viz.html#merging-datasets"><i class="fa fa-check"></i><b>1.1.1</b> Merging Datasets</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="viz.html"><a href="viz.html#ggplot"><i class="fa fa-check"></i><b>1.2</b> GGplot</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="viz.html"><a href="viz.html#bar-plots"><i class="fa fa-check"></i><b>1.2.1</b> Bar Plots</a></li>
+<li class="chapter" data-level="1.2.2" data-path="viz.html"><a href="viz.html#line-graphs"><i class="fa fa-check"></i><b>1.2.2</b> Line Graphs</a></li>
+<li class="chapter" data-level="1.2.3" data-path="viz.html"><a href="viz.html#histograms"><i class="fa fa-check"></i><b>1.2.3</b> Histograms</a></li>
+<li class="chapter" data-level="1.2.4" data-path="viz.html"><a href="viz.html#scatterplots"><i class="fa fa-check"></i><b>1.2.4</b> Scatterplots</a></li>
+<li class="chapter" data-level="1.2.5" data-path="viz.html"><a href="viz.html#multiple-series"><i class="fa fa-check"></i><b>1.2.5</b> Multiple Series</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="viz.html"><a href="viz.html#recap"><i class="fa fa-check"></i><b>1.3</b> Recap</a></li>
+<li class="chapter" data-level="" data-path="viz.html"><a href="viz.html#exercises-1"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html"><i class="fa fa-check"></i><b>2</b> Describing Relationships in the General Social Survey</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#the-canadian-gss."><i class="fa fa-check"></i><b>2.1</b> The Canadian GSS.</a></li>
+<li class="chapter" data-level="2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#looking-at-the-data."><i class="fa fa-check"></i><b>2.2</b> Looking at the data.</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#cross-tabulations"><i class="fa fa-check"></i><b>2.2.1</b> Cross-tabulations</a></li>
+<li class="chapter" data-level="2.2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#permutation-tests-in-r."><i class="fa fa-check"></i><b>2.2.2</b> Permutation Tests in R.</a></li>
+<li class="chapter" data-level="2.2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#back-to-the-data"><i class="fa fa-check"></i><b>2.2.3</b> Back to the Data</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#descriptive-output-in-knitr"><i class="fa fa-check"></i><b>2.3</b> Descriptive Output in knitr</a></li>
+<li class="chapter" data-level="" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#exercises-2"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="linear-models.html"><a href="linear-models.html"><i class="fa fa-check"></i><b>3</b> Linear Models</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="linear-models.html"><a href="linear-models.html#effects-plots"><i class="fa fa-check"></i><b>3.1</b> Effects Plots</a></li>
+<li class="chapter" data-level="3.2" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-linearity"><i class="fa fa-check"></i><b>3.2</b> Diagnostic Tools: Linearity</a></li>
+<li class="chapter" data-level="3.3" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-heteroskedasticity"><i class="fa fa-check"></i><b>3.3</b> Diagnostic Tools: Heteroskedasticity</a></li>
+<li class="chapter" data-level="3.4" data-path="linear-models.html"><a href="linear-models.html#diagnostics-outliers-and-influential-data"><i class="fa fa-check"></i><b>3.4</b> Diagnostics: Outliers and Influential Data</a></li>
+<li class="chapter" data-level="3.5" data-path="linear-models.html"><a href="linear-models.html#diagnostics-for-normality"><i class="fa fa-check"></i><b>3.5</b> Diagnostics for Normality</a>
+<ul>
+<li class="chapter" data-level="3.5.1" data-path="linear-models.html"><a href="linear-models.html#bootstrapping-regression-models"><i class="fa fa-check"></i><b>3.5.1</b> Bootstrapping Regression Models</a></li>
+</ul></li>
+<li class="chapter" data-level="3.6" data-path="linear-models.html"><a href="linear-models.html#interactions"><i class="fa fa-check"></i><b>3.6</b> Interactions</a></li>
+<li class="chapter" data-level="" data-path="linear-models.html"><a href="linear-models.html#exercises-3"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html"><i class="fa fa-check"></i><b>4</b> Generalized Linear Models - Logit.</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#evaluating-model-fit"><i class="fa fa-check"></i><b>4.1</b> Evaluating Model Fit</a></li>
+<li class="chapter" data-level="4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effects"><i class="fa fa-check"></i><b>4.2</b> Marginal Effects</a></li>
+<li class="chapter" data-level="4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effect-plots"><i class="fa fa-check"></i><b>4.3</b> Marginal Effect Plots</a></li>
+<li class="chapter" data-level="4.4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#interactions-in-binary-dv-models"><i class="fa fa-check"></i><b>4.4</b> Interactions in Binary DV Models</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-binary"><i class="fa fa-check"></i><b>4.4.1</b> Both binary</a></li>
+<li class="chapter" data-level="4.4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#one-binary-one-continuous."><i class="fa fa-check"></i><b>4.4.2</b> One binary, one continuous.</a></li>
+<li class="chapter" data-level="4.4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-continuous"><i class="fa fa-check"></i><b>4.4.3</b> Both Continuous</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#other-glms."><i class="fa fa-check"></i><b>4.5</b> Other GLMs.</a></li>
+<li class="chapter" data-level="" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#exercises-4"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html"><i class="fa fa-check"></i><b>5</b> Ordered and Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#ordinal-dv-models"><i class="fa fa-check"></i><b>5.1</b> Ordinal DV Models</a></li>
+<li class="chapter" data-level="5.2" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#multinomial-logit"><i class="fa fa-check"></i><b>5.2</b> Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#parametric-bootstrap-for-confidence-intervals."><i class="fa fa-check"></i><b>5.2.1</b> Parametric Bootstrap for Confidence Intervals.</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#conclusion"><i class="fa fa-check"></i><b>5.3</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html"><i class="fa fa-check"></i><b>6</b> Handling Complex Survey Data</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#frequency-distributions-and-contingency-tables"><i class="fa fa-check"></i><b>6.1</b> Frequency Distributions and Contingency Tables</a></li>
+<li class="chapter" data-level="6.2" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#summary-statistics"><i class="fa fa-check"></i><b>6.2</b> Summary Statistics</a></li>
+<li class="chapter" data-level="6.3" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#estimating-models"><i class="fa fa-check"></i><b>6.3</b> Estimating Models</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="multilevel-models.html"><a href="multilevel-models.html"><i class="fa fa-check"></i><b>7</b> Multilevel Models</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="multilevel-models.html"><a href="multilevel-models.html#data-structure."><i class="fa fa-check"></i><b>7.1</b> Data Structure.</a></li>
+<li class="chapter" data-level="7.2" data-path="multilevel-models.html"><a href="multilevel-models.html#clustering-standard-errors"><i class="fa fa-check"></i><b>7.2</b> Clustering Standard Errors</a></li>
+<li class="chapter" data-level="7.3" data-path="multilevel-models.html"><a href="multilevel-models.html#between-vs-within-relationships."><i class="fa fa-check"></i><b>7.3</b> Between vs Within Relationships.</a></li>
+<li class="chapter" data-level="7.4" data-path="multilevel-models.html"><a href="multilevel-models.html#random-intercepts"><i class="fa fa-check"></i><b>7.4</b> Random Intercepts</a></li>
+<li class="chapter" data-level="7.5" data-path="multilevel-models.html"><a href="multilevel-models.html#estimating-the-multilevel-model"><i class="fa fa-check"></i><b>7.5</b> Estimating the Multilevel Model</a>
+<ul>
+<li class="chapter" data-level="7.5.1" data-path="multilevel-models.html"><a href="multilevel-models.html#p-values-in-lmer-output"><i class="fa fa-check"></i><b>7.5.1</b> P-values in LMER Output</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="multilevel-models.html"><a href="multilevel-models.html#other-random-effects-models"><i class="fa fa-check"></i><b>7.6</b> Other Random-Effects Models</a></li>
+<li class="chapter" data-level="7.7" data-path="multilevel-models.html"><a href="multilevel-models.html#bayesian-models-with-brms"><i class="fa fa-check"></i><b>7.7</b> Bayesian Models with BRMS</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html"><i class="fa fa-check"></i><b>8</b> Time-Series Cross-Sectional Models</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#preliminaries-and-assumptions"><i class="fa fa-check"></i><b>8.1</b> Preliminaries and Assumptions</a></li>
+<li class="chapter" data-level="8.2" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#unit-effects"><i class="fa fa-check"></i><b>8.2</b> Unit Effects</a></li>
+<li class="chapter" data-level="8.3" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#the-plm-package"><i class="fa fa-check"></i><b>8.3</b> The plm Package</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="measurement-issues.html"><a href="measurement-issues.html"><i class="fa fa-check"></i><b>9</b> Measurement Issues</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="measurement-issues.html"><a href="measurement-issues.html#reliability-analysis"><i class="fa fa-check"></i><b>9.1</b> Reliability Analysis</a></li>
+<li class="chapter" data-level="9.2" data-path="measurement-issues.html"><a href="measurement-issues.html#exploratory-factor-analysis-and-principal-components-analysis"><i class="fa fa-check"></i><b>9.2</b> Exploratory Factor Analysis and Principal Components Analysis</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="measurement-issues.html"><a href="measurement-issues.html#rotations"><i class="fa fa-check"></i><b>9.2.1</b> Rotations</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="measurement-issues.html"><a href="measurement-issues.html#cfa-and-sem"><i class="fa fa-check"></i><b>9.3</b> CFA and SEM</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">R: Learning by Example</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="ordered-and-multinomial-logit" class="section level1 hasAnchor" number="5">
+<h1><span class="header-section-number">Chapter 5</span> Ordered and Multinomial Logit<a href="ordered-and-multinomial-logit.html#ordered-and-multinomial-logit" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>There are lots of situations where we have a categorical dependent variable with more than two categories. In this case, either ordered logit (if the categories are inherently ordered) or multinomial logit (if they are un-ordered) is often a suitable choice. These models predict the probability that an observation is in each of the categories.</p>
+<div id="ordinal-dv-models" class="section level2 hasAnchor" number="5.1">
+<h2><span class="header-section-number">5.1</span> Ordinal DV Models<a href="ordered-and-multinomial-logit.html#ordinal-dv-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In the ordered logit (or probit) model, the idea is that there is a latent continuous variable about which we only observe a discrete realization. That is, we don’t know the observation’s exact value on the underlying latent variable; instead, we know whether it falls between two different threshold parameters. That is, we know whether it falls into the same category with a bunch of other unknown values. The goal of the model is to estimate the regression parameters along with these threshold parameters.</p>
+<p>These are often called cumulative probability models because the model is estimating the following:</p>
+<p><span class="math display">\[Pr(y &lt;= m) = F(\tau_m - Xb)\]</span></p>
+<p>Which leads to:</p>
+<p><span class="math display">\[ Pr(y=m) = F(\tau_{m} - Xb) - F(\tau_{m-1} - Xb)\]</span></p>
+<p>where, as above, <span class="math inline">\(F()\)</span> is the CDF of a probability distribution - the logistic for logit or normal for probit.</p>
+<p>There are a couple of different ways to fit these models. The <code>polr()</code> function in the <code>MASS</code> package is one way. This method will probably respond to post-estimation functions better because it has been around for longer. There is also a package called <code>ordinal</code> that has functions for fitting different kinds of ordered DV models. We will spend a bit more time talking about this package because it has implications for chapters later on in the book. Just know, that if you run into a situation where output from the <code>clm()</code> function doesn’t respond well to a post-estimation technique that you might try the <code>polr()</code> function from MASS.</p>
+<div class="sourceCode" id="cb319"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb319-1"><a href="ordered-and-multinomial-logit.html#cb319-1" tabindex="-1"></a><span class="fu">library</span>(ordinal)</span>
+<span id="cb319-2"><a href="ordered-and-multinomial-logit.html#cb319-2" tabindex="-1"></a><span class="fu">library</span>(DAMisc)</span>
+<span id="cb319-3"><a href="ordered-and-multinomial-logit.html#cb319-3" tabindex="-1"></a><span class="fu">data</span>(france)</span>
+<span id="cb319-4"><a href="ordered-and-multinomial-logit.html#cb319-4" tabindex="-1"></a></span>
+<span id="cb319-5"><a href="ordered-and-multinomial-logit.html#cb319-5" tabindex="-1"></a>ologit.mod <span class="ot">&lt;-</span> <span class="fu">clm</span>(retnat <span class="sc">~</span> lrself <span class="sc">+</span> male <span class="sc">+</span> age, <span class="at">data=</span>france)</span>
+<span id="cb319-6"><a href="ordered-and-multinomial-logit.html#cb319-6" tabindex="-1"></a><span class="fu">summary</span>(ologit.mod)</span></code></pre></div>
+<pre><code>## formula: retnat ~ lrself + male + age
+## data:    france
+## 
+##  link  threshold nobs logLik  AIC     niter max.grad cond.H 
+##  logit flexible  542  -566.76 1143.53 5(0)  5.98e-14 5.7e+04
+## 
+## Coefficients:
+##         Estimate Std. Error z value Pr(&gt;|z|)    
+## lrself -0.154106   0.037345  -4.127 3.68e-05 ***
+## male   -0.342544   0.162003  -2.114   0.0345 *  
+## age     0.010258   0.004911   2.089   0.0367 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Threshold coefficients:
+##             Estimate Std. Error z value
+## Better|Same  -1.6237     0.2951  -5.503
+## Same|Worse    0.3419     0.2857   1.197</code></pre>
+<p>The summary function for the <code>clm</code> object is a bit better because it returns <span class="math inline">\(p\)</span>-values, whereas the summary for the <code>polr</code> object does not. Once we’ve estimated the model, just like above we can see how the model fits. The <code>ordfit()</code> function in the <code>DAMisc</code> package will work on both <code>polr</code> and <code>clm</code> objects. The various peseudo-<span class="math inline">\(R^{2}\)</span> measures are defined as they were in the binary model.</p>
+<div class="sourceCode" id="cb321"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb321-1"><a href="ordered-and-multinomial-logit.html#cb321-1" tabindex="-1"></a><span class="fu">ordfit</span>(ologit.mod)</span></code></pre></div>
+<pre><code>##                       Estimate
+## Count R2              0.465   
+## Count R2 (Adj)        0.049   
+## ML R2                 0.045   
+## McFadden R2           0.021   
+## McFadden R2 (Adj)     0.013   
+## McKelvey &amp; Zavoina R2 0.049</code></pre>
+<p>We could also look at the PRE just as we did with the binary model.</p>
+<div class="sourceCode" id="cb323"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb323-1"><a href="ordered-and-multinomial-logit.html#cb323-1" tabindex="-1"></a><span class="fu">pre</span>(ologit.mod, <span class="at">data=</span>france, <span class="at">sim=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>## mod1:  retnat ~ lrself + male + age 
+## mod2:  retnat ~ 1 
+## 
+## Analytical Results
+##  PMC =  0.437 
+##  PCP =  0.465 
+##  PRE =  0.049 
+## ePMC =  0.353 
+## ePCP =  0.367 
+## ePRE =  0.021 
+## 
+## Simulated Results
+##      median lower  upper
+##  PRE 0.033  -0.003 0.062
+## ePRE 0.021  0.004  0.036</code></pre>
+<p>We see not an excellent fit here - we improve ever so slightly on the null model, though that’s a pretty low bar.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Using the GSS 2016 data, estimate and summarise an ordered logit model of <code>sparts</code> on <code>college_ed</code> (which we created in the previous chapter), <code>aid_scale</code>, <code>sex</code> and <code>age</code>.</p>
+</div>
+<p>We can use the <code>ggeffects</code> package to plot the fitted values.</p>
+<div class="sourceCode" id="cb325"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb325-1"><a href="ordered-and-multinomial-logit.html#cb325-1" tabindex="-1"></a><span class="fu">library</span>(ggeffects)</span>
+<span id="cb325-2"><a href="ordered-and-multinomial-logit.html#cb325-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb325-3"><a href="ordered-and-multinomial-logit.html#cb325-3" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggpredict</span>(ologit.mod, <span class="at">terms=</span><span class="st">&quot;lrself&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb325-4"><a href="ordered-and-multinomial-logit.html#cb325-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">response.level =</span> <span class="fu">factor</span>(response.level, </span>
+<span id="cb325-5"><a href="ordered-and-multinomial-logit.html#cb325-5" tabindex="-1"></a>                                 <span class="at">labels=</span><span class="fu">levels</span>(france<span class="sc">$</span>retnat)))</span>
+<span id="cb325-6"><a href="ordered-and-multinomial-logit.html#cb325-6" tabindex="-1"></a><span class="fu">ggplot</span>(g, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>predicted, <span class="at">colour=</span>response.level)) <span class="sc">+</span> </span>
+<span id="cb325-7"><a href="ordered-and-multinomial-logit.html#cb325-7" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>conf.low, </span>
+<span id="cb325-8"><a href="ordered-and-multinomial-logit.html#cb325-8" tabindex="-1"></a>                  <span class="at">ymax=</span>conf.high, </span>
+<span id="cb325-9"><a href="ordered-and-multinomial-logit.html#cb325-9" tabindex="-1"></a>                  <span class="at">fill=</span>response.level), </span>
+<span id="cb325-10"><a href="ordered-and-multinomial-logit.html#cb325-10" tabindex="-1"></a>              <span class="at">alpha=</span>.<span class="dv">15</span>, </span>
+<span id="cb325-11"><a href="ordered-and-multinomial-logit.html#cb325-11" tabindex="-1"></a>              <span class="at">col=</span><span class="st">&quot;transparent&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb325-12"><a href="ordered-and-multinomial-logit.html#cb325-12" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb325-13"><a href="ordered-and-multinomial-logit.html#cb325-13" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb325-14"><a href="ordered-and-multinomial-logit.html#cb325-14" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb325-15"><a href="ordered-and-multinomial-logit.html#cb325-15" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Left-Right Self-Placement&quot;</span>, </span>
+<span id="cb325-16"><a href="ordered-and-multinomial-logit.html#cb325-16" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Predicted Probability&quot;</span>, </span>
+<span id="cb325-17"><a href="ordered-and-multinomial-logit.html#cb325-17" tabindex="-1"></a>       <span class="at">colour =</span> <span class="st">&quot;Response</span><span class="sc">\n</span><span class="st">Category&quot;</span>, </span>
+<span id="cb325-18"><a href="ordered-and-multinomial-logit.html#cb325-18" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">&quot;Response</span><span class="sc">\n</span><span class="st">Category&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-177-1.png" width="65%" style="display: block; margin: auto;" />
+In the figure above, the prediction we would get is from the line that has the highest probability. In this case, you see that it’s mostly “Same”, except for when left-right self-placement is at its most left-leaning (i.e., lowest) values - in which case the prediction would be for “Worse”. The “Better” and “Worse” lines basically trade off moving across the left-right spectrum.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Using the model you estimated above, plot the effect of <code>aid_scale</code> for the three different <code>college_ed</code> groups.</p>
+</div>
+<p>The <code>clm</code> function also does the generalized ordered logit model wherein some of the coefficients are allowed to change across response categories. This is essentially a ordinal-multinomial model hybrid.</p>
+<div class="sourceCode" id="cb326"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb326-1"><a href="ordered-and-multinomial-logit.html#cb326-1" tabindex="-1"></a>gologit.mod <span class="ot">&lt;-</span> <span class="fu">clm</span>(retnat <span class="sc">~</span>   male <span class="sc">+</span> age, <span class="at">nominal =</span> <span class="sc">~</span> lrself, </span>
+<span id="cb326-2"><a href="ordered-and-multinomial-logit.html#cb326-2" tabindex="-1"></a>    <span class="at">data=</span>france)</span>
+<span id="cb326-3"><a href="ordered-and-multinomial-logit.html#cb326-3" tabindex="-1"></a><span class="fu">summary</span>(gologit.mod)</span></code></pre></div>
+<pre><code>## formula: retnat ~ male + age
+## nominal: ~lrself
+## data:    france
+## 
+##  link  threshold nobs logLik  AIC     niter max.grad cond.H 
+##  logit flexible  542  -566.20 1144.40 5(0)  3.15e-13 5.8e+04
+## 
+## Coefficients:
+##       Estimate Std. Error z value Pr(&gt;|z|)  
+## male -0.345173   0.162037  -2.130   0.0332 *
+## age   0.010367   0.004912   2.111   0.0348 *
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Threshold coefficients:
+##                         Estimate Std. Error z value
+## Better|Same.(Intercept) -1.78421    0.33463  -5.332
+## Same|Worse.(Intercept)   0.44284    0.30183   1.467
+## Better|Same.lrself       0.18569    0.04792   3.875
+## Same|Worse.lrself        0.13092    0.04290   3.052</code></pre>
+<p>It is simple to do a test between the of the generalization:</p>
+<div class="sourceCode" id="cb328"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb328-1"><a href="ordered-and-multinomial-logit.html#cb328-1" tabindex="-1"></a><span class="fu">anova</span>(ologit.mod, gologit.mod)</span></code></pre></div>
+<pre><code>## Likelihood ratio tests of cumulative link models:
+##  
+##             formula:                     nominal: link: threshold:
+## ologit.mod  retnat ~ lrself + male + age ~1       logit flexible  
+## gologit.mod retnat ~ male + age          ~lrself  logit flexible  
+## 
+##             no.par    AIC  logLik LR.stat df Pr(&gt;Chisq)
+## ologit.mod       5 1143.5 -566.76                      
+## gologit.mod      6 1144.4 -566.20  1.1232  1     0.2892</code></pre>
+<p>The plot above uses the MER approach, if you wanted the AME approach, you could use <code>ordAveEffPlot()</code> from the <code>DAMisc</code> package. Just like <code>aveEffPlot()</code>, you can have the function return the data to plot with <code>returnMprob=TRUE</code> and <code>plot=FALSE</code>.</p>
+<div class="sourceCode" id="cb330"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb330-1"><a href="ordered-and-multinomial-logit.html#cb330-1" tabindex="-1"></a>oap <span class="ot">&lt;-</span> <span class="fu">ordAveEffPlot</span>(ologit.mod, <span class="st">&quot;lrself&quot;</span>, </span>
+<span id="cb330-2"><a href="ordered-and-multinomial-logit.html#cb330-2" tabindex="-1"></a>                     <span class="at">data=</span>france, <span class="at">plot=</span><span class="cn">FALSE</span>, </span>
+<span id="cb330-3"><a href="ordered-and-multinomial-logit.html#cb330-3" tabindex="-1"></a>                     <span class="at">returnMprob=</span><span class="cn">TRUE</span>)</span>
+<span id="cb330-4"><a href="ordered-and-multinomial-logit.html#cb330-4" tabindex="-1"></a><span class="fu">ggplot</span>(oap<span class="sc">$</span>data, <span class="fu">aes</span>(<span class="at">x=</span>s, <span class="at">y=</span>mean, <span class="at">colour=</span>y)) <span class="sc">+</span> </span>
+<span id="cb330-5"><a href="ordered-and-multinomial-logit.html#cb330-5" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>lower, </span>
+<span id="cb330-6"><a href="ordered-and-multinomial-logit.html#cb330-6" tabindex="-1"></a>                  <span class="at">ymax=</span>upper, </span>
+<span id="cb330-7"><a href="ordered-and-multinomial-logit.html#cb330-7" tabindex="-1"></a>                  <span class="at">fill=</span>y), </span>
+<span id="cb330-8"><a href="ordered-and-multinomial-logit.html#cb330-8" tabindex="-1"></a>              <span class="at">alpha=</span>.<span class="dv">15</span>, </span>
+<span id="cb330-9"><a href="ordered-and-multinomial-logit.html#cb330-9" tabindex="-1"></a>              <span class="at">col=</span><span class="st">&quot;transparent&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb330-10"><a href="ordered-and-multinomial-logit.html#cb330-10" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb330-11"><a href="ordered-and-multinomial-logit.html#cb330-11" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb330-12"><a href="ordered-and-multinomial-logit.html#cb330-12" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb330-13"><a href="ordered-and-multinomial-logit.html#cb330-13" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Left-Right Self-Placement&quot;</span>, </span>
+<span id="cb330-14"><a href="ordered-and-multinomial-logit.html#cb330-14" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Predicted Probability&quot;</span>, </span>
+<span id="cb330-15"><a href="ordered-and-multinomial-logit.html#cb330-15" tabindex="-1"></a>       <span class="at">colour =</span> <span class="st">&quot;Response Category&quot;</span>, </span>
+<span id="cb330-16"><a href="ordered-and-multinomial-logit.html#cb330-16" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">&quot;Response Category&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-178-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>Note that this looks really similar to the plot we made above.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Using the <code>ordAveEffPlot()</code> function, replicate the same graph you made in the previous exercise.<br />
+- How do the two compare to each other?</p>
+</div>
+<p>One last thing we could do here is to test one of the important assumptions in this model - the Parallel Regressions Assumption. This assumption states that the effect on the cumulative probabilities is the same for all levels of the dependent variable. If this assumption doesn’t hold, then ordered logit or probit is not the best model. The Brant test is a test of this assumption. There is a package called <code>brant</code> that has this test in it. To use the <code>brant</code> pacakge, you’ll need to re-estimate the model using <code>polr()</code> from the <code>MASS</code> package.</p>
+<div class="sourceCode" id="cb331"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb331-1"><a href="ordered-and-multinomial-logit.html#cb331-1" tabindex="-1"></a>ologit.mod2 <span class="ot">&lt;-</span> MASS<span class="sc">::</span><span class="fu">polr</span>(retnat <span class="sc">~</span> lrself <span class="sc">+</span> male <span class="sc">+</span> age, <span class="at">data=</span>france)</span>
+<span id="cb331-2"><a href="ordered-and-multinomial-logit.html#cb331-2" tabindex="-1"></a><span class="fu">library</span>(brant)</span>
+<span id="cb331-3"><a href="ordered-and-multinomial-logit.html#cb331-3" tabindex="-1"></a><span class="fu">brant</span>(ologit.mod2)</span></code></pre></div>
+<pre><code>## -------------------------------------------- 
+## Test for X2  df  probability 
+## -------------------------------------------- 
+## Omnibus      1.19    3   0.76
+## lrself       0.7 1   0.4
+## male     0.24    1   0.62
+## age      0.16    1   0.69
+## -------------------------------------------- 
+## 
+## H0: Parallel Regression Assumption holds</code></pre>
+<p>You could also do a test much like this with the <code>clm()</code> function. The test below is similar in spirit to the “Omnibus” test above. To my mind, you should only really pay attention to the omnibus test and if it fails, switch to multinomial logit.</p>
+<div class="sourceCode" id="cb333"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb333-1"><a href="ordered-and-multinomial-logit.html#cb333-1" tabindex="-1"></a>null.mod <span class="ot">&lt;-</span> <span class="fu">clm</span>(retnat <span class="sc">~</span> lrself <span class="sc">+</span> male <span class="sc">+</span> age, <span class="at">data=</span>france)</span>
+<span id="cb333-2"><a href="ordered-and-multinomial-logit.html#cb333-2" tabindex="-1"></a>alt.mod <span class="ot">&lt;-</span> <span class="fu">clm</span>(retnat <span class="sc">~</span> <span class="dv">1</span>, <span class="at">nominal =</span> <span class="sc">~</span> lrself <span class="sc">+</span> male <span class="sc">+</span> age, <span class="at">data=</span>france)</span></code></pre></div>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Does the parallel regressions assumption hold in your model?</p>
+</div>
+</div>
+<div id="multinomial-logit" class="section level2 hasAnchor" number="5.2">
+<h2><span class="header-section-number">5.2</span> Multinomial Logit<a href="ordered-and-multinomial-logit.html#multinomial-logit" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The multinomial logit model allows us to model un-ordered choices or choices that appear ordered by where the parallel regressions assumption doesn’t hold. In the simplest version of the model that we’ll talk about first, we’re modeling:
+<span class="math display">\[Pr(y=m) = \frac{e^{XB_j}}{\sum_{k=1}^{M}e^{XB_k}}\]</span></p>
+<p>where in R, the default is to set <span class="math inline">\(B_1 = \mathbf{0}\)</span> for identification purposes. That is, the reference category is the first category in the factor. In R, the first category is always the reference level of a factor. It can be changed by rearranging the levels so a different one is the first one.</p>
+<p>Here, we’re going to use another dataset from France. In this case, we’ll be modeling vote as a function of some demographic covariates and left-right placement variables. First we’ll read in the data and make a factor variable out of vote by using the <code>factorize()</code> function.</p>
+<div class="sourceCode" id="cb334"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb334-1"><a href="ordered-and-multinomial-logit.html#cb334-1" tabindex="-1"></a><span class="fu">library</span>(rio)</span>
+<span id="cb334-2"><a href="ordered-and-multinomial-logit.html#cb334-2" tabindex="-1"></a>france2 <span class="ot">&lt;-</span> <span class="fu">import</span>(<span class="st">&quot;data/France_2004.dta&quot;</span>)</span>
+<span id="cb334-3"><a href="ordered-and-multinomial-logit.html#cb334-3" tabindex="-1"></a>france2 <span class="ot">&lt;-</span> france2 <span class="sc">%&gt;%</span> </span>
+<span id="cb334-4"><a href="ordered-and-multinomial-logit.html#cb334-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">vote_fac =</span> <span class="fu">factorize</span>(vote), </span>
+<span id="cb334-5"><a href="ordered-and-multinomial-logit.html#cb334-5" tabindex="-1"></a>         <span class="at">demsat =</span> <span class="fu">droplevels</span>(<span class="fu">factorize</span>(demsat)), </span>
+<span id="cb334-6"><a href="ordered-and-multinomial-logit.html#cb334-6" tabindex="-1"></a>         <span class="at">eusup =</span> <span class="fu">factor</span>(eusup, <span class="at">levels=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>), </span>
+<span id="cb334-7"><a href="ordered-and-multinomial-logit.html#cb334-7" tabindex="-1"></a>                        <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;No&quot;</span>, <span class="st">&quot;Neutral&quot;</span>, <span class="st">&quot;Yes&quot;</span>)), </span>
+<span id="cb334-8"><a href="ordered-and-multinomial-logit.html#cb334-8" tabindex="-1"></a>         <span class="at">retnat =</span> <span class="fu">droplevels</span>(<span class="fu">factorize</span>(retnat)), </span>
+<span id="cb334-9"><a href="ordered-and-multinomial-logit.html#cb334-9" tabindex="-1"></a>         <span class="at">urban =</span> <span class="fu">droplevels</span>(<span class="fu">factorize</span>(urban)), </span>
+<span id="cb334-10"><a href="ordered-and-multinomial-logit.html#cb334-10" tabindex="-1"></a>         <span class="at">soclass =</span> <span class="fu">droplevels</span>(<span class="fu">factorize</span>(soclass)))</span></code></pre></div>
+<p>Just as with the ordered logit, there are two prominent ways of estimating the multinomial logit model. The first is with the <code>multinom()</code> function in the <code>nnet</code> package. This model only allows individual-specific information - it doesn’t do the conditional logit specification that includes choice-specific information. The <code>mlogit()</code> function in the <code>mlogit</code> package does also estimate the conditional logit specification along with the more traditional multinomial logit model and others.</p>
+<div class="sourceCode" id="cb335"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb335-1"><a href="ordered-and-multinomial-logit.html#cb335-1" tabindex="-1"></a><span class="fu">library</span>(nnet)</span>
+<span id="cb335-2"><a href="ordered-and-multinomial-logit.html#cb335-2" tabindex="-1"></a>mod1 <span class="ot">&lt;-</span> <span class="fu">multinom</span>(vote_fac <span class="sc">~</span> age <span class="sc">+</span> retnat <span class="sc">+</span> demsat <span class="sc">+</span> </span>
+<span id="cb335-3"><a href="ordered-and-multinomial-logit.html#cb335-3" tabindex="-1"></a>                   eusup <span class="sc">+</span> union <span class="sc">+</span> soclass <span class="sc">+</span> urban, </span>
+<span id="cb335-4"><a href="ordered-and-multinomial-logit.html#cb335-4" tabindex="-1"></a>                 <span class="at">data=</span>france2, <span class="at">trace=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<p>The summary function for <code>multinom</code> objects is not that helpful because it gives a matrix of coefficients and separately a matrix of standard errors. The <code>mnlSig()</code> function in the <code>DAMisc</code> package helps by printing the matrix of coefficients with significance flags.</p>
+<div class="sourceCode" id="cb336"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb336-1"><a href="ordered-and-multinomial-logit.html#cb336-1" tabindex="-1"></a><span class="fu">noquote</span>(<span class="fu">t</span>(<span class="fu">mnlSig</span>(mod1)))</span></code></pre></div>
+<pre><code>##                                       PS      Green   UDF     UMP*    FN      
+## (Intercept)                           3.055*  0.980   -0.025  2.608   -11.154*
+## age                                   -0.021* -0.046* 0.009   0.009   -0.005  
+## retnatsame                            -1.020  -1.278  -2.126  -1.905  -1.129  
+## retnatworse                           -1.053  -1.732  -2.592* -2.950* -1.569  
+## demsatassez satisfait                 0.359   1.502   -0.136  -0.369  12.661* 
+## demsatpeu satisfait                   0.720   2.013   0.223   -0.227  13.690* 
+## demsatpas satisfait du tout           0.213   2.293*  -0.878  -1.259  13.627* 
+## eusupNeutral                          0.409   0.603   1.345   -0.207  -0.133  
+## eusupYes                              1.452*  2.494*  2.258*  0.780   -0.367  
+## union                                 -1.538* -1.371* -1.988* -2.026* -2.228* 
+## soclassclasse moyenne inférieure      1.312*  1.515*  2.188*  1.983*  0.848   
+## soclassclasse moyenne                 1.115*  0.974*  2.227*  2.293*  0.836   
+## soclassclasse moyenne supérieure      2.062   2.515*  3.416*  3.199*  0.421   
+## soclassclasse favorisée               14.800* 15.354* 16.493* 16.669* 15.305* 
+## urbandans une ville petite ou moyenne -0.331  -0.553  -0.447  -0.528  0.055   
+## urbandans une grande ville            -0.319  -1.417* -0.464  -0.409  -0.101</code></pre>
+<p>We could also do this with the <code>mlogit()</code> function, but first we have to turn the data into a format amenable for the function with <code>mlogit.data()</code>.</p>
+<div class="sourceCode" id="cb338"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb338-1"><a href="ordered-and-multinomial-logit.html#cb338-1" tabindex="-1"></a><span class="fu">library</span>(mlogit)</span>
+<span id="cb338-2"><a href="ordered-and-multinomial-logit.html#cb338-2" tabindex="-1"></a>mldat <span class="ot">&lt;-</span> <span class="fu">mlogit.data</span>(france2, <span class="at">shape=</span><span class="st">&quot;wide&quot;</span>, <span class="at">choice=</span><span class="st">&quot;vote_fac&quot;</span>)</span>
+<span id="cb338-3"><a href="ordered-and-multinomial-logit.html#cb338-3" tabindex="-1"></a>mlmod <span class="ot">&lt;-</span> <span class="fu">mlogit</span>(vote_fac <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> age <span class="sc">+</span> retnat <span class="sc">+</span> demsat <span class="sc">+</span> </span>
+<span id="cb338-4"><a href="ordered-and-multinomial-logit.html#cb338-4" tabindex="-1"></a>                eusup <span class="sc">+</span> union <span class="sc">+</span> soclass <span class="sc">+</span> urban, </span>
+<span id="cb338-5"><a href="ordered-and-multinomial-logit.html#cb338-5" tabindex="-1"></a>                <span class="at">data=</span>mldat)</span></code></pre></div>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Estimate the same model as above, but as a multinomial logit model instead. Summarise the model and consider the differences.</p>
+</div>
+<p>Note that we will focus on this format later on, but for now, we’ll use the <code>multinom()</code> function because it plays better with the post-estimation tools we want to use. If we wanted to generate scalar measures of fit for the mode, we could use the <code>mnlfit()</code> function from the <code>DAMisc</code> package.</p>
+<div class="sourceCode" id="cb339"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb339-1"><a href="ordered-and-multinomial-logit.html#cb339-1" tabindex="-1"></a><span class="fu">mnlfit</span>(mod1)</span></code></pre></div>
+<pre><code>## $result
+##                                Estimate   p-value
+## Fagerland, Hosmer and Bonfi 39.58523646 0.4887696
+## Count R2                     0.56634304        NA
+## Count R2 (Adj)               0.12418301        NA
+## ML R2                        0.33441756        NA
+## McFadden R2                  0.14452618        NA
+## McFadden R2 (Adj)            0.07865403        NA
+## Cragg-Uhler(Nagelkerke) R2   0.35568788        NA
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;mnlfit&quot;</code></pre>
+<p>We could also calculate the proportional reduction in error:</p>
+<div class="sourceCode" id="cb341"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb341-1"><a href="ordered-and-multinomial-logit.html#cb341-1" tabindex="-1"></a><span class="fu">pre</span>(mod1, <span class="at">sim=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>## mod1:  vote_fac ~ age + retnat + demsat + eusup + union + soclass + urban 
+## mod2:  vote_fac ~ 1 
+## 
+## Analytical Results
+##  PMC =  0.505 
+##  PCP =  0.566 
+##  PRE =  0.124 
+## ePMC =  0.322 
+## ePCP =  0.394 
+## ePRE =  0.105 
+## 
+## Simulated Results
+##      median lower upper
+##  PRE 0.094  0.063 0.120
+## ePRE 0.093  0.067 0.119</code></pre>
+<p>The effects plot look a lot like those for the ordered logit model. The <code>ggpredict()</code> function will generate predictions, but it doesn’t generate standard errors or confidence bounds. Instead, we could use the <code>mnlAveEffPlot()</code> function from the <code>DAMisc</code> package if we wanted a plot with confidence intervals.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>How does your multinomial logit model fit?</p>
+</div>
+<div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb343-1"><a href="ordered-and-multinomial-logit.html#cb343-1" tabindex="-1"></a>mne <span class="ot">&lt;-</span> <span class="fu">mnlAveEffPlot</span>(mod1, <span class="st">&quot;age&quot;</span>, france2, <span class="at">nvals =</span> <span class="dv">15</span>, <span class="at">plot=</span><span class="cn">FALSE</span>)</span>
+<span id="cb343-2"><a href="ordered-and-multinomial-logit.html#cb343-2" tabindex="-1"></a><span class="fu">ggplot</span>(mne, <span class="fu">aes</span>(<span class="at">x=</span>s, <span class="at">y=</span>mean, <span class="at">colour=</span>y)) <span class="sc">+</span> </span>
+<span id="cb343-3"><a href="ordered-and-multinomial-logit.html#cb343-3" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>lower, </span>
+<span id="cb343-4"><a href="ordered-and-multinomial-logit.html#cb343-4" tabindex="-1"></a>                  <span class="at">ymax=</span>upper, </span>
+<span id="cb343-5"><a href="ordered-and-multinomial-logit.html#cb343-5" tabindex="-1"></a>                  <span class="at">fill=</span>y), </span>
+<span id="cb343-6"><a href="ordered-and-multinomial-logit.html#cb343-6" tabindex="-1"></a>              <span class="at">alpha=</span>.<span class="dv">15</span>, </span>
+<span id="cb343-7"><a href="ordered-and-multinomial-logit.html#cb343-7" tabindex="-1"></a>              <span class="at">col=</span><span class="st">&quot;transparent&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb343-8"><a href="ordered-and-multinomial-logit.html#cb343-8" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb343-9"><a href="ordered-and-multinomial-logit.html#cb343-9" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb343-10"><a href="ordered-and-multinomial-logit.html#cb343-10" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb343-11"><a href="ordered-and-multinomial-logit.html#cb343-11" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Age&quot;</span>, </span>
+<span id="cb343-12"><a href="ordered-and-multinomial-logit.html#cb343-12" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Predicted Probability&quot;</span>, </span>
+<span id="cb343-13"><a href="ordered-and-multinomial-logit.html#cb343-13" tabindex="-1"></a>       <span class="at">colour =</span> <span class="st">&quot;Response</span><span class="sc">\n</span><span class="st">Category&quot;</span>, </span>
+<span id="cb343-14"><a href="ordered-and-multinomial-logit.html#cb343-14" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">&quot;Response</span><span class="sc">\n</span><span class="st">Category&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-187-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>If the superposition of the lines makes it too difficult to see, you could use faceting.</p>
+<div class="sourceCode" id="cb344"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb344-1"><a href="ordered-and-multinomial-logit.html#cb344-1" tabindex="-1"></a><span class="fu">ggplot</span>(mne, <span class="fu">aes</span>(<span class="at">x=</span>s, <span class="at">y=</span>mean)) <span class="sc">+</span> </span>
+<span id="cb344-2"><a href="ordered-and-multinomial-logit.html#cb344-2" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>lower, </span>
+<span id="cb344-3"><a href="ordered-and-multinomial-logit.html#cb344-3" tabindex="-1"></a>                  <span class="at">ymax=</span>upper), </span>
+<span id="cb344-4"><a href="ordered-and-multinomial-logit.html#cb344-4" tabindex="-1"></a>              <span class="at">alpha=</span>.<span class="dv">15</span>, </span>
+<span id="cb344-5"><a href="ordered-and-multinomial-logit.html#cb344-5" tabindex="-1"></a>              <span class="at">col=</span><span class="st">&quot;transparent&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb344-6"><a href="ordered-and-multinomial-logit.html#cb344-6" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb344-7"><a href="ordered-and-multinomial-logit.html#cb344-7" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb344-8"><a href="ordered-and-multinomial-logit.html#cb344-8" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb344-9"><a href="ordered-and-multinomial-logit.html#cb344-9" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Age&quot;</span>, </span>
+<span id="cb344-10"><a href="ordered-and-multinomial-logit.html#cb344-10" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Predicted Probability&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb344-11"><a href="ordered-and-multinomial-logit.html#cb344-11" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>y)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-188-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Plot the effect of <code>aid_scale</code> for men and women.</p>
+</div>
+<p>There is another version of the MNL model, called the conditional logit model, where you can include both individual-specific information (like we’ve already done), but you can also include choice-specific information. This modifies the model that we discussed above in the following way:</p>
+<p><span class="math display">\[\begin{aligned}
+\eta_{j} &amp;= XBj + z_jd\\
+Pr(Y=m) &amp;= \frac{e^{\eta_j}}{\sum_{k=1}^{M}e^\eta_{k}}
+\end{aligned}\]</span></p>
+<p>Here <span class="math inline">\(B_{j}\)</span> are the coefficients for each response category that apply to the individual-specific information and <span class="math inline">\(d\)</span> is a single coefficient that applies to the choice-varying information. We’ll use this model to add in information about the individual’s ideological distance to each party. This would help us evaluate models of spatial voting (i.e., that people vote for parties that are ideologically closer to them). This is going to require us to do some modification to the data.</p>
+<p>First, we need to re-organize the <code>lrX</code> variables where <code>X</code> refers to a party number. These variables measure idiosyncratic (i.e., person-specific) placements of the parties on the ideological spectrum. We need to change those into <code>lr_X</code> where <code>X</code> will now represent the same party abbreviations as the vote variable.</p>
+<div class="sourceCode" id="cb345"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb345-1"><a href="ordered-and-multinomial-logit.html#cb345-1" tabindex="-1"></a>france2w <span class="ot">&lt;-</span> france2 <span class="sc">%&gt;%</span> </span>
+<span id="cb345-2"><a href="ordered-and-multinomial-logit.html#cb345-2" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="st">&quot;lr_PCF&quot;</span> <span class="ot">=</span> <span class="st">&quot;lr10&quot;</span>, </span>
+<span id="cb345-3"><a href="ordered-and-multinomial-logit.html#cb345-3" tabindex="-1"></a>         <span class="st">&quot;lr_PS&quot;</span> <span class="ot">=</span> <span class="st">&quot;lr20&quot;</span>, </span>
+<span id="cb345-4"><a href="ordered-and-multinomial-logit.html#cb345-4" tabindex="-1"></a>         <span class="st">&quot;lr_Green&quot;</span> <span class="ot">=</span> <span class="st">&quot;lr50&quot;</span>, </span>
+<span id="cb345-5"><a href="ordered-and-multinomial-logit.html#cb345-5" tabindex="-1"></a>         <span class="st">&quot;lr_UDF&quot;</span> <span class="ot">=</span> <span class="st">&quot;lr70&quot;</span>, </span>
+<span id="cb345-6"><a href="ordered-and-multinomial-logit.html#cb345-6" tabindex="-1"></a>         <span class="st">&quot;lr_UMP*&quot;</span> <span class="ot">=</span> <span class="st">&quot;lr73&quot;</span>, </span>
+<span id="cb345-7"><a href="ordered-and-multinomial-logit.html#cb345-7" tabindex="-1"></a>         <span class="st">&quot;lr_FN&quot;</span> <span class="ot">=</span> <span class="st">&quot;lr80&quot;</span>) </span>
+<span id="cb345-8"><a href="ordered-and-multinomial-logit.html#cb345-8" tabindex="-1"></a>mldat2 <span class="ot">&lt;-</span> <span class="fu">mlogit.data</span>(france2w, <span class="at">choice=</span><span class="st">&quot;vote_fac&quot;</span>, <span class="at">varying =</span> <span class="fu">grep</span>(<span class="st">&quot;lr</span><span class="sc">\\</span><span class="st">_&quot;</span>, <span class="fu">names</span>(france2w)), <span class="at">sep=</span><span class="st">&quot;_&quot;</span>) </span></code></pre></div>
+<p>The <code>mlogit.data()</code> function does all of the necessary reshaping. Now, we need to calculate the distance from each individual to each party.</p>
+<div class="sourceCode" id="cb346"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb346-1"><a href="ordered-and-multinomial-logit.html#cb346-1" tabindex="-1"></a>mldat2<span class="sc">$</span>dist <span class="ot">&lt;-</span> <span class="fu">abs</span>(mldat2<span class="sc">$</span>lr <span class="sc">-</span> mldat2<span class="sc">$</span>lrself) </span></code></pre></div>
+<p>Now, we could add that into the model.</p>
+<div class="sourceCode" id="cb347"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb347-1"><a href="ordered-and-multinomial-logit.html#cb347-1" tabindex="-1"></a>mlmod2 <span class="ot">&lt;-</span> <span class="fu">mlogit</span>(vote_fac <span class="sc">~</span> dist <span class="sc">|</span> age <span class="sc">+</span> retnat <span class="sc">+</span> demsat <span class="sc">+</span> </span>
+<span id="cb347-2"><a href="ordered-and-multinomial-logit.html#cb347-2" tabindex="-1"></a>                eusup <span class="sc">+</span> union <span class="sc">+</span> soclass <span class="sc">+</span> urban, </span>
+<span id="cb347-3"><a href="ordered-and-multinomial-logit.html#cb347-3" tabindex="-1"></a>                <span class="at">data=</span>mldat2)</span></code></pre></div>
+<p>Now, we come to what is probably the hardest task so far. That is - making an effect plot for distance. This is hard because we can’t just change the values of distance because it’s really a function of lots of variables. As we get farther from some parties, we get closer to others in systematic (deterministic) ways. We have to make sure we represent those appropriately. Let’s first think about using the MER approach. First, we would probably need to find the average of the party placements and the average or mode of the other variables. To do this, we’ll take the first observation’s values. Then, we’ll find the appropriate central values to use instead.</p>
+<div class="sourceCode" id="cb348"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb348-1"><a href="ordered-and-multinomial-logit.html#cb348-1" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> mldat2[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, ]</span>
+<span id="cb348-2"><a href="ordered-and-multinomial-logit.html#cb348-2" tabindex="-1"></a><span class="do">## numeric variables</span></span>
+<span id="cb348-3"><a href="ordered-and-multinomial-logit.html#cb348-3" tabindex="-1"></a>tmp<span class="sc">$</span>age <span class="ot">&lt;-</span> <span class="fu">median</span>(france2<span class="sc">$</span>age)</span>
+<span id="cb348-4"><a href="ordered-and-multinomial-logit.html#cb348-4" tabindex="-1"></a>tmp<span class="sc">$</span>hhincome <span class="ot">&lt;-</span> <span class="fu">median</span>(france2<span class="sc">$</span>hhincome)</span>
+<span id="cb348-5"><a href="ordered-and-multinomial-logit.html#cb348-5" tabindex="-1"></a>tmp<span class="sc">$</span>male <span class="ot">&lt;-</span> <span class="fu">median</span>(france2<span class="sc">$</span>male)</span>
+<span id="cb348-6"><a href="ordered-and-multinomial-logit.html#cb348-6" tabindex="-1"></a>tmp<span class="sc">$</span>union <span class="ot">&lt;-</span> <span class="fu">median</span>(france2<span class="sc">$</span>union)</span>
+<span id="cb348-7"><a href="ordered-and-multinomial-logit.html#cb348-7" tabindex="-1"></a><span class="do">## factor variables</span></span>
+<span id="cb348-8"><a href="ordered-and-multinomial-logit.html#cb348-8" tabindex="-1"></a>tmp<span class="sc">$</span>demsat <span class="ot">&lt;-</span> <span class="fu">central</span>(france2<span class="sc">$</span>demsat)</span>
+<span id="cb348-9"><a href="ordered-and-multinomial-logit.html#cb348-9" tabindex="-1"></a>tmp<span class="sc">$</span>eusup <span class="ot">&lt;-</span> <span class="fu">central</span>(france2<span class="sc">$</span>eusup)</span>
+<span id="cb348-10"><a href="ordered-and-multinomial-logit.html#cb348-10" tabindex="-1"></a>tmp<span class="sc">$</span>retnat <span class="ot">&lt;-</span> <span class="fu">central</span>(france2<span class="sc">$</span>retnat)</span>
+<span id="cb348-11"><a href="ordered-and-multinomial-logit.html#cb348-11" tabindex="-1"></a>tmp<span class="sc">$</span>soclass <span class="ot">&lt;-</span> <span class="fu">central</span>(france2<span class="sc">$</span>soclass)</span>
+<span id="cb348-12"><a href="ordered-and-multinomial-logit.html#cb348-12" tabindex="-1"></a>tmp<span class="sc">$</span>urban <span class="ot">&lt;-</span> <span class="fu">central</span>(france2<span class="sc">$</span>urban)</span></code></pre></div>
+<p>Next, let’s find the mean of the party placements and replace those in <code>tmp</code>.</p>
+<div class="sourceCode" id="cb349"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb349-1"><a href="ordered-and-multinomial-logit.html#cb349-1" tabindex="-1"></a>pty <span class="ot">&lt;-</span> mldat2 <span class="sc">%&gt;%</span> </span>
+<span id="cb349-2"><a href="ordered-and-multinomial-logit.html#cb349-2" tabindex="-1"></a>  as.data.frame <span class="sc">%&gt;%</span> </span>
+<span id="cb349-3"><a href="ordered-and-multinomial-logit.html#cb349-3" tabindex="-1"></a>  <span class="fu">group_by</span>(alt) <span class="sc">%&gt;%</span> </span>
+<span id="cb349-4"><a href="ordered-and-multinomial-logit.html#cb349-4" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">lr =</span> <span class="fu">mean</span>(lr)) <span class="sc">%&gt;%</span> </span>
+<span id="cb349-5"><a href="ordered-and-multinomial-logit.html#cb349-5" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="st">&quot;party&quot;</span> <span class="ot">=</span> <span class="st">&quot;alt&quot;</span>)</span>
+<span id="cb349-6"><a href="ordered-and-multinomial-logit.html#cb349-6" tabindex="-1"></a>tmp<span class="sc">$</span>lr <span class="ot">&lt;-</span> pty<span class="sc">$</span>lr</span></code></pre></div>
+<p>Next we need to change the <code>lrself</code> variable, recalculate distance and then calculated predicted probabilities.</p>
+<div class="sourceCode" id="cb350"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb350-1"><a href="ordered-and-multinomial-logit.html#cb350-1" tabindex="-1"></a>tmp<span class="sc">$</span>lrself <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb350-2"><a href="ordered-and-multinomial-logit.html#cb350-2" tabindex="-1"></a>tmp<span class="sc">$</span>dist <span class="ot">&lt;-</span> <span class="fu">abs</span>(tmp<span class="sc">$</span>lr <span class="sc">-</span> tmp<span class="sc">$</span>lrself)</span>
+<span id="cb350-3"><a href="ordered-and-multinomial-logit.html#cb350-3" tabindex="-1"></a><span class="fu">predict</span>(mlmod2, <span class="at">newdata=</span>tmp)</span></code></pre></div>
+<pre><code>##          FN       Green         PCF          PS         UDF        UMP* 
+## 0.003081705 0.093902365 0.031763672 0.812112143 0.025329307 0.033810808</code></pre>
+<p>We could then do this for lots of different values of <code>lrself</code> and the combine the results.</p>
+<div class="sourceCode" id="cb352"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb352-1"><a href="ordered-and-multinomial-logit.html#cb352-1" tabindex="-1"></a>lrs <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">1</span>,<span class="dv">10</span>, <span class="at">length=</span><span class="dv">25</span>)</span>
+<span id="cb352-2"><a href="ordered-and-multinomial-logit.html#cb352-2" tabindex="-1"></a>preds <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb352-3"><a href="ordered-and-multinomial-logit.html#cb352-3" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(lrs)){</span>
+<span id="cb352-4"><a href="ordered-and-multinomial-logit.html#cb352-4" tabindex="-1"></a>  tmp<span class="sc">$</span>lrself <span class="ot">&lt;-</span> lrs[i]</span>
+<span id="cb352-5"><a href="ordered-and-multinomial-logit.html#cb352-5" tabindex="-1"></a>  tmp<span class="sc">$</span>dist <span class="ot">&lt;-</span> <span class="fu">abs</span>(tmp<span class="sc">$</span>lr <span class="sc">-</span> tmp<span class="sc">$</span>lrself)</span>
+<span id="cb352-6"><a href="ordered-and-multinomial-logit.html#cb352-6" tabindex="-1"></a>  preds <span class="ot">&lt;-</span> <span class="fu">rbind</span>(preds, <span class="fu">predict</span>(mlmod2, <span class="at">newdata=</span>tmp))</span>
+<span id="cb352-7"><a href="ordered-and-multinomial-logit.html#cb352-7" tabindex="-1"></a>}</span></code></pre></div>
+<p>Now, we can put those predictions into a format that’s amenable to plotting:</p>
+<div class="sourceCode" id="cb353"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb353-1"><a href="ordered-and-multinomial-logit.html#cb353-1" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb353-2"><a href="ordered-and-multinomial-logit.html#cb353-2" tabindex="-1"></a>preds <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(preds)</span>
+<span id="cb353-3"><a href="ordered-and-multinomial-logit.html#cb353-3" tabindex="-1"></a>preds<span class="sc">$</span>lrself <span class="ot">&lt;-</span> lrs</span>
+<span id="cb353-4"><a href="ordered-and-multinomial-logit.html#cb353-4" tabindex="-1"></a>preds <span class="ot">&lt;-</span> preds <span class="sc">%&gt;%</span> <span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="sc">-</span>lrself, <span class="at">names_to=</span><span class="st">&quot;party&quot;</span>, <span class="at">values_to=</span><span class="st">&quot;prob&quot;</span>)</span></code></pre></div>
+<p>Next, we can make a plot:</p>
+<div class="sourceCode" id="cb354"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb354-1"><a href="ordered-and-multinomial-logit.html#cb354-1" tabindex="-1"></a><span class="fu">ggplot</span>(preds, <span class="fu">aes</span>(<span class="at">colour=</span>party)) <span class="sc">+</span> </span>
+<span id="cb354-2"><a href="ordered-and-multinomial-logit.html#cb354-2" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span>lrself, <span class="at">y=</span>prob)) <span class="sc">+</span> </span>
+<span id="cb354-3"><a href="ordered-and-multinomial-logit.html#cb354-3" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>pty, <span class="fu">aes</span>(<span class="at">x=</span>lr, <span class="at">y=</span><span class="sc">-</span>.<span class="dv">05</span>)) <span class="sc">+</span> </span>
+<span id="cb354-4"><a href="ordered-and-multinomial-logit.html#cb354-4" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb354-5"><a href="ordered-and-multinomial-logit.html#cb354-5" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb354-6"><a href="ordered-and-multinomial-logit.html#cb354-6" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Left-Right Self-Placement&quot;</span>, </span>
+<span id="cb354-7"><a href="ordered-and-multinomial-logit.html#cb354-7" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Pr(Vote for Party)&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-197-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>Or, with faceting:</p>
+<div class="sourceCode" id="cb355"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb355-1"><a href="ordered-and-multinomial-logit.html#cb355-1" tabindex="-1"></a><span class="fu">ggplot</span>(preds) <span class="sc">+</span> </span>
+<span id="cb355-2"><a href="ordered-and-multinomial-logit.html#cb355-2" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span>lrself, <span class="at">y=</span>prob)) <span class="sc">+</span> </span>
+<span id="cb355-3"><a href="ordered-and-multinomial-logit.html#cb355-3" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>pty, <span class="fu">aes</span>(<span class="at">x=</span>lr, <span class="at">y=</span><span class="sc">-</span>.<span class="dv">05</span>)) <span class="sc">+</span> </span>
+<span id="cb355-4"><a href="ordered-and-multinomial-logit.html#cb355-4" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb355-5"><a href="ordered-and-multinomial-logit.html#cb355-5" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>party) <span class="sc">+</span> </span>
+<span id="cb355-6"><a href="ordered-and-multinomial-logit.html#cb355-6" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb355-7"><a href="ordered-and-multinomial-logit.html#cb355-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Left-Right Self-Placement&quot;</span>, </span>
+<span id="cb355-8"><a href="ordered-and-multinomial-logit.html#cb355-8" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Pr(Vote for Party)&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-198-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>Now, what we haven’t done is to find the uncertainty around the predictions. This is where things get more challenging. Because the predict function doesn’t return standard errors, we would need to calculate them in a different way if we wanted them. One way to do this would be with a <em>parametric bootstrap</em>. I’ve alluded to this a couple of times, but we’ll put a finer point on it here.</p>
+<div id="parametric-bootstrap-for-confidence-intervals." class="section level3 hasAnchor" number="5.2.1">
+<h3><span class="header-section-number">5.2.1</span> Parametric Bootstrap for Confidence Intervals.<a href="ordered-and-multinomial-logit.html#parametric-bootstrap-for-confidence-intervals." class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Bootstrapping is a resampling technique that is used to generate uncertainty estimates for parameters. There are two main types:</p>
+<ol style="list-style-type: decimal">
+<li>Non-parametric bootstrap - resample the original data with replacement and re-estimate the model <span class="math inline">\(R\)</span> times, each time saving the parameter(s) of interest. Then, the distribution of the parameter across the bootstrap samples is an estimate of the sampling distribution.</li>
+<li>Parametric bootstrap - resampling from a known distribution to induce uncertainty in some quantity of interest.</li>
+</ol>
+<p>So, the first thing we have to do is draw a bunch of samples from the distribution of the coefficients.</p>
+<div class="sourceCode" id="cb356"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb356-1"><a href="ordered-and-multinomial-logit.html#cb356-1" tabindex="-1"></a>B <span class="ot">&lt;-</span> MASS<span class="sc">::</span><span class="fu">mvrnorm</span>(<span class="dv">1000</span>, <span class="fu">coef</span>(mlmod2), <span class="fu">vcov</span>(mlmod2))</span></code></pre></div>
+<p>Now, let’s think about how we would generate a prediction for a single draw (i.e., row) of <span class="math inline">\(B\)</span>. If we looked into what the <code>mlogit.predict()</code> function looks like, that might give us some sense of what to do.</p>
+<div id="brief-aside---generic-methods" class="section level4 hasAnchor" number="5.2.1.1">
+<h4><span class="header-section-number">5.2.1.1</span> Brief Aside - Generic Methods<a href="ordered-and-multinomial-logit.html#brief-aside---generic-methods" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>In R, you will have noticed by now that we can use the <code>predict()</code> function on lots of different objects. You might wonder, how does R know what to do with each differnet kind of object. It knows because objects have different predict methods. For example, the people who wrote the <code>mlogit()</code> function also wrote a function called <code>predict.mlogit()</code> which tells R what to do when the <code>predict()</code> function is called on an object of class <code>mlogit</code>.</p>
+<p>If you want to see what that looks like, you can do the following:</p>
+<div class="sourceCode" id="cb357"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb357-1"><a href="ordered-and-multinomial-logit.html#cb357-1" tabindex="-1"></a>mlogit<span class="sc">:::</span>predict.mlogit</span></code></pre></div>
+<p>Note that the use of the three colons (<code>:::</code>) which allow you to see a function not exported from the namespace. The main part of the function that will help us is the following.</p>
+<div class="sourceCode" id="cb358"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb358-1"><a href="ordered-and-multinomial-logit.html#cb358-1" tabindex="-1"></a>newobject <span class="ot">&lt;-</span> <span class="fu">update</span>(object, <span class="at">start =</span> <span class="fu">coef</span>(object, <span class="at">fixed =</span> <span class="cn">TRUE</span>), </span>
+<span id="cb358-2"><a href="ordered-and-multinomial-logit.html#cb358-2" tabindex="-1"></a>        <span class="at">data =</span> newdata, <span class="at">iterlim =</span> <span class="dv">0</span>, <span class="at">print.level =</span> <span class="dv">0</span>)</span></code></pre></div>
+<p>What happens here is that the <code>update()</code> function re-estimates the model. The <code>start</code> argument starts the model at the coefficient values for the original model. The <code>data</code> argument provides the new data to the model. Importantly, <code>iterlim = 0</code> tells the <code>update()</code> function to do zero iterations (that is, not not update beyond the starting values). This then generates a vector of probabilities. We can use this by replacing the argument to <code>start</code> with the draw from the coefficients.</p>
+<div class="sourceCode" id="cb359"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb359-1"><a href="ordered-and-multinomial-logit.html#cb359-1" tabindex="-1"></a>pred.dist <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb359-2"><a href="ordered-and-multinomial-logit.html#cb359-2" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(B)){</span>
+<span id="cb359-3"><a href="ordered-and-multinomial-logit.html#cb359-3" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">update</span>(mlmod2, <span class="at">start =</span> B[i,], </span>
+<span id="cb359-4"><a href="ordered-and-multinomial-logit.html#cb359-4" tabindex="-1"></a>        <span class="at">data =</span> tmp, <span class="at">iterlim =</span> <span class="dv">0</span>, <span class="at">print.level =</span> <span class="dv">0</span>)</span>
+<span id="cb359-5"><a href="ordered-and-multinomial-logit.html#cb359-5" tabindex="-1"></a>  pred.dist <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pred.dist, p)</span>
+<span id="cb359-6"><a href="ordered-and-multinomial-logit.html#cb359-6" tabindex="-1"></a>}</span></code></pre></div>
+<p>This is how it would work for a single value of <code>lrself</code>. To do it for all of the values of <code>lrself</code> we chose above, we would have to put the loop above in another loop.</p>
+<div class="sourceCode" id="cb360"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb360-1"><a href="ordered-and-multinomial-logit.html#cb360-1" tabindex="-1"></a>pred.dist <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="at">mode=</span><span class="st">&quot;list&quot;</span>, <span class="at">length=</span><span class="fu">length</span>(lrs))</span>
+<span id="cb360-2"><a href="ordered-and-multinomial-logit.html#cb360-2" tabindex="-1"></a><span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(lrs)){</span>
+<span id="cb360-3"><a href="ordered-and-multinomial-logit.html#cb360-3" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(B)){</span>
+<span id="cb360-4"><a href="ordered-and-multinomial-logit.html#cb360-4" tabindex="-1"></a>    tmp<span class="sc">$</span>lrself <span class="ot">&lt;-</span> lrs[j]</span>
+<span id="cb360-5"><a href="ordered-and-multinomial-logit.html#cb360-5" tabindex="-1"></a>    tmp<span class="sc">$</span>dist <span class="ot">&lt;-</span> <span class="fu">abs</span>(tmp<span class="sc">$</span>lr <span class="sc">-</span> tmp<span class="sc">$</span>lrself)</span>
+<span id="cb360-6"><a href="ordered-and-multinomial-logit.html#cb360-6" tabindex="-1"></a>    p <span class="ot">&lt;-</span> <span class="fu">update</span>(mlmod2, <span class="at">start =</span> B[i,], </span>
+<span id="cb360-7"><a href="ordered-and-multinomial-logit.html#cb360-7" tabindex="-1"></a>        <span class="at">data =</span> tmp, <span class="at">iterlim =</span> <span class="dv">0</span>, <span class="at">print.level =</span> <span class="dv">0</span>)</span>
+<span id="cb360-8"><a href="ordered-and-multinomial-logit.html#cb360-8" tabindex="-1"></a>    pred.dist[[j]] <span class="ot">&lt;-</span> <span class="fu">rbind</span>(pred.dist[[j]], p<span class="sc">$</span>probabilities)</span>
+<span id="cb360-9"><a href="ordered-and-multinomial-logit.html#cb360-9" tabindex="-1"></a>  }</span>
+<span id="cb360-10"><a href="ordered-and-multinomial-logit.html#cb360-10" tabindex="-1"></a>}</span></code></pre></div>
+<p>Next, we could calculate the confidence intervals for the predicted probabilities and then reshape for plotting:</p>
+<div class="sourceCode" id="cb361"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb361-1"><a href="ordered-and-multinomial-logit.html#cb361-1" tabindex="-1"></a>lower <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">sapply</span>(pred.dist, <span class="cf">function</span>(x)<span class="fu">apply</span>(x, <span class="dv">2</span>, quantile, .<span class="dv">025</span>)))</span>
+<span id="cb361-2"><a href="ordered-and-multinomial-logit.html#cb361-2" tabindex="-1"></a>upper <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">sapply</span>(pred.dist, <span class="cf">function</span>(x)<span class="fu">apply</span>(x, <span class="dv">2</span>, quantile, .<span class="dv">975</span>)))</span>
+<span id="cb361-3"><a href="ordered-and-multinomial-logit.html#cb361-3" tabindex="-1"></a>lower <span class="ot">&lt;-</span> lower <span class="sc">%&gt;%</span> </span>
+<span id="cb361-4"><a href="ordered-and-multinomial-logit.html#cb361-4" tabindex="-1"></a>  as.data.frame <span class="sc">%&gt;%</span> </span>
+<span id="cb361-5"><a href="ordered-and-multinomial-logit.html#cb361-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lrself =</span> lrs) <span class="sc">%&gt;%</span> </span>
+<span id="cb361-6"><a href="ordered-and-multinomial-logit.html#cb361-6" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="sc">-</span>lrself, <span class="at">names_to=</span><span class="st">&quot;party&quot;</span>, <span class="at">values_to=</span><span class="st">&quot;lower&quot;</span>)</span>
+<span id="cb361-7"><a href="ordered-and-multinomial-logit.html#cb361-7" tabindex="-1"></a>upper <span class="ot">&lt;-</span> upper <span class="sc">%&gt;%</span> </span>
+<span id="cb361-8"><a href="ordered-and-multinomial-logit.html#cb361-8" tabindex="-1"></a>  as.data.frame <span class="sc">%&gt;%</span> </span>
+<span id="cb361-9"><a href="ordered-and-multinomial-logit.html#cb361-9" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="fu">everything</span>(), <span class="at">names_to=</span><span class="st">&quot;party&quot;</span>, <span class="at">values_to=</span><span class="st">&quot;upper&quot;</span>)</span>
+<span id="cb361-10"><a href="ordered-and-multinomial-logit.html#cb361-10" tabindex="-1"></a>pred.cis <span class="ot">&lt;-</span> lower <span class="sc">%&gt;%</span> </span>
+<span id="cb361-11"><a href="ordered-and-multinomial-logit.html#cb361-11" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">upper =</span> upper<span class="sc">$</span>upper, </span>
+<span id="cb361-12"><a href="ordered-and-multinomial-logit.html#cb361-12" tabindex="-1"></a>         <span class="at">prob =</span> preds<span class="sc">$</span>prob)</span></code></pre></div>
+<p>To make the plot, we should probably use facets to make it readable.</p>
+<div class="sourceCode" id="cb362"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb362-1"><a href="ordered-and-multinomial-logit.html#cb362-1" tabindex="-1"></a><span class="fu">ggplot</span>(pred.cis) <span class="sc">+</span> </span>
+<span id="cb362-2"><a href="ordered-and-multinomial-logit.html#cb362-2" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x=</span>lrself, <span class="at">ymin=</span>lower, <span class="at">ymax=</span>upper), </span>
+<span id="cb362-3"><a href="ordered-and-multinomial-logit.html#cb362-3" tabindex="-1"></a>              <span class="at">alpha=</span>.<span class="dv">15</span>, </span>
+<span id="cb362-4"><a href="ordered-and-multinomial-logit.html#cb362-4" tabindex="-1"></a>              <span class="at">col=</span><span class="st">&quot;transparent&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb362-5"><a href="ordered-and-multinomial-logit.html#cb362-5" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span>lrself, <span class="at">y=</span>prob)) <span class="sc">+</span> </span>
+<span id="cb362-6"><a href="ordered-and-multinomial-logit.html#cb362-6" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>pty, <span class="fu">aes</span>(<span class="at">x=</span>lr, <span class="at">y=</span><span class="sc">-</span>.<span class="dv">05</span>)) <span class="sc">+</span> </span>
+<span id="cb362-7"><a href="ordered-and-multinomial-logit.html#cb362-7" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb362-8"><a href="ordered-and-multinomial-logit.html#cb362-8" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>party) <span class="sc">+</span> </span>
+<span id="cb362-9"><a href="ordered-and-multinomial-logit.html#cb362-9" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb362-10"><a href="ordered-and-multinomial-logit.html#cb362-10" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Left-Right Self-Placement&quot;</span>, </span>
+<span id="cb362-11"><a href="ordered-and-multinomial-logit.html#cb362-11" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Pr(Vote for Party)&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-206-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>We could follow this same framework for making any effect plot with confidence bounds from an <code>mlogit</code> object.</p>
+</div>
+</div>
+</div>
+<div id="conclusion" class="section level2 hasAnchor" number="5.3">
+<h2><span class="header-section-number">5.3</span> Conclusion<a href="ordered-and-multinomial-logit.html#conclusion" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Here we have worked through ordinal and multinomial logit models. They have some similar features, though we also discussed the conditional logit model which allows both individual- and choice-specific information in the model.</p>
+
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="generalized-linear-models---logit..html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="handling-complex-survey-data.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["RBE.pdf", "RBE.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

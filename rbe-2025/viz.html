@@ -1,0 +1,2088 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 1 Visualizing | R: Learning by Example</title>
+  <meta name="description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 1 Visualizing | R: Learning by Example" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 1 Visualizing | R: Learning by Example" />
+  
+  <meta name="twitter:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+<meta name="author" content="David A. Armstrong II and William Poirier" />
+
+
+<meta name="date" content="2025-05-29" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="datasets.html"/>
+<link rel="next" href="describing-relationships-in-the-general-social-survey.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<link href="libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.33/datatables.js"></script>
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">R: Learning by Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preliminaries</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#license"><i class="fa fa-check"></i>License</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#getting-r-and-rstudio"><i class="fa fa-check"></i>Getting R and Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#keeping-track-of-your-work"><i class="fa fa-check"></i>Keeping Track of Your Work</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#overview-of-rstudio"><i class="fa fa-check"></i>Overview of Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#using-r"><i class="fa fa-check"></i>Using <em>R</em></a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#assigning-output-to-objects"><i class="fa fa-check"></i>Assigning Output to Objects</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#vectors-and-matrices"><i class="fa fa-check"></i>Vectors and Matrices</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#function-arguments"><i class="fa fa-check"></i>Function Arguments</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#importing-data"><i class="fa fa-check"></i>Importing Data</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#data-types-in-r"><i class="fa fa-check"></i>Data Types in <em>R</em></a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#examining-data"><i class="fa fa-check"></i>Examining Data</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#missing-values"><i class="fa fa-check"></i>Missing Values</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#filtering-with-logical-expressions-and-sorting"><i class="fa fa-check"></i>Filtering with Logical Expressions and Sorting</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#workhorse-functions"><i class="fa fa-check"></i>Workhorse Functions</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#exercises"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html"><i class="fa fa-check"></i>Datasets</a>
+<ul>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo"><i class="fa fa-check"></i><code>colo</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo_covid"><i class="fa fa-check"></i><code>colo_covid</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gss-canada"><i class="fa fa-check"></i><code>gss</code> (Canada)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gsss16-usa"><i class="fa fa-check"></i><code>gsss16</code> (USA)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#davenport-soule-armstrong-data"><i class="fa fa-check"></i>Davenport-Soule-Armstrong Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#france-2004"><i class="fa fa-check"></i>France 2004</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#ces19"><i class="fa fa-check"></i><code>ces19</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#snijders-and-bosker-multileve-school-data"><i class="fa fa-check"></i>Snijders and Bosker Multileve School Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-multilevel"><i class="fa fa-check"></i>World Values Survey (multilevel)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#repression-data"><i class="fa fa-check"></i>Repression Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#oil-and-democracy-dataset"><i class="fa fa-check"></i>Oil and Democracy Dataset</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#politicaldemocracy"><i class="fa fa-check"></i><code>PoliticalDemocracy</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-measurement"><i class="fa fa-check"></i>World Values Survey (measurement)</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="viz.html"><a href="viz.html"><i class="fa fa-check"></i><b>1</b> Visualizing</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="viz.html"><a href="viz.html#wrangling-data"><i class="fa fa-check"></i><b>1.1</b> Wrangling data</a>
+<ul>
+<li class="chapter" data-level="1.1.1" data-path="viz.html"><a href="viz.html#merging-datasets"><i class="fa fa-check"></i><b>1.1.1</b> Merging Datasets</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="viz.html"><a href="viz.html#ggplot"><i class="fa fa-check"></i><b>1.2</b> GGplot</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="viz.html"><a href="viz.html#bar-plots"><i class="fa fa-check"></i><b>1.2.1</b> Bar Plots</a></li>
+<li class="chapter" data-level="1.2.2" data-path="viz.html"><a href="viz.html#line-graphs"><i class="fa fa-check"></i><b>1.2.2</b> Line Graphs</a></li>
+<li class="chapter" data-level="1.2.3" data-path="viz.html"><a href="viz.html#histograms"><i class="fa fa-check"></i><b>1.2.3</b> Histograms</a></li>
+<li class="chapter" data-level="1.2.4" data-path="viz.html"><a href="viz.html#scatterplots"><i class="fa fa-check"></i><b>1.2.4</b> Scatterplots</a></li>
+<li class="chapter" data-level="1.2.5" data-path="viz.html"><a href="viz.html#multiple-series"><i class="fa fa-check"></i><b>1.2.5</b> Multiple Series</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="viz.html"><a href="viz.html#recap"><i class="fa fa-check"></i><b>1.3</b> Recap</a></li>
+<li class="chapter" data-level="" data-path="viz.html"><a href="viz.html#exercises-1"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html"><i class="fa fa-check"></i><b>2</b> Describing Relationships in the General Social Survey</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#the-canadian-gss."><i class="fa fa-check"></i><b>2.1</b> The Canadian GSS.</a></li>
+<li class="chapter" data-level="2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#looking-at-the-data."><i class="fa fa-check"></i><b>2.2</b> Looking at the data.</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#cross-tabulations"><i class="fa fa-check"></i><b>2.2.1</b> Cross-tabulations</a></li>
+<li class="chapter" data-level="2.2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#permutation-tests-in-r."><i class="fa fa-check"></i><b>2.2.2</b> Permutation Tests in R.</a></li>
+<li class="chapter" data-level="2.2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#back-to-the-data"><i class="fa fa-check"></i><b>2.2.3</b> Back to the Data</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#descriptive-output-in-knitr"><i class="fa fa-check"></i><b>2.3</b> Descriptive Output in knitr</a></li>
+<li class="chapter" data-level="" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#exercises-2"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="linear-models.html"><a href="linear-models.html"><i class="fa fa-check"></i><b>3</b> Linear Models</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="linear-models.html"><a href="linear-models.html#effects-plots"><i class="fa fa-check"></i><b>3.1</b> Effects Plots</a></li>
+<li class="chapter" data-level="3.2" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-linearity"><i class="fa fa-check"></i><b>3.2</b> Diagnostic Tools: Linearity</a></li>
+<li class="chapter" data-level="3.3" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-heteroskedasticity"><i class="fa fa-check"></i><b>3.3</b> Diagnostic Tools: Heteroskedasticity</a></li>
+<li class="chapter" data-level="3.4" data-path="linear-models.html"><a href="linear-models.html#diagnostics-outliers-and-influential-data"><i class="fa fa-check"></i><b>3.4</b> Diagnostics: Outliers and Influential Data</a></li>
+<li class="chapter" data-level="3.5" data-path="linear-models.html"><a href="linear-models.html#diagnostics-for-normality"><i class="fa fa-check"></i><b>3.5</b> Diagnostics for Normality</a>
+<ul>
+<li class="chapter" data-level="3.5.1" data-path="linear-models.html"><a href="linear-models.html#bootstrapping-regression-models"><i class="fa fa-check"></i><b>3.5.1</b> Bootstrapping Regression Models</a></li>
+</ul></li>
+<li class="chapter" data-level="3.6" data-path="linear-models.html"><a href="linear-models.html#interactions"><i class="fa fa-check"></i><b>3.6</b> Interactions</a></li>
+<li class="chapter" data-level="" data-path="linear-models.html"><a href="linear-models.html#exercises-3"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html"><i class="fa fa-check"></i><b>4</b> Generalized Linear Models - Logit.</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#evaluating-model-fit"><i class="fa fa-check"></i><b>4.1</b> Evaluating Model Fit</a></li>
+<li class="chapter" data-level="4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effects"><i class="fa fa-check"></i><b>4.2</b> Marginal Effects</a></li>
+<li class="chapter" data-level="4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effect-plots"><i class="fa fa-check"></i><b>4.3</b> Marginal Effect Plots</a></li>
+<li class="chapter" data-level="4.4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#interactions-in-binary-dv-models"><i class="fa fa-check"></i><b>4.4</b> Interactions in Binary DV Models</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-binary"><i class="fa fa-check"></i><b>4.4.1</b> Both binary</a></li>
+<li class="chapter" data-level="4.4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#one-binary-one-continuous."><i class="fa fa-check"></i><b>4.4.2</b> One binary, one continuous.</a></li>
+<li class="chapter" data-level="4.4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-continuous"><i class="fa fa-check"></i><b>4.4.3</b> Both Continuous</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#other-glms."><i class="fa fa-check"></i><b>4.5</b> Other GLMs.</a></li>
+<li class="chapter" data-level="" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#exercises-4"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html"><i class="fa fa-check"></i><b>5</b> Ordered and Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#ordinal-dv-models"><i class="fa fa-check"></i><b>5.1</b> Ordinal DV Models</a></li>
+<li class="chapter" data-level="5.2" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#multinomial-logit"><i class="fa fa-check"></i><b>5.2</b> Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#parametric-bootstrap-for-confidence-intervals."><i class="fa fa-check"></i><b>5.2.1</b> Parametric Bootstrap for Confidence Intervals.</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#conclusion"><i class="fa fa-check"></i><b>5.3</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html"><i class="fa fa-check"></i><b>6</b> Handling Complex Survey Data</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#frequency-distributions-and-contingency-tables"><i class="fa fa-check"></i><b>6.1</b> Frequency Distributions and Contingency Tables</a></li>
+<li class="chapter" data-level="6.2" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#summary-statistics"><i class="fa fa-check"></i><b>6.2</b> Summary Statistics</a></li>
+<li class="chapter" data-level="6.3" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#estimating-models"><i class="fa fa-check"></i><b>6.3</b> Estimating Models</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="multilevel-models.html"><a href="multilevel-models.html"><i class="fa fa-check"></i><b>7</b> Multilevel Models</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="multilevel-models.html"><a href="multilevel-models.html#data-structure."><i class="fa fa-check"></i><b>7.1</b> Data Structure.</a></li>
+<li class="chapter" data-level="7.2" data-path="multilevel-models.html"><a href="multilevel-models.html#clustering-standard-errors"><i class="fa fa-check"></i><b>7.2</b> Clustering Standard Errors</a></li>
+<li class="chapter" data-level="7.3" data-path="multilevel-models.html"><a href="multilevel-models.html#between-vs-within-relationships."><i class="fa fa-check"></i><b>7.3</b> Between vs Within Relationships.</a></li>
+<li class="chapter" data-level="7.4" data-path="multilevel-models.html"><a href="multilevel-models.html#random-intercepts"><i class="fa fa-check"></i><b>7.4</b> Random Intercepts</a></li>
+<li class="chapter" data-level="7.5" data-path="multilevel-models.html"><a href="multilevel-models.html#estimating-the-multilevel-model"><i class="fa fa-check"></i><b>7.5</b> Estimating the Multilevel Model</a>
+<ul>
+<li class="chapter" data-level="7.5.1" data-path="multilevel-models.html"><a href="multilevel-models.html#p-values-in-lmer-output"><i class="fa fa-check"></i><b>7.5.1</b> P-values in LMER Output</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="multilevel-models.html"><a href="multilevel-models.html#other-random-effects-models"><i class="fa fa-check"></i><b>7.6</b> Other Random-Effects Models</a></li>
+<li class="chapter" data-level="7.7" data-path="multilevel-models.html"><a href="multilevel-models.html#bayesian-models-with-brms"><i class="fa fa-check"></i><b>7.7</b> Bayesian Models with BRMS</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html"><i class="fa fa-check"></i><b>8</b> Time-Series Cross-Sectional Models</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#preliminaries-and-assumptions"><i class="fa fa-check"></i><b>8.1</b> Preliminaries and Assumptions</a></li>
+<li class="chapter" data-level="8.2" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#unit-effects"><i class="fa fa-check"></i><b>8.2</b> Unit Effects</a></li>
+<li class="chapter" data-level="8.3" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#the-plm-package"><i class="fa fa-check"></i><b>8.3</b> The plm Package</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="measurement-issues.html"><a href="measurement-issues.html"><i class="fa fa-check"></i><b>9</b> Measurement Issues</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="measurement-issues.html"><a href="measurement-issues.html#reliability-analysis"><i class="fa fa-check"></i><b>9.1</b> Reliability Analysis</a></li>
+<li class="chapter" data-level="9.2" data-path="measurement-issues.html"><a href="measurement-issues.html#exploratory-factor-analysis-and-principal-components-analysis"><i class="fa fa-check"></i><b>9.2</b> Exploratory Factor Analysis and Principal Components Analysis</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="measurement-issues.html"><a href="measurement-issues.html#rotations"><i class="fa fa-check"></i><b>9.2.1</b> Rotations</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="measurement-issues.html"><a href="measurement-issues.html#cfa-and-sem"><i class="fa fa-check"></i><b>9.3</b> CFA and SEM</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">R: Learning by Example</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="viz" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">Chapter 1</span> Visualizing<a href="viz.html#viz" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>The goal of this case study is to start making graphs that help us understand our data better. We will be using the <code>ggplot2</code> package and perhaps some add-ons for making graphs. This is but one of a few different graphical systems in R. The main ones are:</p>
+<ul>
+<li><code>base</code> - the base graphics available in R. They are great for quick plots, but for publication-quality plots, we can do better.</li>
+<li><code>lattice</code> - based on the Trellis graphics system developed at Bell Labs in the 1990s to implement many of the theoretical ideas discussed by William Cleveland. In R, it is based on the <code>grid</code> package, though we usually don’t interact directly with the functions in <code>grid</code>.<br />
+</li>
+<li><code>ggplot2</code> - is also based on <code>grid</code>, but is intended to implement Wilkinson’s vision in <em>The Grammar of Graphics</em> of model-based graphical displays.</li>
+</ul>
+<p>Our first exercise would be to generate some visual insights on the COVID-19 pandemic in Colorado. We’re going to walk through all of the steps that we would use from reading in the data, to managing it to making plots. The first thing we want to do is read in some baseline demographic data. I’ve already got these coded in R.</p>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="viz.html#cb109-1" tabindex="-1"></a><span class="fu">load</span>(<span class="st">&quot;data/colo.rda&quot;</span>)</span>
+<span id="cb109-2"><a href="viz.html#cb109-2" tabindex="-1"></a><span class="fu">library</span>(summarytools)</span></code></pre></div>
+<p>We can see what variables are there:</p>
+<table>
+<colgroup>
+<col width="2%" />
+<col width="11%" />
+<col width="23%" />
+<col width="19%" />
+<col width="11%" />
+<col width="18%" />
+<col width="6%" />
+<col width="6%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">No</th>
+<th align="left">Variable</th>
+<th align="left">Label</th>
+<th align="left">Stats / Values</th>
+<th align="left">Freqs (% of Valid)</th>
+<th align="left">Graph</th>
+<th align="left">Valid</th>
+<th align="left">Missing</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">fips<br />
+[character]</td>
+<td align="left">FIPS code</td>
+<td align="left">1. 08001<br />
+2. 08003<br />
+3. 08005<br />
+4. 08007<br />
+5. 08009<br />
+6. 08011<br />
+7. 08013<br />
+8. 08014<br />
+9. 08015<br />
+10. 08017<br />
+[ 54 others ]</td>
+<td align="left">1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+54 (84.4%)</td>
+<td align="left"><br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+IIIIIIIIIIIIIIII</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="left">county<br />
+[character]</td>
+<td align="left">County name</td>
+<td align="left">1. Adams<br />
+2. Alamosa<br />
+3. Arapahoe<br />
+4. Archuleta<br />
+5. Baca<br />
+6. Bent<br />
+7. Boulder<br />
+8. Broomfield<br />
+9. Chaffee<br />
+10. Cheyenne<br />
+[ 54 others ]</td>
+<td align="left">1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+1 ( 1.6%)<br />
+54 (84.4%)</td>
+<td align="left"><br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+IIIIIIIIIIIIIIII</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="left">st<br />
+[character]</td>
+<td align="left">State abbreviation</td>
+<td align="left">1. CO</td>
+<td align="left">64 (100.0%)</td>
+<td align="left">IIIIIIIIIIIIIIIIIIII</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">4</td>
+<td align="left">hospitals<br />
+[integer]</td>
+<td align="left"># Hospitals in the county</td>
+<td align="left">Mean (sd) : 1.2 (1.3)<br />
+min &lt; med &lt; max:<br />
+0 &lt; 1 &lt; 6<br />
+IQR (CV) : 1.2 (1)</td>
+<td align="left">0 : 17 (26.6%)<br />
+1 : 31 (48.4%)<br />
+2 : 7 (10.9%)<br />
+3 : 5 ( 7.8%)<br />
+4 : 1 ( 1.6%)<br />
+5 : 2 ( 3.1%)<br />
+6 : 1 ( 1.6%)</td>
+<td align="left">IIIII<br />
+IIIIIIIII<br />
+II<br />
+I<br />
+<br />
+<br />
+</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">5</td>
+<td align="left">icu_beds<br />
+[integer]</td>
+<td align="left"># ICU beds in the county</td>
+<td align="left">Mean (sd) : 25 (74.1)<br />
+min &lt; med &lt; max:<br />
+0 &lt; 0 &lt; 506<br />
+IQR (CV) : 6.5 (3)</td>
+<td align="left">20 distinct values</td>
+<td align="left">:<br />
+:<br />
+:<br />
+:<br />
+:</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">6</td>
+<td align="left">tpop<br />
+[numeric]</td>
+<td align="left">Total population (2009 ACS)</td>
+<td align="left">Mean (sd) : 177986.4 (362030.9)<br />
+min &lt; med &lt; max:<br />
+1524 &lt; 30028 &lt; 1432984<br />
+IQR (CV) : 75579.5 (2)</td>
+<td align="left">64 distinct values</td>
+<td align="left">:<br />
+:<br />
+:<br />
+:<br />
+:     .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">7</td>
+<td align="left">mpop<br />
+[numeric]</td>
+<td align="left">Male Population (2009 ACS)</td>
+<td align="left">Mean (sd) : 0.5 (0)<br />
+min &lt; med &lt; max:<br />
+0.5 &lt; 0.5 &lt; 0.7<br />
+IQR (CV) : 0 (0.1)</td>
+<td align="left">64 distinct values</td>
+<td align="left">  :<br />
+  :<br />
+  :<br />
+: :<br />
+: : .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">8</td>
+<td align="left">fpop<br />
+[numeric]</td>
+<td align="left">Female Population (2009 ACS)</td>
+<td align="left">Mean (sd) : 0.5 (0)<br />
+min &lt; med &lt; max:<br />
+0.3 &lt; 0.5 &lt; 0.5<br />
+IQR (CV) : 0 (0.1)</td>
+<td align="left">64 distinct values</td>
+<td align="left">        :<br />
+        :<br />
+        :<br />
+        : :<br />
+      . : :</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">9</td>
+<td align="left">white_male<br />
+[numeric]</td>
+<td align="left">White male proportion</td>
+<td align="left">Mean (sd) : 0.5 (0)<br />
+min &lt; med &lt; max:<br />
+0.4 &lt; 0.5 &lt; 0.6<br />
+IQR (CV) : 0 (0.1)</td>
+<td align="left">64 distinct values</td>
+<td align="left">    :<br />
+    :<br />
+    :<br />
+    : .<br />
+  : : :</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">10</td>
+<td align="left">white_female<br />
+[numeric]</td>
+<td align="left">White female proportion</td>
+<td align="left">Mean (sd) : 0.4 (0)<br />
+min &lt; med &lt; max:<br />
+0.2 &lt; 0.5 &lt; 0.5<br />
+IQR (CV) : 0 (0.1)</td>
+<td align="left">64 distinct values</td>
+<td align="left">          :<br />
+        . :<br />
+        : :<br />
+        : :<br />
+      . : :</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">11</td>
+<td align="left">white_pop<br />
+[numeric]</td>
+<td align="left">White population proportion</td>
+<td align="left">Mean (sd) : 0.9 (0)<br />
+min &lt; med &lt; max:<br />
+0.8 &lt; 0.9 &lt; 1<br />
+IQR (CV) : 0 (0)</td>
+<td align="left">64 distinct values</td>
+<td align="left">      :<br />
+      :<br />
+      :<br />
+      : :<br />
+  . : : :</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">12</td>
+<td align="left">black_male<br />
+[numeric]</td>
+<td align="left">Black male proportion</td>
+<td align="left">Mean (sd) : 0 (0)<br />
+min &lt; med &lt; max:<br />
+0 &lt; 0 &lt; 0.1<br />
+IQR (CV) : 0 (1.4)</td>
+<td align="left">64 distinct values</td>
+<td align="left">:<br />
+:<br />
+:<br />
+:<br />
+: . .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">13</td>
+<td align="left">black_female<br />
+[numeric]</td>
+<td align="left">Black female proportion</td>
+<td align="left">Mean (sd) : 0 (0)<br />
+min &lt; med &lt; max:<br />
+0 &lt; 0 &lt; 0.1<br />
+IQR (CV) : 0 (1.5)</td>
+<td align="left">62 distinct values</td>
+<td align="left">:<br />
+:<br />
+:<br />
+:<br />
+: .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">14</td>
+<td align="left">black_pop<br />
+[numeric]</td>
+<td align="left">Black population proportion</td>
+<td align="left">Mean (sd) : 0 (0)<br />
+min &lt; med &lt; max:<br />
+0 &lt; 0 &lt; 0.1<br />
+IQR (CV) : 0 (1.2)</td>
+<td align="left">64 distinct values</td>
+<td align="left">:<br />
+:<br />
+:<br />
+:<br />
+: :</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">15</td>
+<td align="left">hisp_male<br />
+[numeric]</td>
+<td align="left">Hispanic male proportion</td>
+<td align="left">Mean (sd) : 0.1 (0.1)<br />
+min &lt; med &lt; max:<br />
+0 &lt; 0.1 &lt; 0.3<br />
+IQR (CV) : 0.1 (0.7)</td>
+<td align="left">64 distinct values</td>
+<td align="left">  :<br />
+  :<br />
+. :<br />
+: :   . .<br />
+: : : : :</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">16</td>
+<td align="left">hisp_female<br />
+[numeric]</td>
+<td align="left">Hispanic female proportion</td>
+<td align="left">Mean (sd) : 0.1 (0.1)<br />
+min &lt; med &lt; max:<br />
+0 &lt; 0.1 &lt; 0.3<br />
+IQR (CV) : 0.1 (0.7)</td>
+<td align="left">64 distinct values</td>
+<td align="left">: :<br />
+: :<br />
+: :<br />
+: : . .<br />
+: : : : : .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">17</td>
+<td align="left">hisp_pop<br />
+[numeric]</td>
+<td align="left">Hispanic population proportion</td>
+<td align="left">Mean (sd) : 0.2 (0.1)<br />
+min &lt; med &lt; max:<br />
+0.1 &lt; 0.1 &lt; 0.6<br />
+IQR (CV) : 0.2 (0.7)</td>
+<td align="left">64 distinct values</td>
+<td align="left">  :<br />
+  :<br />
+: :<br />
+: : . .<br />
+: : : : :</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">18</td>
+<td align="left">over60_pop<br />
+[numeric]</td>
+<td align="left">Over 60 population proportion</td>
+<td align="left">Mean (sd) : 0.6 (0)<br />
+min &lt; med &lt; max:<br />
+0.6 &lt; 0.6 &lt; 0.7<br />
+IQR (CV) : 0 (0)</td>
+<td align="left">64 distinct values</td>
+<td align="left">      : .<br />
+    : : :<br />
+    : : :<br />
+    : : : .<br />
+: : : : : :</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">19</td>
+<td align="left">over60_male<br />
+[numeric]</td>
+<td align="left">Over 60 male proportion</td>
+<td align="left">Mean (sd) : 0.3 (0)<br />
+min &lt; med &lt; max:<br />
+0.3 &lt; 0.3 &lt; 0.5<br />
+IQR (CV) : 0 (0.1)</td>
+<td align="left">64 distinct values</td>
+<td align="left">  :<br />
+. :<br />
+: :<br />
+: :<br />
+: : : .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">20</td>
+<td align="left">over60_female<br />
+[numeric]</td>
+<td align="left">Over 60 female proportion</td>
+<td align="left">Mean (sd) : 0.3 (0)<br />
+min &lt; med &lt; max:<br />
+0.2 &lt; 0.3 &lt; 0.3<br />
+IQR (CV) : 0 (0.1)</td>
+<td align="left">64 distinct values</td>
+<td align="left">              :<br />
+              :<br />
+              :<br />
+            : : :<br />
+          . : : :</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">21</td>
+<td align="left">lt25k<br />
+[numeric]</td>
+<td align="left">Proportion making less than $25,000/year</td>
+<td align="left">Mean (sd) : 0.2 (0.1)<br />
+min &lt; med &lt; max:<br />
+0.1 &lt; 0.3 &lt; 0.5<br />
+IQR (CV) : 0.1 (0.4)</td>
+<td align="left">64 distinct values</td>
+<td align="left">    :   :<br />
+  . :   : : :<br />
+  : : : : : :<br />
+  : : : : : :<br />
+: : : : : : : :   .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">22</td>
+<td align="left">gt100k<br />
+[numeric]</td>
+<td align="left">Proportion making more than
+$100,000/year</td>
+<td align="left">Mean (sd) : 0.2 (0.1)<br />
+min &lt; med &lt; max:<br />
+0 &lt; 0.1 &lt; 0.5<br />
+IQR (CV) : 0.1 (0.6)</td>
+<td align="left">64 distinct values</td>
+<td align="left">  :<br />
+  :<br />
+. :<br />
+: : . : :<br />
+: : : : : . :</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">23</td>
+<td align="left">nohs<br />
+[numeric]</td>
+<td align="left">Proportion without a high school degree</td>
+<td align="left">Mean (sd) : 0.1 (0.1)<br />
+min &lt; med &lt; max:<br />
+0 &lt; 0.1 &lt; 0.3<br />
+IQR (CV) : 0.1 (0.5)</td>
+<td align="left">64 distinct values</td>
+<td align="left">  .   :<br />
+  :   :<br />
+. :   :<br />
+: : : :<br />
+: : : : : :</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">24</td>
+<td align="left">BAplus<br />
+[numeric]</td>
+<td align="left">Proportion with a BA/S degree or greater</td>
+<td align="left">Mean (sd) : 0.3 (0.1)<br />
+min &lt; med &lt; max:<br />
+0.1 &lt; 0.2 &lt; 0.6<br />
+IQR (CV) : 0.2 (0.4)</td>
+<td align="left">64 distinct values</td>
+<td align="left">:<br />
+: :<br />
+: :<br />
+: : : .   : .<br />
+: : : : : : : : . .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">25</td>
+<td align="left">repvote<br />
+[numeric]</td>
+<td align="left">Republican share of two-party vote in
+2020</td>
+<td align="left">Mean (sd) : 0.6 (0.2)<br />
+min &lt; med &lt; max:<br />
+0.2 &lt; 0.6 &lt; 0.9<br />
+IQR (CV) : 0.3 (0.3)</td>
+<td align="left">64 distinct values</td>
+<td align="left">    :     .<br />
+    :   . : .<br />
+    : : : : :<br />
+. . : : : : :<br />
+: : : : : : :</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">26</td>
+<td align="left">urban_rural<br />
+[factor]</td>
+<td align="left">Census Urban-rural classification</td>
+<td align="left">1. Metro &gt;1M<br />
+2. Metro 250k-1M<br />
+3. Metro &lt; 250k<br />
+4. UP &gt; 20k, adj<br />
+5. UP &lt; 20k, non-adj<br />
+6. UP 2500-20k, adj<br />
+7. UP 2500-20k, non-adj<br />
+8. Rural, adj<br />
+9. Rural, non-adj</td>
+<td align="left">10 (15.6%)<br />
+5 ( 7.8%)<br />
+2 ( 3.1%)<br />
+3 ( 4.7%)<br />
+3 ( 4.7%)<br />
+6 ( 9.4%)<br />
+15 (23.4%)<br />
+3 ( 4.7%)<br />
+17 (26.6%)</td>
+<td align="left">III<br />
+I<br />
+<br />
+<br />
+<br />
+I<br />
+IIII<br />
+<br />
+IIIII</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">27</td>
+<td align="left">tot_pop<br />
+[integer]</td>
+<td align="left">Total Poulation (Colorado Estimate)</td>
+<td align="left">Mean (sd) : 90062.1 (183363.4)<br />
+min &lt; med &lt; max:<br />
+726 &lt; 15105.5 &lt; 729239<br />
+IQR (CV) : 38011.5 (2)</td>
+<td align="left">64 distinct values</td>
+<td align="left">:<br />
+:<br />
+:<br />
+:<br />
+:     .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">28</td>
+<td align="left">full_vac_pop<br />
+[integer]</td>
+<td align="left">Number of fully vaccinated people</td>
+<td align="left">Mean (sd) : 46407.9 (98270)<br />
+min &lt; med &lt; max:<br />
+420 &lt; 6631 &lt; 437037<br />
+IQR (CV) : 15386.2 (2.1)</td>
+<td align="left">64 distinct values</td>
+<td align="left">:<br />
+:<br />
+:<br />
+:<br />
+:</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">29</td>
+<td align="left">pct_vac_pop<br />
+[numeric]</td>
+<td align="left">Proportion of total population that is
+fully vaccinated</td>
+<td align="left">Mean (sd) : 44.6 (13.6)<br />
+min &lt; med &lt; max:<br />
+16.4 &lt; 42.9 &lt; 78.2<br />
+IQR (CV) : 19.5 (0.3)</td>
+<td align="left">63 distinct values</td>
+<td align="left">    . :<br />
+    : : .<br />
+  . : : : .<br />
+  : : : : :<br />
+. : : : : : .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">30</td>
+<td align="left">eligible_pop<br />
+[integer]</td>
+<td align="left">Number of people eligible for the
+vaccine (12+)</td>
+<td align="left">Mean (sd) : 77351.3 (156889.4)<br />
+min &lt; med &lt; max:<br />
+661 &lt; 13084 &lt; 632816<br />
+IQR (CV) : 33153.2 (2)</td>
+<td align="left">64 distinct values</td>
+<td align="left">:<br />
+:<br />
+:<br />
+:<br />
+:</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">31</td>
+<td align="left">full_vac_eligible<br />
+[integer]</td>
+<td align="left">Number of eligible people vaccinated</td>
+<td align="left">Mean (sd) : 46407.1 (98268.6)<br />
+min &lt; med &lt; max:<br />
+420 &lt; 6631 &lt; 437030<br />
+IQR (CV) : 15386 (2.1)</td>
+<td align="left">64 distinct values</td>
+<td align="left">:<br />
+:<br />
+:<br />
+:<br />
+:</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">32</td>
+<td align="left">pct_vac_eligible<br />
+[numeric]</td>
+<td align="left">Proportion of eligible population that
+is fully vaccinated</td>
+<td align="left">Mean (sd) : 51.2 (15.1)<br />
+min &lt; med &lt; max:<br />
+17.9 &lt; 49.5 &lt; 85.9<br />
+IQR (CV) : 23 (0.3)</td>
+<td align="left">62 distinct values</td>
+<td align="left">      :<br />
+    . : :<br />
+    : : : .<br />
+    : : : : :<br />
+. : : : : : : .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">33</td>
+<td align="left">adult_pop<br />
+[integer]</td>
+<td align="left">Adult population (18+)</td>
+<td align="left">Mean (sd) : 70368.8 (142887.8)<br />
+min &lt; med &lt; max:<br />
+613 &lt; 11890.5 &lt; 590056<br />
+IQR (CV) : 30172.8 (2)</td>
+<td align="left">64 distinct values</td>
+<td align="left">:<br />
+:<br />
+:<br />
+:<br />
+:   .     .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">34</td>
+<td align="left">full_vac_adult<br />
+[integer]</td>
+<td align="left">Number of adults who are fully
+vaccinated</td>
+<td align="left">Mean (sd) : 43782 (92506)<br />
+min &lt; med &lt; max:<br />
+412 &lt; 6469.5 &lt; 415992<br />
+IQR (CV) : 14743.2 (2.1)</td>
+<td align="left">64 distinct values</td>
+<td align="left">:<br />
+:<br />
+:<br />
+:<br />
+:     .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">35</td>
+<td align="left">pct_vac_adult<br />
+[numeric]</td>
+<td align="left">Proportion of adults who are
+fullyvaccinated</td>
+<td align="left">Mean (sd) : 53.8 (14.9)<br />
+min &lt; med &lt; max:<br />
+18.4 &lt; 53.1 &lt; 88.6<br />
+IQR (CV) : 21.6 (0.3)</td>
+<td align="left">61 distinct values</td>
+<td align="left">      : :<br />
+    . : : .<br />
+    : : : : .<br />
+    : : : : :<br />
+. . : : : : : :</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">36</td>
+<td align="left">over65_pop<br />
+[integer]</td>
+<td align="left">Number of people over the age of 65</td>
+<td align="left">Mean (sd) : 13230.7 (24794.9)<br />
+min &lt; med &lt; max:<br />
+199 &lt; 2681 &lt; 99332<br />
+IQR (CV) : 7059.2 (1.9)</td>
+<td align="left">64 distinct values</td>
+<td align="left">:<br />
+:<br />
+:<br />
+:<br />
+:   .   .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">37</td>
+<td align="left">full_vac_over65<br />
+[integer]</td>
+<td align="left">Number of people over 65 who are fully
+vaccinated</td>
+<td align="left">Mean (sd) : 10693.3 (20642.6)<br />
+min &lt; med &lt; max:<br />
+142 &lt; 1975.5 &lt; 85755<br />
+IQR (CV) : 5349 (1.9)</td>
+<td align="left">64 distinct values</td>
+<td align="left">:<br />
+:<br />
+:<br />
+:<br />
+:       .     .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">38</td>
+<td align="left">pct_vac_over65<br />
+[numeric]</td>
+<td align="left">Proportion of those over 65 who are
+fully vaccinated</td>
+<td align="left">Mean (sd) : 71.7 (11.9)<br />
+min &lt; med &lt; max:<br />
+34.8 &lt; 70.8 &lt; 93.9<br />
+IQR (CV) : 15.4 (0.2)</td>
+<td align="left">59 distinct values</td>
+<td align="left">      :<br />
+      : .<br />
+      : : .<br />
+      : : :<br />
+    : : : : :</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">39</td>
+<td align="left">phys_health<br />
+[numeric]</td>
+<td align="left">Average number of physically unhealthy
+days out of the last 30 (2016)</td>
+<td align="left">Mean (sd) : 3.4 (0.5)<br />
+min &lt; med &lt; max:<br />
+2.5 &lt; 3.3 &lt; 4.8<br />
+IQR (CV) : 0.7 (0.1)</td>
+<td align="left">20 distinct values</td>
+<td align="left">  :<br />
+. :<br />
+: :<br />
+: : :<br />
+: : : : .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">40</td>
+<td align="left">mental_health<br />
+[numeric]</td>
+<td align="left">Average number of mentally unhealthy
+days out of the last 30 (2016)</td>
+<td align="left">Mean (sd) : 3.5 (0.3)<br />
+min &lt; med &lt; max:<br />
+2.9 &lt; 3.5 &lt; 4.4<br />
+IQR (CV) : 0.4 (0.1)</td>
+<td align="left">15 distinct values</td>
+<td align="left">    . :<br />
+    : :<br />
+  : : : .<br />
+  : : : :   .<br />
+. : : : : : : .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">41</td>
+<td align="left">smoking_pct<br />
+[numeric]</td>
+<td align="left">Percentage of adults who currently smoke
+(2016)</td>
+<td align="left">Mean (sd) : 0.1 (0)<br />
+min &lt; med &lt; max:<br />
+0.1 &lt; 0.1 &lt; 0.2<br />
+IQR (CV) : 0 (0.1)</td>
+<td align="left">12 distinct values</td>
+<td align="left">  :<br />
+  : :<br />
+  : :<br />
+  : : :<br />
+: : : :   .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">42</td>
+<td align="left">inactivity<br />
+[numeric]</td>
+<td align="left">Percentage of adults over 20 reporting
+no leisure-time physical acticity (2016)</td>
+<td align="left">Mean (sd) : 0.2 (0)<br />
+min &lt; med &lt; max:<br />
+0.1 &lt; 0.2 &lt; 0.3<br />
+IQR (CV) : 0.1 (0.2)</td>
+<td align="left">16 distinct values</td>
+<td align="left">      :<br />
+      :<br />
+  .   : . :<br />
+: : : : : : .<br />
+: : : : : : : .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">43</td>
+<td align="left">wkly_wage<br />
+[numeric]</td>
+<td align="left">Average Weekly Wage</td>
+<td align="left">Mean (sd) : 894.1 (219.3)<br />
+min &lt; med &lt; max:<br />
+548 &lt; 832 &lt; 1606<br />
+IQR (CV) : 216.2 (0.2)</td>
+<td align="left">64 distinct values</td>
+<td align="left">    :<br />
+  : :<br />
+  : :<br />
+  : : .<br />
+. : : : . .</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+<tr class="even">
+<td align="left">44</td>
+<td align="left">rich_poor<br />
+[factor]</td>
+<td align="left"></td>
+<td align="left">1. &lt; $750<br />
+2. $750 - $1000<br />
+3. &lt; $1000</td>
+<td align="left">14 (21.9%)<br />
+35 (54.7%)<br />
+15 (23.4%)</td>
+<td align="left">IIII<br />
+IIIIIIIIII<br />
+IIII</td>
+<td align="left">64<br />
+(100.0%)</td>
+<td align="left">0<br />
+(0.0%)</td>
+</tr>
+</tbody>
+</table>
+<p>We could then look at the structure of the data:</p>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="viz.html#cb110-1" tabindex="-1"></a><span class="fu">str</span>(colo)</span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    64 obs. of  44 variables:
+##  $ fips             : chr  &quot;08109&quot; &quot;08115&quot; &quot;08017&quot; &quot;08027&quot; ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;FIPS code&quot;
+##  $ county           : chr  &quot;Saguache&quot; &quot;Sedgwick&quot; &quot;Cheyenne&quot; &quot;Custer&quot; ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;County name&quot;
+##  $ st               : chr  &quot;CO&quot; &quot;CO&quot; &quot;CO&quot; &quot;CO&quot; ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;State abbreviation&quot;
+##  $ hospitals        : int  0 1 1 0 2 0 1 0 1 1 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;# Hospitals in the county&quot;
+##  $ icu_beds         : int  0 0 0 0 11 0 4 0 6 0 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;# ICU beds in the county&quot;
+##  $ tpop             : num  13686 4606 3752 9908 112620 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Total population (2009 ACS)&quot;
+##  $ mpop             : num  0.501 0.494 0.509 0.516 0.505 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Male Population (2009 ACS)&quot;
+##  $ fpop             : num  0.499 0.506 0.491 0.484 0.495 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Female Population (2009 ACS)&quot;
+##  $ white_male       : num  0.456 0.458 0.481 0.484 0.448 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;White male proportion&quot;
+##  $ white_female     : num  0.458 0.482 0.472 0.461 0.436 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;White female proportion&quot;
+##  $ white_pop        : num  0.914 0.94 0.954 0.945 0.884 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;White population proportion&quot;
+##  $ black_male       : num  0.00658 0.00782 0.0032 0.01171 0.00387 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Black male proportion&quot;
+##  $ black_female     : num  0.00453 0.00174 0.00586 0.00323 0.00224 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Black female proportion&quot;
+##  $ black_pop        : num  0.01111 0.00955 0.00906 0.01494 0.00611 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Black population proportion&quot;
+##  $ hisp_male        : num  0.1723 0.0816 0.0672 0.0317 0.0655 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Hispanic male proportion&quot;
+##  $ hisp_female      : num  0.1868 0.0851 0.0496 0.0234 0.0642 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Hispanic female proportion&quot;
+##  $ hisp_pop         : num  0.3591 0.1667 0.1167 0.0551 0.1297 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Hispanic population proportion&quot;
+##  $ over60_pop       : num  0.623 0.618 0.633 0.601 0.638 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Over 60 population proportion&quot;
+##  $ over60_male      : num  0.311 0.306 0.324 0.311 0.323 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Over 60 male proportion&quot;
+##  $ over60_female    : num  0.312 0.313 0.309 0.29 0.315 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Over 60 female proportion&quot;
+##  $ lt25k            : num  0.403 0.312 0.249 0.291 0.197 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Proportion making less than $25,000/year&quot;
+##  $ gt100k           : num  0.0954 0.0829 0.0968 0.0835 0.2053 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Proportion making more than $100,000/year&quot;
+##  $ nohs             : num  0.2687 0.1865 0.1203 0.0611 0.0655 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Proportion without a high school degree&quot;
+##  $ BAplus           : num  0.19 0.138 0.207 0.296 0.416 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Proportion with a BA/S degree or greater&quot;
+##  $ repvote          : num  0.447 0.792 0.875 0.721 0.448 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Republican share of two-party vote in 2020&quot;
+##  $ urban_rural      : Factor w/ 9 levels &quot;Metro &gt;1M&quot;,&quot;Metro 250k-1M&quot;,..: 9 9 9 8 4 9 7 1 7 7 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Census Urban-rural classification&quot;
+##  $ tot_pop          : int  6824 2229 1825 5059 56272 726 17756 18844 16181 12122 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Total Poulation (Colorado Estimate)&quot;
+##  $ full_vac_pop     : int  2371 897 420 1974 31638 568 10721 7586 6987 3723 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Number of fully vaccinated people&quot;
+##  $ pct_vac_pop      : num  34.7 40.2 23 39 56.2 78.2 60.4 40.3 43.2 30.7 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Proportion of total population that is fully vaccinated&quot;
+##  $ eligible_pop     : int  5852 1948 1533 4612 49629 661 16204 16857 13454 10024 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Number of people eligible for the vaccine (12+)&quot;
+##  $ full_vac_eligible: int  2371 897 420 1974 31635 568 10719 7586 6987 3723 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Number of eligible people vaccinated&quot;
+##  $ pct_vac_eligible : num  40.5 46 27.4 42.8 63.7 85.9 66.2 45 51.9 37.1 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Proportion of eligible population that is fully vaccinated&quot;
+##  $ adult_pop        : int  5311 1797 1382 4330 45313 613 15249 15624 12058 8924 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Adult population (18+)&quot;
+##  $ full_vac_adult   : int  2316 893 419 1961 30042 543 10189 7350 6617 3611 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Number of adults who are fully vaccinated&quot;
+##  $ pct_vac_adult    : num  43.6 49.7 30.3 45.3 66.3 88.6 66.8 47 54.9 40.5 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Proportion of adults who are fullyvaccinated&quot;
+##  $ over65_pop       : int  1664 613 381 1648 10210 199 3720 4061 2367 2165 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Number of people over the age of 65&quot;
+##  $ full_vac_over65  : int  847 474 204 1114 8790 142 1950 2519 1915 1405 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Number of people over 65 who are fully vaccinated&quot;
+##  $ pct_vac_over65   : num  50.9 77.3 53.5 67.6 86.1 71.4 52.4 62 80.9 64.9 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Proportion of those over 65 who are fully vaccinated&quot;
+##  $ phys_health      : num  4.5 3.3 3.1 3.4 3.1 3.3 3 2.8 4.1 3.7 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Average number of physically unhealthy days out of the last 30 (2016)&quot;
+##  $ mental_health    : num  4.2 3.5 3.4 3.7 3.6 3.4 3.1 3.2 4.1 3.8 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Average number of mentally unhealthy days out of the last 30 (2016)&quot;
+##  $ smoking_pct      : num  0.18 0.15 0.14 0.15 0.13 0.16 0.13 0.15 0.17 0.17 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Percentage of adults who currently smoke (2016)&quot;
+##  $ inactivity       : num  0.17 0.2 0.26 0.2 0.13 0.18 0.1 0.16 0.17 0.22 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Percentage of adults over 20 reporting no leisure-time physical acticity (2016)&quot;
+##  $ wkly_wage        : num  711 758 903 679 848 ...
+##   ..- attr(*, &quot;label&quot;)= chr &quot;Average Weekly Wage&quot;
+##  $ rich_poor        : Factor w/ 3 levels &quot;&lt; $750&quot;,&quot;$750 - $1000&quot;,..: 1 2 2 1 2 1 3 2 2 1 ...</code></pre>
+<p>Next, we can download the most recent COVID-19 case data:</p>
+<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="viz.html#cb112-1" tabindex="-1"></a><span class="fu">library</span>(rio)</span>
+<span id="cb112-2"><a href="viz.html#cb112-2" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="st">&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv&quot;</span></span>
+<span id="cb112-3"><a href="viz.html#cb112-3" tabindex="-1"></a>covid <span class="ot">&lt;-</span> <span class="fu">import</span>(f)</span></code></pre></div>
+<p>The data we downloaded has all of the counties across the US, so we’ll need to learn about how to subset and filter data. To this, we turn to the <em>tidyverse</em>.</p>
+<div id="wrangling-data" class="section level2 hasAnchor" number="1.1">
+<h2><span class="header-section-number">1.1</span> Wrangling data<a href="viz.html#wrangling-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We’re going to use the <a href="https://dplyr.tidyverse.org/"><code>dplyr</code></a> package, which is part of the <em>tidyverse</em>, for wrangling data. There are tons of different ways to filter, subset, select, sample, etc… data, but the tidyverse functions are generally pretty intuitive (after a brief introduction) and simple. We can do lots of things with <code>dplyr</code>, but the most common operations could be boiled down to the following:</p>
+<ul>
+<li><code>mutate()</code> adds new variables that are functions of existing variables</li>
+<li><code>select()</code> picks variables based on their names.</li>
+<li><code>filter()</code> picks cases based on their values.</li>
+<li><code>arrange()</code> changes the ordering of the rows.</li>
+<li><code>summarise()</code> reduces multiple values down to a single summary.</li>
+<li><code>reframe()</code> is a new verb that is like summarise, but doesn’t expect a single observation per group.</li>
+</ul>
+<p>There is also a <code>group_by()</code> operator that allows the operations to be done for groups of observations rather than the entire data frame. <a href="https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf">Here</a> is a useful cheat sheet for the <code>dplyr</code> functions.</p>
+<p>These functions are often combined with the <strong>pipe</strong> character, <code>%&gt;%</code>. The pipe character operates by taking whatever is on its left side and sending it to the function on its right. The <code>tidyverse</code> functions are all configured so that they expect the first argument to be the piped data. However, you could put the piped output anywhere in the function as the period (<code>.</code>) stands in for the piped output. We’ll see some examples of this later on.</p>
+<p>A function that uses the pipe character usually starts by piping the original data into one of the <code>dplyr</code> verbs. For example, we could <code>filter</code> the covid data to only contain those from Colorado from the most recent date. To do this, we could 1) group the data by county, 2) arrange by date and 3, take the last observation for each county.</p>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="viz.html#cb113-1" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb113-2"><a href="viz.html#cb113-2" tabindex="-1"></a>covid <span class="ot">&lt;-</span> covid <span class="sc">%&gt;%</span> </span>
+<span id="cb113-3"><a href="viz.html#cb113-3" tabindex="-1"></a>  <span class="fu">filter</span>(state <span class="sc">==</span> <span class="st">&quot;Colorado&quot;</span>) </span>
+<span id="cb113-4"><a href="viz.html#cb113-4" tabindex="-1"></a>covid_last <span class="ot">&lt;-</span> covid <span class="sc">%&gt;%</span> </span>
+<span id="cb113-5"><a href="viz.html#cb113-5" tabindex="-1"></a>  <span class="fu">group_by</span>(county) <span class="sc">%&gt;%</span> </span>
+<span id="cb113-6"><a href="viz.html#cb113-6" tabindex="-1"></a>  <span class="fu">arrange</span>(date, <span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb113-7"><a href="viz.html#cb113-7" tabindex="-1"></a>  <span class="fu">reframe</span>(<span class="at">deaths =</span> <span class="fu">last</span>(deaths), </span>
+<span id="cb113-8"><a href="viz.html#cb113-8" tabindex="-1"></a>          <span class="at">cases =</span> <span class="fu">last</span>(cases))</span></code></pre></div>
+<div id="merging-datasets" class="section level3 hasAnchor" number="1.1.1">
+<h3><span class="header-section-number">1.1.1</span> Merging Datasets<a href="viz.html#merging-datasets" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Next, we could go ahead and put our two datasets together. The <code>left_join()</code> function will keep all of the rows of the first argument and only the matching elements of the second dataset. <code>right_join()</code> does the opposite. There are also <code>full_join()</code> which keeps all elements of both datasets and <code>inner_join()</code> which keeps on the elements present in both datasets. By default, the <code>*_join()</code> functions will join the data based on all common columns across both datasets. You can change this behaviour by using <code>join = join_by(left_var == right_var)</code> where <code>left_var</code> is the name of the variable to join by the dataset on the left side of the join and <code>right_var</code> is the same for the right-side dataset.</p>
+<p>Just by way of information, there are also some filter-join functions in the <code>dplyr</code> package. <code>semi_join()</code> returns the rows of its first argument that exist in its second argument and <code>anti_join()</code> returns the rows of its first argument that do not exist in its second argument.</p>
+<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="viz.html#cb114-1" tabindex="-1"></a>colo_dat <span class="ot">&lt;-</span> colo <span class="sc">%&gt;%</span> </span>
+<span id="cb114-2"><a href="viz.html#cb114-2" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>fips, <span class="sc">-</span>st) <span class="sc">%&gt;%</span> </span>
+<span id="cb114-3"><a href="viz.html#cb114-3" tabindex="-1"></a>  <span class="fu">left_join</span>(covid_last)</span>
+<span id="cb114-4"><a href="viz.html#cb114-4" tabindex="-1"></a>colo_dat</span></code></pre></div>
+<pre><code>##        county hospitals icu_beds    tpop      mpop      fpop white_male white_female white_pop
+## 1    Saguache         0        0   13686 0.5006576 0.4993424  0.4559404    0.4579863 0.9139266
+## 2    Sedgwick         1        0    4606 0.4937039 0.5062961  0.4580981    0.4815458 0.9396439
+## 3    Cheyenne         1        0    3752 0.5085288 0.4914712  0.4813433    0.4722814 0.9536247
+## 4      Custer         0        0    9908 0.5157449 0.4842551  0.4840533    0.4606379 0.9446912
+## 5    La Plata         2       11  112620 0.5045463 0.4954537  0.4476647    0.4362280 0.8838927
+## 6    San Juan         0        0    1524 0.5603675 0.4396325  0.5301837    0.4212598 0.9514436
+## 7      Pitkin         1        4   35900 0.5174930 0.4825070  0.4932033    0.4562674 0.9494708
+## 8        Park         0        0   37112 0.5264066 0.4735934  0.4965510    0.4454624 0.9420134
+## 9     Alamosa         1        6   33366 0.5011689 0.4988311  0.4345741    0.4381107 0.8726848
+## 10    Prowers         1        0   24328 0.5025485 0.4974515  0.4754193    0.4711444 0.9465636
+## 11     Moffat         1        0   26376 0.5128147 0.4871853  0.4848347    0.4606460 0.9454807
+## 12  Jefferson         4       94 1160466 0.4985825 0.5014175  0.4570164    0.4599962 0.9170126
+## 13     Summit         1        8   62014 0.5423292 0.4576708  0.5141420    0.4362241 0.9503660
+## 14     Pueblo         2       32  335058 0.4927863 0.5072137  0.4424249    0.4591623 0.9015872
+## 15    Boulder         5       72  652156 0.5031588 0.4968412  0.4543698    0.4475923 0.9019621
+## 16     Denver         6      227 1432984 0.5018758 0.4981242  0.4081748    0.3997951 0.8079699
+## 17   Montrose         1        8   84428 0.4930829 0.5069171  0.4632113    0.4796039 0.9428152
+## 18      Eagle         1        5  109986 0.5302493 0.4697507  0.4986271    0.4453112 0.9439383
+## 19 San Miguel         0        0   16382 0.5321695 0.4678305  0.5081187    0.4430472 0.9511659
+## 20   Costilla         0        0    7656 0.5177638 0.4822362  0.4566353    0.4250261 0.8816614
+## 21 Broomfield         1       20  138534 0.4972209 0.5027791  0.4384339    0.4416389 0.8800728
+## 22    Chaffee         1        2   40054 0.5283867 0.4716133  0.4901882    0.4492935 0.9394817
+##    black_male black_female black_pop hisp_male hisp_female  hisp_pop over60_pop over60_male
+## 1   0.0065761    0.0045302 0.0111062 0.1722929   0.1867602 0.3590530  0.6232647   0.3108709
+## 2   0.0078159    0.0017369 0.0095528 0.0816327   0.0851064 0.1667390  0.6183811   0.3057225
+## 3   0.0031983    0.0058635 0.0090618 0.0671642   0.0495736 0.1167377  0.6333464   0.3241780
+## 4   0.0117077    0.0032297 0.0149374 0.0316916   0.0234154 0.0551070  0.6012898   0.3110830
+## 5   0.0038714    0.0022376 0.0061090 0.0654591   0.0641982 0.1296573  0.6378880   0.3226304
+## 6   0.0013123    0.0000000 0.0013123 0.0708661   0.0524934 0.1233596  0.6213565   0.3500483
+## 7   0.0075766    0.0028969 0.0104735 0.0495822   0.0517549 0.1013370  0.6335860   0.3271969
+## 8   0.0045807    0.0040957 0.0086764 0.0334124   0.0288855 0.0622979  0.6249745   0.3294877
+## 9   0.0121081    0.0090511 0.0211593 0.2303543   0.2277168 0.4580711  0.6496055   0.3265410
+## 10  0.0054258    0.0034528 0.0088787 0.2033870   0.1830812 0.3864683  0.6395511   0.3230867
+## 11  0.0045496    0.0032605 0.0078101 0.0846982   0.0718077 0.1565059  0.6426835   0.3303122
+## 12  0.0081347    0.0059511 0.0140857 0.0765606   0.0783582 0.1549188  0.6411245   0.3212147
+## 13  0.0086110    0.0040958 0.0127068 0.0773374   0.0684362 0.1457735  0.6462361   0.3510404
+## 14  0.0144035    0.0114070 0.0258105 0.2140883   0.2168162 0.4309045  0.6376744   0.3158653
+## 15  0.0067499    0.0049651 0.0117150 0.0703758   0.0687627 0.1391385  0.6466982   0.3268295
+## 16  0.0494772    0.0487849 0.0982621 0.1502808   0.1463896 0.2966704  0.6537768   0.3296953
+## 17  0.0042166    0.0030559 0.0072725 0.1070261   0.1000379 0.2070640  0.6267402   0.3102388
+## 18  0.0111287    0.0044915 0.0156202 0.1557471   0.1424909 0.2982380  0.6515174   0.3457555
+## 19  0.0054938    0.0031742 0.0086681 0.0554267   0.0515200 0.1069466  0.6430550   0.3415366
+## 20  0.0114943    0.0088819 0.0203762 0.3074713   0.2951933 0.6026646  0.6152519   0.3184087
+## 21  0.0084745    0.0066698 0.0151443 0.0635945   0.0624540 0.1260485  0.6484918   0.3243828
+## 22  0.0158286    0.0015479 0.0173765 0.0636141   0.0376492 0.1012633  0.6210195   0.3309992
+##    over60_female     lt25k    gt100k      nohs    BAplus   repvote          urban_rural tot_pop
+## 1      0.3123938 0.4033045 0.0953811 0.2687361 0.1895787 0.4473479       Rural, non-adj    6824
+## 2      0.3126585 0.3124336 0.0828905 0.1864989 0.1384439 0.7917317       Rural, non-adj    2229
+## 3      0.3091684 0.2488479 0.0967742 0.1202532 0.2070524 0.8751183       Rural, non-adj    1825
+## 4      0.2902067 0.2910489 0.0834706 0.0611050 0.2963776 0.7211337           Rural, adj    5059
+## 5      0.3152576 0.1970761 0.2053351 0.0654549 0.4158661 0.4477447        UP &gt; 20k, adj   56272
+## 6      0.2713082 0.1392758 0.0724234 0.0448029 0.4516129 0.4479167       Rural, non-adj     726
+## 7      0.3063891 0.1525447 0.3312360 0.0445772 0.5906691 0.2580188 UP 2500-20k, non-adj   17756
+## 8      0.2954868 0.1299184 0.2435255 0.0707616 0.3135566 0.6420050            Metro &gt;1M   18844
+## 9      0.3230644 0.3761405 0.1177483 0.1626225 0.2659823 0.4885325 UP 2500-20k, non-adj   16181
+## 10     0.3164645 0.3589133 0.0656355 0.2092519 0.1704614 0.7485690 UP 2500-20k, non-adj   12122
+## 11     0.3123713 0.2124651 0.1397209 0.1152357 0.1471191 0.8585532 UP 2500-20k, non-adj   13252
+## 12     0.3199098 0.1543146 0.2831228 0.0742428 0.3843765 0.4622031            Metro &gt;1M  583081
+## 13     0.2951957 0.0982958 0.2765267 0.0550049 0.4885633 0.3479566    UP &lt; 20k, non-adj   30983
+## 14     0.3218090 0.3143779 0.1142508 0.1504617 0.2097279 0.5027031         Metro &lt; 250k  168110
+## 15     0.3198687 0.1930457 0.3150113 0.0663074 0.5663567 0.2382778        Metro 250k-1M  327164
+## 16     0.3240815 0.2794546 0.1860275 0.1671625 0.3925907 0.2040418            Metro &gt;1M  729239
+## 17     0.3165014 0.2769821 0.1219949 0.1520444 0.2029647 0.7246070        UP &gt; 20k, adj   42765
+## 18     0.3057619 0.1315326 0.3073141 0.1262167 0.4696625 0.3893629    UP &lt; 20k, non-adj   55070
+## 19     0.3015184 0.1968556 0.2210940 0.0605951 0.4593614 0.2577345       Rural, non-adj    8174
+## 20     0.2968432 0.5222052 0.0581930 0.2619849 0.1707317 0.3432574       Rural, non-adj    3872
+## 21     0.3241089 0.1079362 0.3522239 0.0456233 0.4193482 0.4213444            Metro &gt;1M   70762
+## 22     0.2900203 0.2997847 0.1248654 0.0906938 0.2949720 0.5244674 UP 2500-20k, non-adj   20361
+##    full_vac_pop pct_vac_pop eligible_pop full_vac_eligible pct_vac_eligible adult_pop
+## 1          2371        34.7         5852              2371             40.5      5311
+## 2           897        40.2         1948               897             46.0      1797
+## 3           420        23.0         1533               420             27.4      1382
+## 4          1974        39.0         4612              1974             42.8      4330
+## 5         31638        56.2        49629             31635             63.7     45313
+## 6           568        78.2          661               568             85.9       613
+## 7         10721        60.4        16204             10719             66.2     15249
+## 8          7586        40.3        16857              7586             45.0     15624
+## 9          6987        43.2        13454              6987             51.9     12058
+## 10         3723        30.7        10024              3723             37.1      8924
+## 11         3968        29.9        11081              3968             35.8      9851
+## 12       348157        59.7       508992            348149             68.4    467388
+## 13        21528        69.5        28057             21527             76.7     26562
+## 14        70396        41.9       144823             70395             48.6    131053
+## 15       212447        64.9       289956            212443             73.3    265779
+## 16       437037        59.9       632816            437030             69.1    590056
+## 17        15778        36.9        37085             15778             42.5     33523
+## 18        35477        64.4        47782             35476             74.2     43715
+## 19         5523        67.6         7120              5523             77.6      6503
+## 20         1935        50.0         3406              1935             56.8      3122
+## 21        46211        65.3        61262             46211             75.4     55296
+## 22        10776        52.9        18234             10775             59.1     17080
+##    full_vac_adult pct_vac_adult over65_pop full_vac_over65 pct_vac_over65 phys_health mental_health
+## 1            2316          43.6       1664             847           50.9         4.5           4.2
+## 2             893          49.7        613             474           77.3         3.3           3.5
+## 3             419          30.3        381             204           53.5         3.1           3.4
+## 4            1961          45.3       1648            1114           67.6         3.4           3.7
+## 5           30042          66.3      10210            8790           86.1         3.1           3.6
+## 6             543          88.6        199             142           71.4         3.3           3.4
+## 7           10189          66.8       3720            1950           52.4         3.0           3.1
+## 8            7350          47.0       4061            2519           62.0         2.8           3.2
+## 9            6617          54.9       2367            1915           80.9         4.1           4.1
+## 10           3611          40.5       2165            1405           64.9         3.7           3.8
+## 11           3909          39.7       2156            1331           61.7         3.4           3.4
+## 12         328652          70.3      99332           85755           86.3         2.8           3.2
+## 13          20517          77.2       4335            3573           82.4         3.0           3.1
+## 14          67385          51.4      32020           24240           75.7         4.6           4.2
+## 15         198452          74.7      48807           45826           93.9         2.9           3.1
+## 16         415992          70.5      87947           70603           80.3         3.2           3.6
+## 17          15403          45.9      10174            7026           69.1         3.6           3.6
+## 18          33443          76.5       6869            5983           87.1         2.9           3.1
+## 19           5211          80.1       1258             966           76.8         3.0           3.4
+## 20           1870          59.9       1069             744           69.6         4.8           4.4
+## 21          42634          77.1      10213            9559           93.6         2.8           3.3
+## 22          10446          61.2       5391            4206           78.0         3.1           3.6
+##    smoking_pct inactivity wkly_wage    rich_poor deaths  cases
+## 1         0.18       0.17       711       &lt; $750     12   1203
+## 2         0.15       0.20       758 $750 - $1000     11    490
+## 3         0.14       0.26       903 $750 - $1000      9    322
+## 4         0.15       0.20       679       &lt; $750     21    656
+## 5         0.13       0.13       848 $750 - $1000     86  13002
+## 6         0.16       0.18       548       &lt; $750      0    203
+## 7         0.13       0.10      1149      &lt; $1000      7   6676
+## 8         0.15       0.16       830 $750 - $1000     20   2913
+## 9         0.17       0.17       783 $750 - $1000     62   4560
+## 10        0.17       0.22       693       &lt; $750     51   2654
+## 11        0.16       0.21      1000 $750 - $1000     52   3062
+## 12        0.13       0.13      1221      &lt; $1000   1356 128067
+## 13        0.15       0.10       834 $750 - $1000     14  10087
+## 14        0.17       0.22       907 $750 - $1000    802  47690
+## 15        0.11       0.10      1418      &lt; $1000    373  68435
+## 16        0.16       0.12      1458      &lt; $1000   1360 177033
+## 17        0.14       0.16       823 $750 - $1000    160   9398
+## 18        0.13       0.11      1015      &lt; $1000     35  16274
+## 19        0.15       0.14       899 $750 - $1000      8   2322
+## 20        0.19       0.24       648       &lt; $750     18    708
+## 21        0.13       0.13      1606      &lt; $1000    116  13997
+## 22        0.13       0.17       845 $750 - $1000     47   4749
+##  [ reached &#39;max&#39; / getOption(&quot;max.print&quot;) -- omitted 42 rows ]</code></pre>
+</div>
+</div>
+<div id="ggplot" class="section level2 hasAnchor" number="1.2">
+<h2><span class="header-section-number">1.2</span> GGplot<a href="viz.html#ggplot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>As mentioned above, we’re using the <a href="https://ggplot2.tidyverse.org/"><code>ggplot</code></a> package to make plots. There is another nice cheat sheet <a href="https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf">here</a>. There are a few different aspects of the plot that we can specify.</p>
+<ul>
+<li><strong>Geometries</strong> are ways of mapping the data onto aesthetic elements (values, colour, shape, size, etc…) of the data onto the plotting region.</li>
+<li><strong>Themes</strong> govern the overall look of the plot including color schemes for the background, axis labels, positioning of the legend, etc…</li>
+<li><strong>Scales</strong> govern how the axes behave and the exact ways in which aesthetic elements are represented in the plot.</li>
+<li><strong>Facets</strong> allow multiple-panel plots to be constructed.</li>
+</ul>
+<p>Let’s say we wanted to make a bar plot such that the height of the bar represented the number of distinct observations we had each day. All of the plots we make will start with the <code>ggplot()</code> function. This initializes the plot with data and often aesthetics. Aesthetic elements that show up in the call to <code>ggplot()</code> are defined for all subsequent geometries. We can also define aesthetic elements to be specific to each geometry if desired. There are times we’ll see later where this might be useful.</p>
+<div id="bar-plots" class="section level3 hasAnchor" number="1.2.1">
+<h3><span class="header-section-number">1.2.1</span> Bar Plots<a href="viz.html#bar-plots" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In the plot below, we plot <code>urban_rural</code> (the county’s urban-rural status) as the variable on the <span class="math inline">\(x\)</span>-axis. Because we are making a bar graph it automatically counts up the number of observations in each group and plots that on the y-axis. If this is the behaviour we want, we do not need to supply a <code>y</code> aesthetic. Then we add (with a <code>+</code> sign) the bar geometry to our initialized plot and we get the following.</p>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="viz.html#cb116-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb116-2"><a href="viz.html#cb116-2" tabindex="-1"></a><span class="fu">ggplot</span>(colo_dat, <span class="fu">aes</span>(<span class="at">x=</span>urban_rural)) <span class="sc">+</span> </span>
+<span id="cb116-3"><a href="viz.html#cb116-3" tabindex="-1"></a>  <span class="fu">geom_bar</span>()</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-31-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>We can make the plot a bit “prettier” (to my eye at least) by changing the theme and adding a title.</p>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="viz.html#cb117-1" tabindex="-1"></a><span class="fu">ggplot</span>(colo_dat, <span class="fu">aes</span>(<span class="at">x=</span>urban_rural)) <span class="sc">+</span> </span>
+<span id="cb117-2"><a href="viz.html#cb117-2" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span> </span>
+<span id="cb117-3"><a href="viz.html#cb117-3" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb117-4"><a href="viz.html#cb117-4" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;COVID-19 Observations in Colorado Counties by Day&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb117-5"><a href="viz.html#cb117-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;County Density&quot;</span>, <span class="at">y=</span><span class="st">&quot;Number of Observations&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-32-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>We also see that the text labels on the x-axis are overplotting each other. We can solve this in two ways. We could use <code>ccord_flip()</code> at the end to make horizontal rather than vertical bars. Here is what that looks like.</p>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="viz.html#cb118-1" tabindex="-1"></a><span class="fu">ggplot</span>(colo_dat, <span class="fu">aes</span>(<span class="at">x=</span>urban_rural)) <span class="sc">+</span> </span>
+<span id="cb118-2"><a href="viz.html#cb118-2" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span> </span>
+<span id="cb118-3"><a href="viz.html#cb118-3" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb118-4"><a href="viz.html#cb118-4" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;COVID-19 Observations in Colorado Counties by Day&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb118-5"><a href="viz.html#cb118-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;County Density&quot;</span>, <span class="at">y=</span><span class="st">&quot;Number of Observations&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb118-6"><a href="viz.html#cb118-6" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-33-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Now, I want you to try making a bar plot to see how many observations are in each level of the variable <code>rich_poor</code> (a categorical indicator of average weekly wage).</p>
+</div>
+<p>We could also make bar graphs by plotting the mean of some variable by some other variable. For example, we might want to plot the mental health by urban-rural context from the <code>colo</code> data object. Here</p>
+<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="viz.html#cb119-1" tabindex="-1"></a><span class="fu">ggplot</span>(colo_dat, <span class="fu">aes</span>(<span class="at">x=</span>urban_rural, <span class="at">y=</span>mental_health)) <span class="sc">+</span> </span>
+<span id="cb119-2"><a href="viz.html#cb119-2" tabindex="-1"></a>  <span class="fu">stat_summary</span>(<span class="at">geom=</span><span class="st">&quot;bar&quot;</span>, <span class="at">fun=</span>mean) <span class="sc">+</span> </span>
+<span id="cb119-3"><a href="viz.html#cb119-3" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb119-4"><a href="viz.html#cb119-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;&quot;</span>, <span class="at">y=</span><span class="st">&quot;Average Mental Health Score&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb119-5"><a href="viz.html#cb119-5" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-34-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>Now, one last thing that we might want to do would be to order the bars by height. We could do this with the <code>reorder()</code> function - applied to the <code>x</code> aesthetic in the call to <code>ggplot()</code>.</p>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="viz.html#cb120-1" tabindex="-1"></a><span class="fu">ggplot</span>(colo, <span class="fu">aes</span>(<span class="at">x=</span><span class="fu">reorder</span>(urban_rural, mental_health, mean), </span>
+<span id="cb120-2"><a href="viz.html#cb120-2" tabindex="-1"></a>                 <span class="at">y=</span>mental_health)) <span class="sc">+</span> </span>
+<span id="cb120-3"><a href="viz.html#cb120-3" tabindex="-1"></a>  <span class="fu">stat_summary</span>(<span class="at">geom=</span><span class="st">&quot;bar&quot;</span>, <span class="at">fun=</span>mean) <span class="sc">+</span> </span>
+<span id="cb120-4"><a href="viz.html#cb120-4" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb120-5"><a href="viz.html#cb120-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;&quot;</span>, <span class="at">y=</span><span class="st">&quot;Average Mental Health Score&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb120-6"><a href="viz.html#cb120-6" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-35-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Now you can make a bar plot of average republican vote by urban-rural context. Make sure to sort by height.</p>
+</div>
+<p>If we wanted to see the actual data instead, we could use the <code>summarise()</code> function from the <code>dplyr</code> package.</p>
+<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="viz.html#cb121-1" tabindex="-1"></a>colo_dat <span class="sc">%&gt;%</span> </span>
+<span id="cb121-2"><a href="viz.html#cb121-2" tabindex="-1"></a>  <span class="fu">group_by</span>(urban_rural) <span class="sc">%&gt;%</span> </span>
+<span id="cb121-3"><a href="viz.html#cb121-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_mh =</span> <span class="fu">mean</span>(mental_health)) <span class="sc">%&gt;%</span> </span>
+<span id="cb121-4"><a href="viz.html#cb121-4" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(mean_mh))</span></code></pre></div>
+<pre><code>## # A tibble: 9 × 2
+##   urban_rural          mean_mh
+##   &lt;fct&gt;                  &lt;dbl&gt;
+## 1 Metro &lt; 250k            4.05
+## 2 UP 2500-20k, adj        3.83
+## 3 Rural, adj              3.77
+## 4 UP &gt; 20k, adj           3.67
+## 5 Rural, non-adj          3.63
+## 6 UP 2500-20k, non-adj    3.54
+## 7 Metro 250k-1M           3.28
+## 8 Metro &gt;1M               3.21
+## 9 UP &lt; 20k, non-adj       3.17</code></pre>
+</div>
+<div id="line-graphs" class="section level3 hasAnchor" number="1.2.2">
+<h3><span class="header-section-number">1.2.2</span> Line Graphs<a href="viz.html#line-graphs" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Now that our two datasets are together, we could make some more graphs. We could make line-graphs of cases. First, we could show how the total number of cases looks across counties.</p>
+<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="viz.html#cb123-1" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x=</span>date, <span class="at">y=</span>cases)) <span class="sc">+</span> </span>
+<span id="cb123-2"><a href="viz.html#cb123-2" tabindex="-1"></a>  <span class="fu">stat_summary</span>(<span class="at">fun=</span>sum, <span class="at">geom=</span><span class="st">&quot;line&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb123-3"><a href="viz.html#cb123-3" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb123-4"><a href="viz.html#cb123-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Date&quot;</span>, <span class="at">y=</span><span class="st">&quot;Total COVID-19 Cases&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-37-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>Note that cases in the dataset is the number of cases to date - a cumulative sum. If we wanted to figure out how many <em>new</em> cases happened each day, we could subtract the previous day’s total form the current day. We could do this with the <code>lag()</code> function.</p>
+<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="viz.html#cb124-1" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb124-2"><a href="viz.html#cb124-2" tabindex="-1"></a>covid_filled <span class="ot">&lt;-</span> covid <span class="sc">%&gt;%</span> </span>
+<span id="cb124-3"><a href="viz.html#cb124-3" tabindex="-1"></a>  <span class="fu">complete</span>(county, date) <span class="sc">%&gt;%</span> </span>
+<span id="cb124-4"><a href="viz.html#cb124-4" tabindex="-1"></a>  <span class="fu">fill</span>(cases, deaths, <span class="at">.direction =</span> <span class="st">&quot;down&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb124-5"><a href="viz.html#cb124-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cases =</span> <span class="fu">ifelse</span>(cases <span class="sc">&lt;</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(cases), dplyr<span class="sc">::</span><span class="fu">lag</span>(cases), cases)) <span class="sc">%&gt;%</span> </span>
+<span id="cb124-6"><a href="viz.html#cb124-6" tabindex="-1"></a>  <span class="fu">filter</span>(date <span class="sc">&gt;=</span> lubridate<span class="sc">::</span><span class="fu">ymd</span>(<span class="st">&quot;2021-01-01&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb124-7"><a href="viz.html#cb124-7" tabindex="-1"></a>  <span class="fu">group_by</span>(county) <span class="sc">%&gt;%</span></span>
+<span id="cb124-8"><a href="viz.html#cb124-8" tabindex="-1"></a>  <span class="fu">arrange</span>(date, <span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb124-9"><a href="viz.html#cb124-9" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">new_cases =</span> cases <span class="sc">-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(cases))</span></code></pre></div>
+<p>Then, we could plot the sum of <code>new_cases</code> by date.</p>
+<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="viz.html#cb125-1" tabindex="-1"></a><span class="fu">ggplot</span>(covid_filled, <span class="fu">aes</span>(<span class="at">x=</span>date, <span class="at">y=</span>new_cases)) <span class="sc">+</span> </span>
+<span id="cb125-2"><a href="viz.html#cb125-2" tabindex="-1"></a>  <span class="fu">stat_summary</span>(<span class="at">fun=</span>sum, <span class="at">geom=</span><span class="st">&quot;line&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb125-3"><a href="viz.html#cb125-3" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb125-4"><a href="viz.html#cb125-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Date&quot;</span>, <span class="at">y=</span><span class="st">&quot;New COVID-19 Cases&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-39-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Now, I want you to try doing the same thing with the <code>deaths</code> variable.</p>
+</div>
+<p>We could also put a smooth trend line in the data with the <code>geom_smooth()</code> function. For this to work, though, we would need to actually make the summary data.</p>
+<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="viz.html#cb126-1" tabindex="-1"></a>covid_filled <span class="sc">%&gt;%</span> </span>
+<span id="cb126-2"><a href="viz.html#cb126-2" tabindex="-1"></a>  <span class="fu">group_by</span>(date) <span class="sc">%&gt;%</span> </span>
+<span id="cb126-3"><a href="viz.html#cb126-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">new_cases =</span> <span class="fu">sum</span>(new_cases)) <span class="sc">%&gt;%</span> </span>
+<span id="cb126-4"><a href="viz.html#cb126-4" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>date, <span class="at">y=</span>new_cases)) <span class="sc">+</span> </span>
+<span id="cb126-5"><a href="viz.html#cb126-5" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">col=</span><span class="st">&quot;gray50&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb126-6"><a href="viz.html#cb126-6" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">col=</span><span class="st">&quot;red&quot;</span>, <span class="at">size=</span><span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb126-7"><a href="viz.html#cb126-7" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb126-8"><a href="viz.html#cb126-8" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Date&quot;</span>, <span class="at">y=</span><span class="st">&quot;New COVID-19 Cases&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-40-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Now, you do the same thing with the <code>deaths</code> variable.</p>
+</div>
+<p>What if we wanted to plot the three worst counties in Colorado? Here we would first have to define “worst”. Let’s say for our purposes that we use the total number of cases on the last recorded day. We could then figure out the cases on the last day with the <code>last()</code> operator. We could also figure use the <code>top_n()</code> function to find the top</p>
+<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb127-1"><a href="viz.html#cb127-1" tabindex="-1"></a>worst_cases <span class="ot">&lt;-</span> covid_last <span class="sc">%&gt;%</span> </span>
+<span id="cb127-2"><a href="viz.html#cb127-2" tabindex="-1"></a>  ungroup <span class="sc">%&gt;%</span> </span>
+<span id="cb127-3"><a href="viz.html#cb127-3" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(cases)) <span class="sc">%&gt;%</span> </span>
+<span id="cb127-4"><a href="viz.html#cb127-4" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n=</span><span class="dv">5</span>)</span>
+<span id="cb127-5"><a href="viz.html#cb127-5" tabindex="-1"></a></span>
+<span id="cb127-6"><a href="viz.html#cb127-6" tabindex="-1"></a>covid <span class="sc">%&gt;%</span> </span>
+<span id="cb127-7"><a href="viz.html#cb127-7" tabindex="-1"></a>  <span class="fu">filter</span>(county <span class="sc">%in%</span> worst_cases<span class="sc">$</span>county) <span class="sc">%&gt;%</span> </span>
+<span id="cb127-8"><a href="viz.html#cb127-8" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>date, <span class="at">y=</span>cases, <span class="at">colour=</span>county)) <span class="sc">+</span> </span>
+<span id="cb127-9"><a href="viz.html#cb127-9" tabindex="-1"></a>    <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb127-10"><a href="viz.html#cb127-10" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb127-11"><a href="viz.html#cb127-11" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span></span>
+<span id="cb127-12"><a href="viz.html#cb127-12" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Date&quot;</span>, <span class="at">y=</span><span class="st">&quot;COVID-19 Cases&quot;</span>, <span class="at">colour=</span><span class="st">&quot;&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-41-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>It looks like things are pretty stable until say the middle of 2020 or so, why don’t we start then. The <code>xlim()</code> function allows us to do this.</p>
+<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="viz.html#cb128-1" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb128-2"><a href="viz.html#cb128-2" tabindex="-1"></a>covid <span class="sc">%&gt;%</span> </span>
+<span id="cb128-3"><a href="viz.html#cb128-3" tabindex="-1"></a>  <span class="fu">filter</span>(county <span class="sc">%in%</span> worst_cases<span class="sc">$</span>county) <span class="sc">%&gt;%</span> </span>
+<span id="cb128-4"><a href="viz.html#cb128-4" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>date, <span class="at">y=</span>cases, <span class="at">colour=</span>county)) <span class="sc">+</span> </span>
+<span id="cb128-5"><a href="viz.html#cb128-5" tabindex="-1"></a>    <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb128-6"><a href="viz.html#cb128-6" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb128-7"><a href="viz.html#cb128-7" tabindex="-1"></a>    <span class="fu">xlim</span>(<span class="fu">ymd</span>(<span class="st">&quot;2020-07-01&quot;</span>), <span class="fu">max</span>(covid<span class="sc">$</span>date)) <span class="sc">+</span></span>
+<span id="cb128-8"><a href="viz.html#cb128-8" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span></span>
+<span id="cb128-9"><a href="viz.html#cb128-9" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Date&quot;</span>, <span class="at">y=</span><span class="st">&quot;COVID-19 Cases&quot;</span>, <span class="at">colour=</span><span class="st">&quot;&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-42-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>Or, we could do it with the <code>scale_x_continuous()</code> function, can be used to impose exact limits on the plotting region by setting <code>expand=c(0,0)</code> as below.</p>
+<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="viz.html#cb129-1" tabindex="-1"></a>covid <span class="sc">%&gt;%</span> </span>
+<span id="cb129-2"><a href="viz.html#cb129-2" tabindex="-1"></a>  <span class="fu">filter</span>(county <span class="sc">%in%</span> worst_cases<span class="sc">$</span>county) <span class="sc">%&gt;%</span> </span>
+<span id="cb129-3"><a href="viz.html#cb129-3" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>date, <span class="at">y=</span>cases, <span class="at">colour=</span>county)) <span class="sc">+</span> </span>
+<span id="cb129-4"><a href="viz.html#cb129-4" tabindex="-1"></a>    <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb129-5"><a href="viz.html#cb129-5" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb129-6"><a href="viz.html#cb129-6" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span></span>
+<span id="cb129-7"><a href="viz.html#cb129-7" tabindex="-1"></a>    <span class="fu">scale_x_date</span>(<span class="at">limits=</span><span class="fu">c</span>(<span class="fu">ymd</span>(<span class="st">&quot;2020-03-15&quot;</span>), <span class="fu">max</span>(covid<span class="sc">$</span>date)), </span>
+<span id="cb129-8"><a href="viz.html#cb129-8" tabindex="-1"></a>                 <span class="at">expand=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>)) <span class="sc">+</span></span>
+<span id="cb129-9"><a href="viz.html#cb129-9" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Date&quot;</span>, <span class="at">y=</span><span class="st">&quot;COVID-19 Cases&quot;</span>, <span class="at">colour=</span><span class="st">&quot;&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-43-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="viz.html#cb130-1" tabindex="-1"></a>covid <span class="sc">%&gt;%</span> </span>
+<span id="cb130-2"><a href="viz.html#cb130-2" tabindex="-1"></a>  <span class="fu">filter</span>(county <span class="sc">%in%</span> worst_cases<span class="sc">$</span>county) <span class="sc">%&gt;%</span> </span>
+<span id="cb130-3"><a href="viz.html#cb130-3" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>date, <span class="at">y=</span>cases, <span class="at">colour=</span>county)) <span class="sc">+</span> </span>
+<span id="cb130-4"><a href="viz.html#cb130-4" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb130-5"><a href="viz.html#cb130-5" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb130-6"><a href="viz.html#cb130-6" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb130-7"><a href="viz.html#cb130-7" tabindex="-1"></a>      <span class="at">sec.axis =</span> <span class="fu">sec_axis</span>(<span class="sc">~</span>., </span>
+<span id="cb130-8"><a href="viz.html#cb130-8" tabindex="-1"></a>                          <span class="at">breaks=</span>worst_cases<span class="sc">$</span>cases, </span>
+<span id="cb130-9"><a href="viz.html#cb130-9" tabindex="-1"></a>                          <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Denver&quot;</span>, <span class="st">&quot;Arapahoe&quot;</span>, </span>
+<span id="cb130-10"><a href="viz.html#cb130-10" tabindex="-1"></a>                                     <span class="st">&quot;Adams&quot;</span>, <span class="st">&quot;El Paso&quot;</span>, </span>
+<span id="cb130-11"><a href="viz.html#cb130-11" tabindex="-1"></a>                                     <span class="st">&quot;Jefferson&quot;</span>))) <span class="sc">+</span> </span>
+<span id="cb130-12"><a href="viz.html#cb130-12" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span></span>
+<span id="cb130-13"><a href="viz.html#cb130-13" tabindex="-1"></a>    <span class="fu">scale_x_date</span>(<span class="at">limits=</span><span class="fu">c</span>(<span class="fu">ymd</span>(<span class="st">&quot;2020-03-15&quot;</span>), <span class="fu">max</span>(covid<span class="sc">$</span>date)), </span>
+<span id="cb130-14"><a href="viz.html#cb130-14" tabindex="-1"></a>                 <span class="at">expand=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>)) <span class="sc">+</span></span>
+<span id="cb130-15"><a href="viz.html#cb130-15" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Date&quot;</span>, <span class="at">y=</span><span class="st">&quot;COVID-19 Cases&quot;</span>, <span class="at">colour=</span><span class="st">&quot;&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-44-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>You make the same kind of graph, but get the 4 worst counties with respect to the <code>deaths</code> variable.</p>
+</div>
+<div id="controlling-colour" class="section level4 hasAnchor" number="1.2.2.1">
+<h4><span class="header-section-number">1.2.2.1</span> Controlling Colour<a href="viz.html#controlling-colour" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>We can change the colours of lines with the <code>scale_colour_manual()</code> function. The first argument is <code>values</code> which has to be a vector of colours. There is also an optional <code>labels</code> argument that would allow you to override the default labels attached to the colours.</p>
+<p>If you’re looking for resources for choosing colours, here are a couple that might be useful</p>
+<ul>
+<li><a href="https://colorbrewer2.org/"><strong>Colorbrewer</strong></a> is a website that is specifically designed for mapping colors, but the palettes are general enough to be used for anything. All of the palettes are implemented in the <code>RColorBrewer</code> package.</li>
+<li><a href="https://paletton.com"><strong>Paletton</strong></a> is not a fancy exercise bike, but a website that helps you pick colour palettes. If you find one you like, there is a “Tables/Export” button right below the colour swatches. If you click that, it will tell you the hex codes for the colours that you can use in R.</li>
+</ul>
+<p>Looking at the ColorBrewer website, we let’s say we wanted to use the “Set-2” palette. We could do that as follows:</p>
+<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="viz.html#cb131-1" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer)</span>
+<span id="cb131-2"><a href="viz.html#cb131-2" tabindex="-1"></a>covid <span class="sc">%&gt;%</span> </span>
+<span id="cb131-3"><a href="viz.html#cb131-3" tabindex="-1"></a>  <span class="fu">filter</span>(county <span class="sc">%in%</span> worst_cases<span class="sc">$</span>county) <span class="sc">%&gt;%</span> </span>
+<span id="cb131-4"><a href="viz.html#cb131-4" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>date, <span class="at">y=</span>cases, <span class="at">colour=</span>county)) <span class="sc">+</span> </span>
+<span id="cb131-5"><a href="viz.html#cb131-5" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb131-6"><a href="viz.html#cb131-6" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb131-7"><a href="viz.html#cb131-7" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb131-8"><a href="viz.html#cb131-8" tabindex="-1"></a>      <span class="at">sec.axis =</span> <span class="fu">sec_axis</span>(<span class="sc">~</span>., </span>
+<span id="cb131-9"><a href="viz.html#cb131-9" tabindex="-1"></a>                          <span class="at">breaks=</span>worst_cases<span class="sc">$</span>cases, </span>
+<span id="cb131-10"><a href="viz.html#cb131-10" tabindex="-1"></a>                          <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Denver&quot;</span>, <span class="st">&quot;Arapahoe&quot;</span>, </span>
+<span id="cb131-11"><a href="viz.html#cb131-11" tabindex="-1"></a>                                     <span class="st">&quot;Adams&quot;</span>, <span class="st">&quot;El Paso&quot;</span>, </span>
+<span id="cb131-12"><a href="viz.html#cb131-12" tabindex="-1"></a>                                     <span class="st">&quot;Jefferson&quot;</span>))) <span class="sc">+</span> </span>
+<span id="cb131-13"><a href="viz.html#cb131-13" tabindex="-1"></a>    <span class="fu">scale_colour_manual</span>(<span class="at">values=</span><span class="fu">brewer.pal</span>(<span class="dv">5</span>, <span class="st">&quot;Set2&quot;</span>)) <span class="sc">+</span> </span>
+<span id="cb131-14"><a href="viz.html#cb131-14" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span></span>
+<span id="cb131-15"><a href="viz.html#cb131-15" tabindex="-1"></a>    <span class="fu">scale_x_date</span>(<span class="at">limits=</span><span class="fu">c</span>(<span class="fu">ymd</span>(<span class="st">&quot;2020-03-15&quot;</span>),<span class="fu">max</span>(covid<span class="sc">$</span>date)), </span>
+<span id="cb131-16"><a href="viz.html#cb131-16" tabindex="-1"></a>                 <span class="at">expand=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>)) <span class="sc">+</span></span>
+<span id="cb131-17"><a href="viz.html#cb131-17" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Date&quot;</span>, <span class="at">y=</span><span class="st">&quot;COVID-19 Cases&quot;</span>, <span class="at">colour=</span><span class="st">&quot;&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-45-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Implement a new colour scheme in your plot of the worst places in Colorado with respect to <code>deaths</code>.</p>
+</div>
+<p>We could move back and plot all of the lines on the same graph. Doing this, we probably don’t want to colour them differently. We would rather have them look all the same to identify the overall patterns. We could also put in a line for the mean with the <code>stat_summary()</code> function and we could even change the scale of <span class="math inline">\(y\)</span> to be <code>log10</code> instead of in the level. Note that the <code>group</code> aesthetic is defined for the line geometry, but not for the whole plot. To define it for the whole would calculate the mean of cases by day within each county. Putting the <code>group</code> aesthetic in the line geometry means that it only affects the drawing of these lines and not the line drawn by <code>stat_summary()</code>.</p>
+<div class="sourceCode" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb132-1"><a href="viz.html#cb132-1" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x=</span>date, <span class="at">y=</span>cases)) <span class="sc">+</span> </span>
+<span id="cb132-2"><a href="viz.html#cb132-2" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group=</span>county), <span class="at">col=</span><span class="st">&quot;gray65&quot;</span>, <span class="at">size=</span>.<span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb132-3"><a href="viz.html#cb132-3" tabindex="-1"></a>  <span class="fu">stat_summary</span>(<span class="at">fun=</span>mean, <span class="at">col=</span><span class="st">&quot;red&quot;</span>, <span class="at">geom=</span><span class="st">&quot;line&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb132-4"><a href="viz.html#cb132-4" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb132-5"><a href="viz.html#cb132-5" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">limits=</span><span class="fu">c</span>(<span class="fu">ymd</span>(<span class="st">&quot;2020-03-15&quot;</span>), <span class="fu">max</span>(covid<span class="sc">$</span>date)), </span>
+<span id="cb132-6"><a href="viz.html#cb132-6" tabindex="-1"></a>               <span class="at">expand=</span><span class="fu">c</span>(.<span class="dv">01</span>,.<span class="dv">01</span>)) <span class="sc">+</span></span>
+<span id="cb132-7"><a href="viz.html#cb132-7" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span> </span>
+<span id="cb132-8"><a href="viz.html#cb132-8" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Date&quot;</span>, <span class="at">y=</span><span class="st">&quot;COVID-19 Cases&quot;</span>, <span class="at">colour=</span><span class="st">&quot;&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-46-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Now, you do the same as above, but for <code>deaths</code>.</p>
+</div>
+</div>
+</div>
+<div id="histograms" class="section level3 hasAnchor" number="1.2.3">
+<h3><span class="header-section-number">1.2.3</span> Histograms<a href="viz.html#histograms" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We can move to talk about histograms. We could look at the distribution of republican vote (<code>repvote</code>) in Colorado.</p>
+<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="viz.html#cb133-1" tabindex="-1"></a><span class="fu">ggplot</span>(colo_dat, <span class="fu">aes</span>(<span class="at">x=</span>repvote)) <span class="sc">+</span> </span>
+<span id="cb133-2"><a href="viz.html#cb133-2" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span> </span>
+<span id="cb133-3"><a href="viz.html#cb133-3" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb133-4"><a href="viz.html#cb133-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;COVID-19 Cases&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-47-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>Note, that there are lots of bins, probably too many. We could instead use fewer, say 7.</p>
+<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="viz.html#cb134-1" tabindex="-1"></a><span class="fu">ggplot</span>(colo_dat, <span class="fu">aes</span>(<span class="at">x=</span>repvote)) <span class="sc">+</span> </span>
+<span id="cb134-2"><a href="viz.html#cb134-2" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins=</span><span class="dv">7</span>) <span class="sc">+</span></span>
+<span id="cb134-3"><a href="viz.html#cb134-3" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb134-4"><a href="viz.html#cb134-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;COVID-19 Cases&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-48-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Find a variable or two in the data and make a histogram of their distributions. Note that the <code>bins=#</code> argument to the histogram geometry will produce a histogram with approximately <code>#</code> bins.</p>
+</div>
+<p>To make things a bit more interesting, let’s make a new variable that codes whether a majority of the two-party vote went to the republican or note. There is a <code>recode()</code> function in the <code>dplyr</code> package, but it’s not actually the best one. I have always like the one in the <code>car</code> package better.</p>
+<div id="package-masking" class="section level4 hasAnchor" number="1.2.3.1">
+<h4><span class="header-section-number">1.2.3.1</span> Package masking<a href="viz.html#package-masking" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>This brings up an important point to think about. When we load two packages that have functions of the same name in them, the more recent one loaded <em>masks</em> the more distant one loaded. In this case, we have been using the <code>dplyr</code> functions quite extensively and we just want to use one function from the <code>car</code> package. Rather than using <code>library(car)</code> and then specifying the <code>recode</code> function and hoping that <code>car</code> was loaded after <code>dplyr</code>, we can be explicit about where we want R to find the function. We can cal <code>car::recode()</code> instead. This tells R to get the <code>recode()</code> function from the <code>car</code> package. The two colons <code>::</code> mean get a function that is <em>exported</em> from the <em>namespace</em>. Let’s talk about these two terms for a second.</p>
+<p>When people build packages for R, it creates a <em>namespace</em> that contains all of the functions that exist in the package. This is, for example, so functios inside the <code>car</code> package can easily access other functions inside the <code>car</code> package.</p>
+<p>Some, and sometimes all, of the functions that people write in a package are <em>exported</em> - meaning that they are intended to be called directly by end users. Some functions, however, may not be exported - specifically those that are intended to be called by other functions within the package, but not by the end users directly. The two colons can retrieve functions from that namespace that are exported. Three colons <code>:::</code> can retrieve <em>any</em> function from the namespace, whether or not it was exported by the end user. These can be useful if you want to make sure you’re always using the right version of a function that you know often gets masked.</p>
+<p>As more and more packages are written for R, this is more and more likely to happen. There are a few that happen regularly for things that I do. The aforementioned <code>recode()</code> function is one (both in <code>car</code> and <code>dplyr</code>), but so is the <code>select()</code> function, which is in both the <code>MASS</code> package and <code>dplyr</code>.</p>
+</div>
+<div id="recoding-variables" class="section level4 hasAnchor" number="1.2.3.2">
+<h4><span class="header-section-number">1.2.3.2</span> Recoding Variables<a href="viz.html#recoding-variables" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>We will recode the values of <code>repvote</code> such that values less than or equal to 50 are coded as “Democratic Majority” and values greater than 50 is coded as “Republican Majority”. If we had any values that were exactly <span class="math inline">\(50%\)</span>, we might want to include a category or ties, but we don’t have that here. The first argument to the <code>recode()</code> function is a vector of values to be recoded. The second is a set of recode instructions with the following properties:</p>
+<ol style="list-style-type: decimal">
+<li>The entire set of recode instructions must be inside a single set of quotations (either single quotes or double quotes).<br />
+</li>
+<li>Each individual recode instruction is separated from the next by a semicolon (<code>;</code>).</li>
+</ol>
+<p>The recode instructions take the form of <code>old-values = new-value</code>, where <code>old-values</code> can be a scalar (e.g., <code>2=1</code>), vector (e.g., <code>c(1,2,3)=0</code>) or range (e.g., <code>1:4 =0</code>). The range operator (<code>:</code>) works differently in the recode function than it does in the rest of R. In the rest of R, it creates sequences of integer values between the number on the left of the colon to the number on the right:</p>
+<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="viz.html#cb135-1" tabindex="-1"></a><span class="dv">1</span><span class="sc">:</span><span class="dv">5</span></span></code></pre></div>
+<pre><code>## [1] 1 2 3 4 5</code></pre>
+<p>However in the <code>recode()</code> function, it means <em>all</em> values between the number on its left and the number on its right, inclusive of the bounds. For ranges, there are a couple of “helper” values: <code>lo</code> and <code>hi</code> fill in for the lowest and highest values in the variables without having to identify the numbers directly.</p>
+<p>The result can be returned as a factor (if you supply the argument <code>as.factor=TRUE</code>) and if you do that, you can also set the ordering of the levels with the <code>levels</code> argument. Here, the levels have to be spelled exactly as they are in the recode instructions. As discussed in the <a href="index.html#data-types-in-r">Data Types in R</a> section, the first value of a factor will serve as the reference category in models. Below, we put all of these pieces together.</p>
+<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb137-1"><a href="viz.html#cb137-1" tabindex="-1"></a>colo_dat <span class="ot">&lt;-</span> colo_dat <span class="sc">%&gt;%</span> </span>
+<span id="cb137-2"><a href="viz.html#cb137-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">maj_party =</span> car<span class="sc">::</span><span class="fu">recode</span>(repvote, </span>
+<span id="cb137-3"><a href="viz.html#cb137-3" tabindex="-1"></a>                                 <span class="st">&quot;lo:.5=&#39;Democratic&#39;; .5:hi=&#39;Republican&#39;&quot;</span>, </span>
+<span id="cb137-4"><a href="viz.html#cb137-4" tabindex="-1"></a>                                 <span class="at">as.factor=</span><span class="cn">TRUE</span>, </span>
+<span id="cb137-5"><a href="viz.html#cb137-5" tabindex="-1"></a>                                 <span class="at">levels=</span><span class="fu">c</span>(<span class="st">&quot;Democratic&quot;</span>, <span class="st">&quot;Republican&quot;</span>)))</span></code></pre></div>
+<p>Note that above, .5 is the upper bound of the first recode statement and the lower bound of the second. We don’t actually have any values of exactly 0.5, but if we did, those values would go into the <code>Democratic</code> catetory. It’s the first recode statement involving a number that is operative.</p>
+<p>Now, we could go back to make our histogram of the log of cases conditioning on majority vote. There are generally two methods of plotting multiple groups - <strong>superposition</strong> and <strong>justaposition</strong>. We’ve already seen superposition at work in the graphs above with multiple lines.</p>
+<ul>
+<li>In superposed graphs, multiple groups are plotted in the same plotting region (we might call it a “panel”). We saw this above when we had different coloured lines where each group is represented as a different colour. The aesthetic elements <code>size</code>, <code>shape</code>, <code>linetype</code>, <code>colour</code> - all represent methods for identifying superposed series.</li>
+<li>In juxtaposed graphs, each group is plotted in its own panel. Colours are not needed because each panel contains only a single series and the group is identified in the strip above the panel. This is done with either the <code>facet_wrap()</code> or <code>facet_grid()</code> function in <em>R</em>.</li>
+</ul>
+<p>First, let’s do the juxtaposed plot of mental health.</p>
+<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="viz.html#cb138-1" tabindex="-1"></a><span class="fu">ggplot</span>(colo_dat, <span class="fu">aes</span>(<span class="at">x=</span>mental_health)) <span class="sc">+</span> </span>
+<span id="cb138-2"><a href="viz.html#cb138-2" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins=</span><span class="dv">7</span>) <span class="sc">+</span> </span>
+<span id="cb138-3"><a href="viz.html#cb138-3" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb138-4"><a href="viz.html#cb138-4" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio=</span><span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb138-5"><a href="viz.html#cb138-5" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>maj_party) <span class="sc">+</span> </span>
+<span id="cb138-6"><a href="viz.html#cb138-6" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Mental Health Score&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-51-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>If we wanted to superpose the cases, we could do that by specifying the <code>fill</code> aesthetic. In the code below, we set the <code>alpha</code> parameter in the histogram geometry, which allows the colours to be semi-transparent. The <code>alpha</code> parameter ranges from 0 (completely transparent) to 1 (completely opaque).</p>
+<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="viz.html#cb139-1" tabindex="-1"></a><span class="fu">ggplot</span>(colo_dat, <span class="fu">aes</span>(<span class="at">x=</span>mental_health, <span class="at">fill=</span>maj_party)) <span class="sc">+</span> </span>
+<span id="cb139-2"><a href="viz.html#cb139-2" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins=</span><span class="dv">7</span>, <span class="at">alpha=</span>.<span class="dv">3</span>) <span class="sc">+</span> </span>
+<span id="cb139-3"><a href="viz.html#cb139-3" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb139-4"><a href="viz.html#cb139-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Mental Health&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-52-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>The default position of the histograms above is to stack them. That is, for each bin, the democratic values are stacked on top of the republican values. If you would rather have them each plotted starting at zero, you could use <code>position="identity"</code> as an argument to the histogram geometry.</p>
+<div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb140-1"><a href="viz.html#cb140-1" tabindex="-1"></a><span class="fu">ggplot</span>(colo_dat, <span class="fu">aes</span>(<span class="at">x=</span>mental_health, <span class="at">fill=</span>maj_party)) <span class="sc">+</span> </span>
+<span id="cb140-2"><a href="viz.html#cb140-2" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins=</span><span class="dv">7</span>, <span class="at">alpha=</span>.<span class="dv">3</span>, <span class="at">position=</span><span class="st">&quot;identity&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb140-3"><a href="viz.html#cb140-3" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb140-4"><a href="viz.html#cb140-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Mental Health&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-53-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<ul>
+<li>Make a two-category variable from the <code>mental_health</code> variable such that values less than or equal to 3.5 are in the “low” category and those greater than 3.5 are in the “high” category.</li>
+<li>Make a histogram of the <code>inactivity</code> variable by the new <code>mental_health</code> categorical variable that you made.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="scatterplots" class="section level3 hasAnchor" number="1.2.4">
+<h3><span class="header-section-number">1.2.4</span> Scatterplots<a href="viz.html#scatterplots" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Finally, for now, we’ll investigate scatterplots. We can make a scatterplot between the average weekly wage (<code>wkly_wage</code>) and the proportion of people with a BA or higher (<code>BAplus</code>).</p>
+<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="viz.html#cb141-1" tabindex="-1"></a><span class="fu">ggplot</span>(colo_dat, <span class="fu">aes</span>(<span class="at">x=</span>BAplus, <span class="at">y=</span>wkly_wage)) <span class="sc">+</span> </span>
+<span id="cb141-2"><a href="viz.html#cb141-2" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb141-3"><a href="viz.html#cb141-3" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb141-4"><a href="viz.html#cb141-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;% with BA Degree or Higher&quot;</span>, </span>
+<span id="cb141-5"><a href="viz.html#cb141-5" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Average Weekly Wage&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-54-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>In the figure above the plotting symbol is the default filled circle. This can be changed with either <code>pch</code> or <code>shape</code>. The options are:</p>
+<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="viz.html#cb142-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">&quot;images/pch.png&quot;</span>)</span></code></pre></div>
+<p><img src="images/pch.png" width="35%" style="display: block; margin: auto;" /></p>
+<p>The filled symbols are fine for small datasets, but open symbols are better for larger datasets as they allow you to more easily visualize overplotting of symbols (i.e., it’s easier to see the density of data). Another option would be to set the <code>alpha</code> parameter to a small value - this would allow you to visualize overplotting as well.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<ul>
+<li>Now, you make a scatterplot of the weekly wage against a different variable. Bonus points for adding a smooth trend line to the graph.<br />
+</li>
+<li>Make the symbols different based on the <code>mental_health</code> categorical variable you made before.</li>
+</ul>
+</div>
+<p>If you wanted text instead of points, you could add a text geometry instead of the point geometry.</p>
+<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="viz.html#cb143-1" tabindex="-1"></a><span class="fu">ggplot</span>(colo_dat, <span class="fu">aes</span>(<span class="at">x=</span>BAplus, <span class="at">y=</span>wkly_wage)) <span class="sc">+</span> </span>
+<span id="cb143-2"><a href="viz.html#cb143-2" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label=</span>county)) <span class="sc">+</span> </span>
+<span id="cb143-3"><a href="viz.html#cb143-3" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb143-4"><a href="viz.html#cb143-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;% with BA Degree or Higher&quot;</span>, </span>
+<span id="cb143-5"><a href="viz.html#cb143-5" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Average Weekly Wage&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-56-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>If you’re printing this for the web or you want to explore the plot yourself, you could use the <code>plotly</code> package, which makes interactive graphics. There is a <code>ggplotly</code> function that turns ggplots into interactive plotly plots. The function below will buld a plot such that when you hover over each point, it gives the county and the values of the two variables in the scatterplot.</p>
+<div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="viz.html#cb144-1" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb144-2"><a href="viz.html#cb144-2" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> colo_dat <span class="sc">%&gt;%</span> </span>
+<span id="cb144-3"><a href="viz.html#cb144-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label =</span> <span class="fu">paste</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">County: &quot;</span>, county, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">BA or Greater: &quot;</span>, <span class="fu">round</span>(BAplus, <span class="dv">2</span>)<span class="sc">*</span><span class="dv">100</span>, </span>
+<span id="cb144-4"><a href="viz.html#cb144-4" tabindex="-1"></a>                     <span class="st">&quot;</span><span class="sc">\n</span><span class="st">Weekly Wage: &quot;</span>, wkly_wage, <span class="at">sep=</span><span class="st">&quot;&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb144-5"><a href="viz.html#cb144-5" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>BAplus, <span class="at">y=</span>wkly_wage, <span class="at">text=</span>label)) <span class="sc">+</span> </span>
+<span id="cb144-6"><a href="viz.html#cb144-6" tabindex="-1"></a>    <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb144-7"><a href="viz.html#cb144-7" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb144-8"><a href="viz.html#cb144-8" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;% with BA Degree or Higher&quot;</span>, </span>
+<span id="cb144-9"><a href="viz.html#cb144-9" tabindex="-1"></a>         <span class="at">y=</span><span class="st">&quot;Average Weekly Wage&quot;</span>) </span>
+<span id="cb144-10"><a href="viz.html#cb144-10" tabindex="-1"></a><span class="fu">ggplotly</span>(g1, <span class="at">tooltip =</span> <span class="st">&quot;text&quot;</span>)</span></code></pre></div>
+<center>
+</center>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Take one of the visualizations you made above and make it into a <code>plotly</code> plot.</p>
+</div>
+</div>
+<div id="multiple-series" class="section level3 hasAnchor" number="1.2.5">
+<h3><span class="header-section-number">1.2.5</span> Multiple Series<a href="viz.html#multiple-series" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>As a wrap-up, let’s see how we would plot both deaths and cases in the same plot. We saw how to do this earlier when we wanted to plot multiple groups for a single variable. The idea here would be the same, we simply need to transform our dataset into one where the groups represent different variables. That is, we need to reshape it from wide to long format. To do this, we can use the <code>pivot_longer()</code> function from the <code>tidyr</code> package.</p>
+<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="viz.html#cb145-1" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> covid <span class="sc">%&gt;%</span> </span>
+<span id="cb145-2"><a href="viz.html#cb145-2" tabindex="-1"></a>  <span class="fu">select</span>(county, date, deaths, cases) <span class="sc">%&gt;%</span> </span>
+<span id="cb145-3"><a href="viz.html#cb145-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cases =</span> cases<span class="sc">/</span><span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb145-4"><a href="viz.html#cb145-4" tabindex="-1"></a>  <span class="fu">group_by</span>(date) <span class="sc">%&gt;%</span> </span>
+<span id="cb145-5"><a href="viz.html#cb145-5" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">c</span>(<span class="st">&quot;cases&quot;</span>, <span class="st">&quot;deaths&quot;</span>), sum)) <span class="sc">%&gt;%</span> </span>
+<span id="cb145-6"><a href="viz.html#cb145-6" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="fu">c</span>(<span class="st">&quot;cases&quot;</span>, <span class="st">&quot;deaths&quot;</span>), </span>
+<span id="cb145-7"><a href="viz.html#cb145-7" tabindex="-1"></a>               <span class="at">names_to=</span><span class="st">&quot;var&quot;</span>, </span>
+<span id="cb145-8"><a href="viz.html#cb145-8" tabindex="-1"></a>               <span class="at">values_to=</span><span class="st">&quot;val&quot;</span>) </span></code></pre></div>
+<div class="sourceCode" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb146-1"><a href="viz.html#cb146-1" tabindex="-1"></a>tmp <span class="sc">%&gt;%</span> </span>
+<span id="cb146-2"><a href="viz.html#cb146-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">var =</span> <span class="fu">factor</span>(var, <span class="at">levels=</span><span class="fu">c</span>(<span class="st">&quot;cases&quot;</span>, <span class="st">&quot;deaths&quot;</span>), </span>
+<span id="cb146-3"><a href="viz.html#cb146-3" tabindex="-1"></a>                      <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;Cases (Hundreds)&quot;</span>, <span class="st">&quot;Deaths&quot;</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb146-4"><a href="viz.html#cb146-4" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>date, <span class="at">y=</span>val, <span class="at">colour=</span>var)) <span class="sc">+</span> </span>
+<span id="cb146-5"><a href="viz.html#cb146-5" tabindex="-1"></a>    <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb146-6"><a href="viz.html#cb146-6" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb146-7"><a href="viz.html#cb146-7" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb146-8"><a href="viz.html#cb146-8" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Date&quot;</span>, <span class="at">y=</span><span class="st">&quot;Count&quot;</span>, <span class="at">colour=</span><span class="st">&quot;Series&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-59-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div id="with-great-power-comes-great-responsibility" class="section level4 hasAnchor" number="1.2.5.1">
+<h4><span class="header-section-number">1.2.5.1</span> With Great Power Comes Great Responsibility<a href="viz.html#with-great-power-comes-great-responsibility" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>The <code>ggplot</code> environment makes it really easy to do lots of cool things. Just remember the important equation <span class="math inline">\(\text{Cool} + \text{Cool} + \text{Cool} \neq \text{Super Cool}\)</span>. Here’s an example.</p>
+<p>Before we move on, we’re going to create one more categorical variable, this time out of the <code>urban_rural</code> variable, which is already categorical. However, we want to group all of the areas identified as “Metro” together, the areas identified as “UP” together and the areas identified as “Rural” together. We could do this with a traditional recode statement, but I thought this would be a good place to talk about how <em>R</em> can deal with strings. There is a really useful package called <code>stringr</code> which has tons of functions for string manipulation. The one we’re going to use is called <code>str_extract()</code> which pulls some sub-string out of a set of characters. It’s like a search and recovery mission for parts of strings. Below, we’re going to search for Metro or UP or Rural and then if it finds any of those it will extract just those bits.</p>
+<div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="viz.html#cb147-1" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb147-2"><a href="viz.html#cb147-2" tabindex="-1"></a>colo_dat <span class="ot">&lt;-</span> colo_dat <span class="sc">%&gt;%</span> </span>
+<span id="cb147-3"><a href="viz.html#cb147-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mur =</span> <span class="fu">str_extract</span>(urban_rural, <span class="st">&quot;Metro|UP|Rural&quot;</span>), </span>
+<span id="cb147-4"><a href="viz.html#cb147-4" tabindex="-1"></a>         <span class="at">mur =</span> <span class="fu">factor</span>(mur, <span class="at">levels=</span><span class="fu">c</span>(<span class="st">&quot;Rural&quot;</span>, <span class="st">&quot;UP&quot;</span>, <span class="st">&quot;Metro&quot;</span>)))</span></code></pre></div>
+<p>Below, we make a scatterplot of weekly wage by proportion with a BA or greater we encode colour as republican vote and size as the log of total population.</p>
+<div class="sourceCode" id="cb148"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb148-1"><a href="viz.html#cb148-1" tabindex="-1"></a><span class="fu">ggplot</span>(colo_dat, <span class="fu">aes</span>(<span class="at">x=</span>BAplus, <span class="at">y=</span>wkly_wage, <span class="at">colour=</span>repvote, <span class="at">size=</span><span class="fu">log</span>(tpop))) <span class="sc">+</span> </span>
+<span id="cb148-2"><a href="viz.html#cb148-2" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb148-3"><a href="viz.html#cb148-3" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">se=</span><span class="cn">TRUE</span>, <span class="at">alpha=</span>.<span class="dv">25</span>, <span class="at">show.legend=</span><span class="cn">FALSE</span>) <span class="sc">+</span> </span>
+<span id="cb148-4"><a href="viz.html#cb148-4" tabindex="-1"></a>  <span class="fu">scale_colour_viridis_c</span>() <span class="sc">+</span></span>
+<span id="cb148-5"><a href="viz.html#cb148-5" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>mur) <span class="sc">+</span> </span>
+<span id="cb148-6"><a href="viz.html#cb148-6" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb148-7"><a href="viz.html#cb148-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Proportion with BA Degree or Higher&quot;</span>, </span>
+<span id="cb148-8"><a href="viz.html#cb148-8" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Weekly Wage)&quot;</span>, </span>
+<span id="cb148-9"><a href="viz.html#cb148-9" tabindex="-1"></a>       <span class="at">colour=</span><span class="st">&quot;% Republican&quot;</span>, </span>
+<span id="cb148-10"><a href="viz.html#cb148-10" tabindex="-1"></a>       <span class="at">size=</span><span class="st">&quot;Total Population (log)&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-61-1.png" width="100%" /></p>
+<p>As the figure above clearly demonstrates, we can encode lots of information into geometric elements. The cognitive task of decoding all of that information is quite high. Generally, we’re not great at distinguishing different sizes of things, though with only 4 sizes, it might not be too bad. We’re also not good at making fine distinctions in color hue or saturation. Just make sure that what you’re presenting conveys the point you want to convey in the simplest possible way.</p>
+</div>
+</div>
+</div>
+<div id="recap" class="section level2 hasAnchor" number="1.3">
+<h2><span class="header-section-number">1.3</span> Recap<a href="viz.html#recap" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>OK, so back to the main question - what do we learn about COVID-19 in Colorado? Well, given all of the tools that we’ve developed and what we know about COVID-19 infections, I think we could put together a useful visual.</p>
+<p>I want to show deaths and cases (though in different panels). I want to group by the <code>mur</code> variable. Let’s do it …</p>
+<div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb149-1"><a href="viz.html#cb149-1" tabindex="-1"></a>covid <span class="sc">%&gt;%</span> </span>
+<span id="cb149-2"><a href="viz.html#cb149-2" tabindex="-1"></a>  <span class="fu">left_join</span>(colo_dat <span class="sc">%&gt;%</span> <span class="fu">select</span>(county, tpop, mur)) <span class="sc">%&gt;%</span> </span>
+<span id="cb149-3"><a href="viz.html#cb149-3" tabindex="-1"></a>  <span class="fu">group_by</span>(date, mur) <span class="sc">%&gt;%</span> </span>
+<span id="cb149-4"><a href="viz.html#cb149-4" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">cases =</span> <span class="fu">median</span>(cases<span class="sc">/</span>(tpop<span class="sc">/</span><span class="dv">100000</span>)), </span>
+<span id="cb149-5"><a href="viz.html#cb149-5" tabindex="-1"></a>         <span class="at">deaths =</span> <span class="fu">median</span>(deaths<span class="sc">/</span>(tpop<span class="sc">/</span><span class="dv">100000</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb149-6"><a href="viz.html#cb149-6" tabindex="-1"></a>  <span class="fu">select</span>(date, mur, cases, deaths) <span class="sc">%&gt;%</span> </span>
+<span id="cb149-7"><a href="viz.html#cb149-7" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="fu">c</span>(<span class="st">&quot;cases&quot;</span>, <span class="st">&quot;deaths&quot;</span>), </span>
+<span id="cb149-8"><a href="viz.html#cb149-8" tabindex="-1"></a>               <span class="at">names_to=</span><span class="st">&quot;var&quot;</span>, </span>
+<span id="cb149-9"><a href="viz.html#cb149-9" tabindex="-1"></a>               <span class="at">values_to=</span><span class="st">&quot;val&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb149-10"><a href="viz.html#cb149-10" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb149-11"><a href="viz.html#cb149-11" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>date, <span class="at">y=</span>val, <span class="at">colour=</span>mur)) <span class="sc">+</span> </span>
+<span id="cb149-12"><a href="viz.html#cb149-12" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">size=</span>.<span class="dv">25</span>) <span class="sc">+</span> </span>
+<span id="cb149-13"><a href="viz.html#cb149-13" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span>var, <span class="at">scales=</span><span class="st">&quot;free_y&quot;</span>, <span class="at">ncol=</span><span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb149-14"><a href="viz.html#cb149-14" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb149-15"><a href="viz.html#cb149-15" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">&quot;top&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb149-16"><a href="viz.html#cb149-16" tabindex="-1"></a>    <span class="fu">scale_colour_viridis_d</span>() <span class="sc">+</span> </span>
+<span id="cb149-17"><a href="viz.html#cb149-17" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Date&quot;</span>, <span class="at">y=</span><span class="st">&quot;Count/100k&quot;</span>, <span class="at">colour=</span><span class="st">&quot;&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-62-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>I used medians here instead of means because the means seemed to be pulled by some outliers.The insights we gain here are:</p>
+<ol style="list-style-type: decimal">
+<li>In terms of cases/capita, all three types of areas seem to be doing quite similarly in general.<br />
+</li>
+<li>Cases picked up in metro areas first, then urban areas then rural areas, on average. It looks like the lag is about a week moving from larger to smaller areas.<br />
+</li>
+<li>Deaths are better in rural areas than other places and better in non-metro places with substantial urban populations than in metro areas.<br />
+</li>
+<li>In terms of the death rate, <span class="math inline">\(\frac{\text{Deaths}}{\text{Cases}}\)</span>, things are much worse in metro areas than in the other two types of places.</li>
+</ol>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>I have compiled a similar dataset (with most of the same variables, though not the public health ones beyond the COVID stuff) for Minnesota. Using the same process above, how do the insights from Minnesota differ from those for Colorado.</p>
+</div>
+</div>
+<div id="exercises-1" class="section level2 unnumbered hasAnchor">
+<h2>Exercises<a href="viz.html#exercises-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li><p>The Canadian Election Study (CES) offers data on Canadian’s political behaviour and attitudes. Load the data from the 2019 study and remove the <code>NA</code> values of the party identification (<code>pid</code>) variable and the political cynicism (<code>cynicism</code>) variable.</p></li>
+<li><p>The <code>cynicism</code> variable is a Likert scale type variable coded from -1 to 1. Create a factor variable that contains the categorical values (Strongly disagree, Disagree, Neutral, Agree, Strongly agree) using the <code>recode()</code> function from the <code>car</code> package. You might have to round up the values of <code>cynicism</code> beforehand.</p></li>
+<li><p>We are interested in the level of <code>cynicism</code> of Canadians, particularly if there exist a difference across partisans. Create a bar graph that displays the mean level of cynicism from the partisans of each party. For added difficulty, try and do it in one call.</p></li>
+<li><p>As you can see, it is difficult to read a bar graph that has negative and positive values. Transform the cynicism variable such that it has values between 0 and 1, 0.5 being the neutral position. Rerun the graph.</p></li>
+<li><p>Add a horizontal line at the 0.5 mark using <code>geom_hline()</code>.</p></li>
+<li><p>Now, let’s add <span class="math inline">\(95\%\)</span> confidence intervals around the means. The <code>geom_errorbar()</code> takes the lower and upper bounds of the confidence interval as inputs.</p></li>
+<li><p>Great, we now have all the information we wanted to show our readers. But it’s not the prettiest graph out there. Add titles to the x- and y-axis, change the colour of the bars, and change the theme. However, displaying a legend doesn’t make much sense here, so make sure to add the argument <code>show.legend = F</code> to both geoms in the graph. (Hint: <code>labs()</code>, <code>scale_fill_brewer()</code> and <code>theme()</code> are useful functions here).</p></li>
+<li><p>Maybe the difference isn’t from party lines, but really from differences in age. Add facets in accordance with the <code>agegrp</code> variable. (Hint: you need to work on the computation of the means and confidence intervals before adding <code>facet_wrap(~agegrp)</code> in the graph).</p></li>
+<li><p>The Liberal and Conservative parties in Canada are natural opponents. Hence, we would expect partisans from one party to really dislike the leader of the other party. The variables <code>leader_lib</code> and <code>leader_con</code> are feeling thermometers for each one of the party’s leaders. Create a scatter plot that shows this relationship making it as publishable as possible.</p></li>
+</ol>
+
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="datasets.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="describing-relationships-in-the-general-social-survey.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["RBE.pdf", "RBE.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

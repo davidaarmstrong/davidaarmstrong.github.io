@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 3 Linear Models | R: Learning by Example</title>
+  <meta name="description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 3 Linear Models | R: Learning by Example" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 3 Linear Models | R: Learning by Example" />
+  
+  <meta name="twitter:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+<meta name="author" content="David A. Armstrong II and William Poirier" />
+
+
+<meta name="date" content="2025-05-29" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="describing-relationships-in-the-general-social-survey.html"/>
+<link rel="next" href="generalized-linear-models---logit..html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<link href="libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.33/datatables.js"></script>
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">R: Learning by Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preliminaries</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#license"><i class="fa fa-check"></i>License</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#getting-r-and-rstudio"><i class="fa fa-check"></i>Getting R and Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#keeping-track-of-your-work"><i class="fa fa-check"></i>Keeping Track of Your Work</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#overview-of-rstudio"><i class="fa fa-check"></i>Overview of Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#using-r"><i class="fa fa-check"></i>Using <em>R</em></a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#assigning-output-to-objects"><i class="fa fa-check"></i>Assigning Output to Objects</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#vectors-and-matrices"><i class="fa fa-check"></i>Vectors and Matrices</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#function-arguments"><i class="fa fa-check"></i>Function Arguments</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#importing-data"><i class="fa fa-check"></i>Importing Data</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#data-types-in-r"><i class="fa fa-check"></i>Data Types in <em>R</em></a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#examining-data"><i class="fa fa-check"></i>Examining Data</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#missing-values"><i class="fa fa-check"></i>Missing Values</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#filtering-with-logical-expressions-and-sorting"><i class="fa fa-check"></i>Filtering with Logical Expressions and Sorting</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#workhorse-functions"><i class="fa fa-check"></i>Workhorse Functions</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#exercises"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html"><i class="fa fa-check"></i>Datasets</a>
+<ul>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo"><i class="fa fa-check"></i><code>colo</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo_covid"><i class="fa fa-check"></i><code>colo_covid</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gss-canada"><i class="fa fa-check"></i><code>gss</code> (Canada)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gsss16-usa"><i class="fa fa-check"></i><code>gsss16</code> (USA)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#davenport-soule-armstrong-data"><i class="fa fa-check"></i>Davenport-Soule-Armstrong Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#france-2004"><i class="fa fa-check"></i>France 2004</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#ces19"><i class="fa fa-check"></i><code>ces19</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#snijders-and-bosker-multileve-school-data"><i class="fa fa-check"></i>Snijders and Bosker Multileve School Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-multilevel"><i class="fa fa-check"></i>World Values Survey (multilevel)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#repression-data"><i class="fa fa-check"></i>Repression Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#oil-and-democracy-dataset"><i class="fa fa-check"></i>Oil and Democracy Dataset</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#politicaldemocracy"><i class="fa fa-check"></i><code>PoliticalDemocracy</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-measurement"><i class="fa fa-check"></i>World Values Survey (measurement)</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="viz.html"><a href="viz.html"><i class="fa fa-check"></i><b>1</b> Visualizing</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="viz.html"><a href="viz.html#wrangling-data"><i class="fa fa-check"></i><b>1.1</b> Wrangling data</a>
+<ul>
+<li class="chapter" data-level="1.1.1" data-path="viz.html"><a href="viz.html#merging-datasets"><i class="fa fa-check"></i><b>1.1.1</b> Merging Datasets</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="viz.html"><a href="viz.html#ggplot"><i class="fa fa-check"></i><b>1.2</b> GGplot</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="viz.html"><a href="viz.html#bar-plots"><i class="fa fa-check"></i><b>1.2.1</b> Bar Plots</a></li>
+<li class="chapter" data-level="1.2.2" data-path="viz.html"><a href="viz.html#line-graphs"><i class="fa fa-check"></i><b>1.2.2</b> Line Graphs</a></li>
+<li class="chapter" data-level="1.2.3" data-path="viz.html"><a href="viz.html#histograms"><i class="fa fa-check"></i><b>1.2.3</b> Histograms</a></li>
+<li class="chapter" data-level="1.2.4" data-path="viz.html"><a href="viz.html#scatterplots"><i class="fa fa-check"></i><b>1.2.4</b> Scatterplots</a></li>
+<li class="chapter" data-level="1.2.5" data-path="viz.html"><a href="viz.html#multiple-series"><i class="fa fa-check"></i><b>1.2.5</b> Multiple Series</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="viz.html"><a href="viz.html#recap"><i class="fa fa-check"></i><b>1.3</b> Recap</a></li>
+<li class="chapter" data-level="" data-path="viz.html"><a href="viz.html#exercises-1"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html"><i class="fa fa-check"></i><b>2</b> Describing Relationships in the General Social Survey</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#the-canadian-gss."><i class="fa fa-check"></i><b>2.1</b> The Canadian GSS.</a></li>
+<li class="chapter" data-level="2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#looking-at-the-data."><i class="fa fa-check"></i><b>2.2</b> Looking at the data.</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#cross-tabulations"><i class="fa fa-check"></i><b>2.2.1</b> Cross-tabulations</a></li>
+<li class="chapter" data-level="2.2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#permutation-tests-in-r."><i class="fa fa-check"></i><b>2.2.2</b> Permutation Tests in R.</a></li>
+<li class="chapter" data-level="2.2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#back-to-the-data"><i class="fa fa-check"></i><b>2.2.3</b> Back to the Data</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#descriptive-output-in-knitr"><i class="fa fa-check"></i><b>2.3</b> Descriptive Output in knitr</a></li>
+<li class="chapter" data-level="" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#exercises-2"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="linear-models.html"><a href="linear-models.html"><i class="fa fa-check"></i><b>3</b> Linear Models</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="linear-models.html"><a href="linear-models.html#effects-plots"><i class="fa fa-check"></i><b>3.1</b> Effects Plots</a></li>
+<li class="chapter" data-level="3.2" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-linearity"><i class="fa fa-check"></i><b>3.2</b> Diagnostic Tools: Linearity</a></li>
+<li class="chapter" data-level="3.3" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-heteroskedasticity"><i class="fa fa-check"></i><b>3.3</b> Diagnostic Tools: Heteroskedasticity</a></li>
+<li class="chapter" data-level="3.4" data-path="linear-models.html"><a href="linear-models.html#diagnostics-outliers-and-influential-data"><i class="fa fa-check"></i><b>3.4</b> Diagnostics: Outliers and Influential Data</a></li>
+<li class="chapter" data-level="3.5" data-path="linear-models.html"><a href="linear-models.html#diagnostics-for-normality"><i class="fa fa-check"></i><b>3.5</b> Diagnostics for Normality</a>
+<ul>
+<li class="chapter" data-level="3.5.1" data-path="linear-models.html"><a href="linear-models.html#bootstrapping-regression-models"><i class="fa fa-check"></i><b>3.5.1</b> Bootstrapping Regression Models</a></li>
+</ul></li>
+<li class="chapter" data-level="3.6" data-path="linear-models.html"><a href="linear-models.html#interactions"><i class="fa fa-check"></i><b>3.6</b> Interactions</a></li>
+<li class="chapter" data-level="" data-path="linear-models.html"><a href="linear-models.html#exercises-3"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html"><i class="fa fa-check"></i><b>4</b> Generalized Linear Models - Logit.</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#evaluating-model-fit"><i class="fa fa-check"></i><b>4.1</b> Evaluating Model Fit</a></li>
+<li class="chapter" data-level="4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effects"><i class="fa fa-check"></i><b>4.2</b> Marginal Effects</a></li>
+<li class="chapter" data-level="4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effect-plots"><i class="fa fa-check"></i><b>4.3</b> Marginal Effect Plots</a></li>
+<li class="chapter" data-level="4.4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#interactions-in-binary-dv-models"><i class="fa fa-check"></i><b>4.4</b> Interactions in Binary DV Models</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-binary"><i class="fa fa-check"></i><b>4.4.1</b> Both binary</a></li>
+<li class="chapter" data-level="4.4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#one-binary-one-continuous."><i class="fa fa-check"></i><b>4.4.2</b> One binary, one continuous.</a></li>
+<li class="chapter" data-level="4.4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-continuous"><i class="fa fa-check"></i><b>4.4.3</b> Both Continuous</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#other-glms."><i class="fa fa-check"></i><b>4.5</b> Other GLMs.</a></li>
+<li class="chapter" data-level="" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#exercises-4"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html"><i class="fa fa-check"></i><b>5</b> Ordered and Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#ordinal-dv-models"><i class="fa fa-check"></i><b>5.1</b> Ordinal DV Models</a></li>
+<li class="chapter" data-level="5.2" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#multinomial-logit"><i class="fa fa-check"></i><b>5.2</b> Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#parametric-bootstrap-for-confidence-intervals."><i class="fa fa-check"></i><b>5.2.1</b> Parametric Bootstrap for Confidence Intervals.</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#conclusion"><i class="fa fa-check"></i><b>5.3</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html"><i class="fa fa-check"></i><b>6</b> Handling Complex Survey Data</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#frequency-distributions-and-contingency-tables"><i class="fa fa-check"></i><b>6.1</b> Frequency Distributions and Contingency Tables</a></li>
+<li class="chapter" data-level="6.2" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#summary-statistics"><i class="fa fa-check"></i><b>6.2</b> Summary Statistics</a></li>
+<li class="chapter" data-level="6.3" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#estimating-models"><i class="fa fa-check"></i><b>6.3</b> Estimating Models</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="multilevel-models.html"><a href="multilevel-models.html"><i class="fa fa-check"></i><b>7</b> Multilevel Models</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="multilevel-models.html"><a href="multilevel-models.html#data-structure."><i class="fa fa-check"></i><b>7.1</b> Data Structure.</a></li>
+<li class="chapter" data-level="7.2" data-path="multilevel-models.html"><a href="multilevel-models.html#clustering-standard-errors"><i class="fa fa-check"></i><b>7.2</b> Clustering Standard Errors</a></li>
+<li class="chapter" data-level="7.3" data-path="multilevel-models.html"><a href="multilevel-models.html#between-vs-within-relationships."><i class="fa fa-check"></i><b>7.3</b> Between vs Within Relationships.</a></li>
+<li class="chapter" data-level="7.4" data-path="multilevel-models.html"><a href="multilevel-models.html#random-intercepts"><i class="fa fa-check"></i><b>7.4</b> Random Intercepts</a></li>
+<li class="chapter" data-level="7.5" data-path="multilevel-models.html"><a href="multilevel-models.html#estimating-the-multilevel-model"><i class="fa fa-check"></i><b>7.5</b> Estimating the Multilevel Model</a>
+<ul>
+<li class="chapter" data-level="7.5.1" data-path="multilevel-models.html"><a href="multilevel-models.html#p-values-in-lmer-output"><i class="fa fa-check"></i><b>7.5.1</b> P-values in LMER Output</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="multilevel-models.html"><a href="multilevel-models.html#other-random-effects-models"><i class="fa fa-check"></i><b>7.6</b> Other Random-Effects Models</a></li>
+<li class="chapter" data-level="7.7" data-path="multilevel-models.html"><a href="multilevel-models.html#bayesian-models-with-brms"><i class="fa fa-check"></i><b>7.7</b> Bayesian Models with BRMS</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html"><i class="fa fa-check"></i><b>8</b> Time-Series Cross-Sectional Models</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#preliminaries-and-assumptions"><i class="fa fa-check"></i><b>8.1</b> Preliminaries and Assumptions</a></li>
+<li class="chapter" data-level="8.2" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#unit-effects"><i class="fa fa-check"></i><b>8.2</b> Unit Effects</a></li>
+<li class="chapter" data-level="8.3" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#the-plm-package"><i class="fa fa-check"></i><b>8.3</b> The plm Package</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="measurement-issues.html"><a href="measurement-issues.html"><i class="fa fa-check"></i><b>9</b> Measurement Issues</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="measurement-issues.html"><a href="measurement-issues.html#reliability-analysis"><i class="fa fa-check"></i><b>9.1</b> Reliability Analysis</a></li>
+<li class="chapter" data-level="9.2" data-path="measurement-issues.html"><a href="measurement-issues.html#exploratory-factor-analysis-and-principal-components-analysis"><i class="fa fa-check"></i><b>9.2</b> Exploratory Factor Analysis and Principal Components Analysis</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="measurement-issues.html"><a href="measurement-issues.html#rotations"><i class="fa fa-check"></i><b>9.2.1</b> Rotations</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="measurement-issues.html"><a href="measurement-issues.html#cfa-and-sem"><i class="fa fa-check"></i><b>9.3</b> CFA and SEM</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">R: Learning by Example</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="linear-models" class="section level1 hasAnchor" number="3">
+<h1><span class="header-section-number">Chapter 3</span> Linear Models<a href="linear-models.html#linear-models" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>As we all know, linear models are the workhorse of statistical modeling. These are ubiquitous across disciplines whether in the OLS regression framework or in a classical ANOVA framework. Here, we’re going to focus on the OLS regression framework to highlight lots of what you can do with linear models in R. We will work with the COVID-19 data from Colorado that we worked with before.</p>
+<div class="sourceCode" id="cb181"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb181-1"><a href="linear-models.html#cb181-1" tabindex="-1"></a>colo_dat <span class="ot">&lt;-</span> colo_dat <span class="sc">%&gt;%</span> </span>
+<span id="cb181-2"><a href="linear-models.html#cb181-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cases_pc =</span> cases<span class="sc">*</span><span class="dv">10000</span><span class="sc">/</span>tpop)</span></code></pre></div>
+<p>There are a few things worth noting here. First, as discussed previously, the main argument here is a formula where the outcome variable is on the left-hand side of the tilde (<code>~</code>) and the explanatory variables are on the right-hand side of the tilde. They can be separated by plus signs if an additive model is desired or with asterisks if the effect of the variables is conditional on each other. We will see an example of this below.</p>
+<div class="sourceCode" id="cb182"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb182-1"><a href="linear-models.html#cb182-1" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(cases_pc) <span class="sc">~</span> white_pop, <span class="at">data=</span>colo_dat)</span>
+<span id="cb182-2"><a href="linear-models.html#cb182-2" tabindex="-1"></a><span class="fu">summary</span>(mod)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = log(cases_pc) ~ white_pop, data = colo_dat)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.61171 -0.15814 -0.01486  0.14214  0.69646 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   8.9881     0.6995  12.848  &lt; 2e-16 ***
+## white_pop    -2.0956     0.7596  -2.759  0.00762 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.2528 on 62 degrees of freedom
+## Multiple R-squared:  0.1093, Adjusted R-squared:  0.09496 
+## F-statistic:  7.61 on 1 and 62 DF,  p-value: 0.007618</code></pre>
+<p>The <code>stargazer</code> package allows us to export model results in a way that is nicely presented in an RMarkdown document, a LaTeX document or to word through html.</p>
+<div class="sourceCode" id="cb184"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb184-1"><a href="linear-models.html#cb184-1" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span>
+<span id="cb184-2"><a href="linear-models.html#cb184-2" tabindex="-1"></a><span class="fu">stargazer</span>(mod, <span class="at">type=</span><span class="st">&quot;html&quot;</span>, </span>
+<span id="cb184-3"><a href="linear-models.html#cb184-3" tabindex="-1"></a>          <span class="at">style=</span><span class="st">&quot;ajps&quot;</span>, </span>
+<span id="cb184-4"><a href="linear-models.html#cb184-4" tabindex="-1"></a>          <span class="at">covariate.labels=</span><span class="fu">c</span>(</span>
+<span id="cb184-5"><a href="linear-models.html#cb184-5" tabindex="-1"></a>            <span class="st">&quot;White Population (%)&quot;</span>, </span>
+<span id="cb184-6"><a href="linear-models.html#cb184-6" tabindex="-1"></a>            <span class="st">&quot;Intercept&quot;</span>),</span>
+<span id="cb184-7"><a href="linear-models.html#cb184-7" tabindex="-1"></a>          <span class="at">star.cutoffs=</span>.<span class="dv">05</span>, </span>
+<span id="cb184-8"><a href="linear-models.html#cb184-8" tabindex="-1"></a>          <span class="at">star.char =</span> <span class="st">&quot;`*`&quot;</span>, </span>
+<span id="cb184-9"><a href="linear-models.html#cb184-9" tabindex="-1"></a>          <span class="at">notes=</span><span class="st">&quot;`*` p &lt; .05&quot;</span>, </span>
+<span id="cb184-10"><a href="linear-models.html#cb184-10" tabindex="-1"></a>          <span class="at">notes.append=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<table style="text-align:center">
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+<strong>log(cases_pc)</strong>
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+White Population (%)
+</td>
+<td>
+-2.096<sup><code>*</code></sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.760)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Intercept
+</td>
+<td>
+8.988<sup><code>*</code></sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.700)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+N
+</td>
+<td>
+64
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R-squared
+</td>
+<td>
+0.109
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adj. R-squared
+</td>
+<td>
+0.095
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+0.253 (df = 62)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+7.610<sup><code>*</code></sup> (df = 1; 62)
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td colspan="2" style="text-align:left">
+<code>*</code> p &lt; .05
+</td>
+</tr>
+</table>
+<p>To include in a word document, you could do the following:</p>
+<div class="sourceCode" id="cb185"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb185-1"><a href="linear-models.html#cb185-1" tabindex="-1"></a><span class="fu">cat</span>(</span>
+<span id="cb185-2"><a href="linear-models.html#cb185-2" tabindex="-1"></a>  <span class="fu">stargazer</span>(mod, <span class="at">type=</span><span class="st">&quot;html&quot;</span>, </span>
+<span id="cb185-3"><a href="linear-models.html#cb185-3" tabindex="-1"></a>          <span class="at">style=</span><span class="st">&quot;ajps&quot;</span>, </span>
+<span id="cb185-4"><a href="linear-models.html#cb185-4" tabindex="-1"></a>          <span class="at">covariate.labels=</span><span class="fu">c</span>(</span>
+<span id="cb185-5"><a href="linear-models.html#cb185-5" tabindex="-1"></a>            <span class="st">&quot;White Population (%)&quot;</span>, </span>
+<span id="cb185-6"><a href="linear-models.html#cb185-6" tabindex="-1"></a>            <span class="st">&quot;Intercept&quot;</span>),</span>
+<span id="cb185-7"><a href="linear-models.html#cb185-7" tabindex="-1"></a>          <span class="at">star.cutoffs=</span>.<span class="dv">05</span>, </span>
+<span id="cb185-8"><a href="linear-models.html#cb185-8" tabindex="-1"></a>          <span class="at">star.char =</span> <span class="st">&quot;`*`&quot;</span>, </span>
+<span id="cb185-9"><a href="linear-models.html#cb185-9" tabindex="-1"></a>          <span class="at">notes=</span><span class="st">&quot;`*` p &lt; .05&quot;</span>, </span>
+<span id="cb185-10"><a href="linear-models.html#cb185-10" tabindex="-1"></a>          <span class="at">notes.append=</span><span class="cn">FALSE</span>), </span>
+<span id="cb185-11"><a href="linear-models.html#cb185-11" tabindex="-1"></a>  <span class="at">file=</span><span class="st">&quot;table.html&quot;</span>)</span></code></pre></div>
+<p>Then you could choose Insert <span class="math inline">\(\rightarrow\)</span> File… and browse to the file <code>table.html</code> that you just created. This will bring the table into your Word document nicely formatted. Alternatively, you could write in RMarkdown and knit to a Word document.</p>
+<p>Now, back to the model. In the above, we know that for every 1 unit change in <code>white_pop</code> (the proportion of the population that is white), that the log of cases per 10,000 people goes down by 2 units. This is a reasonably big change on the log scale, but a one-unit change is also huge. It represents changing from a county with <strong>no</strong> white people to a county with <strong>only</strong> white people. In reality, the range of the <code>white_pop</code> variable is:</p>
+<div class="sourceCode" id="cb186"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb186-1"><a href="linear-models.html#cb186-1" tabindex="-1"></a><span class="fu">range</span>(colo_dat<span class="sc">$</span>white_pop)</span></code></pre></div>
+<pre><code>## [1] 0.7672597 0.9664671</code></pre>
+<p>Given that it varies in a reasonably small range, it might be worth trying to plot out the variable’s effect. There are a couple of different ways to do this. One is with the <code>effects</code> package that produces <code>lattice</code> plots of the effects. The other is with the <code>ggeffects</code> package, which makes it easy to make <code>ggplot2</code> plots of the effect. Let’s start with the <code>effects</code> package.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Using the GSS 2016 data that we used in the previous chapter, estimate a regression of <code>aid_scale</code> on <code>age</code>, <code>sei10</code>, the log of <code>realinc</code>, <code>partyid</code> and <code>sex</code>.
+- Make a nice looking table of the results.</p>
+</div>
+<div id="effects-plots" class="section level2 hasAnchor" number="3.1">
+<h2><span class="header-section-number">3.1</span> Effects Plots<a href="linear-models.html#effects-plots" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <code>Effect()</code> function from the <code>effects</code> package allows us to plot the effect of a variable in a model. For example,</p>
+<div class="sourceCode" id="cb188"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb188-1"><a href="linear-models.html#cb188-1" tabindex="-1"></a><span class="fu">library</span>(effects)</span>
+<span id="cb188-2"><a href="linear-models.html#cb188-2" tabindex="-1"></a>e <span class="ot">&lt;-</span> <span class="fu">Effect</span>(<span class="st">&quot;white_pop&quot;</span>, mod, </span>
+<span id="cb188-3"><a href="linear-models.html#cb188-3" tabindex="-1"></a>            <span class="at">xlevels=</span><span class="fu">list</span>(<span class="at">white_pop =</span> <span class="dv">50</span>))</span></code></pre></div>
+<p>Note that the summary object has 50 values from the smallest to largest values of <code>white_pop</code> along with their predictions and <span class="math inline">\(95\%\)</span> confidence intervals. We can make a plot of those values with the <code>plot()</code> function:</p>
+<div class="sourceCode" id="cb189"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb189-1"><a href="linear-models.html#cb189-1" tabindex="-1"></a><span class="fu">plot</span>(e)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-91-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>In general, the <code>effect</code> package will unwind any functions or transformations of the independent variables, but not the dependent variable. So, we would have to do that ourselves. Doing this kind of a transformation is a bit difficult without some more intervention, so why don’t we move to the <code>ggeffects</code> package. We’ll make the same plot as above.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Use the <code>effects</code> package to make a plot of the effect of <code>realinc</code> on <code>aid_scale</code>.</p>
+</div>
+<div class="sourceCode" id="cb190"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb190-1"><a href="linear-models.html#cb190-1" tabindex="-1"></a><span class="fu">library</span>(ggeffects)</span>
+<span id="cb190-2"><a href="linear-models.html#cb190-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb190-3"><a href="linear-models.html#cb190-3" tabindex="-1"></a>preds <span class="ot">&lt;-</span> <span class="fu">ggpredict</span>(mod,</span>
+<span id="cb190-4"><a href="linear-models.html#cb190-4" tabindex="-1"></a>                   <span class="at">terms =</span> <span class="st">&quot;white_pop [all]&quot;</span>)</span></code></pre></div>
+<pre><code>## Model has log-transformed response. Back-transforming predictions to original response
+##   scale. Standard errors are still on the transformed scale.</code></pre>
+<div class="sourceCode" id="cb192"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb192-1"><a href="linear-models.html#cb192-1" tabindex="-1"></a><span class="fu">ggplot</span>(preds, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>predicted)) <span class="sc">+</span> </span>
+<span id="cb192-2"><a href="linear-models.html#cb192-2" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>conf.low, <span class="at">ymax=</span>conf.high), </span>
+<span id="cb192-3"><a href="linear-models.html#cb192-3" tabindex="-1"></a>              <span class="at">alpha=</span>.<span class="dv">25</span>) <span class="sc">+</span> </span>
+<span id="cb192-4"><a href="linear-models.html#cb192-4" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb192-5"><a href="linear-models.html#cb192-5" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb192-6"><a href="linear-models.html#cb192-6" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Proportion of the Population that is White&quot;</span>, </span>
+<span id="cb192-7"><a href="linear-models.html#cb192-7" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Predicted COVID-19 Cases/10k&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-92-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>The <code>terms=</code> argument identifies the terms to move around. Everything else will be held constant at representative values. In particular <code>white_pop [all]</code> means move the <code>white_pop</code> variable and use all of its unique values to generate predictions. The output from <code>ggpredict</code> always names the first variable in <code>terms=</code> - <code>x</code>, the predictions <code>predicted</code> and the confidence bounds <code>conf.low</code> and <code>conf.high</code>. You may also note that a warning got printed indicating that the model had a log-transformed response and that the predictions and confidence intervals were back-transformed to the original scale of the <span class="math inline">\(y\)</span>-variable (i.e., cases/10k rather than log(cases/10k)). The standard errors remain on the scale defined by the model rather than the original response scale. The confidence intervals are transformed using an end-point transformation which means that they are arrived at, in this case, on the log scale and then simply transformed by applying <code>exp()</code> to the bounds and fit.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Use the <code>ggeffects</code> package to replicate the graph you just made with the <code>effects</code> package.</p>
+</div>
+<p>To see how it works, let’s add a categorical variable - the three category metro, urban, rural variable should work. We’ll also add in the republican majority variable, too.</p>
+<div class="sourceCode" id="cb193"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb193-1"><a href="linear-models.html#cb193-1" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb193-2"><a href="linear-models.html#cb193-2" tabindex="-1"></a>colo_dat <span class="ot">&lt;-</span> colo_dat <span class="sc">%&gt;%</span> </span>
+<span id="cb193-3"><a href="linear-models.html#cb193-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mur =</span> <span class="fu">str_extract</span>(urban_rural, <span class="st">&quot;Metro|UP|Rural&quot;</span>), </span>
+<span id="cb193-4"><a href="linear-models.html#cb193-4" tabindex="-1"></a>         <span class="at">mur =</span> <span class="fu">factor</span>(mur, <span class="at">levels=</span><span class="fu">c</span>(<span class="st">&quot;Rural&quot;</span>, <span class="st">&quot;UP&quot;</span>, <span class="st">&quot;Metro&quot;</span>)), </span>
+<span id="cb193-5"><a href="linear-models.html#cb193-5" tabindex="-1"></a>         <span class="at">rep_maj =</span> <span class="fu">factor</span>(repvote <span class="sc">&gt;</span> .<span class="dv">5</span>, </span>
+<span id="cb193-6"><a href="linear-models.html#cb193-6" tabindex="-1"></a>                          <span class="at">levels=</span><span class="fu">c</span>(<span class="cn">FALSE</span>,<span class="cn">TRUE</span>), </span>
+<span id="cb193-7"><a href="linear-models.html#cb193-7" tabindex="-1"></a>                          <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;No&quot;</span>, <span class="st">&quot;Yes&quot;</span>)))</span></code></pre></div>
+<p>Now, we can estimate the model:</p>
+<div class="sourceCode" id="cb194"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb194-1"><a href="linear-models.html#cb194-1" tabindex="-1"></a>mod2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(cases_pc) <span class="sc">~</span> mur <span class="sc">+</span> rep_maj <span class="sc">+</span> white_pop, <span class="at">data=</span>colo_dat)</span>
+<span id="cb194-2"><a href="linear-models.html#cb194-2" tabindex="-1"></a><span class="fu">summary</span>(mod2)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = log(cases_pc) ~ mur + rep_maj + white_pop, data = colo_dat)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.58724 -0.16880 -0.02825  0.13434  0.67306 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  9.31144    0.74099  12.566  &lt; 2e-16 ***
+## murUP        0.09553    0.07365   1.297  0.19965    
+## murMetro    -0.08477    0.08809  -0.962  0.33984    
+## rep_majYes   0.01376    0.06741   0.204  0.83892    
+## white_pop   -2.47620    0.79404  -3.118  0.00281 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.2476 on 59 degrees of freedom
+## Multiple R-squared:  0.187,  Adjusted R-squared:  0.1319 
+## F-statistic: 3.393 on 4 and 59 DF,  p-value: 0.0145</code></pre>
+<p>Here, we see a slightly bigger effect of <code>white_pop</code>. If we wanted to test the significance of the term rather than the coefficient (i.e., all of the <code>mur</code> coefficients jointly equal to zero rather than independent tests), we could use that <code>Anova()</code> function from the <code>car</code> package.</p>
+<div class="sourceCode" id="cb196"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb196-1"><a href="linear-models.html#cb196-1" tabindex="-1"></a><span class="fu">library</span>(car)</span>
+<span id="cb196-2"><a href="linear-models.html#cb196-2" tabindex="-1"></a><span class="fu">Anova</span>(mod2)</span></code></pre></div>
+<pre><code>## Anova Table (Type II tests)
+## 
+## Response: log(cases_pc)
+##           Sum Sq Df F value  Pr(&gt;F)   
+## mur       0.3273  2  2.6696 0.07764 . 
+## rep_maj   0.0026  1  0.0417 0.83892   
+## white_pop 0.5962  1  9.7249 0.00281 **
+## Residuals 3.6171 59                   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>By default, you get a type II test, though you could get a type III test, by specifying <code>type="III"</code>. To remind, the difference comes from how higher order terms are handled. Let’s imagine we’ve got the following model:</p>
+<p><span class="math display">\[y = b_0 + b_1x + b_2z + b_3xz + b_4w + e\]</span></p>
+<p>In this case, we have a higher order term (the interaction between <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span>). A type II test would execute the following four tests:</p>
+<ol style="list-style-type: decimal">
+<li>Is <span class="math inline">\(x\)</span> significant controlling for <span class="math inline">\(z\)</span> and <span class="math inline">\(w\)</span>, but not <span class="math inline">\(xz\)</span>.</li>
+<li>Is <span class="math inline">\(z\)</span> significant controlling for <span class="math inline">\(x\)</span> and <span class="math inline">\(w\)</span>, but not <span class="math inline">\(xz\)</span>.</li>
+<li>Is <span class="math inline">\(xz\)</span> significant controlling for <span class="math inline">\(x\)</span>, <span class="math inline">\(z\)</span> and <span class="math inline">\(w\)</span>.<br />
+</li>
+<li>Is <span class="math inline">\(w\)</span> significant controlling for <span class="math inline">\(x\)</span>, <span class="math inline">\(z\)</span> and <span class="math inline">\(xz\)</span>.</li>
+</ol>
+<p>A type III test would test each term controlling for all other terms, including higher order terms. This is more like what you would get from the regression output. Arguably, type II tests are more interesting because they don’t presume the existence of the higher order term in testing lower-order terms, thus making them appropriate for evaluating the significance of lower order terms independently of the higher order term.</p>
+</div>
+<div id="diagnostic-tools-linearity" class="section level2 hasAnchor" number="3.2">
+<h2><span class="header-section-number">3.2</span> Diagnostic Tools: Linearity<a href="linear-models.html#diagnostic-tools-linearity" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>There are lots of diagnostic tools for the linear model. Perhaps one of the most useful is the component + residual plot. This can be produced with the <code>crPlot()</code> function in the <code>car</code> package. If we’ve got the following model:</p>
+<p><span class="math display">\[\log(\text{Cases}) = b_0 + b_1\text{Urban} + b_2\text{Metro} + b_3\text{Republican Majority} + b_4\text{White} + e\]</span></p>
+<p>then the component plus residual plot for <code>white_pop</code> would have the variable itself on the <span class="math inline">\(x\)</span>-axis and on the <span class="math inline">\(y\)</span>-axis would be <span class="math inline">\(b_4\text{White} + e\)</span> the component (the systematic part of the model relating to the variable of interest) plus the model residual. The line running through plot has a slope of <span class="math inline">\(b_4\)</span>. The pink line is a local polynomial regression fit to the points. This allows us to evaluate whether there are any un-modeled non-linearities in the data.</p>
+<div class="sourceCode" id="cb198"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb198-1"><a href="linear-models.html#cb198-1" tabindex="-1"></a><span class="fu">crPlot</span>(mod, <span class="st">&quot;white_pop&quot;</span>, <span class="at">smooth =</span> <span class="fu">list</span>(<span class="at">smoother=</span>loessLine, </span>
+<span id="cb198-2"><a href="linear-models.html#cb198-2" tabindex="-1"></a>                                        <span class="at">smoother.args=</span><span class="fu">list</span>(<span class="at">var=</span><span class="cn">TRUE</span>)))</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-96-1.png" width="65%" style="display: block; margin: auto;" />
+We could try a couple of different potential solutions to the non-linearity exhibited in the plot. If we thought the non-linearity was simple and monotone, we could use a non-linear transformation. The Box-Tidwell transformation would be appropriate here. This model identifies the optimal power transformation to linearize the relationship.</p>
+<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb199-1"><a href="linear-models.html#cb199-1" tabindex="-1"></a><span class="fu">boxTidwell</span>(<span class="fu">log</span>(cases_pc) <span class="sc">~</span> white_pop, <span class="sc">~</span>mur <span class="sc">+</span> rep_maj, <span class="at">data=</span>colo_dat)</span></code></pre></div>
+<pre><code>##  MLE of lambda Score Statistic (t) Pr(&gt;|t|)
+##         3.1542             -0.3487   0.7286
+## 
+## iterations =  15</code></pre>
+<p>The proposed power transformation is <span class="math inline">\(x^{3.15}\)</span>. We could see what it looks like if we wanted.</p>
+<div class="sourceCode" id="cb201"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb201-1"><a href="linear-models.html#cb201-1" tabindex="-1"></a><span class="fu">ggplot</span>(colo_dat, <span class="fu">aes</span>(<span class="at">x=</span>white_pop, <span class="at">y=</span><span class="fu">I</span>(white_pop<span class="sc">^</span><span class="fl">3.15</span>))) <span class="sc">+</span> </span>
+<span id="cb201-2"><a href="linear-models.html#cb201-2" tabindex="-1"></a>         <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb201-3"><a href="linear-models.html#cb201-3" tabindex="-1"></a>         <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-98-1.png" width="65%" style="display: block; margin: auto;" />
+The transformation is actually not very severe at all. Further, the <span class="math inline">\(p\)</span>-value indicates that the transformation isn’t necessary. Here, the null hypothesis is that no transformation is needed. If, instead, we thought that the non-monotonicity in the CR Plot was interesting, we could estimate a polynomial. In R, polynomials are estimated with the <code>poly()</code> function and by default are orthogonalized. This essentially implements a type II test for polynomial regressors. You can turn off the orthogonalization by specifying <code>raw=TRUE</code> as an argument to the function. This would implement a type III test for the polynomial regressors. For example the code below would estimate a third-degree polynomial in <code>white_pop</code>:</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Use the methods discussed above to evaluate linearity for <code>age</code>, <code>sei10</code> and <code>realinc</code>. For <code>realinc</code> see whether the log is just as good as other transformations.</p>
+</div>
+<div class="sourceCode" id="cb202"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb202-1"><a href="linear-models.html#cb202-1" tabindex="-1"></a>mod2b <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(cases_pc) <span class="sc">~</span> mur <span class="sc">+</span> rep_maj <span class="sc">+</span> <span class="fu">poly</span>(white_pop, <span class="dv">3</span>), <span class="at">data=</span>colo_dat)</span>
+<span id="cb202-2"><a href="linear-models.html#cb202-2" tabindex="-1"></a><span class="fu">summary</span>(mod2b)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = log(cases_pc) ~ mur + rep_maj + poly(white_pop, 
+##     3), data = colo_dat)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.57772 -0.16630 -0.02752  0.12212  0.60664 
+## 
+## Coefficients:
+##                      Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)          7.026087   0.076183  92.227  &lt; 2e-16 ***
+## murUP                0.104443   0.075243   1.388  0.17052    
+## murMetro            -0.059484   0.090855  -0.655  0.51529    
+## rep_majYes           0.009006   0.067481   0.133  0.89430    
+## poly(white_pop, 3)1 -0.794998   0.264879  -3.001  0.00398 ** 
+## poly(white_pop, 3)2 -0.072051   0.251579  -0.286  0.77561    
+## poly(white_pop, 3)3  0.364747   0.254274   1.434  0.15690    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.2473 on 57 degrees of freedom
+## Multiple R-squared:  0.2167, Adjusted R-squared:  0.1343 
+## F-statistic: 2.629 on 6 and 57 DF,  p-value: 0.02551</code></pre>
+<p>As you can see, the second and third order terms are not statistically significant, indicating that the linear relationship is sufficient. These findings make sense if we include the confidence bounds around the loess curve in the CR plot. There is a bug in the <code>crPlot()</code> function that doesn’t allow us to do this, but we could make it “by hand” with <code>ggplot2</code>. In the code below, the <code>augment()</code> function comes from the <code>broom</code> package and it puts model results (like fitted values and residuals) in a data frame with the original variables in the model. In addition, we’re obtaining the partial residuals for the <code>white_pop</code> variable and adding those into the data.</p>
+<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb204-1"><a href="linear-models.html#cb204-1" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb204-2"><a href="linear-models.html#cb204-2" tabindex="-1"></a>aug <span class="ot">&lt;-</span> <span class="fu">augment</span>(mod2, <span class="at">data=</span>colo_dat) <span class="sc">%&gt;%</span> </span>
+<span id="cb204-3"><a href="linear-models.html#cb204-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">p.resid =</span> <span class="fu">residuals</span>(mod2, <span class="at">type=</span><span class="st">&quot;partial&quot;</span>)[,<span class="st">&quot;white_pop&quot;</span>])</span>
+<span id="cb204-4"><a href="linear-models.html#cb204-4" tabindex="-1"></a><span class="fu">ggplot</span>(aug, <span class="fu">aes</span>(<span class="at">x=</span>white_pop, <span class="at">y=</span>p.resid)) <span class="sc">+</span> </span>
+<span id="cb204-5"><a href="linear-models.html#cb204-5" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape=</span><span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb204-6"><a href="linear-models.html#cb204-6" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">&quot;lm&quot;</span>, </span>
+<span id="cb204-7"><a href="linear-models.html#cb204-7" tabindex="-1"></a>              <span class="at">se=</span><span class="cn">FALSE</span>)<span class="sc">+</span> </span>
+<span id="cb204-8"><a href="linear-models.html#cb204-8" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">&quot;loess&quot;</span>, </span>
+<span id="cb204-9"><a href="linear-models.html#cb204-9" tabindex="-1"></a>              <span class="at">se=</span><span class="cn">TRUE</span>, </span>
+<span id="cb204-10"><a href="linear-models.html#cb204-10" tabindex="-1"></a>              <span class="at">col=</span><span class="st">&quot;red&quot;</span>, </span>
+<span id="cb204-11"><a href="linear-models.html#cb204-11" tabindex="-1"></a>              <span class="at">fill=</span><span class="fu">rgb</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,.<span class="dv">25</span>, <span class="at">maxColorValue =</span> <span class="dv">1</span>)) <span class="sc">+</span> </span>
+<span id="cb204-12"><a href="linear-models.html#cb204-12" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb204-13"><a href="linear-models.html#cb204-13" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Proportion Over 60&quot;</span>, </span>
+<span id="cb204-14"><a href="linear-models.html#cb204-14" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Component + Residual&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-100-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>In the plot above, you can see that the linear model line is generally within the confidence bounds of the loess curve, making it unsurprising that potential fixes to the non-linearity problem were not necessary.</p>
+</div>
+<div id="diagnostic-tools-heteroskedasticity" class="section level2 hasAnchor" number="3.3">
+<h2><span class="header-section-number">3.3</span> Diagnostic Tools: Heteroskedasticity<a href="linear-models.html#diagnostic-tools-heteroskedasticity" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>There are tools for detecting heteroskedasticity. The <code>car</code> package has a function called <code>ncvTest()</code> which estimates a score test of the residuals. It starts by calculating the standardized squared residuals</p>
+<p><span class="math display">\[U_{i} = \frac{E_{i}^{2}}{\hat{\sigma}^{2}} = \frac{E_{i}^{2}}{\frac{\sum E_{i}^{2}}{n}}\]</span></p>
+<p>Then, it regress the <span class="math inline">\(U_{i}\)</span> on all of the explanatory variable <span class="math inline">\(X\)</span>’s or the fitted values <span class="math inline">\(\hat{y}\)</span>, finding the fitted values:</p>
+<p><span class="math display">\[U_{i} = \eta_{0} + \eta_{1}X_{i1} + \cdots + \eta_{p}X_{ip} + \omega_{i}\]</span></p>
+<p>The score is then calculated as:</p>
+<p><span class="math display">\[S_{0}^{2} = \frac{\sum(\hat{U}_{i} - \bar{U})^{2}}{2}\]</span></p>
+<p>and <span class="math inline">\(S_{0}^{2}\)</span> is distributed as <span class="math inline">\(\chi^{2}\)</span> with <span class="math inline">\(p\)</span> degrees of freedom. The results for our model are below:</p>
+<div class="sourceCode" id="cb205"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb205-1"><a href="linear-models.html#cb205-1" tabindex="-1"></a><span class="fu">ncvTest</span>(mod2)</span></code></pre></div>
+<pre><code>## Non-constant Variance Score Test 
+## Variance formula: ~ fitted.values 
+## Chisquare = 1.137662, Df = 1, p = 0.28615</code></pre>
+<p>Here, we see not much evidence of heteroskedasticity, but it is probably worth looking at the residuals vs fitted plot anyway.</p>
+<div class="sourceCode" id="cb207"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb207-1"><a href="linear-models.html#cb207-1" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>mod2<span class="sc">$</span>fitted.values, </span>
+<span id="cb207-2"><a href="linear-models.html#cb207-2" tabindex="-1"></a>                   <span class="at">y=</span>mod2<span class="sc">$</span>residuals)) <span class="sc">+</span> </span>
+<span id="cb207-3"><a href="linear-models.html#cb207-3" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb207-4"><a href="linear-models.html#cb207-4" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-102-1.png" width="65%" style="display: block; margin: auto;" />
+Or, we could actually plot out the standardized squared residuals against the fitted values.</p>
+<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="linear-models.html#cb208-1" tabindex="-1"></a>sigma2 <span class="ot">&lt;-</span> <span class="fu">sum</span>(mod2<span class="sc">$</span>residuals<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span><span class="fu">nobs</span>(mod2)</span>
+<span id="cb208-2"><a href="linear-models.html#cb208-2" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>mod2<span class="sc">$</span>fitted.values, </span>
+<span id="cb208-3"><a href="linear-models.html#cb208-3" tabindex="-1"></a>                   <span class="at">y=</span><span class="fu">I</span>(mod2<span class="sc">$</span>residuals<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span>sigma2))) <span class="sc">+</span> </span>
+<span id="cb208-4"><a href="linear-models.html#cb208-4" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb208-5"><a href="linear-models.html#cb208-5" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">se=</span><span class="cn">TRUE</span>, <span class="at">alpha=</span>.<span class="dv">25</span>) <span class="sc">+</span> </span>
+<span id="cb208-6"><a href="linear-models.html#cb208-6" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-103-1.png" width="672" /></p>
+<p>In this case, even though the test was not significant, we would probably want to investigate potential “fixes” to the problem just the same. In fact, the test is known to have relatively low power in small samples. The advice then is to “fix” the problem if there is any hint of heteroskedasticity even if the test isn’t conclusive.</p>
+<p>One of the most common fixes is to use robust standard errors. Robust standard errors can be calculated to compensate for an <em>unknown</em> pattern of non-constant error variance. They do not change the OLS coefficient estimates or solve the inefficiency problem, but do give more accurate <span class="math inline">\(p\)</span>-values in the presence of the problem. These come in lots of different “flavors”, most of which are variants on the method originally proposed by White (1980).</p>
+<p>The covariance matrix of the OLS estimator is:</p>
+<p><span class="math display">\[\begin{aligned}
+V(\mathbf{b}) &amp;= \mathbf{(X^{\prime}X)^{-1}X^{\prime}\Sigma X(X^{\prime}X)^{-1}}\\
+&amp;= \mathbf{(X^{\prime}X)^{-1}X^{\prime}}V(\mathbf{y})\mathbf{ X(X^{\prime}X)^{-1}}
+\end{aligned}\]</span></p>
+<p>Where <span class="math inline">\(V(\mathbf{y}) = \sigma_{\varepsilon}^{2}\mathbf{I}_{n}\)</span> if the assumption of homoskedasticity is satisfied. The variance simplifies to:</p>
+<p><span class="math display">\[V(\mathbf{b}) = \sigma_{\varepsilon}^{2}(\mathbf{X^{\prime}X})^{-1}\]</span></p>
+<p>In the presence of non-constant error variance, however, <span class="math inline">\(V(\mathbf{y})\)</span> contains nonzero covariance and unequal variance. In these cases, White suggests a consistent estimator of the variance that constrains <span class="math inline">\(\mathbf{\Sigma}\)</span> to a diagonal matrix containing only squared residuals. The <strong>heteroskedasticity consistent covariance matrix</strong> (HCCM) estimator is then:</p>
+<p><span class="math display">\[V(\mathbf{b}) = \mathbf{(X^{\prime}X)^{-1}X^{\prime}\hat{\Phi}X (X^{\prime}X)^{-1}}\]</span></p>
+<p>where <span class="math inline">\(\mathbf{\hat{\Phi}} = e^{2}_{i}\mathbf{I}_{n}\)</span> and the <span class="math inline">\(e_{i}\)</span> are the OLS residuals.</p>
+<p>These are known as HC0 robust standdard errors. Other HCCMs use the “hat value” which are the diagonal elements of <span class="math inline">\(\mathbf{X}\left(\mathbf{X}^{\prime}\mathbf{X}\right)^{-1}\mathbf{X}^{\prime}\)</span></p>
+<p>These give a sense of how far each observation is from the mean of the X’s. Below is a figure that shows two hypothetical <span class="math inline">\(X\)</span> variables and the plotting symbols are proportional in size to the hat value</p>
+<div class="sourceCode" id="cb209"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb209-1"><a href="linear-models.html#cb209-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb209-2"><a href="linear-models.html#cb209-2" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">1</span>, MASS<span class="sc">::</span><span class="fu">mvrnorm</span>(<span class="dv">25</span>, <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>), <span class="fu">diag</span>(<span class="dv">2</span>)))</span>
+<span id="cb209-3"><a href="linear-models.html#cb209-3" tabindex="-1"></a></span>
+<span id="cb209-4"><a href="linear-models.html#cb209-4" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">diag</span>(X<span class="sc">%*%</span> <span class="fu">solve</span>(<span class="fu">t</span>(X)<span class="sc">%*%</span>X)<span class="sc">%*%</span><span class="fu">t</span>(X))</span>
+<span id="cb209-5"><a href="linear-models.html#cb209-5" tabindex="-1"></a><span class="fu">plot</span>(X[,<span class="dv">2</span>], X[,<span class="dv">3</span>], <span class="at">cex =</span> h<span class="sc">*</span><span class="dv">10</span>)</span>
+<span id="cb209-6"><a href="linear-models.html#cb209-6" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="fu">mean</span>(X[,<span class="dv">3</span>]), <span class="at">v=</span><span class="fu">mean</span>(X[,<span class="dv">2</span>]))</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-104-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>MacKinnon and White (1985) considered three alternatives: HC1, HC2 and HC3, each of which offers a different method for finding <span class="math inline">\(\mathbf{\Phi}\)</span>.</p>
+<ul>
+<li>HC1: <span class="math inline">\(\frac{N}{N-K}\times\text{HC0}\)</span>.</li>
+<li>HC2: <span class="math inline">\(\hat{\mathbf{\Phi}} = \text{diag}\left[\frac{e_{i}^{2}}{1-h_{ii}}\right]\)</span> where <span class="math inline">\(h_{ii} = \mathbf{x}_{i}(\mathbf{X}^{\prime}\mathbf{X})^{-1}\mathbf{x}_{i}^{\prime}\)</span></li>
+<li>HC3: <span class="math inline">\(\hat{\mathbf{\Phi}} = \text{diag}\left[\frac{e_{i}^{2}}{(1-h_{ii})^{2}}\right]\)</span></li>
+</ul>
+<p>HC3 standard errors are shown to outperform the alternatives in small samples, but can still fail to generate the appropriate Type I error rate when outliers are present. HC4 standard errors can produce the appropriate test statistics even in the presence of outliers:</p>
+<p><span class="math display">\[\hat{\mathbf{\Phi}} = \text{diag}\left[\frac{e_{i}^{2}}{(1-h_{ii})^{\delta_{i}}}\right]\]</span></p>
+<p>where <span class="math inline">\(\delta_{i} = min\left\{4, \frac{N h_{ii}}{p}\right\}\)</span> with <span class="math inline">\(n\)</span> = number of obs, and <span class="math inline">\(p\)</span> = number of parameters in model.</p>
+<p>HC4 outperform HC3 in the presence of influential observations, but not in other situations. HC4 standard errors are not universally better than others and as Cribari-Neto and da Silva (2011) show, HC4 SEs have relatively poor performance when there are many regressors and when the maximal leverage point is extreme. Cribari-Neto and da Silva propose a modified HC4 estimator, called HC4m, where, as above:</p>
+<p><span class="math display">\[\hat{\mathbf{\Phi}} = \text{diag}\left[\frac{e_{i}^{2}}{(1-h_{ii})^{\delta_{i}}}\right]\]</span></p>
+<p>and here, <span class="math inline">\(\delta_{i} = min\left\{\gamma_{1}, \frac{nh_{ii}}{p}\right\} + min\left\{\gamma_{2}, \frac{nh_{ii}}{p}\right\}\)</span>.</p>
+<p>They find that the best values of the <span class="math inline">\(\gamma\)</span> parameters are <span class="math inline">\(\gamma_{1}=1\)</span> and <span class="math inline">\(\gamma_{2}=1.5\)</span>. HC5 standard errors are supposed to also provide different discounting than HC4 and HC4m estimators. The HC5 standard errors are operationalized as:</p>
+<p><span class="math display">\[\hat{\mathbf{\Phi}} = \text{diag}\left[\frac{e_{i}^{2}}{(1-h_{ii})^{\delta_{i}}}\right]\]</span></p>
+<p>and here, <span class="math inline">\(\delta_{i} = min\left\{\frac{nh_{ii}}{p}, max\left\{4, \frac{nkh_{max}}{p}\right\}\right\}\)</span> with <span class="math inline">\(k=0.7\)</span>.</p>
+<p>For observations with bigger hat-values, their residuals get increased in size, thus increasing the standard error (generally).</p>
+<p>The <code>coeftest()</code> function in the <code>lmtest</code> package allows you to specify any of these HCCMs.</p>
+<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="linear-models.html#cb210-1" tabindex="-1"></a><span class="fu">library</span>(lmtest)</span>
+<span id="cb210-2"><a href="linear-models.html#cb210-2" tabindex="-1"></a><span class="fu">library</span>(sandwich)</span>
+<span id="cb210-3"><a href="linear-models.html#cb210-3" tabindex="-1"></a><span class="fu">coeftest</span>(mod2, <span class="at">vcov. =</span> vcovHC, <span class="at">type=</span><span class="st">&quot;HC5&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## t test of coefficients:
+## 
+##              Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept)  9.311443   1.096578  8.4914 8.117e-12 ***
+## murUP        0.095534   0.087910  1.0867   0.28158    
+## murMetro    -0.084766   0.104986 -0.8074   0.42267    
+## rep_majYes   0.013764   0.066645  0.2065   0.83709    
+## white_pop   -2.476198   1.160102 -2.1345   0.03697 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Now, re-estimate the model with the appropriate functional forms.
+- Test the model for heteroskedasticity problems.
+- Use robust standard errors to test model coefficients.
+- How do results change as you change the type of HCCM?</p>
+</div>
+<p>We could use this to provide information to the <code>ggpredict()</code> and <code>stargazer()</code> as well.</p>
+<div class="sourceCode" id="cb212"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb212-1"><a href="linear-models.html#cb212-1" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggpredict</span>(mod2, </span>
+<span id="cb212-2"><a href="linear-models.html#cb212-2" tabindex="-1"></a>               <span class="at">terms=</span><span class="st">&quot;white_pop [all]&quot;</span>, </span>
+<span id="cb212-3"><a href="linear-models.html#cb212-3" tabindex="-1"></a>               <span class="at">vcov.fun=</span><span class="st">&quot;vcovHC&quot;</span>,</span>
+<span id="cb212-4"><a href="linear-models.html#cb212-4" tabindex="-1"></a>               <span class="at">vcov.type=</span><span class="st">&quot;HC5&quot;</span>)</span>
+<span id="cb212-5"><a href="linear-models.html#cb212-5" tabindex="-1"></a><span class="fu">ggplot</span>(g, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>predicted)) <span class="sc">+</span> </span>
+<span id="cb212-6"><a href="linear-models.html#cb212-6" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>conf.low, <span class="at">ymax=</span>conf.high), </span>
+<span id="cb212-7"><a href="linear-models.html#cb212-7" tabindex="-1"></a>              <span class="at">alpha=</span>.<span class="dv">25</span>) <span class="sc">+</span> </span>
+<span id="cb212-8"><a href="linear-models.html#cb212-8" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb212-9"><a href="linear-models.html#cb212-9" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb212-10"><a href="linear-models.html#cb212-10" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;White Population (%)&quot;</span>, </span>
+<span id="cb212-11"><a href="linear-models.html#cb212-11" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Predicted COVID-19 Cases/10k&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-106-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>We could also provide these to the <code>stargazer()</code> function.</p>
+<div class="sourceCode" id="cb213"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb213-1"><a href="linear-models.html#cb213-1" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span>
+<span id="cb213-2"><a href="linear-models.html#cb213-2" tabindex="-1"></a>ct <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(mod2, <span class="at">vcov.=</span><span class="fu">vcovHC</span>(mod2, <span class="at">type=</span><span class="st">&quot;HC5&quot;</span>))</span>
+<span id="cb213-3"><a href="linear-models.html#cb213-3" tabindex="-1"></a><span class="fu">stargazer</span>(mod2, <span class="at">type=</span><span class="st">&quot;html&quot;</span>, </span>
+<span id="cb213-4"><a href="linear-models.html#cb213-4" tabindex="-1"></a>          <span class="at">style=</span><span class="st">&quot;ajps&quot;</span>, </span>
+<span id="cb213-5"><a href="linear-models.html#cb213-5" tabindex="-1"></a>          <span class="at">covariate.labels=</span><span class="fu">c</span>(</span>
+<span id="cb213-6"><a href="linear-models.html#cb213-6" tabindex="-1"></a>            <span class="st">&quot;Urban Area&quot;</span>,</span>
+<span id="cb213-7"><a href="linear-models.html#cb213-7" tabindex="-1"></a>            <span class="st">&quot;Metro Area&quot;</span>, </span>
+<span id="cb213-8"><a href="linear-models.html#cb213-8" tabindex="-1"></a>            <span class="st">&quot;Republican Majority (0/1)&quot;</span>, </span>
+<span id="cb213-9"><a href="linear-models.html#cb213-9" tabindex="-1"></a>            <span class="st">&quot;Whie Population (%)&quot;</span>, </span>
+<span id="cb213-10"><a href="linear-models.html#cb213-10" tabindex="-1"></a>            <span class="st">&quot;Intercept&quot;</span>),</span>
+<span id="cb213-11"><a href="linear-models.html#cb213-11" tabindex="-1"></a>          <span class="at">se =</span> <span class="fu">list</span>(ct[,<span class="dv">2</span>]),</span>
+<span id="cb213-12"><a href="linear-models.html#cb213-12" tabindex="-1"></a>          <span class="at">t =</span> <span class="fu">list</span>(ct[,<span class="dv">3</span>]),</span>
+<span id="cb213-13"><a href="linear-models.html#cb213-13" tabindex="-1"></a>          <span class="at">p =</span> <span class="fu">list</span>(ct[,<span class="dv">4</span>]),</span>
+<span id="cb213-14"><a href="linear-models.html#cb213-14" tabindex="-1"></a>          <span class="at">star.cutoffs=</span>.<span class="dv">05</span>, </span>
+<span id="cb213-15"><a href="linear-models.html#cb213-15" tabindex="-1"></a>          <span class="at">star.char =</span> <span class="st">&quot;`*`&quot;</span>, </span>
+<span id="cb213-16"><a href="linear-models.html#cb213-16" tabindex="-1"></a>          <span class="at">notes=</span><span class="st">&quot;`*` p &lt; .05&quot;</span>, </span>
+<span id="cb213-17"><a href="linear-models.html#cb213-17" tabindex="-1"></a>          <span class="at">notes.append=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<table style="text-align:center">
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+<strong>log(cases_pc)</strong>
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Urban Area
+</td>
+<td>
+0.096
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.088)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Metro Area
+</td>
+<td>
+-0.085
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.105)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Republican Majority (0/1)
+</td>
+<td>
+0.014
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.067)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Whie Population (%)
+</td>
+<td>
+-2.476<sup><code>*</code></sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1.160)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Intercept
+</td>
+<td>
+9.311<sup><code>*</code></sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1.097)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+N
+</td>
+<td>
+64
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R-squared
+</td>
+<td>
+0.187
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adj. R-squared
+</td>
+<td>
+0.132
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+0.248 (df = 59)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+3.393<sup><code>*</code></sup> (df = 4; 59)
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td colspan="2" style="text-align:left">
+<code>*</code> p &lt; .05
+</td>
+</tr>
+</table>
+<p>There are some other options, like variance modeling (e.g., heteroskedastic regression), weighted least squares (WLS) or feasible generalized least squares (FGLS), too. The latter two you would do by specifying a <code>weight=</code> argument to the linear model where the weight is the variable that is proportional to the scale of the residuals. The former requires a maximum likelihood estimator that allows you to simultaneously parameterize the mean and variance (though this is done easily with the <code>gamlss</code> package).</p>
+</div>
+<div id="diagnostics-outliers-and-influential-data" class="section level2 hasAnchor" number="3.4">
+<h2><span class="header-section-number">3.4</span> Diagnostics: Outliers and Influential Data<a href="linear-models.html#diagnostics-outliers-and-influential-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>There are lots of diagnostics for outliers and influential data as well. First, it is worth noting that influential points are those that have both leverage and discrepancy. Points with high leverage are those that are far away from the center of the distribution of the <span class="math inline">\(X\)</span> variables. Points with discrepancy are those with large residuals.</p>
+<p>The most common measure of leverage is the <span class="math inline">\(hat-value\)</span>, <span class="math inline">\(h_i\)</span>. The name <span class="math inline">\(hat-values\)</span> results from their calculation based on the fitted values (<span class="math inline">\(\hat{Y}\)</span>):</p>
+<p><span class="math display">\[\begin{aligned}
+\hat{Y}_{j} &amp;= h_{1j}Y_{1} + h_{2j}Y_{2} + \cdots + h_{nj}Y_n\\
+&amp;= \sum_{i=1}^{n}h_{ij}Y_{i}
+\end{aligned}\]</span></p>
+<p>Recall that the <strong>Hat Matrix</strong>, <span class="math inline">\(\mathbf{H}\)</span>, projects the <span class="math inline">\(Y\)</span>’s onto their predicted values:</p>
+<p><span class="math display">\[\begin{aligned}
+\mathbf{\hat{y}} &amp;= \mathbf{Xb}\\
+&amp;= \mathbf{X(X^{\prime}X)^{-1}X^{\prime}y}\\
+&amp;= \mathbf{Hy}\\
+\underset{(n\times n)}{\mathbf{H}} &amp;=
+\mathbf{X(X^{\prime}X)^{-1}X^{\prime}}
+\end{aligned}\]</span></p>
+<p>If <span class="math inline">\(h_{ij}\)</span> is large, the <span class="math inline">\(i^{th}\)</span> observation has a substantial impact on the <span class="math inline">\(j^{th}\)</span> fitted value. Since <span class="math inline">\(\bm{H}\)</span> is symmetric and idempotent<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>, the hat value <span class="math inline">\(h_{i}\)</span> measures the <em>potential leverage</em> of <span class="math inline">\(Y_{i}\)</span> on all the fitted values. In multiple regression, <span class="math inline">\(h_i\)</span> measures the distance from the centroid point of all of the <span class="math inline">\(X\)</span>’s (point of means). Hat values range from <span class="math inline">\(\frac{1}{n}\)</span> to 1 with a mean of <span class="math inline">\(\frac{k+1}{n}\)</span>. Values more than twice the mean are considered “big”, though this is not a formal test.</p>
+<p>We could make a plot of the hat values.</p>
+<div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb214-1"><a href="linear-models.html#cb214-1" tabindex="-1"></a>hbar <span class="ot">&lt;-</span> mod2<span class="sc">$</span>rank<span class="sc">/</span><span class="fu">nobs</span>(mod2)</span>
+<span id="cb214-2"><a href="linear-models.html#cb214-2" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span><span class="dv">1</span><span class="sc">:</span><span class="fu">nobs</span>(mod2), <span class="at">y=</span><span class="fu">hatvalues</span>(mod2))) <span class="sc">+</span> </span>
+<span id="cb214-3"><a href="linear-models.html#cb214-3" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb214-4"><a href="linear-models.html#cb214-4" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">2</span><span class="sc">*</span>hbar, <span class="at">lty=</span><span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb214-5"><a href="linear-models.html#cb214-5" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb214-6"><a href="linear-models.html#cb214-6" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Observation Number&quot;</span>, </span>
+<span id="cb214-7"><a href="linear-models.html#cb214-7" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Hat Value&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-108-1.png" width="65%" style="display: block; margin: auto;" />
+As you can see above, there are a few points with higher than expected hat values. We could find them as follows:</p>
+<div class="sourceCode" id="cb215"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb215-1"><a href="linear-models.html#cb215-1" tabindex="-1"></a>aug2 <span class="ot">&lt;-</span> <span class="fu">augment</span>(mod2) <span class="sc">%&gt;%</span> </span>
+<span id="cb215-2"><a href="linear-models.html#cb215-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">obs =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nobs</span>(mod2))</span>
+<span id="cb215-3"><a href="linear-models.html#cb215-3" tabindex="-1"></a></span>
+<span id="cb215-4"><a href="linear-models.html#cb215-4" tabindex="-1"></a>aug2 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(.hat <span class="sc">&gt;</span> <span class="dv">2</span><span class="sc">*</span>hbar) <span class="sc">%&gt;%</span> </span>
+<span id="cb215-5"><a href="linear-models.html#cb215-5" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">`</span><span class="at">log(cases_pc)</span><span class="st">`</span>, mur, rep_maj, .hat, obs)</span></code></pre></div>
+<pre><code>## # A tibble: 2 × 5
+##   `log(cases_pc)` mur   rep_maj  .hat   obs
+##             &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;   &lt;dbl&gt; &lt;int&gt;
+## 1            7.96 Rural Yes     0.184    23
+## 2            7.10 Metro No      0.241    62</code></pre>
+<p>So, observations 23 and 62 are the ones with high leverage. Now remember, they are not necessarily influential because we don’t know whether they are also models with big residuals.</p>
+<p>Unusual observations typically have large residuals but not necessarily so - high leverage observations can have small residuals because they pull the line towards them:</p>
+<p><span class="math display">\[V(E_{i}) = \sigma^{2}_{\varepsilon}(1-h_{i})\]</span></p>
+<p>Standardized residuals provide one possible, though unsatisfactory, way of detecting outliers:
+<span class="math display">\[E_{i}^{\prime} = \frac{E_{i}}{S_{E}\sqrt{1-h_{i}}}\]</span></p>
+<p>The numerator and denominator are not independent and thus <span class="math inline">\(E_{i}^{\prime}\)</span> does not follow a <span class="math inline">\(t\)</span>-distribution: If <span class="math inline">\(\mid E_{i} \mid\)</span> is large, the standard error is also large:</p>
+<p><span class="math display">\[S_{E} = \sqrt{\frac{\sum E_{i}^{2}}{n-k-1}}\]</span></p>
+<p>However, if we refit the model deleting the <span class="math inline">\(i^{th}\)</span> observation we obtain an estimate of the standard deviation of the residuals <span class="math inline">\(S_{E(-i)}\)</span> (standard error of the regression) that is based on the <span class="math inline">\(n-1\)</span> observations. We then calculate the studentized residuals <span class="math inline">\(E_{i}^{*}\)</span>’s, which have an independent numerator and denominator:</p>
+<p><span class="math display">\[E_{i}^{*} = \frac{E_{i}}{S_{E(-i)}\sqrt{1-h_{i}}}\]</span></p>
+<p>Studentized residuals follow a <span class="math inline">\(t\)</span>-distribution with <span class="math inline">\(n-k-2\)</span> degrees of freedom. Observations that have a studentized residual outside the <span class="math inline">\(\pm 2\)</span> range are considered statistically significant at the 95% level. Since we are looking for the furthest outliers, it is not legitimate to use a simple <span class="math inline">\(t\)</span>-test. We would expect that <span class="math inline">\(5\%\)</span> of the studentized residuals would be beyond <span class="math inline">\(t_{.025}\pm2\)</span> by chance alone. To remedy this we can make a Bonferroni adjustment to the <span class="math inline">\(p\)</span>-value. The Bonferroni <span class="math inline">\(p\)</span>-value for the largest outlier is: <span class="math inline">\(p=2np^{\prime}\)</span> where <span class="math inline">\(p^{\prime}\)</span> is the unadjusted <span class="math inline">\(p\)</span>-value from a <span class="math inline">\(t\)</span>-test with <span class="math inline">\(n-k-2\)</span> degrees of freedom. The <code>outlierTest()</code> function in the <code>car</code> package gives Bonferroni <span class="math inline">\(p\)</span>-value for the largest absolute studentized residual</p>
+<div class="sourceCode" id="cb217"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb217-1"><a href="linear-models.html#cb217-1" tabindex="-1"></a><span class="fu">outlierTest</span>(mod2)</span></code></pre></div>
+<pre><code>## No Studentized residuals with Bonferroni p &lt; 0.05
+## Largest |rstudent|:
+##    rstudent unadjusted p-value Bonferroni p
+## 23 3.243943          0.0019581      0.12532</code></pre>
+<p>Note from the above that the adjusted <span class="math inline">\(p\)</span>-value suggests that we do not have significant outliers.</p>
+<p>Recall that influential observations are those that have both discrepancy and leverage. There are a few different ways of measuring this. One common way is with DFBeta - a difference in the coefficient induced by removing a single observation.</p>
+<p><span class="math display">\[D_{ij} = B_{j} - B_{j(-i)}\quad \forall \quad i=1, \ldots, n; \quad j=1, \ldots, k\]</span></p>
+<p>The <span class="math inline">\(B_{j}\)</span> are the coefficients for all the data and the <span class="math inline">\(B_{j(-i)}\)</span> are the coefficients
+for the same model with the <span class="math inline">\(i^{th}\)</span> observation removed. A standard cut-off for an influential observation is: <span class="math inline">\(D_{ij} \geq \frac{2}{\sqrt{n}}\)</span>.</p>
+<p>The <code>dfbeta()</code> function calculates these values for us. There is a scaled version that permits more reasonable comparison:</p>
+<p><span class="math display">\[D_{ij}^{(s)} = \frac{B_j - B_{j(-i)}}{s_{E(-i)}\sqrt{(\mathbf{X}^{\prime}\mathbf{X})_{jj}}}\]</span></p>
+<p>The main problem with the <span class="math inline">\(D_{ij}\)</span> and <span class="math inline">\(D_{ij}^{(s)}\)</span> is that it produces a value for every observation and coefficient sometimes requiring lots of investigation. We could plot them in R with:</p>
+<div class="sourceCode" id="cb219"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb219-1"><a href="linear-models.html#cb219-1" tabindex="-1"></a>Ds <span class="ot">&lt;-</span> <span class="fu">dfbetas</span>(mod2)</span></code></pre></div>
+<p>Before we plot them, we’ll arrange them in log format with the <code>pivot_longer()</code> function from the <code>tidyr</code> package. In the plot below, we should be looking for values bigger than <span class="math inline">\(\frac{2}{\sqrt{n}}\)</span>. We can see below that several of the coefficients appear to be affected by some influential observations.</p>
+<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb220-1"><a href="linear-models.html#cb220-1" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb220-2"><a href="linear-models.html#cb220-2" tabindex="-1"></a>Ds <span class="ot">&lt;-</span> Ds <span class="sc">%&gt;%</span> </span>
+<span id="cb220-3"><a href="linear-models.html#cb220-3" tabindex="-1"></a>  as.data.frame <span class="sc">%&gt;%</span> </span>
+<span id="cb220-4"><a href="linear-models.html#cb220-4" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb220-5"><a href="linear-models.html#cb220-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">obs =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nobs</span>(mod2)) <span class="sc">%&gt;%</span> </span>
+<span id="cb220-6"><a href="linear-models.html#cb220-6" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">-</span>obs, </span>
+<span id="cb220-7"><a href="linear-models.html#cb220-7" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">&quot;var&quot;</span>, </span>
+<span id="cb220-8"><a href="linear-models.html#cb220-8" tabindex="-1"></a>               <span class="at">values_to=</span><span class="st">&quot;value&quot;</span>)</span>
+<span id="cb220-9"><a href="linear-models.html#cb220-9" tabindex="-1"></a><span class="fu">ggplot</span>(Ds, <span class="fu">aes</span>(<span class="at">x=</span>obs, <span class="at">y=</span><span class="fu">abs</span>(value))) <span class="sc">+</span> </span>
+<span id="cb220-10"><a href="linear-models.html#cb220-10" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb220-11"><a href="linear-models.html#cb220-11" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">2</span><span class="sc">/</span><span class="fu">sqrt</span>(<span class="fu">nobs</span>(mod2b)), </span>
+<span id="cb220-12"><a href="linear-models.html#cb220-12" tabindex="-1"></a>             <span class="at">lty=</span><span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb220-13"><a href="linear-models.html#cb220-13" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>var) <span class="sc">+</span> </span>
+<span id="cb220-14"><a href="linear-models.html#cb220-14" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb220-15"><a href="linear-models.html#cb220-15" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Observation&quot;</span>, </span>
+<span id="cb220-16"><a href="linear-models.html#cb220-16" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;DFBeta Scaled&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-112-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>Cook’s D measures the <em>distance</em> between <span class="math inline">\(B_j\)</span> and <span class="math inline">\(B_{j(-i)}\)</span> by calculating an <span class="math inline">\(F\)</span>-statistic for the hypothesis that <span class="math inline">\(B_j=B_{j(-i)}\)</span>, for <span class="math inline">\(j=0,1,\ldots,k\)</span>. An <span class="math inline">\(F\)</span>-test is calculated for each observation as follows:</p>
+<p><span class="math display">\[D_{i} = \frac{E_{i}^{\prime 2}}{k+1} \times \frac{h_{i}}{1-h_{i}}\]</span></p>
+<p>where <span class="math inline">\(h_{i}\)</span> is the hat value for each observation and <span class="math inline">\(E_{i}^{\prime}\)</span> is the standardized residual. The first fraction measures discrepancy; the second fraction measures leverage. There is no significance test for <span class="math inline">\(D_i\)</span> (i.e., the <span class="math inline">\(F\)</span>-statistic here measures only distance) but a commonly used cut-off is: <span class="math inline">\(D_{i} &gt; \frac{4}{n-k-1}\)</span></p>
+<div class="sourceCode" id="cb221"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb221-1"><a href="linear-models.html#cb221-1" tabindex="-1"></a><span class="fu">ggplot</span>(aug2, <span class="fu">aes</span>(<span class="at">x=</span>obs, <span class="at">y=</span>.cooksd)) <span class="sc">+</span> </span>
+<span id="cb221-2"><a href="linear-models.html#cb221-2" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb221-3"><a href="linear-models.html#cb221-3" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">4</span><span class="sc">/</span>mod2b<span class="sc">$</span>rank, </span>
+<span id="cb221-4"><a href="linear-models.html#cb221-4" tabindex="-1"></a>             <span class="at">lty=</span><span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb221-5"><a href="linear-models.html#cb221-5" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb221-6"><a href="linear-models.html#cb221-6" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Observation&quot;</span>, </span>
+<span id="cb221-7"><a href="linear-models.html#cb221-7" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Cook&#39;s Distance&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-113-1.png" width="672" /></p>
+<p>We could plot many of these diagnostics together in a “bubble plot”.</p>
+<div class="sourceCode" id="cb222"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb222-1"><a href="linear-models.html#cb222-1" tabindex="-1"></a><span class="fu">ggplot</span>(aug2, <span class="fu">aes</span>(<span class="at">x=</span>.hat, <span class="at">y=</span>.std.resid, <span class="at">size=</span><span class="fu">sqrt</span>(.cooksd))) <span class="sc">+</span> </span>
+<span id="cb222-2"><a href="linear-models.html#cb222-2" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>, <span class="at">shape=</span><span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb222-3"><a href="linear-models.html#cb222-3" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>), <span class="at">lty=</span><span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb222-4"><a href="linear-models.html#cb222-4" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="dv">2</span><span class="sc">/</span><span class="fu">sqrt</span>(<span class="fu">nobs</span>(mod2)), <span class="at">lty=</span><span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb222-5"><a href="linear-models.html#cb222-5" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb222-6"><a href="linear-models.html#cb222-6" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Leverage (Hat Values)&quot;</span>, </span>
+<span id="cb222-7"><a href="linear-models.html#cb222-7" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Studentized Residual&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-114-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>Finally, we could evaluate the potential for joint influence. Subsets of cases can jointly influence a regression line, or can offset the influence of other points. Cook’s D can help us determine joint influence if there are relatively few influential cases. That is, we can delete cases sequentially, updating the model each time and exploring the Cook’s D’s again. This approach is impractical if there are potentially a large number of subsets to explore.</p>
+<p>Added-variable plots (also called partial-regression plots) provide a more useful method of assessing joint influence. These plots essentially show the partial relationships between <span class="math inline">\(Y\)</span> and each <span class="math inline">\(X\)</span>. Let <span class="math inline">\(Y_{i}^{(1)}\)</span> represent the residuals from the least-squares regression of <span class="math inline">\(Y\)</span> on all of the <span class="math inline">\(X\)</span>’s except for <span class="math inline">\(X_1\)</span>:</p>
+<p><span class="math display">\[Y_{i} = A^{(1)} + B_{2}^{(1)}X_{i2} + \cdots + B_{k}^{(1)}X_{ik} +  Y_{i}^{(1)}\]</span></p>
+<p>Similarly, <span class="math inline">\(X_{i}^{(1)}\)</span> are the residuals from the regression of <span class="math inline">\(X_{1}\)</span> on all the other <span class="math inline">\(X\)</span>’s</p>
+<p><span class="math display">\[X_{i1} = C^{(1)} + D_{2}^{(1)}X_{i2} + \cdots + D_{k}^{(1)}X_{ik} + X_{i}^{(1)}\]</span></p>
+<p>These two equations determine the residuals <span class="math inline">\(X^{(1)}\)</span> and <span class="math inline">\(Y^{(1)}\)</span> as parts of <span class="math inline">\(X_{1}\)</span> and <span class="math inline">\(Y\)</span> that remain when the effects of <span class="math inline">\(X_{2}, \ldots, X_{k}\)</span> are removed. The Residuals <span class="math inline">\(Y^{(1)}\)</span> and <span class="math inline">\(X^{(1)}\)</span> have the following properties:</p>
+<ul>
+<li>Slope of the regression of <span class="math inline">\(Y^{(1)}\)</span> on <span class="math inline">\(X^{(1)}\)</span> is the least-squares slope <span class="math inline">\(B_1\)</span> from the full multiple regression</li>
+<li>Residuals from the regression of <span class="math inline">\(Y^{(1)}\)</span> on <span class="math inline">\(X^{(1)}\)</span> are the same as the residuals from the full regression: <span class="math inline">\(Y_{i}^{(1)} = B_{1}X_{i1}^{(1)} + E_{i}\)</span></li>
+<li>Variation of <span class="math inline">\(X^{(1)}\)</span> is the conditional variance of <span class="math inline">\(X_1\)</span> holding the other <span class="math inline">\(X\)</span>’s constant. Consequently, except for the df the standard error from the partial simple regression is the same as the multiple regression SE of <span class="math inline">\(B_1\)</span>.</li>
+</ul>
+<p>We can make these in R with <code>avPlots()</code></p>
+<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb223-1"><a href="linear-models.html#cb223-1" tabindex="-1"></a><span class="fu">avPlots</span>(mod2)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-115-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>The only thing that really stands out as a potential problem is that for the <code>white_pop|others</code> figure, observations 23 and 47 are both working to decrease the regression slope (make it more negative).</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Use the methods discussed above to evaluate potential outliers and influential data in the model you’ve estimated.</p>
+</div>
+</div>
+<div id="diagnostics-for-normality" class="section level2 hasAnchor" number="3.5">
+<h2><span class="header-section-number">3.5</span> Diagnostics for Normality<a href="linear-models.html#diagnostics-for-normality" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Diagnostics for normality are slightly less plentiful, but there are a couple of options. First, we could simply look at the distribution of the residuals and compare that to a normal distribution.</p>
+<div class="sourceCode" id="cb224"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb224-1"><a href="linear-models.html#cb224-1" tabindex="-1"></a><span class="fu">ggplot</span>(aug2, <span class="fu">aes</span>(<span class="at">x=</span>.std.resid)) <span class="sc">+</span> </span>
+<span id="cb224-2"><a href="linear-models.html#cb224-2" tabindex="-1"></a>  <span class="fu">stat_density</span>(<span class="at">geom=</span><span class="st">&quot;line&quot;</span>, <span class="fu">aes</span>(<span class="at">color=</span><span class="st">&quot;Empirical&quot;</span>)) <span class="sc">+</span> </span>
+<span id="cb224-3"><a href="linear-models.html#cb224-3" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="fu">aes</span>(<span class="at">color=</span><span class="st">&quot;Theoretical&quot;</span>), </span>
+<span id="cb224-4"><a href="linear-models.html#cb224-4" tabindex="-1"></a>                <span class="at">fun=</span>dnorm, </span>
+<span id="cb224-5"><a href="linear-models.html#cb224-5" tabindex="-1"></a>                <span class="at">args=</span><span class="fu">list</span>(<span class="at">sd =</span> <span class="fu">sd</span>(aug2<span class="sc">$</span>.std.resid)), </span>
+<span id="cb224-6"><a href="linear-models.html#cb224-6" tabindex="-1"></a>                <span class="at">geom=</span><span class="st">&quot;line&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb224-7"><a href="linear-models.html#cb224-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Residuals&quot;</span>, </span>
+<span id="cb224-8"><a href="linear-models.html#cb224-8" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">&quot;Distribution&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-116-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>The distribution above doesn’t look all that normal. If we wanted a sense of <em>how</em> not normal it looks, we could look at a quantile-quantile plot. We’ll use the one in the <code>ggpubr</code> package.</p>
+<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="linear-models.html#cb225-1" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span>
+<span id="cb225-2"><a href="linear-models.html#cb225-2" tabindex="-1"></a><span class="fu">ggqqplot</span>(aug2<span class="sc">$</span>.std.resid)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-117-1.png" width="672" />
+This looks alright, but we could also do a formal test. The Shapiro-Wilk’s test is a good option here.</p>
+<div class="sourceCode" id="cb226"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb226-1"><a href="linear-models.html#cb226-1" tabindex="-1"></a><span class="fu">shapiro.test</span>(aug2<span class="sc">$</span>.std.resid)</span></code></pre></div>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  aug2$.std.resid
+## W = 0.97828, p-value = 0.3186</code></pre>
+<p>The null hypothesis here is normality, so we cannot reject the null hypothesis. There is no indication of non-normality here.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Are the residuals from your model normally distributed?</p>
+</div>
+<p>You’ll note that when we started, we were using the log of cases. It might be that there is a better normalizing transformation than the log. We could consider that with the <code>powerTransform()</code> function</p>
+<div class="sourceCode" id="cb228"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb228-1"><a href="linear-models.html#cb228-1" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">powerTransform</span>(mod2, <span class="at">family=</span><span class="st">&quot;bcPower&quot;</span>))</span></code></pre></div>
+<pre><code>## bcPower Transformation to Normality 
+##    Est Power Rounded Pwr Wald Lwr Bnd Wald Upr Bnd
+## Y1    -1.878           1      -6.3521        2.596
+## 
+## Likelihood ratio test that transformation parameter is equal to 0
+##  (log transformation)
+##                            LRT df    pval
+## LR test, lambda = (0) 0.680966  1 0.40925
+## 
+## Likelihood ratio test that no transformation is needed
+##                            LRT df    pval
+## LR test, lambda = (1) 1.603868  1 0.20536</code></pre>
+<p>This suggests that no transformation is needed in addition to the log.</p>
+<div id="bootstrapping-regression-models" class="section level3 hasAnchor" number="3.5.1">
+<h3><span class="header-section-number">3.5.1</span> Bootstrapping Regression Models<a href="linear-models.html#bootstrapping-regression-models" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>One way to deal with non-normality (if non-normality of the errors is the <em>only</em> problem) is to use the bootstrap. The “wild bootstrap” is known to handle problems with heteroskedasticity appropriately. We can use the <code>wild.boot()</code> function in the <code>lmboot</code> package to accomplish this.</p>
+<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="linear-models.html#cb230-1" tabindex="-1"></a><span class="fu">library</span>(lmboot)</span>
+<span id="cb230-2"><a href="linear-models.html#cb230-2" tabindex="-1"></a><span class="fu">attributes</span>(colo_dat<span class="sc">$</span>cases_pc) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb230-3"><a href="linear-models.html#cb230-3" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">wild.boot</span>(<span class="fu">log</span>(cases_pc) <span class="sc">~</span> mur <span class="sc">+</span> rep_maj <span class="sc">+</span> white_pop, <span class="at">B =</span> <span class="dv">2500</span>, <span class="at">data=</span>colo_dat)</span></code></pre></div>
+<p>We could calculate percentile confidence intervals for the parameters in the model by summarising the <code>bootEstParam</code> element of the <code>w</code> object.</p>
+<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb231-1"><a href="linear-models.html#cb231-1" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
+<span id="cb231-2"><a href="linear-models.html#cb231-2" tabindex="-1"></a>bs.ci <span class="ot">&lt;-</span> w<span class="sc">$</span>bootEstParam <span class="sc">%&gt;%</span> </span>
+<span id="cb231-3"><a href="linear-models.html#cb231-3" tabindex="-1"></a>  as.data.frame <span class="sc">%&gt;%</span> </span>
+<span id="cb231-4"><a href="linear-models.html#cb231-4" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">quantile</span>(.x, <span class="at">probs=</span><span class="fu">c</span>(.<span class="dv">025</span>,.<span class="dv">975</span>)))) <span class="sc">%&gt;%</span> </span>
+<span id="cb231-5"><a href="linear-models.html#cb231-5" tabindex="-1"></a>  <span class="fu">t</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb231-6"><a href="linear-models.html#cb231-6" tabindex="-1"></a>  <span class="fu">as_tibble</span>(., <span class="at">.name_repair=</span><span class="st">&quot;minimal&quot;</span>)</span>
+<span id="cb231-7"><a href="linear-models.html#cb231-7" tabindex="-1"></a><span class="fu">names</span>(bs.ci) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;lower&quot;</span>, <span class="st">&quot;upper&quot;</span>)</span>
+<span id="cb231-8"><a href="linear-models.html#cb231-8" tabindex="-1"></a>bs.ci <span class="ot">&lt;-</span> bs.ci <span class="sc">%&gt;%</span> </span>
+<span id="cb231-9"><a href="linear-models.html#cb231-9" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">est =</span> <span class="fu">c</span>(w<span class="sc">$</span>origEstParam), </span>
+<span id="cb231-10"><a href="linear-models.html#cb231-10" tabindex="-1"></a>         <span class="at">param =</span> <span class="fu">names</span>(<span class="fu">coef</span>(mod2)))</span></code></pre></div>
+<p>For comparison, we could make the original and HC5 confidence intervals, too:</p>
+<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb232-1"><a href="linear-models.html#cb232-1" tabindex="-1"></a>orig.ci <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">confint</span>(mod2), </span>
+<span id="cb232-2"><a href="linear-models.html#cb232-2" tabindex="-1"></a>                     <span class="at">.name_repair=</span><span class="st">&quot;minimal&quot;</span>)</span>
+<span id="cb232-3"><a href="linear-models.html#cb232-3" tabindex="-1"></a><span class="fu">names</span>(orig.ci) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;lower&quot;</span>, <span class="st">&quot;upper&quot;</span>)</span>
+<span id="cb232-4"><a href="linear-models.html#cb232-4" tabindex="-1"></a>orig.ci <span class="ot">&lt;-</span> orig.ci <span class="sc">%&gt;%</span> </span>
+<span id="cb232-5"><a href="linear-models.html#cb232-5" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">est =</span> <span class="fu">coef</span>(mod2), </span>
+<span id="cb232-6"><a href="linear-models.html#cb232-6" tabindex="-1"></a>         <span class="at">param =</span> <span class="fu">names</span>(<span class="fu">coef</span>(mod2)))</span>
+<span id="cb232-7"><a href="linear-models.html#cb232-7" tabindex="-1"></a></span>
+<span id="cb232-8"><a href="linear-models.html#cb232-8" tabindex="-1"></a>hc5t <span class="ot">&lt;-</span> <span class="fu">coeftest</span>(mod2, <span class="at">vcov.=</span>vcovHC, </span>
+<span id="cb232-9"><a href="linear-models.html#cb232-9" tabindex="-1"></a>                 <span class="at">type=</span><span class="st">&quot;HC5&quot;</span>)</span>
+<span id="cb232-10"><a href="linear-models.html#cb232-10" tabindex="-1"></a>hc5.ci <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">confint</span>(hc5t), </span>
+<span id="cb232-11"><a href="linear-models.html#cb232-11" tabindex="-1"></a>                     <span class="at">.name_repair=</span><span class="st">&quot;minimal&quot;</span>)</span>
+<span id="cb232-12"><a href="linear-models.html#cb232-12" tabindex="-1"></a><span class="fu">names</span>(hc5.ci) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;lower&quot;</span>, <span class="st">&quot;upper&quot;</span>)</span>
+<span id="cb232-13"><a href="linear-models.html#cb232-13" tabindex="-1"></a>hc5.ci <span class="ot">&lt;-</span> hc5.ci <span class="sc">%&gt;%</span> </span>
+<span id="cb232-14"><a href="linear-models.html#cb232-14" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">est =</span> <span class="fu">coef</span>(mod2), </span>
+<span id="cb232-15"><a href="linear-models.html#cb232-15" tabindex="-1"></a>         <span class="at">param =</span> <span class="fu">names</span>(<span class="fu">coef</span>(mod2)))</span></code></pre></div>
+<p>Now, we could just look at them, but it’s probably more interesting to make a graph. To do that, we’ll have to combine everything together after making a flag in each dataset for which model the confidence intervals come from.</p>
+<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="linear-models.html#cb233-1" tabindex="-1"></a>all.ci <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(orig.ci, hc5.ci, bs.ci)</span>
+<span id="cb233-2"><a href="linear-models.html#cb233-2" tabindex="-1"></a>all.ci <span class="ot">&lt;-</span> all.ci <span class="sc">%&gt;%</span> </span>
+<span id="cb233-3"><a href="linear-models.html#cb233-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">type=</span><span class="fu">factor</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">each=</span><span class="dv">5</span>), </span>
+<span id="cb233-4"><a href="linear-models.html#cb233-4" tabindex="-1"></a>                     <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;Raw&quot;</span>, <span class="st">&quot;HC5&quot;</span>, <span class="st">&quot;BS&quot;</span>)))</span></code></pre></div>
+<p>Now, we could make the graph</p>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="linear-models.html#cb234-1" tabindex="-1"></a><span class="fu">ggplot</span>(all.ci, <span class="fu">aes</span>(<span class="at">y=</span>est, <span class="at">x=</span>param, <span class="at">colour=</span>type)) <span class="sc">+</span> </span>
+<span id="cb234-2"><a href="linear-models.html#cb234-2" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width=</span>.<span class="dv">3</span>)) <span class="sc">+</span> </span>
+<span id="cb234-3"><a href="linear-models.html#cb234-3" tabindex="-1"></a>  <span class="fu">geom_linerange</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>lower, <span class="at">ymax=</span>upper), </span>
+<span id="cb234-4"><a href="linear-models.html#cb234-4" tabindex="-1"></a>                 <span class="at">position=</span> <span class="fu">position_dodge</span>(<span class="at">width=</span>.<span class="dv">3</span>)) <span class="sc">+</span> </span>
+<span id="cb234-5"><a href="linear-models.html#cb234-5" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">0</span>, <span class="at">lty=</span><span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb234-6"><a href="linear-models.html#cb234-6" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb234-7"><a href="linear-models.html#cb234-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, </span>
+<span id="cb234-8"><a href="linear-models.html#cb234-8" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Coefficient (95% CI)&quot;</span>, </span>
+<span id="cb234-9"><a href="linear-models.html#cb234-9" tabindex="-1"></a>       <span class="at">colour =</span> <span class="st">&quot;CI Type&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb234-10"><a href="linear-models.html#cb234-10" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-124-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>What do you find if you bootstrap your model instead of using robust standard errors?</p>
+</div>
+</div>
+</div>
+<div id="interactions" class="section level2 hasAnchor" number="3.6">
+<h2><span class="header-section-number">3.6</span> Interactions<a href="linear-models.html#interactions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We have addressed most of the main issues covered in basic linear model discussions, but we have yet to discuss interactions. Let’s start by talking about interactions between categorical variables and continuous variables.</p>
+<p>We’ll model the interaction between <code>white_pop</code> and <code>rep_maj</code>. In R, we do this simply by putting an asterisk between the two terms:</p>
+<div class="sourceCode" id="cb235"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb235-1"><a href="linear-models.html#cb235-1" tabindex="-1"></a>mod3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(cases_pc) <span class="sc">~</span> rep_maj<span class="sc">*</span>white_pop <span class="sc">+</span> mur , <span class="at">data=</span>colo_dat)</span>
+<span id="cb235-2"><a href="linear-models.html#cb235-2" tabindex="-1"></a><span class="fu">summary</span>(mod3)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = log(cases_pc) ~ rep_maj * white_pop + mur, data = colo_dat)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.54568 -0.16279  0.00512  0.16205  0.47957 
+## 
+## Coefficients:
+##                      Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)           7.42881    0.99413   7.473 4.71e-10 ***
+## rep_majYes            3.62991    1.34817   2.692  0.00926 ** 
+## white_pop            -0.40962    1.07829  -0.380  0.70542    
+## murUP                 0.07534    0.07046   1.069  0.28935    
+## murMetro             -0.06365    0.08416  -0.756  0.45249    
+## rep_majYes:white_pop -3.93514    1.46544  -2.685  0.00943 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.2355 on 58 degrees of freedom
+## Multiple R-squared:  0.2769, Adjusted R-squared:  0.2146 
+## F-statistic: 4.443 on 5 and 58 DF,  p-value: 0.001708</code></pre>
+<p>From the regression output, we see that the interaction of the dummy and continuous variables is significant. If the categorical variable had had more than two levels, we would have needed to look at the <code>Anova()</code> output to see whether the interaction was significant. This means that the effect of <code>white_pop</code> is significantly different in republican majority counties versus republican minority counties. The converse is also true - the effect of being a majority republican county changes as a function of the white population. We’ll investigate how those two things work below.</p>
+<p>The <code>intQualQuant()</code> function in the <code>DAMisc</code> package allows us to evaluate interactions between quantitative and qualitative variables. Specifying <code>type='slopes'</code> and <code>plot=FALSE</code> will give you all of the <em>simple slopes</em>, the conditional partial effects of the continuous variable given different values of the categorical variable.</p>
+<div class="sourceCode" id="cb237"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb237-1"><a href="linear-models.html#cb237-1" tabindex="-1"></a><span class="fu">library</span>(DAMisc)</span>
+<span id="cb237-2"><a href="linear-models.html#cb237-2" tabindex="-1"></a><span class="fu">intQualQuant</span>(mod3, <span class="fu">c</span>(<span class="st">&quot;rep_maj&quot;</span>, <span class="st">&quot;white_pop&quot;</span>), <span class="at">type=</span><span class="st">&quot;slopes&quot;</span>, <span class="at">plot=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<pre><code>## $out
+##            eff       se      tstat       pvalue
+## No  -0.4096249 1.078292 -0.3798829 7.054198e-01
+## Yes -4.3447670 1.026966 -4.2306835 8.388801e-05
+## 
+## $varcor
+##            [,1]       [,2]
+## [1,] 1.16271458 0.03493473
+## [2,] 0.03493473 1.05465859
+## 
+## $mainvar
+## [1] &quot;white_pop&quot;
+## 
+## $givenvar
+## [1] &quot;rep_maj&quot;
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;iqq&quot;</code></pre>
+<p>If we set <code>plot=TRUE</code>, we see the two lines that give the effect of <code>white_pop</code> for each of the <code>rep_maj</code> conditions. The rug plot gives the distribution of <code>white_pop</code> for each of the groups on <code>rep_maj</code>. The benefit of the rug plot is to identify places where inferences are plausible and where they are not.</p>
+<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="linear-models.html#cb239-1" tabindex="-1"></a><span class="fu">intQualQuant</span>(mod3, <span class="fu">c</span>(<span class="st">&quot;rep_maj&quot;</span>, <span class="st">&quot;white_pop&quot;</span>), <span class="at">type=</span><span class="st">&quot;slopes&quot;</span>, <span class="at">plot=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-127-1.png" width="65%" style="display: block; margin: auto;" />
+We can also plot the “other side” of the interaction. It basically identifies the difference between the two lines for every different value of <code>white_pop</code>. We get this by setting <code>type="facs"</code>. Here, we see that the difference between minority and majority Republican counties becomes statistically isignificant at around 0.875, which is the 12.5 percentile of the <code>white_pop</code> variable.</p>
+<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb240-1"><a href="linear-models.html#cb240-1" tabindex="-1"></a><span class="fu">intQualQuant</span>(mod3, <span class="fu">c</span>(<span class="st">&quot;rep_maj&quot;</span>, <span class="st">&quot;white_pop&quot;</span>), <span class="at">type=</span><span class="st">&quot;facs&quot;</span>, <span class="at">plot=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-128-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>To see how the interaction works out on the un-transformed cases variable, we’re best off using the <code>ggpredict()</code> function.</p>
+<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="linear-models.html#cb241-1" tabindex="-1"></a><span class="fu">ggpredict</span>(mod3, <span class="at">terms=</span><span class="fu">c</span>(<span class="st">&quot;white_pop [all]&quot;</span>, <span class="st">&quot;rep_maj&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb241-2"><a href="linear-models.html#cb241-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>predicted, </span>
+<span id="cb241-3"><a href="linear-models.html#cb241-3" tabindex="-1"></a>             <span class="at">colour=</span>group, <span class="at">fill=</span>group)) <span class="sc">+</span> </span>
+<span id="cb241-4"><a href="linear-models.html#cb241-4" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>conf.low, <span class="at">ymax=</span>conf.high), </span>
+<span id="cb241-5"><a href="linear-models.html#cb241-5" tabindex="-1"></a>              <span class="at">alpha=</span>.<span class="dv">15</span>, </span>
+<span id="cb241-6"><a href="linear-models.html#cb241-6" tabindex="-1"></a>              <span class="at">col=</span><span class="st">&quot;transparent&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb241-7"><a href="linear-models.html#cb241-7" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb241-8"><a href="linear-models.html#cb241-8" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb241-9"><a href="linear-models.html#cb241-9" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;White Population %&quot;</span>, </span>
+<span id="cb241-10"><a href="linear-models.html#cb241-10" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Predicted Cases of COVID-19/10k&quot;</span>, </span>
+<span id="cb241-11"><a href="linear-models.html#cb241-11" tabindex="-1"></a>       <span class="at">colour=</span><span class="st">&quot;Republican Majority&quot;</span>, </span>
+<span id="cb241-12"><a href="linear-models.html#cb241-12" tabindex="-1"></a>       <span class="at">fill=</span><span class="st">&quot;Republican Majority&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-129-1.png" width="672" /></p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Add to your model an interaction of <code>tax</code> and <code>sei10</code>.<br />
+- What does the interaction say about the conditional nature of this relationship.</p>
+</div>
+<p>We can also look at two continuous variable interactions. Here, we switch back to an interaction of <code>BAplus</code> and <code>white_pop</code>. Because the interaction term is significant, it means there is a significant conditional relationship.</p>
+<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="linear-models.html#cb242-1" tabindex="-1"></a>mod4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(cases_pc) <span class="sc">~</span> white_pop<span class="sc">*</span>BAplus <span class="sc">+</span> rep_maj, <span class="at">data=</span>colo_dat)</span>
+<span id="cb242-2"><a href="linear-models.html#cb242-2" tabindex="-1"></a><span class="fu">summary</span>(mod4)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = log(cases_pc) ~ white_pop * BAplus + rep_maj, data = colo_dat)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.56930 -0.16154  0.03626  0.15905  0.36885 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)       16.8170     1.8300   9.189 5.53e-13 ***
+## white_pop        -10.7807     2.0036  -5.381 1.34e-06 ***
+## BAplus           -25.6989     5.7234  -4.490 3.36e-05 ***
+## rep_majYes         0.1273     0.0794   1.603    0.114    
+## white_pop:BAplus  28.2401     6.2249   4.537 2.86e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.2218 on 59 degrees of freedom
+## Multiple R-squared:  0.3474, Adjusted R-squared:  0.3032 
+## F-statistic: 7.853 on 4 and 59 DF,  p-value: 3.826e-05</code></pre>
+<p>The main way of looking at these effects is through a so-called marginal effects plot. This plots the <em>effect</em> of one variable against the <em>values</em> of the other variable. The <code>DAintfun2()</code> function from the <code>DAMisc</code> package does this for us.</p>
+<div class="sourceCode" id="cb244"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb244-1"><a href="linear-models.html#cb244-1" tabindex="-1"></a><span class="fu">DAintfun2</span>(mod4, <span class="fu">c</span>(<span class="st">&quot;white_pop&quot;</span>, <span class="st">&quot;BAplus&quot;</span>), </span>
+<span id="cb244-2"><a href="linear-models.html#cb244-2" tabindex="-1"></a>          <span class="at">rug=</span><span class="cn">FALSE</span>, </span>
+<span id="cb244-3"><a href="linear-models.html#cb244-3" tabindex="-1"></a>          <span class="at">hist=</span><span class="cn">TRUE</span>, </span>
+<span id="cb244-4"><a href="linear-models.html#cb244-4" tabindex="-1"></a>          <span class="at">scale.hist =</span> .<span class="dv">3</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-131-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>Here, we see that the effect of <code>white_pop</code> is significant and negative when <code>BAplus</code> is less than around 0.3 and it is significant and positive when <code>BAplus</code> is greater than around .48 (more precise estimates of this below). On the other hand (in the right-hand panel), we see that <code>BAplus</code> is significant and negative when <code>white_pop</code> takes on values smaller than around .875 and is positive and significant when <code>white_pop</code> is above around 0.925. If we wanted to figure out where those values are exactly, we could use the <code>changeSig()</code> function (also in the <code>DAMisc</code> package).</p>
+<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="linear-models.html#cb245-1" tabindex="-1"></a><span class="fu">changeSig</span>(mod4, <span class="fu">c</span>(<span class="st">&quot;white_pop&quot;</span>, <span class="st">&quot;BAplus&quot;</span>))</span></code></pre></div>
+<pre><code>## LB for B(white_pop | BAplus) = 0 when BAplus=0.47 (94th pctile)
+## UB for B(white_pop | BAplus) = 0 when BAplus=0.3317 (67th pctile)
+## LB for B(BAplus | white_pop) = 0 when white_pop=0.9324 (45th pctile)
+## UB for B(BAplus | white_pop) = 0 when white_pop=0.8837 (16th pctile)</code></pre>
+<p>We were pretty close with the visual inspection, but the results from <code>changeSig()</code> are more precise.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Now, do the following:
+- Make a new variable <code>loginc</code> which is the log of <code>realinc</code> and replace <code>log(realinc)</code> with <code>loginc</code> in your model.<br />
+- Instead of an interaction between <code>tax</code> and <code>sei10</code>, use an interaction between <code>sei10</code> and <code>loginc</code>.<br />
+- Evaluate the interaction.</p>
+</div>
+</div>
+<div id="exercises-3" class="section level2 unnumbered hasAnchor">
+<h2>Exercises<a href="linear-models.html#exercises-3" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li><p>For this set of exercise, we’ll be working with the <code>wvsb.rda</code> data set. Create an index of variables related to different form of cheating being justifiable or not using the following variables: <code>V198</code>, <code>V199</code>, <code>V200</code>, <code>V201</code>. Make sure that the resulting index varies from 0 to 1. Regress the cheating index on the secular values index (<code>sacsecval</code>) in an OLS model.</p></li>
+<li><p>Produce a table of the model using <code>stargazer</code>.</p></li>
+<li><p>Create an effect plot of the model using the <code>ggeffects</code> package.</p></li>
+<li><p>Let’s add some variables to the model. Create a compound index representing trust in institutions by adding the variables <code>I_TRUSTPOLICE</code>, <code>I_TRUSTCOURTS</code>, and <code>I_TRUSTARMY</code>, and dividing the resulting vector by 3. Create a binary variable from <code>V240</code>, 1 representing female respondents, 0 otherwise. Create 3 binary variables for age from <code>V242</code>, one for people 16 to 35, one for people 36 to 50, and one for people 51 plus. Notice how these three variables are perfectly colinear, meaning that once we know two of them, we know the value for the other one. Hence, you need only choose two out of the three to include in your model. Finally, subset the data such that only.</p></li>
+<li><p>Now that we have a more refined model, let’s do some diagnostics. First, create a component + residual plot using <code>crPlot()</code> for the secular values index (<code>sacsecval</code>).</p></li>
+<li><p>The residuals appear to be linear. Let’s now add a confidence interval arround the estimated line. Use <code>augment</code> function from <code>broom</code> to do so.</p></li>
+<li><p>Now let’s look for homoskedasticity violations. Use <code>ncvTest</code> to estimate a score test of the residuals. Then create a graph with the fitted values on the x-axis and the residuals on the y-axis.</p></li>
+<li><p>Since we have evidence of heteroskedasticity, we need to correct our standard errors. Using the <code>lmtest</code> and <code>sandwich</code> packages, create a table for the model with HC5 standard errors.</p></li>
+<li><p>Now, let’s run some outlier diagnostics.
+9.1 Produce a hat value graph for the <code>sacsecval</code> variable.
+9.2 Extract the outliers according to the hat values.
+9.3 Compute the Bonferroni p-value for the model. Do we have significant outliers?
+9.4 Calculate the difference in the coefficients induced by removing a single observation. Present the results in a graph.
+9.5 Produce a Cook’s D graph.
+9.6 Produce a bubble plot.
+9.7 Produce an added-variable plot.</p></li>
+<li><p>Now, let’s look at the normality of the residuals:
+10.1 Create a graph that shows the distribution of the residuals against a normal distribution.
+10.2 Present a quantile-quantile plot using the <code>ggpubr</code> package.
+10.3 Perform the Shapiro-Wilk’s test. Are the residuals normal?</p></li>
+<li><p>Reproduce the model from question 4, this time with an interaction between <code>sacsecval</code> and <code>female</code>. Compute the conditional partial effect of <code>female</code> on <code>sacsecval</code> using the <code>avg_comparisons</code> function. Plot your results.</p></li>
+</ol>
+
+
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="1">
+<li id="fn1"><p>For matrix <span class="math inline">\(\bm{H}\)</span>, idempotent imply that <span class="math inline">\(\bm{H}=\bm{H}\times\bm{H&#39;}\)</span><a href="linear-models.html#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="describing-relationships-in-the-general-social-survey.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="generalized-linear-models---logit..html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["RBE.pdf", "RBE.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

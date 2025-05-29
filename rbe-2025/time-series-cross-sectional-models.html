@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 8 Time-Series Cross-Sectional Models | R: Learning by Example</title>
+  <meta name="description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 8 Time-Series Cross-Sectional Models | R: Learning by Example" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 8 Time-Series Cross-Sectional Models | R: Learning by Example" />
+  
+  <meta name="twitter:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+<meta name="author" content="David A. Armstrong II and William Poirier" />
+
+
+<meta name="date" content="2025-05-29" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="multilevel-models.html"/>
+<link rel="next" href="measurement-issues.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<link href="libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.33/datatables.js"></script>
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">R: Learning by Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preliminaries</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#license"><i class="fa fa-check"></i>License</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#getting-r-and-rstudio"><i class="fa fa-check"></i>Getting R and Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#keeping-track-of-your-work"><i class="fa fa-check"></i>Keeping Track of Your Work</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#overview-of-rstudio"><i class="fa fa-check"></i>Overview of Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#using-r"><i class="fa fa-check"></i>Using <em>R</em></a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#assigning-output-to-objects"><i class="fa fa-check"></i>Assigning Output to Objects</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#vectors-and-matrices"><i class="fa fa-check"></i>Vectors and Matrices</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#function-arguments"><i class="fa fa-check"></i>Function Arguments</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#importing-data"><i class="fa fa-check"></i>Importing Data</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#data-types-in-r"><i class="fa fa-check"></i>Data Types in <em>R</em></a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#examining-data"><i class="fa fa-check"></i>Examining Data</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#missing-values"><i class="fa fa-check"></i>Missing Values</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#filtering-with-logical-expressions-and-sorting"><i class="fa fa-check"></i>Filtering with Logical Expressions and Sorting</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#workhorse-functions"><i class="fa fa-check"></i>Workhorse Functions</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#exercises"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html"><i class="fa fa-check"></i>Datasets</a>
+<ul>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo"><i class="fa fa-check"></i><code>colo</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo_covid"><i class="fa fa-check"></i><code>colo_covid</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gss-canada"><i class="fa fa-check"></i><code>gss</code> (Canada)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gsss16-usa"><i class="fa fa-check"></i><code>gsss16</code> (USA)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#davenport-soule-armstrong-data"><i class="fa fa-check"></i>Davenport-Soule-Armstrong Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#france-2004"><i class="fa fa-check"></i>France 2004</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#ces19"><i class="fa fa-check"></i><code>ces19</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#snijders-and-bosker-multileve-school-data"><i class="fa fa-check"></i>Snijders and Bosker Multileve School Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-multilevel"><i class="fa fa-check"></i>World Values Survey (multilevel)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#repression-data"><i class="fa fa-check"></i>Repression Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#oil-and-democracy-dataset"><i class="fa fa-check"></i>Oil and Democracy Dataset</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#politicaldemocracy"><i class="fa fa-check"></i><code>PoliticalDemocracy</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-measurement"><i class="fa fa-check"></i>World Values Survey (measurement)</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="viz.html"><a href="viz.html"><i class="fa fa-check"></i><b>1</b> Visualizing</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="viz.html"><a href="viz.html#wrangling-data"><i class="fa fa-check"></i><b>1.1</b> Wrangling data</a>
+<ul>
+<li class="chapter" data-level="1.1.1" data-path="viz.html"><a href="viz.html#merging-datasets"><i class="fa fa-check"></i><b>1.1.1</b> Merging Datasets</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="viz.html"><a href="viz.html#ggplot"><i class="fa fa-check"></i><b>1.2</b> GGplot</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="viz.html"><a href="viz.html#bar-plots"><i class="fa fa-check"></i><b>1.2.1</b> Bar Plots</a></li>
+<li class="chapter" data-level="1.2.2" data-path="viz.html"><a href="viz.html#line-graphs"><i class="fa fa-check"></i><b>1.2.2</b> Line Graphs</a></li>
+<li class="chapter" data-level="1.2.3" data-path="viz.html"><a href="viz.html#histograms"><i class="fa fa-check"></i><b>1.2.3</b> Histograms</a></li>
+<li class="chapter" data-level="1.2.4" data-path="viz.html"><a href="viz.html#scatterplots"><i class="fa fa-check"></i><b>1.2.4</b> Scatterplots</a></li>
+<li class="chapter" data-level="1.2.5" data-path="viz.html"><a href="viz.html#multiple-series"><i class="fa fa-check"></i><b>1.2.5</b> Multiple Series</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="viz.html"><a href="viz.html#recap"><i class="fa fa-check"></i><b>1.3</b> Recap</a></li>
+<li class="chapter" data-level="" data-path="viz.html"><a href="viz.html#exercises-1"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html"><i class="fa fa-check"></i><b>2</b> Describing Relationships in the General Social Survey</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#the-canadian-gss."><i class="fa fa-check"></i><b>2.1</b> The Canadian GSS.</a></li>
+<li class="chapter" data-level="2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#looking-at-the-data."><i class="fa fa-check"></i><b>2.2</b> Looking at the data.</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#cross-tabulations"><i class="fa fa-check"></i><b>2.2.1</b> Cross-tabulations</a></li>
+<li class="chapter" data-level="2.2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#permutation-tests-in-r."><i class="fa fa-check"></i><b>2.2.2</b> Permutation Tests in R.</a></li>
+<li class="chapter" data-level="2.2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#back-to-the-data"><i class="fa fa-check"></i><b>2.2.3</b> Back to the Data</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#descriptive-output-in-knitr"><i class="fa fa-check"></i><b>2.3</b> Descriptive Output in knitr</a></li>
+<li class="chapter" data-level="" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#exercises-2"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="linear-models.html"><a href="linear-models.html"><i class="fa fa-check"></i><b>3</b> Linear Models</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="linear-models.html"><a href="linear-models.html#effects-plots"><i class="fa fa-check"></i><b>3.1</b> Effects Plots</a></li>
+<li class="chapter" data-level="3.2" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-linearity"><i class="fa fa-check"></i><b>3.2</b> Diagnostic Tools: Linearity</a></li>
+<li class="chapter" data-level="3.3" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-heteroskedasticity"><i class="fa fa-check"></i><b>3.3</b> Diagnostic Tools: Heteroskedasticity</a></li>
+<li class="chapter" data-level="3.4" data-path="linear-models.html"><a href="linear-models.html#diagnostics-outliers-and-influential-data"><i class="fa fa-check"></i><b>3.4</b> Diagnostics: Outliers and Influential Data</a></li>
+<li class="chapter" data-level="3.5" data-path="linear-models.html"><a href="linear-models.html#diagnostics-for-normality"><i class="fa fa-check"></i><b>3.5</b> Diagnostics for Normality</a>
+<ul>
+<li class="chapter" data-level="3.5.1" data-path="linear-models.html"><a href="linear-models.html#bootstrapping-regression-models"><i class="fa fa-check"></i><b>3.5.1</b> Bootstrapping Regression Models</a></li>
+</ul></li>
+<li class="chapter" data-level="3.6" data-path="linear-models.html"><a href="linear-models.html#interactions"><i class="fa fa-check"></i><b>3.6</b> Interactions</a></li>
+<li class="chapter" data-level="" data-path="linear-models.html"><a href="linear-models.html#exercises-3"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html"><i class="fa fa-check"></i><b>4</b> Generalized Linear Models - Logit.</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#evaluating-model-fit"><i class="fa fa-check"></i><b>4.1</b> Evaluating Model Fit</a></li>
+<li class="chapter" data-level="4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effects"><i class="fa fa-check"></i><b>4.2</b> Marginal Effects</a></li>
+<li class="chapter" data-level="4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effect-plots"><i class="fa fa-check"></i><b>4.3</b> Marginal Effect Plots</a></li>
+<li class="chapter" data-level="4.4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#interactions-in-binary-dv-models"><i class="fa fa-check"></i><b>4.4</b> Interactions in Binary DV Models</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-binary"><i class="fa fa-check"></i><b>4.4.1</b> Both binary</a></li>
+<li class="chapter" data-level="4.4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#one-binary-one-continuous."><i class="fa fa-check"></i><b>4.4.2</b> One binary, one continuous.</a></li>
+<li class="chapter" data-level="4.4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-continuous"><i class="fa fa-check"></i><b>4.4.3</b> Both Continuous</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#other-glms."><i class="fa fa-check"></i><b>4.5</b> Other GLMs.</a></li>
+<li class="chapter" data-level="" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#exercises-4"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html"><i class="fa fa-check"></i><b>5</b> Ordered and Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#ordinal-dv-models"><i class="fa fa-check"></i><b>5.1</b> Ordinal DV Models</a></li>
+<li class="chapter" data-level="5.2" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#multinomial-logit"><i class="fa fa-check"></i><b>5.2</b> Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#parametric-bootstrap-for-confidence-intervals."><i class="fa fa-check"></i><b>5.2.1</b> Parametric Bootstrap for Confidence Intervals.</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#conclusion"><i class="fa fa-check"></i><b>5.3</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html"><i class="fa fa-check"></i><b>6</b> Handling Complex Survey Data</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#frequency-distributions-and-contingency-tables"><i class="fa fa-check"></i><b>6.1</b> Frequency Distributions and Contingency Tables</a></li>
+<li class="chapter" data-level="6.2" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#summary-statistics"><i class="fa fa-check"></i><b>6.2</b> Summary Statistics</a></li>
+<li class="chapter" data-level="6.3" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#estimating-models"><i class="fa fa-check"></i><b>6.3</b> Estimating Models</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="multilevel-models.html"><a href="multilevel-models.html"><i class="fa fa-check"></i><b>7</b> Multilevel Models</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="multilevel-models.html"><a href="multilevel-models.html#data-structure."><i class="fa fa-check"></i><b>7.1</b> Data Structure.</a></li>
+<li class="chapter" data-level="7.2" data-path="multilevel-models.html"><a href="multilevel-models.html#clustering-standard-errors"><i class="fa fa-check"></i><b>7.2</b> Clustering Standard Errors</a></li>
+<li class="chapter" data-level="7.3" data-path="multilevel-models.html"><a href="multilevel-models.html#between-vs-within-relationships."><i class="fa fa-check"></i><b>7.3</b> Between vs Within Relationships.</a></li>
+<li class="chapter" data-level="7.4" data-path="multilevel-models.html"><a href="multilevel-models.html#random-intercepts"><i class="fa fa-check"></i><b>7.4</b> Random Intercepts</a></li>
+<li class="chapter" data-level="7.5" data-path="multilevel-models.html"><a href="multilevel-models.html#estimating-the-multilevel-model"><i class="fa fa-check"></i><b>7.5</b> Estimating the Multilevel Model</a>
+<ul>
+<li class="chapter" data-level="7.5.1" data-path="multilevel-models.html"><a href="multilevel-models.html#p-values-in-lmer-output"><i class="fa fa-check"></i><b>7.5.1</b> P-values in LMER Output</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="multilevel-models.html"><a href="multilevel-models.html#other-random-effects-models"><i class="fa fa-check"></i><b>7.6</b> Other Random-Effects Models</a></li>
+<li class="chapter" data-level="7.7" data-path="multilevel-models.html"><a href="multilevel-models.html#bayesian-models-with-brms"><i class="fa fa-check"></i><b>7.7</b> Bayesian Models with BRMS</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html"><i class="fa fa-check"></i><b>8</b> Time-Series Cross-Sectional Models</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#preliminaries-and-assumptions"><i class="fa fa-check"></i><b>8.1</b> Preliminaries and Assumptions</a></li>
+<li class="chapter" data-level="8.2" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#unit-effects"><i class="fa fa-check"></i><b>8.2</b> Unit Effects</a></li>
+<li class="chapter" data-level="8.3" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#the-plm-package"><i class="fa fa-check"></i><b>8.3</b> The plm Package</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="measurement-issues.html"><a href="measurement-issues.html"><i class="fa fa-check"></i><b>9</b> Measurement Issues</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="measurement-issues.html"><a href="measurement-issues.html#reliability-analysis"><i class="fa fa-check"></i><b>9.1</b> Reliability Analysis</a></li>
+<li class="chapter" data-level="9.2" data-path="measurement-issues.html"><a href="measurement-issues.html#exploratory-factor-analysis-and-principal-components-analysis"><i class="fa fa-check"></i><b>9.2</b> Exploratory Factor Analysis and Principal Components Analysis</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="measurement-issues.html"><a href="measurement-issues.html#rotations"><i class="fa fa-check"></i><b>9.2.1</b> Rotations</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="measurement-issues.html"><a href="measurement-issues.html#cfa-and-sem"><i class="fa fa-check"></i><b>9.3</b> CFA and SEM</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">R: Learning by Example</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="time-series-cross-sectional-models" class="section level1 hasAnchor" number="8">
+<h1><span class="header-section-number">Chapter 8</span> Time-Series Cross-Sectional Models<a href="time-series-cross-sectional-models.html#time-series-cross-sectional-models" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>TSCS Data have both cross-sectional (data on different units) and time-series (data over time) properties. As such:</p>
+<ul>
+<li>For each unit (e.g., country) there are many different time-periods.</li>
+<li>For each different time-period, there are many different units</li>
+</ul>
+<div id="preliminaries-and-assumptions" class="section level2 hasAnchor" number="8.1">
+<h2><span class="header-section-number">8.1</span> Preliminaries and Assumptions<a href="time-series-cross-sectional-models.html#preliminaries-and-assumptions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In the presence of such data structure, conventional cross-sectional results are <em>wrong</em>:</p>
+<ul>
+<li>At least inefficient - standard errors will be wrong.</li>
+<li>Could also be biased depending on the particular nature of the data.</li>
+</ul>
+<p>There are several issues that come up when we consider this particular dependence structure in the data.</p>
+<ul>
+<li>Non-independence: the assumption that all observations are independent is almost certainly violated.
+<ul>
+<li>Observations close in time for the same unit are often more alike each other than observations far away in time.</li>
+<li>Consequence I: Serial correlation (errors are correlated with each other).</li>
+<li>Consequence II: Model mis-specification: if <span class="math inline">\(y_{t}\)</span> is a function of <span class="math inline">\(y_{t-1}\)</span> and we don’t include it, then we have mis-specified the model.
+-Trending - series that tend to increase or decrease by the same amount over time.</li>
+<li>Two series that are trending will tend to show a strong relationship, but the relationship could be spurious as both variables are a function of time.</li>
+<li>Also violates the assumption of stationarity - finite, constant variance.</li>
+</ul></li>
+<li>Structural breaks - rapid and immediate changes in mean or variance</li>
+</ul>
+<p>While there are lots of things we <em>could</em> care about with respect to time-series, for TSCS data, it’s almost always about autoregressive errors.</p>
+<p><span class="math display">\[y_{t} = \alpha_{0} + \alpha_{1} y_{t-1} + \varepsilon_{t}\]</span></p>
+<p>Here, the <span class="math inline">\(\alpha_{0}\)</span> allows the long-run equilibrium to be non-zero. Assuming <span class="math inline">\(|\alpha_{1}| &lt; 1\)</span>, the series will eventually, though not immediately, return to its long-term equilibrium after an intervention (without further interventions).</p>
+<p>The correlation between temporally adjacent values of <span class="math inline">\(y\)</span> is:</p>
+<p><span class="math display">\[Corr\left(y_{t}, y_{t-1}\right) \equiv \rho \equiv \frac{E\left(\left(y_{t} - \mu_{t}\right)\left(y_{t-1}-\mu_{t-1}\right)\right)}{E\left(y_{t} - \mu_{t}\right)^{2}}\]</span></p>
+<p>We can estimate <span class="math inline">\(\hat{\rho}\)</span> by plugging <span class="math inline">\(\bar{y}\)</span> in for <span class="math inline">\(\mu\)</span>.</p>
+<p>There are a few assumptions that we should make sure to understand. The first is stationarity. Covariance stationarity is defined by:</p>
+<ul>
+<li><span class="math inline">\(E(y_{t})\)</span> is constant</li>
+<li><span class="math inline">\(\text{Var}(y_{t})\)</span> is constant</li>
+<li><span class="math inline">\(\text{Cov}(y_{t=k}, y_{t=k+h})\)</span> depends only on <span class="math inline">\(h\)</span> and not <span class="math inline">\(k\)</span>.</li>
+</ul>
+<p>Another is exogeneity. Strict exogeneity is defined as:</p>
+<p><span class="math display">\[\begin{aligned}
+y_{t} &amp;= \beta_{0} + \beta_{1}x_{t} + \varepsilon_{t}, \\
+E(\varepsilon_{t} | \mathbf{X}) &amp;= 0 \implies E(\varepsilon_{t} | x_{t + h}) = 0 \quad \forall h
+\end{aligned}\]</span></p>
+<p>If exogeneity is violated, results will be biased. A weaker version (contemporaneous exogeneity) will suffice if <span class="math inline">\(T\)</span> is large.</p>
+<p><span class="math display">\[E(\varepsilon_{t}|x_{t}) = 0\]</span></p>
+<p>One of the ways that we deal with some of these problems could be through the
+Autoregressive Distributive Lag (ADL) model. Here we assume:</p>
+<p><span class="math display">\[y_{t} = \alpha_{0} + \alpha_{1}y_{t-1} + \varepsilon_{t}\]</span></p>
+<p>Where <span class="math inline">\(\alpha_{0}\)</span> assumes that the series has a non-zero mean. In the <em>static process</em> the long-run equilibrium is <span class="math inline">\(\beta_{0} = \frac{\alpha_{0}}{1-\alpha_{1}}\)</span>. However, we will tend to focus on the lagged dependent variable (LDV) model:</p>
+<p><span class="math display">\[y_{t} = \alpha_{0} + \alpha_{1}y_{t-1} + \beta_{1}x_{t} + \varepsilon_{t}\]</span></p>
+<p>Where the short-term (immediate) effect of <span class="math inline">\(x_{t}\)</span> is <span class="math inline">\(\beta_{1}\)</span> and the long-term effect of <span class="math inline">\(x_{t}\)</span> is <span class="math inline">\(\frac{\beta_{1}}{1-\alpha_{1}}\)</span></p>
+<p>Much of the discussion above is derived from Mark Pickup’s excellent primer on Time Series models. The book, though, is really about single-series models. Here, we are interested in time-series cross-sectional models, which have multiple series. All of the issues mentioned above get much more complicated in TSCS data becuse there are, in effect, many different time-series that we’re trying to model simultaneously. Further, the parameters are often constrained to be the same across the different series, which may or may not be appropriate for the data.</p>
+</div>
+<div id="unit-effects" class="section level2 hasAnchor" number="8.2">
+<h2><span class="header-section-number">8.2</span> Unit Effects<a href="time-series-cross-sectional-models.html#unit-effects" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In the chapter discussing multilevel models, we already discussed between- and within-estimators. In the TSCS literature, this same idea often originates from a different concern - how to deal with unit effects. That is - what is the appropriate way to incorporate in our model the unobserved heterogeneity that comes from unobserved group-specific characteristics? Modeling unit effects refers to acknowledging that there may be differences in the average level of the dependent variable across groups.</p>
+<p><span class="math display">\[y_{i} = \alpha_{j[i]} + \beta x_{i} + \varepsilon_{i}; \quad \varepsilon_{i}\sim N(0, \sigma_{y}^{2})\]</span></p>
+<p>After controlling for <span class="math inline">\(x\)</span>, there may remain unexplained variation relating to groups in <span class="math inline">\(y\)</span>. That is what <span class="math inline">\(\alpha_{j[i]}\)</span> is meant to capture. Failing to account for <span class="math inline">\(\alpha_{j[i]}\)</span> will usually result in biased estimates of <span class="math inline">\(\beta\)</span>. There are two approaches to solving this problem - fixed effects and random effects. We would define the fixed-effects estimator as:</p>
+<p><span class="math display">\[y_{i} = \sum_{j=1}^{N}\alpha_{j}z_{j[i]} + \beta x_{i} +  \varepsilon_{i}; \quad \varepsilon_{i}\sim N(0, \sigma_{y}^{2})\]</span></p>
+<p>Here, the unit effects are a systematic part of the model. That means that the unobserved characteristics captured by the different intercepts could be correlated with the other variables in the systematic component of the model. Because these different intercepts are estimated as part of the systematic component, it wouldn’t make sense to think about what other “new” groups might look like. So, this is really a method that is appropriate when the groups are meaningful in their own right and not just a sample from a much larger set of groups. Because the fixed effects are in the systematic part of the model, they they would be perfectly collinear with any other variable that varied only by group, so those variables cannot be in the model. It is also worth noting that the fixed-effects estimator is a within-estimator.</p>
+<p>The random effect model is defined as follows:</p>
+<p><span class="math display">\[y_{i} = \alpha_{j[i]} + \beta x_{i} +  \varepsilon_{i}; \quad \alpha_{j}\sim
+N(\mu_{\alpha}, \sigma_{\alpha}^{2}); \quad \varepsilon_{i}\sim N(0, \sigma_{y}^{2})\]</span></p>
+<p>Here, the unit-specific effects are actually in the stochastic part of the model. As such, there is an assumption that they are uncorrelated with anything in the systematic part of the model. Bell and Jones suggest including all group-mean and within variables in the model, therefore purging the errors of any systematic relationship with the mean of the covariates in the model. It is also worth noting here that we are not modeling the unit-specific effects directly, rather the model accounts for the added variability that comes from the grouping. Specifically, it estimates the variance of the unit effects which are assumed to have a normal distribution with mean equal to 0. The random effect model, as we saw in the chapter on multilevel models, can incorporate group-specific variables and can accommodate itself to both between and within relationships.</p>
+<p>Clark and Linzer (PSRM) give the following advice about the choice.
+- In the standard case (non-sluggish variables) - both RE and FE do equally well as regards bias, use whichever one you want.
+- Your hypothesis should be the guide - if you have a <em>within</em> hypothesis, you should use a <em>within</em> estimator.
+- With “sluggish” independent variables,
+- RE is better with few observations overall and few observations per unit.<br />
+- FE is better with larger N when the correlation between unit effects and independent variable are moderate to high.
+- FE is better in all cases when the number of observations per unit (times in our case) is bigger than 20.</p>
+<p>The first-difference (FD) estimator also solves some problems - particularly related to stationarity. We would define the estimator as:</p>
+<p><span class="math display">\[\Delta y_{it} = \beta \Delta x_{it} + \Delta \varepsilon_{it}\]</span></p>
+<p>where:<br />
+- <span class="math inline">\(\Delta y_{it} = y_{it} - y_{i,t-1}\)</span>
+- <span class="math inline">\(\Delta x_{it} = x_{it} - x_{i,t-1}\)</span>
+- <span class="math inline">\(\Delta \varepsilon_{it} = \varepsilon_{it} - \varepsilon_{i,t-1}\)</span></p>
+<p>This model makes sense particularly if you’re interested in changes.</p>
+</div>
+<div id="the-plm-package" class="section level2 hasAnchor" number="8.3">
+<h2><span class="header-section-number">8.3</span> The plm Package<a href="time-series-cross-sectional-models.html#the-plm-package" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <code>plm</code> package in R has a number of functions that will help us out here. We’ll load in some data to use below:</p>
+<div class="sourceCode" id="cb424"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb424-1"><a href="time-series-cross-sectional-models.html#cb424-1" tabindex="-1"></a><span class="fu">library</span>(rio)</span>
+<span id="cb424-2"><a href="time-series-cross-sectional-models.html#cb424-2" tabindex="-1"></a><span class="fu">library</span>(plm)</span>
+<span id="cb424-3"><a href="time-series-cross-sectional-models.html#cb424-3" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">import</span>(<span class="st">&quot;data/repress_data.dta&quot;</span>)</span></code></pre></div>
+<p>The fixed effect model is estimated with the <code>model="within"</code> and <code>effect="individual"</code> argument.</p>
+<div class="sourceCode" id="cb425"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb425-1"><a href="time-series-cross-sectional-models.html#cb425-1" tabindex="-1"></a>mod1.fe <span class="ot">&lt;-</span> <span class="fu">plm</span>(repress <span class="sc">~</span> voice<span class="sc">*</span>veto <span class="sc">+</span></span>
+<span id="cb425-2"><a href="time-series-cross-sectional-models.html#cb425-2" tabindex="-1"></a>              <span class="fu">log</span>(pop) <span class="sc">+</span> <span class="fu">log</span>(rgdpch) <span class="sc">+</span> iwar <span class="sc">+</span> cwar, <span class="at">data=</span>dat, </span>
+<span id="cb425-3"><a href="time-series-cross-sectional-models.html#cb425-3" tabindex="-1"></a>              <span class="at">model =</span> <span class="st">&quot;within&quot;</span>, <span class="at">index=</span> <span class="fu">c</span>(<span class="st">&quot;ccode&quot;</span>, <span class="st">&quot;year&quot;</span>), </span>
+<span id="cb425-4"><a href="time-series-cross-sectional-models.html#cb425-4" tabindex="-1"></a>              <span class="at">effect=</span><span class="st">&quot;individual&quot;</span>)</span>
+<span id="cb425-5"><a href="time-series-cross-sectional-models.html#cb425-5" tabindex="-1"></a><span class="fu">summary</span>(mod1.fe)</span></code></pre></div>
+<pre><code>## Oneway (individual) effect Within Model
+## 
+## Call:
+## plm(formula = repress ~ voice * veto + log(pop) + log(rgdpch) + 
+##     iwar + cwar, data = dat, effect = &quot;individual&quot;, model = &quot;within&quot;, 
+##     index = c(&quot;ccode&quot;, &quot;year&quot;))
+## 
+## Unbalanced Panel: n = 159, T = 6-28, N = 3876
+## 
+## Residuals:
+##       Min.    1st Qu.     Median    3rd Qu.       Max. 
+## -4.8942061 -0.6903648  0.0022614  0.7214781  4.4375575 
+## 
+## Coefficients:
+##              Estimate Std. Error t-value  Pr(&gt;|t|)    
+## voice        0.063040   0.014638  4.3065 1.702e-05 ***
+## veto         0.233100   0.067497  3.4535 0.0005595 ***
+## log(pop)    -1.430969   0.146190 -9.7884 &lt; 2.2e-16 ***
+## log(rgdpch) -0.125093   0.089594 -1.3962 0.1627308    
+## iwar        -0.205658   0.148735 -1.3827 0.1668359    
+## cwar        -0.633611   0.106042 -5.9751 2.516e-09 ***
+## voice:veto   0.013440   0.012657  1.0619 0.2883504    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Total Sum of Squares:    5062.1
+## Residual Sum of Squares: 4797.3
+## R-Squared:      0.052307
+## Adj. R-Squared: 0.010159
+## F-statistic: 29.2526 on 7 and 3710 DF, p-value: &lt; 2.22e-16</code></pre>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>For the applied exercises in this chapter, we’re using data from:</p>
+<p>Ross, Michel (2001) “Does Oil Hinder Democracy?” <em>World Politics</em> 53(3): 325-361.
+You can load the data with:</p>
+<div class="sourceCode" id="cb427"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb427-1"><a href="time-series-cross-sectional-models.html#cb427-1" tabindex="-1"></a><span class="fu">load</span>(<span class="st">&quot;data/oil.rda&quot;</span>)</span></code></pre></div>
+<p>This will make an object called <code>oil</code> in your workspace.</p>
+<p>Estimate the linear, between and one-way fixed effect model of <code>regime1</code> on the five-year lags of <code>regime1</code>, <code>oil</code>, <code>metal</code> <code>logl135</code> as well as the contemporaneous values of <code>islam</code> and <code>oecd</code>.</p>
+</div>
+<p>There is also a two-way fixed effect model where there are both unit and time. We can estimate that model with:</p>
+<div class="sourceCode" id="cb428"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb428-1"><a href="time-series-cross-sectional-models.html#cb428-1" tabindex="-1"></a>mod1.twfe <span class="ot">&lt;-</span> <span class="fu">plm</span>(repress <span class="sc">~</span> voice<span class="sc">*</span>veto <span class="sc">+</span></span>
+<span id="cb428-2"><a href="time-series-cross-sectional-models.html#cb428-2" tabindex="-1"></a>              <span class="fu">log</span>(pop) <span class="sc">+</span> <span class="fu">log</span>(rgdpch) <span class="sc">+</span> iwar <span class="sc">+</span> cwar, <span class="at">data=</span>dat, </span>
+<span id="cb428-3"><a href="time-series-cross-sectional-models.html#cb428-3" tabindex="-1"></a>              <span class="at">model =</span> <span class="st">&quot;within&quot;</span>, <span class="at">index=</span> <span class="fu">c</span>(<span class="st">&quot;ccode&quot;</span>, <span class="st">&quot;year&quot;</span>), </span>
+<span id="cb428-4"><a href="time-series-cross-sectional-models.html#cb428-4" tabindex="-1"></a>              <span class="at">effect=</span><span class="st">&quot;twoway&quot;</span>)</span>
+<span id="cb428-5"><a href="time-series-cross-sectional-models.html#cb428-5" tabindex="-1"></a><span class="fu">summary</span>(mod1.twfe)</span></code></pre></div>
+<pre><code>## Twoways effects Within Model
+## 
+## Call:
+## plm(formula = repress ~ voice * veto + log(pop) + log(rgdpch) + 
+##     iwar + cwar, data = dat, effect = &quot;twoway&quot;, model = &quot;within&quot;, 
+##     index = c(&quot;ccode&quot;, &quot;year&quot;))
+## 
+## Unbalanced Panel: n = 159, T = 6-28, N = 3876
+## 
+## Residuals:
+##       Min.    1st Qu.     Median    3rd Qu.       Max. 
+## -4.6429697 -0.6536746 -0.0081787  0.6951082  4.3962291 
+## 
+## Coefficients:
+##              Estimate Std. Error t-value  Pr(&gt;|t|)    
+## voice        0.082430   0.014632  5.6334 1.899e-08 ***
+## veto         0.298216   0.067789  4.3992 1.117e-05 ***
+## log(pop)    -0.065765   0.230294 -0.2856   0.77522    
+## log(rgdpch)  0.225734   0.108414  2.0822   0.03740 *  
+## iwar        -0.229900   0.149270 -1.5402   0.12361    
+## cwar        -0.589891   0.106838 -5.5214 3.596e-08 ***
+## voice:veto   0.023783   0.012582  1.8902   0.05881 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Total Sum of Squares:    4852.3
+## Residual Sum of Squares: 4633
+## R-Squared:      0.045196
+## Adj. R-Squared: -0.0045795
+## F-statistic: 24.905 on 7 and 3683 DF, p-value: &lt; 2.22e-16</code></pre>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Estimate the two-way fixed effects version of the model you estimated above.</p>
+</div>
+<p>We could estimate the random effects model in <code>lme4</code> or <code>brms</code> as discussed above, but we could also estimate it with <code>plm</code> as follows:</p>
+<div class="sourceCode" id="cb430"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb430-1"><a href="time-series-cross-sectional-models.html#cb430-1" tabindex="-1"></a>mod1.re <span class="ot">&lt;-</span> <span class="fu">plm</span>(repress <span class="sc">~</span> voice<span class="sc">*</span>veto <span class="sc">+</span></span>
+<span id="cb430-2"><a href="time-series-cross-sectional-models.html#cb430-2" tabindex="-1"></a>              <span class="fu">log</span>(pop) <span class="sc">+</span> <span class="fu">log</span>(rgdpch) <span class="sc">+</span> iwar <span class="sc">+</span> cwar, <span class="at">data=</span>dat, </span>
+<span id="cb430-3"><a href="time-series-cross-sectional-models.html#cb430-3" tabindex="-1"></a>              <span class="at">model =</span> <span class="st">&quot;random&quot;</span>, <span class="at">index=</span> <span class="fu">c</span>(<span class="st">&quot;ccode&quot;</span>, <span class="st">&quot;year&quot;</span>), </span>
+<span id="cb430-4"><a href="time-series-cross-sectional-models.html#cb430-4" tabindex="-1"></a>              <span class="at">effect=</span><span class="st">&quot;individual&quot;</span>)</span>
+<span id="cb430-5"><a href="time-series-cross-sectional-models.html#cb430-5" tabindex="-1"></a><span class="fu">summary</span>(mod1.re)</span></code></pre></div>
+<pre><code>## Oneway (individual) effect Random Effect Model 
+##    (Swamy-Arora&#39;s transformation)
+## 
+## Call:
+## plm(formula = repress ~ voice * veto + log(pop) + log(rgdpch) + 
+##     iwar + cwar, data = dat, effect = &quot;individual&quot;, model = &quot;random&quot;, 
+##     index = c(&quot;ccode&quot;, &quot;year&quot;))
+## 
+## Unbalanced Panel: n = 159, T = 6-28, N = 3876
+## 
+## Effects:
+##                  var std.dev share
+## idiosyncratic 1.2931  1.1371 0.579
+## individual    0.9409  0.9700 0.421
+## theta:
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.5683  0.7837  0.7837  0.7718  0.7837  0.7837 
+## 
+## Residuals:
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## -4.5803 -0.7387  0.0145  0.0037  0.7474  4.3187 
+## 
+## Coefficients:
+##              Estimate Std. Error  z-value  Pr(&gt;|z|)    
+## (Intercept)  3.822831   0.636985   6.0014 1.956e-09 ***
+## voice        0.069137   0.014104   4.9020 9.486e-07 ***
+## veto         0.203971   0.066453   3.0694 0.0021449 ** 
+## log(pop)    -0.607796   0.048474 -12.5385 &lt; 2.2e-16 ***
+## log(rgdpch)  0.191204   0.053444   3.5777 0.0003467 ***
+## iwar        -0.150622   0.149752  -1.0058 0.3145066    
+## cwar        -0.774438   0.106113  -7.2983 2.915e-13 ***
+## voice:veto   0.057605   0.011702   4.9226 8.541e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Total Sum of Squares:    5628.6
+## Residual Sum of Squares: 5150.5
+## R-Squared:      0.084946
+## Adj. R-Squared: 0.08329
+## Chisq: 358.302 on 7 DF, p-value: &lt; 2.22e-16</code></pre>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Estimate the random effect model (both one-way and two-way) similar to the models you estimated above.</p>
+</div>
+<p>One of the main benefits of using the <code>plm</code> package is access to a number of tests for residuals and also access to <code>lag()</code>, <code>lead()</code> and <code>diff()</code> functions that work as expected with time-series cross-sectional data. First, we could test for serial correlation in the errors with either the Breusch-Pagan test:</p>
+<div class="sourceCode" id="cb432"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb432-1"><a href="time-series-cross-sectional-models.html#cb432-1" tabindex="-1"></a><span class="fu">pbgtest</span>(mod1.fe, <span class="at">order=</span><span class="dv">1</span>)</span></code></pre></div>
+<pre><code>## 
+##  Breusch-Godfrey/Wooldridge test for serial correlation in panel models
+## 
+## data:  repress ~ voice * veto + log(pop) + log(rgdpch) + iwar + cwar
+## chisq = 731.08, df = 1, p-value &lt; 2.2e-16
+## alternative hypothesis: serial correlation in idiosyncratic errors</code></pre>
+<p>Or the Wooldridge test, which only works on fixed effects models.</p>
+<div class="sourceCode" id="cb434"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb434-1"><a href="time-series-cross-sectional-models.html#cb434-1" tabindex="-1"></a><span class="fu">pwartest</span>(mod1.fe)</span></code></pre></div>
+<pre><code>## 
+##  Wooldridge&#39;s test for serial correlation in FE panels
+## 
+## data:  mod1.fe
+## F = 340.26, df1 = 1, df2 = 3715, p-value &lt; 2.2e-16
+## alternative hypothesis: serial correlation</code></pre>
+<p>The Breusch-Pagan test also works on random effects models.</p>
+<div class="sourceCode" id="cb436"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb436-1"><a href="time-series-cross-sectional-models.html#cb436-1" tabindex="-1"></a><span class="fu">pbgtest</span>(mod1.re, <span class="at">order=</span><span class="dv">1</span>)</span></code></pre></div>
+<pre><code>## 
+##  Breusch-Godfrey/Wooldridge test for serial correlation in panel models
+## 
+## data:  repress ~ voice * veto + log(pop) + log(rgdpch) + iwar + cwar
+## chisq = 852.02, df = 1, p-value &lt; 2.2e-16
+## alternative hypothesis: serial correlation in idiosyncratic errors</code></pre>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Evaluate the two-way fixed effects model for serial correlation using the tests above.
+- See if a different lag structure solves the problem.</p>
+</div>
+<p>One way that we could attempt to solve the problem is by adding a lagged dependent variable to the model.</p>
+<div class="sourceCode" id="cb438"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb438-1"><a href="time-series-cross-sectional-models.html#cb438-1" tabindex="-1"></a>mod2.fe <span class="ot">&lt;-</span> <span class="fu">plm</span>(repress <span class="sc">~</span> <span class="fu">lag</span>(repress, <span class="dv">1</span>) <span class="sc">+</span> voice<span class="sc">*</span>veto <span class="sc">+</span></span>
+<span id="cb438-2"><a href="time-series-cross-sectional-models.html#cb438-2" tabindex="-1"></a>              <span class="fu">log</span>(pop) <span class="sc">+</span> <span class="fu">log</span>(rgdpch) <span class="sc">+</span> iwar <span class="sc">+</span> cwar, <span class="at">data=</span>dat, </span>
+<span id="cb438-3"><a href="time-series-cross-sectional-models.html#cb438-3" tabindex="-1"></a>              <span class="at">model =</span> <span class="st">&quot;within&quot;</span>, <span class="at">index=</span> <span class="fu">c</span>(<span class="st">&quot;ccode&quot;</span>, <span class="st">&quot;year&quot;</span>), </span>
+<span id="cb438-4"><a href="time-series-cross-sectional-models.html#cb438-4" tabindex="-1"></a>              <span class="at">effect=</span><span class="st">&quot;individual&quot;</span>)</span>
+<span id="cb438-5"><a href="time-series-cross-sectional-models.html#cb438-5" tabindex="-1"></a><span class="fu">summary</span>(mod2.fe)</span></code></pre></div>
+<pre><code>## Oneway (individual) effect Within Model
+## 
+## Call:
+## plm(formula = repress ~ lag(repress, 1) + voice * veto + log(pop) + 
+##     log(rgdpch) + iwar + cwar, data = dat, effect = &quot;individual&quot;, 
+##     model = &quot;within&quot;, index = c(&quot;ccode&quot;, &quot;year&quot;))
+## 
+## Unbalanced Panel: n = 159, T = 5-27, N = 3712
+## 
+## Residuals:
+##      Min.   1st Qu.    Median   3rd Qu.      Max. 
+## -4.109986 -0.584769  0.012532  0.589705  3.923199 
+## 
+## Coefficients:
+##                   Estimate Std. Error t-value  Pr(&gt;|t|)    
+## lag(repress, 1)  0.4563965  0.0145378 31.3937 &lt; 2.2e-16 ***
+## voice            0.0325649  0.0132895  2.4504 0.0143167 *  
+## veto             0.1305343  0.0608242  2.1461 0.0319333 *  
+## log(pop)        -0.7825166  0.1371398 -5.7060 1.252e-08 ***
+## log(rgdpch)     -0.1098530  0.0820230 -1.3393 0.1805605    
+## iwar            -0.0075908  0.1332022 -0.0570 0.9545587    
+## cwar            -0.3415915  0.0936629 -3.6470 0.0002691 ***
+## voice:veto       0.0027028  0.0113383  0.2384 0.8116001    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Total Sum of Squares:    4689.6
+## Residual Sum of Squares: 3484.4
+## R-Squared:      0.25698
+## Adj. R-Squared: 0.22219
+## F-statistic: 153.262 on 8 and 3545 DF, p-value: &lt; 2.22e-16</code></pre>
+<p>We could then test for serial correlation again:</p>
+<div class="sourceCode" id="cb440"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb440-1"><a href="time-series-cross-sectional-models.html#cb440-1" tabindex="-1"></a><span class="fu">pbgtest</span>(mod2.fe, <span class="at">order=</span><span class="dv">1</span>)</span></code></pre></div>
+<pre><code>## 
+##  Breusch-Godfrey/Wooldridge test for serial correlation in panel models
+## 
+## data:  repress ~ lag(repress, 1) + voice * veto + log(pop) + log(rgdpch) +  ...
+## chisq = 65.318, df = 1, p-value = 6.375e-16
+## alternative hypothesis: serial correlation in idiosyncratic errors</code></pre>
+<div class="sourceCode" id="cb442"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb442-1"><a href="time-series-cross-sectional-models.html#cb442-1" tabindex="-1"></a><span class="fu">pwartest</span>(mod2.fe)</span></code></pre></div>
+<pre><code>## 
+##  Wooldridge&#39;s test for serial correlation in FE panels
+## 
+## data:  mod2.fe
+## F = 2.527, df1 = 1, df2 = 3551, p-value = 0.112
+## alternative hypothesis: serial correlation</code></pre>
+<p>We could also test for cross-sectional dependence. This is the situation where there is contemporaneous correlation across groups. Below is Breusch-Pagan’s original LM test with <code>test="lm"</code> and Peseran’s CD statistic with <code>test="cd"</code>. These tests also work with random effects models.</p>
+<div class="sourceCode" id="cb444"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb444-1"><a href="time-series-cross-sectional-models.html#cb444-1" tabindex="-1"></a><span class="fu">pcdtest</span>(mod2.fe, <span class="at">test=</span><span class="st">&quot;lm&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+##  Breusch-Pagan LM test for cross-sectional dependence in panels
+## 
+## data:  repress ~ lag(repress, 1) + voice * veto + log(pop) + log(rgdpch) +     iwar + cwar
+## chisq = 16535, df = 12492, p-value &lt; 2.2e-16
+## alternative hypothesis: cross-sectional dependence</code></pre>
+<div class="sourceCode" id="cb446"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb446-1"><a href="time-series-cross-sectional-models.html#cb446-1" tabindex="-1"></a><span class="fu">pcdtest</span>(mod2.fe, <span class="at">test=</span><span class="st">&quot;cd&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+##  Pesaran CD test for cross-sectional dependence in panels
+## 
+## data:  repress ~ lag(repress, 1) + voice * veto + log(pop) + log(rgdpch) +     iwar + cwar
+## z = 8.1655, p-value = 3.202e-16
+## alternative hypothesis: cross-sectional dependence</code></pre>
+<p>There are robust standard errors we can use to correct for serial correlation and cross-sectional dependence. These are called Driscoll-Kray standard errors and have only been shown to work with fixed effects estimators.</p>
+<div class="sourceCode" id="cb448"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb448-1"><a href="time-series-cross-sectional-models.html#cb448-1" tabindex="-1"></a><span class="fu">library</span>(lmtest)</span>
+<span id="cb448-2"><a href="time-series-cross-sectional-models.html#cb448-2" tabindex="-1"></a><span class="fu">coeftest</span>(mod2.fe, <span class="at">vcov.=</span>vcovSCC)</span></code></pre></div>
+<pre><code>## 
+## t test of coefficients:
+## 
+##                   Estimate Std. Error t value  Pr(&gt;|t|)    
+## lag(repress, 1)  0.4563965  0.0395825 11.5303 &lt; 2.2e-16 ***
+## voice            0.0325649  0.0107890  3.0183  0.002560 ** 
+## veto             0.1305343  0.0487847  2.6757  0.007491 ** 
+## log(pop)        -0.7825166  0.1203529 -6.5019 9.043e-11 ***
+## log(rgdpch)     -0.1098530  0.0781457 -1.4057  0.159888    
+## iwar            -0.0075908  0.0956638 -0.0793  0.936760    
+## cwar            -0.3415915  0.0543238 -6.2881 3.606e-10 ***
+## voice:veto       0.0027028  0.0176934  0.1528  0.878598    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>The Arellano standard errors can fix problems of serial correlation and heteroskedasticity.</p>
+<div class="sourceCode" id="cb450"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb450-1"><a href="time-series-cross-sectional-models.html#cb450-1" tabindex="-1"></a><span class="fu">coeftest</span>(mod2.fe, <span class="at">vcov.=</span>vcovHC, <span class="at">type=</span><span class="st">&quot;HC3&quot;</span>, <span class="at">method=</span><span class="st">&quot;arellano&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## t test of coefficients:
+## 
+##                   Estimate Std. Error t value  Pr(&gt;|t|)    
+## lag(repress, 1)  0.4563965  0.0261685 17.4407 &lt; 2.2e-16 ***
+## voice            0.0325649  0.0178315  1.8263 0.0678961 .  
+## veto             0.1305343  0.0665615  1.9611 0.0499445 *  
+## log(pop)        -0.7825166  0.2012610 -3.8881 0.0001029 ***
+## log(rgdpch)     -0.1098530  0.1004767 -1.0933 0.2743288    
+## iwar            -0.0075908  0.1320141 -0.0575 0.9541501    
+## cwar            -0.3415915  0.1013826 -3.3693 0.0007616 ***
+## voice:veto       0.0027028  0.0151234  0.1787 0.8581695    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>How does the serial correlation robust standard error compare to the lag-structure modeling you did above?</p>
+</div>
+<p>We could also get the Beck and Katz panel corrected standard errors (PCSE) with:</p>
+<div class="sourceCode" id="cb452"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb452-1"><a href="time-series-cross-sectional-models.html#cb452-1" tabindex="-1"></a><span class="fu">coeftest</span>(mod2.fe, <span class="at">vcov.=</span><span class="fu">vcovBK</span>(mod2.fe, <span class="at">type=</span><span class="st">&quot;HC3&quot;</span>))</span></code></pre></div>
+<pre><code>## 
+## t test of coefficients:
+## 
+##                   Estimate Std. Error t value  Pr(&gt;|t|)    
+## lag(repress, 1)  0.4563965  0.0177010 25.7836 &lt; 2.2e-16 ***
+## voice            0.0325649  0.0168745  1.9298 0.0537078 .  
+## veto             0.1305343  0.0713440  1.8296 0.0673869 .  
+## log(pop)        -0.7825166  0.1912979 -4.0906 4.399e-05 ***
+## log(rgdpch)     -0.1098530  0.1114558 -0.9856 0.3243872    
+## iwar            -0.0075908  0.1508133 -0.0503 0.9598603    
+## cwar            -0.3415915  0.0937059 -3.6454 0.0002709 ***
+## voice:veto       0.0027028  0.0141647  0.1908 0.8486821    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>How do the results change if you use the BK PCSEs instead?</p>
+</div>
+
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="multilevel-models.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="measurement-issues.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["RBE.pdf", "RBE.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

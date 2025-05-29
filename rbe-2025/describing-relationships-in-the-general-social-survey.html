@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 2 Describing Relationships in the General Social Survey | R: Learning by Example</title>
+  <meta name="description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 2 Describing Relationships in the General Social Survey | R: Learning by Example" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 2 Describing Relationships in the General Social Survey | R: Learning by Example" />
+  
+  <meta name="twitter:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+<meta name="author" content="David A. Armstrong II and William Poirier" />
+
+
+<meta name="date" content="2025-05-29" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="viz.html"/>
+<link rel="next" href="linear-models.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<link href="libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.33/datatables.js"></script>
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">R: Learning by Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preliminaries</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#license"><i class="fa fa-check"></i>License</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#getting-r-and-rstudio"><i class="fa fa-check"></i>Getting R and Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#keeping-track-of-your-work"><i class="fa fa-check"></i>Keeping Track of Your Work</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#overview-of-rstudio"><i class="fa fa-check"></i>Overview of Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#using-r"><i class="fa fa-check"></i>Using <em>R</em></a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#assigning-output-to-objects"><i class="fa fa-check"></i>Assigning Output to Objects</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#vectors-and-matrices"><i class="fa fa-check"></i>Vectors and Matrices</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#function-arguments"><i class="fa fa-check"></i>Function Arguments</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#importing-data"><i class="fa fa-check"></i>Importing Data</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#data-types-in-r"><i class="fa fa-check"></i>Data Types in <em>R</em></a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#examining-data"><i class="fa fa-check"></i>Examining Data</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#missing-values"><i class="fa fa-check"></i>Missing Values</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#filtering-with-logical-expressions-and-sorting"><i class="fa fa-check"></i>Filtering with Logical Expressions and Sorting</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#workhorse-functions"><i class="fa fa-check"></i>Workhorse Functions</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#exercises"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html"><i class="fa fa-check"></i>Datasets</a>
+<ul>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo"><i class="fa fa-check"></i><code>colo</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo_covid"><i class="fa fa-check"></i><code>colo_covid</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gss-canada"><i class="fa fa-check"></i><code>gss</code> (Canada)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gsss16-usa"><i class="fa fa-check"></i><code>gsss16</code> (USA)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#davenport-soule-armstrong-data"><i class="fa fa-check"></i>Davenport-Soule-Armstrong Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#france-2004"><i class="fa fa-check"></i>France 2004</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#ces19"><i class="fa fa-check"></i><code>ces19</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#snijders-and-bosker-multileve-school-data"><i class="fa fa-check"></i>Snijders and Bosker Multileve School Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-multilevel"><i class="fa fa-check"></i>World Values Survey (multilevel)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#repression-data"><i class="fa fa-check"></i>Repression Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#oil-and-democracy-dataset"><i class="fa fa-check"></i>Oil and Democracy Dataset</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#politicaldemocracy"><i class="fa fa-check"></i><code>PoliticalDemocracy</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-measurement"><i class="fa fa-check"></i>World Values Survey (measurement)</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="viz.html"><a href="viz.html"><i class="fa fa-check"></i><b>1</b> Visualizing</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="viz.html"><a href="viz.html#wrangling-data"><i class="fa fa-check"></i><b>1.1</b> Wrangling data</a>
+<ul>
+<li class="chapter" data-level="1.1.1" data-path="viz.html"><a href="viz.html#merging-datasets"><i class="fa fa-check"></i><b>1.1.1</b> Merging Datasets</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="viz.html"><a href="viz.html#ggplot"><i class="fa fa-check"></i><b>1.2</b> GGplot</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="viz.html"><a href="viz.html#bar-plots"><i class="fa fa-check"></i><b>1.2.1</b> Bar Plots</a></li>
+<li class="chapter" data-level="1.2.2" data-path="viz.html"><a href="viz.html#line-graphs"><i class="fa fa-check"></i><b>1.2.2</b> Line Graphs</a></li>
+<li class="chapter" data-level="1.2.3" data-path="viz.html"><a href="viz.html#histograms"><i class="fa fa-check"></i><b>1.2.3</b> Histograms</a></li>
+<li class="chapter" data-level="1.2.4" data-path="viz.html"><a href="viz.html#scatterplots"><i class="fa fa-check"></i><b>1.2.4</b> Scatterplots</a></li>
+<li class="chapter" data-level="1.2.5" data-path="viz.html"><a href="viz.html#multiple-series"><i class="fa fa-check"></i><b>1.2.5</b> Multiple Series</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="viz.html"><a href="viz.html#recap"><i class="fa fa-check"></i><b>1.3</b> Recap</a></li>
+<li class="chapter" data-level="" data-path="viz.html"><a href="viz.html#exercises-1"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html"><i class="fa fa-check"></i><b>2</b> Describing Relationships in the General Social Survey</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#the-canadian-gss."><i class="fa fa-check"></i><b>2.1</b> The Canadian GSS.</a></li>
+<li class="chapter" data-level="2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#looking-at-the-data."><i class="fa fa-check"></i><b>2.2</b> Looking at the data.</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#cross-tabulations"><i class="fa fa-check"></i><b>2.2.1</b> Cross-tabulations</a></li>
+<li class="chapter" data-level="2.2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#permutation-tests-in-r."><i class="fa fa-check"></i><b>2.2.2</b> Permutation Tests in R.</a></li>
+<li class="chapter" data-level="2.2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#back-to-the-data"><i class="fa fa-check"></i><b>2.2.3</b> Back to the Data</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#descriptive-output-in-knitr"><i class="fa fa-check"></i><b>2.3</b> Descriptive Output in knitr</a></li>
+<li class="chapter" data-level="" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#exercises-2"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="linear-models.html"><a href="linear-models.html"><i class="fa fa-check"></i><b>3</b> Linear Models</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="linear-models.html"><a href="linear-models.html#effects-plots"><i class="fa fa-check"></i><b>3.1</b> Effects Plots</a></li>
+<li class="chapter" data-level="3.2" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-linearity"><i class="fa fa-check"></i><b>3.2</b> Diagnostic Tools: Linearity</a></li>
+<li class="chapter" data-level="3.3" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-heteroskedasticity"><i class="fa fa-check"></i><b>3.3</b> Diagnostic Tools: Heteroskedasticity</a></li>
+<li class="chapter" data-level="3.4" data-path="linear-models.html"><a href="linear-models.html#diagnostics-outliers-and-influential-data"><i class="fa fa-check"></i><b>3.4</b> Diagnostics: Outliers and Influential Data</a></li>
+<li class="chapter" data-level="3.5" data-path="linear-models.html"><a href="linear-models.html#diagnostics-for-normality"><i class="fa fa-check"></i><b>3.5</b> Diagnostics for Normality</a>
+<ul>
+<li class="chapter" data-level="3.5.1" data-path="linear-models.html"><a href="linear-models.html#bootstrapping-regression-models"><i class="fa fa-check"></i><b>3.5.1</b> Bootstrapping Regression Models</a></li>
+</ul></li>
+<li class="chapter" data-level="3.6" data-path="linear-models.html"><a href="linear-models.html#interactions"><i class="fa fa-check"></i><b>3.6</b> Interactions</a></li>
+<li class="chapter" data-level="" data-path="linear-models.html"><a href="linear-models.html#exercises-3"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html"><i class="fa fa-check"></i><b>4</b> Generalized Linear Models - Logit.</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#evaluating-model-fit"><i class="fa fa-check"></i><b>4.1</b> Evaluating Model Fit</a></li>
+<li class="chapter" data-level="4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effects"><i class="fa fa-check"></i><b>4.2</b> Marginal Effects</a></li>
+<li class="chapter" data-level="4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effect-plots"><i class="fa fa-check"></i><b>4.3</b> Marginal Effect Plots</a></li>
+<li class="chapter" data-level="4.4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#interactions-in-binary-dv-models"><i class="fa fa-check"></i><b>4.4</b> Interactions in Binary DV Models</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-binary"><i class="fa fa-check"></i><b>4.4.1</b> Both binary</a></li>
+<li class="chapter" data-level="4.4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#one-binary-one-continuous."><i class="fa fa-check"></i><b>4.4.2</b> One binary, one continuous.</a></li>
+<li class="chapter" data-level="4.4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-continuous"><i class="fa fa-check"></i><b>4.4.3</b> Both Continuous</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#other-glms."><i class="fa fa-check"></i><b>4.5</b> Other GLMs.</a></li>
+<li class="chapter" data-level="" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#exercises-4"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html"><i class="fa fa-check"></i><b>5</b> Ordered and Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#ordinal-dv-models"><i class="fa fa-check"></i><b>5.1</b> Ordinal DV Models</a></li>
+<li class="chapter" data-level="5.2" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#multinomial-logit"><i class="fa fa-check"></i><b>5.2</b> Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#parametric-bootstrap-for-confidence-intervals."><i class="fa fa-check"></i><b>5.2.1</b> Parametric Bootstrap for Confidence Intervals.</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#conclusion"><i class="fa fa-check"></i><b>5.3</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html"><i class="fa fa-check"></i><b>6</b> Handling Complex Survey Data</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#frequency-distributions-and-contingency-tables"><i class="fa fa-check"></i><b>6.1</b> Frequency Distributions and Contingency Tables</a></li>
+<li class="chapter" data-level="6.2" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#summary-statistics"><i class="fa fa-check"></i><b>6.2</b> Summary Statistics</a></li>
+<li class="chapter" data-level="6.3" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#estimating-models"><i class="fa fa-check"></i><b>6.3</b> Estimating Models</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="multilevel-models.html"><a href="multilevel-models.html"><i class="fa fa-check"></i><b>7</b> Multilevel Models</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="multilevel-models.html"><a href="multilevel-models.html#data-structure."><i class="fa fa-check"></i><b>7.1</b> Data Structure.</a></li>
+<li class="chapter" data-level="7.2" data-path="multilevel-models.html"><a href="multilevel-models.html#clustering-standard-errors"><i class="fa fa-check"></i><b>7.2</b> Clustering Standard Errors</a></li>
+<li class="chapter" data-level="7.3" data-path="multilevel-models.html"><a href="multilevel-models.html#between-vs-within-relationships."><i class="fa fa-check"></i><b>7.3</b> Between vs Within Relationships.</a></li>
+<li class="chapter" data-level="7.4" data-path="multilevel-models.html"><a href="multilevel-models.html#random-intercepts"><i class="fa fa-check"></i><b>7.4</b> Random Intercepts</a></li>
+<li class="chapter" data-level="7.5" data-path="multilevel-models.html"><a href="multilevel-models.html#estimating-the-multilevel-model"><i class="fa fa-check"></i><b>7.5</b> Estimating the Multilevel Model</a>
+<ul>
+<li class="chapter" data-level="7.5.1" data-path="multilevel-models.html"><a href="multilevel-models.html#p-values-in-lmer-output"><i class="fa fa-check"></i><b>7.5.1</b> P-values in LMER Output</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="multilevel-models.html"><a href="multilevel-models.html#other-random-effects-models"><i class="fa fa-check"></i><b>7.6</b> Other Random-Effects Models</a></li>
+<li class="chapter" data-level="7.7" data-path="multilevel-models.html"><a href="multilevel-models.html#bayesian-models-with-brms"><i class="fa fa-check"></i><b>7.7</b> Bayesian Models with BRMS</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html"><i class="fa fa-check"></i><b>8</b> Time-Series Cross-Sectional Models</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#preliminaries-and-assumptions"><i class="fa fa-check"></i><b>8.1</b> Preliminaries and Assumptions</a></li>
+<li class="chapter" data-level="8.2" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#unit-effects"><i class="fa fa-check"></i><b>8.2</b> Unit Effects</a></li>
+<li class="chapter" data-level="8.3" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#the-plm-package"><i class="fa fa-check"></i><b>8.3</b> The plm Package</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="measurement-issues.html"><a href="measurement-issues.html"><i class="fa fa-check"></i><b>9</b> Measurement Issues</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="measurement-issues.html"><a href="measurement-issues.html#reliability-analysis"><i class="fa fa-check"></i><b>9.1</b> Reliability Analysis</a></li>
+<li class="chapter" data-level="9.2" data-path="measurement-issues.html"><a href="measurement-issues.html#exploratory-factor-analysis-and-principal-components-analysis"><i class="fa fa-check"></i><b>9.2</b> Exploratory Factor Analysis and Principal Components Analysis</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="measurement-issues.html"><a href="measurement-issues.html#rotations"><i class="fa fa-check"></i><b>9.2.1</b> Rotations</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="measurement-issues.html"><a href="measurement-issues.html#cfa-and-sem"><i class="fa fa-check"></i><b>9.3</b> CFA and SEM</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">R: Learning by Example</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="describing-relationships-in-the-general-social-survey" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">Chapter 2</span> Describing Relationships in the General Social Survey<a href="describing-relationships-in-the-general-social-survey.html#describing-relationships-in-the-general-social-survey" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Sometimes we want numerical rather than visual depictions of relationships and the simplest form those take is descriptive statistics. Below, I discuss some of the tools we can use to summarize and describe (mostly bivariate) relationships in data.</p>
+<div id="the-canadian-gss." class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> The Canadian GSS.<a href="describing-relationships-in-the-general-social-survey.html#the-canadian-gss." class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We are going to use the Canadian General Social Survey (Cycle 30: Canadians at Work and Home). The codebook would be too big to display in the file, but you can download it <a href="https://quantoid.ca/files/rbe/gss30.pdf">here</a>. In particular, we are going to look at relationships between self-reported mental health (<code>SRH_115</code>) and some other variables. First, we’ll have to load the data.</p>
+<div class="sourceCode" id="cb150"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb150-1"><a href="describing-relationships-in-the-general-social-survey.html#cb150-1" tabindex="-1"></a><span class="fu">library</span>(rio)</span>
+<span id="cb150-2"><a href="describing-relationships-in-the-general-social-survey.html#cb150-2" tabindex="-1"></a><span class="fu">load</span>(<span class="st">&quot;data/gss2016can.rda&quot;</span>)</span>
+<span id="cb150-3"><a href="describing-relationships-in-the-general-social-survey.html#cb150-3" tabindex="-1"></a>res <span class="ot">&lt;-</span> gss2016can[,<span class="fu">grep</span>(<span class="st">&quot;^RES&quot;</span>, <span class="fu">names</span>(gss2016can))]</span>
+<span id="cb150-4"><a href="describing-relationships-in-the-general-social-survey.html#cb150-4" tabindex="-1"></a>res <span class="ot">&lt;-</span> res[,<span class="sc">-</span><span class="dv">9</span>]</span>
+<span id="cb150-5"><a href="describing-relationships-in-the-general-social-survey.html#cb150-5" tabindex="-1"></a>a <span class="ot">&lt;-</span> psych<span class="sc">::</span><span class="fu">alpha</span>(<span class="fu">scale</span>(res))</span>
+<span id="cb150-6"><a href="describing-relationships-in-the-general-social-survey.html#cb150-6" tabindex="-1"></a>gss2016can<span class="sc">$</span>resilience <span class="ot">&lt;-</span> <span class="sc">-</span>a<span class="sc">$</span>scores</span>
+<span id="cb150-7"><a href="describing-relationships-in-the-general-social-survey.html#cb150-7" tabindex="-1"></a><span class="fu">attr</span>(gss2016can<span class="sc">$</span>resilience, <span class="st">&quot;label&quot;</span>) <span class="ot">&lt;-</span> <span class="st">&quot;Resilience Score made from a scale of RES_X items&quot;</span></span></code></pre></div>
+</div>
+<div id="looking-at-the-data." class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Looking at the data.<a href="describing-relationships-in-the-general-social-survey.html#looking-at-the-data." class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>After loding the data, we could make a frequency distribution of the variable of interest. There are loads of ways to do this. We’ll use the one in my package <code>DAMisc</code> first. There are lots of variables that have labels, so rather than using the <code>factorize()</code> function on each one, we’ll just do it to the whole dataset.</p>
+<div class="sourceCode" id="cb151"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb151-1"><a href="describing-relationships-in-the-general-social-survey.html#cb151-1" tabindex="-1"></a>gss2016canf <span class="ot">&lt;-</span> <span class="fu">factorize</span>(gss2016can)</span></code></pre></div>
+<p>Now, we’ve got two copies of the data - one with factors (<code>gss2016canf</code>) and one with all numeric data (<code>gss2016can</code>). This may come in handy a bit later.</p>
+<div class="sourceCode" id="cb152"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb152-1"><a href="describing-relationships-in-the-general-social-survey.html#cb152-1" tabindex="-1"></a><span class="fu">library</span>(DAMisc)</span>
+<span id="cb152-2"><a href="describing-relationships-in-the-general-social-survey.html#cb152-2" tabindex="-1"></a><span class="fu">xt</span>(gss2016canf, <span class="st">&quot;SRH_115&quot;</span>)</span></code></pre></div>
+<pre><code>## $tab
+## $tab[[1]]
+##       Var1          Freq
+##  Excellent  24%  (4,728)
+##  Very good  37%  (7,319)
+##       Good  29%  (5,746)
+##       Fair   7%  (1,393)
+##       Poor   2%    (336)
+##      Total 100% (19,522)
+## 
+## 
+## $chisq
+## NULL
+## 
+## $stats
+## list()
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;xt&quot;</code></pre>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>We’re going to use the 2016 US General Social Survey for exercises in this section. You can load the data with:</p>
+<div class="sourceCode" id="cb154"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb154-1"><a href="describing-relationships-in-the-general-social-survey.html#cb154-1" tabindex="-1"></a><span class="fu">load</span>(<span class="st">&quot;data/gss16.rda&quot;</span>)</span></code></pre></div>
+<p>Look at the distribution of two variables we’re going to consider - <code>aidhouse</code> (the government should provide housing to the poor) and <code>partyid</code> (partisan identification).<br />
+- For now, just look at the univariate distributions.</p>
+</div>
+<p>Note that most people estimated their mental health to be “Excellent” or “Very Good”. Just as before, we could make a bar plot of this as well:</p>
+<div class="sourceCode" id="cb155"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb155-1"><a href="describing-relationships-in-the-general-social-survey.html#cb155-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb155-2"><a href="describing-relationships-in-the-general-social-survey.html#cb155-2" tabindex="-1"></a><span class="fu">ggplot</span>(gss2016canf, <span class="fu">aes</span>(<span class="at">x=</span>SRH_115)) <span class="sc">+</span> </span>
+<span id="cb155-3"><a href="describing-relationships-in-the-general-social-survey.html#cb155-3" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span> </span>
+<span id="cb155-4"><a href="describing-relationships-in-the-general-social-survey.html#cb155-4" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb155-5"><a href="describing-relationships-in-the-general-social-survey.html#cb155-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Self-reported Mental Health&quot;</span>, </span>
+<span id="cb155-6"><a href="describing-relationships-in-the-general-social-survey.html#cb155-6" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Count&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-67-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>Note in the plot above that the missing value (<code>NA</code>) is represented. If we don’t want that to be the case, we simply filter them out:</p>
+<div class="sourceCode" id="cb156"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb156-1"><a href="describing-relationships-in-the-general-social-survey.html#cb156-1" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb156-2"><a href="describing-relationships-in-the-general-social-survey.html#cb156-2" tabindex="-1"></a>gss2016canf <span class="sc">%&gt;%</span> </span>
+<span id="cb156-3"><a href="describing-relationships-in-the-general-social-survey.html#cb156-3" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(SRH_115)) <span class="sc">%&gt;%</span> </span>
+<span id="cb156-4"><a href="describing-relationships-in-the-general-social-survey.html#cb156-4" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>SRH_115)) <span class="sc">+</span> </span>
+<span id="cb156-5"><a href="describing-relationships-in-the-general-social-survey.html#cb156-5" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span> </span>
+<span id="cb156-6"><a href="describing-relationships-in-the-general-social-survey.html#cb156-6" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb156-7"><a href="describing-relationships-in-the-general-social-survey.html#cb156-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Self-reported Mental Health&quot;</span>, </span>
+<span id="cb156-8"><a href="describing-relationships-in-the-general-social-survey.html#cb156-8" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Count&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-68-1.png" width="65%" style="display: block; margin: auto;" />
+There is a variable called <code>resilience</code> in the data that is a scale of a bunch of questions about personal resilience. They are most of the <code>RES_X</code> questions in the codebook, except for <code>RES_09</code>, which was not interestingly correlated with the other variables. We could look to see how that variable changes as a function of self-reported mental health. One way of doing this would be to summarise <code>resilience</code> by <code>SRH_115</code>. We can do this with the <code>sumStats()</code> function in the <code>DAMisc</code> package:</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Make a bar plot of <code>aidhouse</code> and of <code>partyid</code>, each independently.</p>
+</div>
+<div class="sourceCode" id="cb157"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb157-1"><a href="describing-relationships-in-the-general-social-survey.html#cb157-1" tabindex="-1"></a><span class="fu">sumStats</span>(gss2016canf, <span class="st">&quot;resilience&quot;</span>, <span class="at">byvar=</span><span class="st">&quot;SRH_115&quot;</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 12
+##   variable   SRH_115      mean    sd   iqr   min     q25     q50     q75   max     n   nNA
+##   &lt;chr&gt;      &lt;fct&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt;
+## 1 resilience Excellent  0.344  0.530 0.778 -3.44 -0.0132  0.387   0.764   1.11  4728     8
+## 2 resilience Very good  0.0735 0.537 0.770 -3.73 -0.278   0.0976  0.492   1.20  7319     9
+## 3 resilience Good      -0.189  0.614 0.792 -3.73 -0.558  -0.158   0.234   1.12  5746    10
+## 4 resilience Fair      -0.535  0.674 0.940 -3.35 -0.977  -0.543  -0.0371  1.03  1393     2
+## 5 resilience Poor      -1.03   0.869 1.03  -3.73 -1.55   -1.01   -0.519   1.03   336     2
+## 6 resilience &lt;NA&gt;      -0.410  0.984 1.03  -3.00 -0.883  -0.152   0.148   1.03    87    56</code></pre>
+<p>This gives many of the “usual suspects” in terms of summary statistics. If you wanted to make the same sort of summary, but visually (say means and <span class="math inline">\(95\%\)</span> confidence intervals), you could do that with <code>ggplot()</code>:</p>
+<div class="sourceCode" id="cb159"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb159-1"><a href="describing-relationships-in-the-general-social-survey.html#cb159-1" tabindex="-1"></a>gss2016canf <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(SRH_115)) <span class="sc">%&gt;%</span> </span>
+<span id="cb159-2"><a href="describing-relationships-in-the-general-social-survey.html#cb159-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>SRH_115, <span class="at">y=</span>resilience)) <span class="sc">+</span> </span>
+<span id="cb159-3"><a href="describing-relationships-in-the-general-social-survey.html#cb159-3" tabindex="-1"></a>    <span class="fu">stat_summary</span>(<span class="at">geom=</span><span class="st">&quot;errorbar&quot;</span>, <span class="at">fun.data=</span>mean_cl_normal, </span>
+<span id="cb159-4"><a href="describing-relationships-in-the-general-social-survey.html#cb159-4" tabindex="-1"></a>                 <span class="at">width=</span><span class="dv">0</span>, <span class="at">conf.int=</span><span class="fl">0.95</span>) <span class="sc">+</span></span>
+<span id="cb159-5"><a href="describing-relationships-in-the-general-social-survey.html#cb159-5" tabindex="-1"></a>    <span class="fu">stat_summary</span>(<span class="at">geom=</span><span class="st">&quot;point&quot;</span>, <span class="at">fun=</span>mean, <span class="at">size=</span>.<span class="dv">75</span>) <span class="sc">+</span></span>
+<span id="cb159-6"><a href="describing-relationships-in-the-general-social-survey.html#cb159-6" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb159-7"><a href="describing-relationships-in-the-general-social-survey.html#cb159-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Self-reported Mental Health&quot;</span>, </span>
+<span id="cb159-8"><a href="describing-relationships-in-the-general-social-survey.html#cb159-8" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Resilience&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-70-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>The <code>stat_summary()</code> function calculates the confidence bounds and means and returns them to the appropriate aesthetics (<code>y.min</code> and <code>y.max</code>, in this case). In this case, because none of the confidence intervals overlap that resilience is statistically different across all categories.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Make a similar graph for <code>realinc</code> as a function of <code>aidhouse</code> from the US GSS data.</p>
+</div>
+<div id="cross-tabulations" class="section level3 hasAnchor" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Cross-tabulations<a href="describing-relationships-in-the-general-social-survey.html#cross-tabulations" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>One of the main tools we use for descriptive analysis is the cross-tabulation (aka joint frequency distribution, contingency table). There are loads of ways to do these in R. Which one you use really depends on what exactly you want to see and the flexibility in the output format. The <code>CrossTable()</code> function in the <code>gmodels</code> package provides lots of information and is quite customizable in what it presents. Here’s an example of self-reported mental health (<code>SRH_115</code>) on self-reported physical health (<code>SRH_110</code>).</p>
+<div class="sourceCode" id="cb160"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb160-1"><a href="describing-relationships-in-the-general-social-survey.html#cb160-1" tabindex="-1"></a><span class="fu">library</span>(gmodels)</span>
+<span id="cb160-2"><a href="describing-relationships-in-the-general-social-survey.html#cb160-2" tabindex="-1"></a><span class="fu">CrossTable</span>(<span class="at">x =</span> gss2016canf<span class="sc">$</span>SRH_115, gss2016canf<span class="sc">$</span>SRH_110)</span></code></pre></div>
+<pre><code>## 
+##  
+##    Cell Contents
+## |-------------------------|
+## |                       N |
+## | Chi-square contribution |
+## |           N / Row Total |
+## |           N / Col Total |
+## |         N / Table Total |
+## |-------------------------|
+## 
+##  
+## Total Observations in Table:  19506 
+## 
+##  
+##                     | gss2016canf$SRH_110 
+## gss2016canf$SRH_115 | Excellent | Very good |      Good |      Fair |      Poor | Row Total | 
+## --------------------|-----------|-----------|-----------|-----------|-----------|-----------|
+##           Excellent |      1845 |      1588 |       942 |       277 |        73 |      4725 | 
+##                     |  2161.995 |     7.879 |   310.573 |   140.310 |    39.298 |           | 
+##                     |     0.390 |     0.336 |     0.199 |     0.059 |     0.015 |     0.242 | 
+##                     |     0.682 |     0.226 |     0.137 |     0.121 |     0.118 |           | 
+##                     |     0.095 |     0.081 |     0.048 |     0.014 |     0.004 |           | 
+## --------------------|-----------|-----------|-----------|-----------|-----------|-----------|
+##           Very good |       593 |      4187 |      1951 |       481 |       101 |      7313 | 
+##                     |   174.634 |   910.892 |   148.777 |   167.828 |    73.722 |           | 
+##                     |     0.081 |     0.573 |     0.267 |     0.066 |     0.014 |     0.375 | 
+##                     |     0.219 |     0.595 |     0.285 |     0.209 |     0.163 |           | 
+##                     |     0.030 |     0.215 |     0.100 |     0.025 |     0.005 |           | 
+## --------------------|-----------|-----------|-----------|-----------|-----------|-----------|
+##                Good |       217 |      1019 |      3439 |       856 |       210 |      5741 | 
+##                     |   421.009 |   533.809 |  1002.572 |    47.897 |     4.344 |           | 
+##                     |     0.038 |     0.177 |     0.599 |     0.149 |     0.037 |     0.294 | 
+##                     |     0.080 |     0.145 |     0.502 |     0.373 |     0.340 |           | 
+##                     |     0.011 |     0.052 |     0.176 |     0.044 |     0.011 |           | 
+## --------------------|-----------|-----------|-----------|-----------|-----------|-----------|
+##                Fair |        38 |       213 |       442 |       572 |       126 |      1391 | 
+##                     |   124.315 |   166.052 |     4.462 |  1017.235 |   152.312 |           | 
+##                     |     0.027 |     0.153 |     0.318 |     0.411 |     0.091 |     0.071 | 
+##                     |     0.014 |     0.030 |     0.064 |     0.249 |     0.204 |           | 
+##                     |     0.002 |     0.011 |     0.023 |     0.029 |     0.006 |           | 
+## --------------------|-----------|-----------|-----------|-----------|-----------|-----------|
+##                Poor |        11 |        27 |        79 |       111 |       108 |       336 | 
+##                     |    27.175 |    73.181 |    12.915 |   128.964 |   890.336 |           | 
+##                     |     0.033 |     0.080 |     0.235 |     0.330 |     0.321 |     0.017 | 
+##                     |     0.004 |     0.004 |     0.012 |     0.048 |     0.175 |           | 
+##                     |     0.001 |     0.001 |     0.004 |     0.006 |     0.006 |           | 
+## --------------------|-----------|-----------|-----------|-----------|-----------|-----------|
+##        Column Total |      2704 |      7034 |      6853 |      2297 |       618 |     19506 | 
+##                     |     0.139 |     0.361 |     0.351 |     0.118 |     0.032 |           | 
+## --------------------|-----------|-----------|-----------|-----------|-----------|-----------|
+## 
+## </code></pre>
+<p>Note that some of these things we may not want to see. We could turn off the row proportions <code>prop.r=FALSE</code> and the cell proportions <code>prop.t=FALSE</code> and we could turn off the <span class="math inline">\(\chi^2\)</span> contribution <code>prop.chisq=FALSE</code>. We could also turn on the <span class="math inline">\(\chi^2\)</span> statistic with</p>
+<div class="sourceCode" id="cb162"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb162-1"><a href="describing-relationships-in-the-general-social-survey.html#cb162-1" tabindex="-1"></a><span class="fu">CrossTable</span>(<span class="at">x =</span> gss2016canf<span class="sc">$</span>SRH_115, gss2016canf<span class="sc">$</span>SRH_110, </span>
+<span id="cb162-2"><a href="describing-relationships-in-the-general-social-survey.html#cb162-2" tabindex="-1"></a>           <span class="at">prop.r=</span><span class="cn">FALSE</span>, <span class="at">prop.t=</span><span class="cn">FALSE</span>, </span>
+<span id="cb162-3"><a href="describing-relationships-in-the-general-social-survey.html#cb162-3" tabindex="-1"></a>           <span class="at">prop.chisq=</span><span class="cn">FALSE</span>, <span class="at">chisq =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>## 
+##  
+##    Cell Contents
+## |-------------------------|
+## |                       N |
+## |           N / Col Total |
+## |-------------------------|
+## 
+##  
+## Total Observations in Table:  19506 
+## 
+##  
+##                     | gss2016canf$SRH_110 
+## gss2016canf$SRH_115 | Excellent | Very good |      Good |      Fair |      Poor | Row Total | 
+## --------------------|-----------|-----------|-----------|-----------|-----------|-----------|
+##           Excellent |      1845 |      1588 |       942 |       277 |        73 |      4725 | 
+##                     |     0.682 |     0.226 |     0.137 |     0.121 |     0.118 |           | 
+## --------------------|-----------|-----------|-----------|-----------|-----------|-----------|
+##           Very good |       593 |      4187 |      1951 |       481 |       101 |      7313 | 
+##                     |     0.219 |     0.595 |     0.285 |     0.209 |     0.163 |           | 
+## --------------------|-----------|-----------|-----------|-----------|-----------|-----------|
+##                Good |       217 |      1019 |      3439 |       856 |       210 |      5741 | 
+##                     |     0.080 |     0.145 |     0.502 |     0.373 |     0.340 |           | 
+## --------------------|-----------|-----------|-----------|-----------|-----------|-----------|
+##                Fair |        38 |       213 |       442 |       572 |       126 |      1391 | 
+##                     |     0.014 |     0.030 |     0.064 |     0.249 |     0.204 |           | 
+## --------------------|-----------|-----------|-----------|-----------|-----------|-----------|
+##                Poor |        11 |        27 |        79 |       111 |       108 |       336 | 
+##                     |     0.004 |     0.004 |     0.012 |     0.048 |     0.175 |           | 
+## --------------------|-----------|-----------|-----------|-----------|-----------|-----------|
+##        Column Total |      2704 |      7034 |      6853 |      2297 |       618 |     19506 | 
+##                     |     0.139 |     0.361 |     0.351 |     0.118 |     0.032 |           | 
+## --------------------|-----------|-----------|-----------|-----------|-----------|-----------|
+## 
+##  
+## Statistics for All Table Factors
+## 
+## 
+## Pearson&#39;s Chi-squared test 
+## ------------------------------------------------------------
+## Chi^2 =  8742.488     d.f. =  16     p =  0 
+## 
+## 
+## </code></pre>
+<p>The one problem with <code>CrossTable()</code> is the that output isn’t amenable to being exported. It only shows up as it is on the screen. There isn’t a single table that you could export to a format that would be good for publication. You could also use the <code>xt()</code> function from the <code>DAMisc</code> package. Note that this function also returns several measures of association - Cramér’s V, Kruskal-Goodman <span class="math inline">\(\gamma\)</span> and Kendall’s <span class="math inline">\(\tau_b\)</span>. The function uses a permutation test to generate <span class="math inline">\(p\)</span>-values for the statistics.</p>
+<div class="sourceCode" id="cb164"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb164-1"><a href="describing-relationships-in-the-general-social-survey.html#cb164-1" tabindex="-1"></a><span class="fu">xt</span>(gss2016canf, <span class="st">&quot;SRH_115&quot;</span>, <span class="st">&quot;SRH_110&quot;</span>)</span></code></pre></div>
+<pre><code>## $tab
+## $tab[[1]]
+##  SRH_115/SRH_110    Excellent    Very good         Good         Fair       Poor         Total
+##        Excellent  68% (1,845)  23% (1,588)  14%   (942)  12%   (277)  12%  (73)  24%  (4,725)
+##        Very good  22%   (593)  60% (4,187)  28% (1,951)  21%   (481)  16% (101)  37%  (7,313)
+##             Good   8%   (217)  14% (1,019)  50% (3,439)  37%   (856)  34% (210)  29%  (5,741)
+##             Fair   1%    (38)   3%   (213)   6%   (442)  25%   (572)  20% (126)   7%  (1,391)
+##             Poor   0%    (11)   0%    (27)   1%    (79)   5%   (111)  17% (108)   2%    (336)
+##            Total 100% (2,704) 100% (7,034) 100% (6,853) 100% (2,297) 100% (618) 100% (19,506)
+## 
+## 
+## $chisq
+## $chisq[[1]]
+## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  tmptab
+## X-squared = 8742.5, df = 16, p-value &lt; 2.2e-16
+## 
+## 
+## 
+## $stats
+## $stats[[1]]
+##                statistic p-value
+## Chi-squared 8742.4880786       0
+## Cramers V      0.3347368       0
+## Lambda         0.2644140       0
+## 
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;xt&quot;</code></pre>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Make a cross-tabulation of <code>aidhouse</code> and <code>partyid</code>.<br />
+- What is the relationship like?</p>
+</div>
+</div>
+<div id="permutation-tests-in-r." class="section level3 hasAnchor" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> Permutation Tests in R.<a href="describing-relationships-in-the-general-social-survey.html#permutation-tests-in-r." class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Permutation tests are great when you don’t know the sampling distribution of a test statistic or you want to calculate a <span class="math inline">\(p\)</span>-value when the distributional assumptions required to derive the sampling distribution are dubious. This will allow us the opportunity to talk about loops a bit.</p>
+<p>The main idea is that we want to impose the null hypothesis relationship and then see how the statistic we’re calculating varies in repeated sampling. In all of these statistics, the null hypothesis is that there is no relationship. So, how do we <em>impose</em> a condition of no relationship? Well, one way would be to take one of the variables in the relationship and randomly re-arrange the rows. The random re-arrangement induces no relationship (though the statistic will not be exactly zero). We could do this random re-arrangement many times to build a sampling distribution under the null hypothesis. Then, we could see how the statistic we calculated compares to the distribution we just calculated.</p>
+<p>First, we can figure out how to calculate the statistic once.</p>
+<div class="sourceCode" id="cb166"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb166-1"><a href="describing-relationships-in-the-general-social-survey.html#cb166-1" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> gss2016canf <span class="sc">%&gt;%</span> </span>
+<span id="cb166-2"><a href="describing-relationships-in-the-general-social-survey.html#cb166-2" tabindex="-1"></a>  <span class="fu">select</span>(SRH_115, SRH_110) </span>
+<span id="cb166-3"><a href="describing-relationships-in-the-general-social-survey.html#cb166-3" tabindex="-1"></a>tmp<span class="sc">$</span>SRH_110 <span class="ot">&lt;-</span> <span class="fu">sample</span>(tmp<span class="sc">$</span>SRH_110, <span class="fu">nrow</span>(tmp), <span class="at">replace=</span><span class="cn">FALSE</span>)</span>
+<span id="cb166-4"><a href="describing-relationships-in-the-general-social-survey.html#cb166-4" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">with</span>(tmp, <span class="fu">table</span>(SRH_115, SRH_110))</span>
+<span id="cb166-5"><a href="describing-relationships-in-the-general-social-survey.html#cb166-5" tabindex="-1"></a>stat <span class="ot">&lt;-</span> <span class="fu">tau.b</span>(tab)</span>
+<span id="cb166-6"><a href="describing-relationships-in-the-general-social-survey.html#cb166-6" tabindex="-1"></a>stat</span></code></pre></div>
+<pre><code>## [1] 0.001399321</code></pre>
+<p>Now we can do it lots of times. We’ll use 1000, but if you were doing this “in real life”, you would probably want 2000 or 2500 iterations to build the distribution. The general advice on the number of samples is that you need more the further out in the tail of the distribution the quantity is you are trying to estimate. If we wanted to estimate the <span class="math inline">\(95^{th}\)</span> percentile, we would need fewer than for the <span class="math inline">\(99.9^{th}\)</span> percentile.</p>
+<p>To do this, we can use a <code>for()</code> loop. Note that the first argument to <code>for()</code> is the name of the counter then we use <code>in</code> and identify the range of the index. Here we go from 1 to 1000 by ones. In each iteration, we perform the calculation in the loop. Before we run the loop, we initialize a value we call <code>stat</code> that will hold the results. There are two schools of thought here. The first is that we could initialize it with <code>NULL</code> and it will grow bigger with every result. This works well if the number of results is relatively small and the results themselves are small (e.g., scalars instead of lists). If you have tons of results or they are big, it is considered better practice to initialize the appropriate size object and fill in an element with each iteration. Finally, we’re setting the random number generating seed to make sure that we can reproduce the same result next time.</p>
+<div class="sourceCode" id="cb168"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb168-1"><a href="describing-relationships-in-the-general-social-survey.html#cb168-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">432143</span>)</span>
+<span id="cb168-2"><a href="describing-relationships-in-the-general-social-survey.html#cb168-2" tabindex="-1"></a>stat <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb168-3"><a href="describing-relationships-in-the-general-social-survey.html#cb168-3" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>){</span>
+<span id="cb168-4"><a href="describing-relationships-in-the-general-social-survey.html#cb168-4" tabindex="-1"></a>  tmp<span class="sc">$</span>SRH_110 <span class="ot">&lt;-</span> <span class="fu">sample</span>(tmp<span class="sc">$</span>SRH_110, <span class="fu">nrow</span>(tmp), <span class="at">replace=</span><span class="cn">FALSE</span>)</span>
+<span id="cb168-5"><a href="describing-relationships-in-the-general-social-survey.html#cb168-5" tabindex="-1"></a>  tab <span class="ot">&lt;-</span> <span class="fu">with</span>(tmp, <span class="fu">table</span>(SRH_115, SRH_110))</span>
+<span id="cb168-6"><a href="describing-relationships-in-the-general-social-survey.html#cb168-6" tabindex="-1"></a>  stat <span class="ot">&lt;-</span> <span class="fu">c</span>(stat, <span class="fu">tau.b</span>(tab))</span>
+<span id="cb168-7"><a href="describing-relationships-in-the-general-social-survey.html#cb168-7" tabindex="-1"></a>}</span></code></pre></div>
+<p>If we wanted to initialize the appropriate size object, we could do as follows:</p>
+<div class="sourceCode" id="cb169"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb169-1"><a href="describing-relationships-in-the-general-social-survey.html#cb169-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">432143</span>)</span>
+<span id="cb169-2"><a href="describing-relationships-in-the-general-social-survey.html#cb169-2" tabindex="-1"></a>stat <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="at">mode=</span><span class="st">&quot;numeric&quot;</span>, <span class="at">length=</span><span class="dv">1000</span>)</span>
+<span id="cb169-3"><a href="describing-relationships-in-the-general-social-survey.html#cb169-3" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>){</span>
+<span id="cb169-4"><a href="describing-relationships-in-the-general-social-survey.html#cb169-4" tabindex="-1"></a>  tmp<span class="sc">$</span>SRH_110 <span class="ot">&lt;-</span> <span class="fu">sample</span>(tmp<span class="sc">$</span>SRH_110, <span class="fu">nrow</span>(tmp), <span class="at">replace=</span><span class="cn">FALSE</span>)</span>
+<span id="cb169-5"><a href="describing-relationships-in-the-general-social-survey.html#cb169-5" tabindex="-1"></a>  tab <span class="ot">&lt;-</span> <span class="fu">with</span>(tmp, <span class="fu">table</span>(SRH_115, SRH_110))</span>
+<span id="cb169-6"><a href="describing-relationships-in-the-general-social-survey.html#cb169-6" tabindex="-1"></a>  stat[i] <span class="ot">&lt;-</span> <span class="fu">tau.b</span>(tab)</span>
+<span id="cb169-7"><a href="describing-relationships-in-the-general-social-survey.html#cb169-7" tabindex="-1"></a>}</span></code></pre></div>
+<p>We could then look at the histogram of the results:</p>
+<div class="sourceCode" id="cb170"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb170-1"><a href="describing-relationships-in-the-general-social-survey.html#cb170-1" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>stat)) <span class="sc">+</span> </span>
+<span id="cb170-2"><a href="describing-relationships-in-the-general-social-survey.html#cb170-2" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span> </span>
+<span id="cb170-3"><a href="describing-relationships-in-the-general-social-survey.html#cb170-3" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb170-4"><a href="describing-relationships-in-the-general-social-survey.html#cb170-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Tau-b Statistic Null Distribution&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-77-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>We could then calculate a <span class="math inline">\(p\)</span>-value by figuring out what proportion of the null distribution is to the right of our test statistic.</p>
+<div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb171-1"><a href="describing-relationships-in-the-general-social-survey.html#cb171-1" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">with</span>(gss2016canf, <span class="fu">table</span>(SRH_115, SRH_110))</span>
+<span id="cb171-2"><a href="describing-relationships-in-the-general-social-survey.html#cb171-2" tabindex="-1"></a>tb <span class="ot">&lt;-</span> <span class="fu">tau.b</span>(tab)</span>
+<span id="cb171-3"><a href="describing-relationships-in-the-general-social-survey.html#cb171-3" tabindex="-1"></a><span class="do">## Calculate the p-value </span></span>
+<span id="cb171-4"><a href="describing-relationships-in-the-general-social-survey.html#cb171-4" tabindex="-1"></a><span class="fu">mean</span>(stat <span class="sc">&gt;</span> tb)</span></code></pre></div>
+<pre><code>## [1] 0</code></pre>
+</div>
+<div id="back-to-the-data" class="section level3 hasAnchor" number="2.2.3">
+<h3><span class="header-section-number">2.2.3</span> Back to the Data<a href="describing-relationships-in-the-general-social-survey.html#back-to-the-data" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>If we wanted to make a plot of the cross-tabulation, we could do that with the <code>geom_tile()</code> function.</p>
+<div class="sourceCode" id="cb173"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb173-1"><a href="describing-relationships-in-the-general-social-survey.html#cb173-1" tabindex="-1"></a>gss2016canf <span class="sc">%&gt;%</span> </span>
+<span id="cb173-2"><a href="describing-relationships-in-the-general-social-survey.html#cb173-2" tabindex="-1"></a>  <span class="fu">group_by</span>(SRH_115, SRH_110) <span class="sc">%&gt;%</span> </span>
+<span id="cb173-3"><a href="describing-relationships-in-the-general-social-survey.html#cb173-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n=</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb173-4"><a href="describing-relationships-in-the-general-social-survey.html#cb173-4" tabindex="-1"></a>  na.omit <span class="sc">%&gt;%</span></span>
+<span id="cb173-5"><a href="describing-relationships-in-the-general-social-survey.html#cb173-5" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y=</span>SRH_115, <span class="at">x=</span>SRH_110, <span class="at">fill=</span>n)) <span class="sc">+</span> </span>
+<span id="cb173-6"><a href="describing-relationships-in-the-general-social-survey.html#cb173-6" tabindex="-1"></a>  <span class="fu">geom_tile</span>() <span class="sc">+</span> </span>
+<span id="cb173-7"><a href="describing-relationships-in-the-general-social-survey.html#cb173-7" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>() <span class="sc">+</span> </span>
+<span id="cb173-8"><a href="describing-relationships-in-the-general-social-survey.html#cb173-8" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb173-9"><a href="describing-relationships-in-the-general-social-survey.html#cb173-9" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Self-reported Physical Health&quot;</span>, </span>
+<span id="cb173-10"><a href="describing-relationships-in-the-general-social-survey.html#cb173-10" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Self-reported Mental Health&quot;</span>, </span>
+<span id="cb173-11"><a href="describing-relationships-in-the-general-social-survey.html#cb173-11" tabindex="-1"></a>       <span class="at">fill=</span><span class="st">&quot;Count&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb173-12"><a href="describing-relationships-in-the-general-social-survey.html#cb173-12" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Joint Frequency Distribution&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-79-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>Or, we could plot the standardized residuals from the cross-tabulation. This can be done with the <code>chisq.test()</code> function executed on the cross-tabulation generated by the <code>table()</code> function.</p>
+<div class="sourceCode" id="cb174"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb174-1"><a href="describing-relationships-in-the-general-social-survey.html#cb174-1" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">with</span>(gss2016canf, <span class="fu">table</span>(SRH_115, SRH_110))</span>
+<span id="cb174-2"><a href="describing-relationships-in-the-general-social-survey.html#cb174-2" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(tab)</span>
+<span id="cb174-3"><a href="describing-relationships-in-the-general-social-survey.html#cb174-3" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(x<span class="sc">$</span>stdres) </span>
+<span id="cb174-4"><a href="describing-relationships-in-the-general-social-survey.html#cb174-4" tabindex="-1"></a><span class="co"># Make all non-significant values set to 0</span></span>
+<span id="cb174-5"><a href="describing-relationships-in-the-general-social-survey.html#cb174-5" tabindex="-1"></a>df<span class="sc">$</span>Freq[<span class="fu">which</span>(df<span class="sc">$</span>Freq <span class="sc">&lt;</span> <span class="dv">2</span> <span class="sc">&amp;</span> df<span class="sc">$</span>Freq <span class="sc">&gt;</span> <span class="sc">-</span><span class="dv">2</span>)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb174-6"><a href="describing-relationships-in-the-general-social-survey.html#cb174-6" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x=</span>SRH_110, <span class="at">y=</span>SRH_115, <span class="at">fill=</span>Freq)) <span class="sc">+</span> </span>
+<span id="cb174-7"><a href="describing-relationships-in-the-general-social-survey.html#cb174-7" tabindex="-1"></a>  <span class="fu">geom_tile</span>() <span class="sc">+</span> </span>
+<span id="cb174-8"><a href="describing-relationships-in-the-general-social-survey.html#cb174-8" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>() <span class="sc">+</span> </span>
+<span id="cb174-9"><a href="describing-relationships-in-the-general-social-survey.html#cb174-9" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb174-10"><a href="describing-relationships-in-the-general-social-survey.html#cb174-10" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Self-reported Physical Health&quot;</span>, </span>
+<span id="cb174-11"><a href="describing-relationships-in-the-general-social-survey.html#cb174-11" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&quot;Self-reported Mental Health&quot;</span>, </span>
+<span id="cb174-12"><a href="describing-relationships-in-the-general-social-survey.html#cb174-12" tabindex="-1"></a>       <span class="at">fill=</span><span class="st">&quot;Count&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb174-13"><a href="describing-relationships-in-the-general-social-survey.html#cb174-13" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Standardized Residuals from Chi-Squared Test&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-80-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>Another visualization we can make of a cross-tabulation is a mosaic plot. In a mosaic plot, the colum widths are proportional to the number of observations in the column variable and the heights of the bars are proportional to the column proportions in the row variable. Here’s an example using the <code>ggmosaic()</code> function in the <code>ggmosaic</code> package. First, we need to install the <code>ggmosaic</code> package from GitHub using the <code>remotes</code> package (which you may need to install first, see the <a href="index.html#using-r">Using <em>R</em></a> section for a reminder of how installing packages works).</p>
+<div class="sourceCode" id="cb175"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb175-1"><a href="describing-relationships-in-the-general-social-survey.html#cb175-1" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;haleyjeppson/ggmosaic&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb176"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb176-1"><a href="describing-relationships-in-the-general-social-survey.html#cb176-1" tabindex="-1"></a><span class="fu">library</span>(ggmosaic)</span>
+<span id="cb176-2"><a href="describing-relationships-in-the-general-social-survey.html#cb176-2" tabindex="-1"></a>gss2016canf <span class="sc">%&gt;%</span> </span>
+<span id="cb176-3"><a href="describing-relationships-in-the-general-social-survey.html#cb176-3" tabindex="-1"></a>  <span class="fu">select</span>(SRH_110, SRH_115) <span class="sc">%&gt;%</span> </span>
+<span id="cb176-4"><a href="describing-relationships-in-the-general-social-survey.html#cb176-4" tabindex="-1"></a>  <span class="fu">na.omit</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb176-5"><a href="describing-relationships-in-the-general-social-survey.html#cb176-5" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb176-6"><a href="describing-relationships-in-the-general-social-survey.html#cb176-6" tabindex="-1"></a>  <span class="fu">geom_mosaic</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fu">product</span>(SRH_110), <span class="at">fill=</span>SRH_115)) <span class="sc">+</span> </span>
+<span id="cb176-7"><a href="describing-relationships-in-the-general-social-survey.html#cb176-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&quot;Self-reported Physical Health&quot;</span>, </span>
+<span id="cb176-8"><a href="describing-relationships-in-the-general-social-survey.html#cb176-8" tabindex="-1"></a>        <span class="at">y=</span><span class="st">&quot;Self-reported Mental Health&quot;</span>, </span>
+<span id="cb176-9"><a href="describing-relationships-in-the-general-social-survey.html#cb176-9" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">&quot;Mental Health&quot;</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-82-1.png" width="672" /></p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Use the three alternative visualizations from above with <code>aidhouse</code> and <code>partyid</code> - heat map, standardized residuals and mosaic plot.
+- Which one do you think is most useful?</p>
+</div>
+</div>
+</div>
+<div id="descriptive-output-in-knitr" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Descriptive Output in knitr<a href="describing-relationships-in-the-general-social-survey.html#descriptive-output-in-knitr" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>As we think about using descriptive statistics, we should also think about how to best use them in a reproducible research framework, like <code>knitr</code>. So, let’s talk through the few different methods we talked about above.</p>
+<p>First, let’s talk about summary statistics. The main reason we might want to output a bunch of summary statistics is for an appendix where we give the summary statistics of all relevant variables in a paper. There are a few packages that can help with this. The <code>summarytools</code> package has the <code>dfSummary()</code> function that can be used as follows:</p>
+<div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb177-1"><a href="describing-relationships-in-the-general-social-survey.html#cb177-1" tabindex="-1"></a><span class="fu">library</span>(summarytools)</span>
+<span id="cb177-2"><a href="describing-relationships-in-the-general-social-survey.html#cb177-2" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> gss2016canf <span class="sc">%&gt;%</span> </span>
+<span id="cb177-3"><a href="describing-relationships-in-the-general-social-survey.html#cb177-3" tabindex="-1"></a>  <span class="fu">select</span>(SRH_110, SRH_115, resilience)</span>
+<span id="cb177-4"><a href="describing-relationships-in-the-general-social-survey.html#cb177-4" tabindex="-1"></a><span class="fu">dfSummary</span>(tmp, </span>
+<span id="cb177-5"><a href="describing-relationships-in-the-general-social-survey.html#cb177-5" tabindex="-1"></a>          <span class="at">graph.col=</span><span class="cn">FALSE</span>, </span>
+<span id="cb177-6"><a href="describing-relationships-in-the-general-social-survey.html#cb177-6" tabindex="-1"></a>          <span class="at">valid.col=</span><span class="cn">FALSE</span>, </span>
+<span id="cb177-7"><a href="describing-relationships-in-the-general-social-survey.html#cb177-7" tabindex="-1"></a>          <span class="at">varnumbers=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<p>Data Frame Summary<br />
+tmp<br />
+Dimensions: 19609 x 3<br />
+Duplicates: 6898</p>
+<table style="width:100%;">
+<colgroup>
+<col width="11%" />
+<col width="35%" />
+<col width="23%" />
+<col width="20%" />
+<col width="8%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Label</th>
+<th align="left">Stats / Values</th>
+<th align="left">Freqs (% of Valid)</th>
+<th align="left">Missing</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">SRH_110
+[factor]</td>
+<td align="left">Self rated health in general</td>
+<td align="left">1. Excellent
+2. Very good
+3. Good
+4. Fair
+5. Poor</td>
+<td align="left">2708 (13.9%)
+7043 (36.0%)
+6866 (35.1%)
+2302 (11.8%)
+619 ( 3.2%)</td>
+<td align="left">71
+(0.4%)</td>
+</tr>
+<tr class="even">
+<td align="left">SRH_115
+[factor]</td>
+<td align="left">Self rated mental health in general</td>
+<td align="left">1. Excellent
+2. Very good
+3. Good
+4. Fair
+5. Poor</td>
+<td align="left">4728 (24.2%)
+7319 (37.5%)
+5746 (29.4%)
+1393 ( 7.1%)
+336 ( 1.7%)</td>
+<td align="left">87
+(0.4%)</td>
+</tr>
+<tr class="odd">
+<td align="left">resilience
+[numeric]</td>
+<td align="left">Resilience Score made from a scale of
+RES_X items</td>
+<td align="left">Mean (sd) : 0 (0.6)
+min &lt; med &lt; max:
+-3.7 &lt; 0 &lt; 1.2
+IQR (CV) : 0.9 (-557.9)</td>
+<td align="left">7892 distinct values</td>
+<td align="left">87
+(0.4%)</td>
+</tr>
+</tbody>
+</table>
+<p>This is fine, but there are other options that are available, too. We could use the <code>sumStats()</code> function from DAMisc for the numeric variables:</p>
+<div class="sourceCode" id="cb178"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb178-1"><a href="describing-relationships-in-the-general-social-survey.html#cb178-1" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">sumStats</span>(gss2016canf, <span class="fu">c</span>(<span class="st">&quot;SRH_110&quot;</span>, <span class="st">&quot;SRH_115&quot;</span>, <span class="st">&quot;resilience&quot;</span>), <span class="at">convertFactors =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb178-2"><a href="describing-relationships-in-the-general-social-survey.html#cb178-2" tabindex="-1"></a>s</span></code></pre></div>
+<pre><code>## # A tibble: 3 × 11
+##   variable       mean    sd   iqr   min    q25       q50   q75   max     n   nNA
+##   &lt;chr&gt;         &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt;
+## 1 SRH_110     2.54    0.975 1      1     2      3        3      5    19609    71
+## 2 SRH_115     2.25    0.957 1      1     2      2        3      5    19609    87
+## 3 resilience -0.00115 0.643 0.895 -3.73 -0.401 -0.000398 0.494  1.20 19609    87</code></pre>
+<p>The function above turns all of the factors into numbers for the numeric summary. You could then use <code>kable()</code> from the <code>knitr</code> package to output the table to markdown or <code>xtable()</code> from the package of the same name to send it to LaTeX.</p>
+<div class="sourceCode" id="cb180"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb180-1"><a href="describing-relationships-in-the-general-social-survey.html#cb180-1" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(s[,<span class="sc">-</span><span class="dv">1</span>])</span></code></pre></div>
+<table>
+<colgroup>
+<col width="12%" />
+<col width="10%" />
+<col width="9%" />
+<col width="10%" />
+<col width="12%" />
+<col width="12%" />
+<col width="10%" />
+<col width="9%" />
+<col width="6%" />
+<col width="4%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">iqr</th>
+<th align="right">min</th>
+<th align="right">q25</th>
+<th align="right">q50</th>
+<th align="right">q75</th>
+<th align="right">max</th>
+<th align="right">n</th>
+<th align="right">nNA</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">2.5435050</td>
+<td align="right">0.9752404</td>
+<td align="right">1.000000</td>
+<td align="right">1.000000</td>
+<td align="right">2.0000000</td>
+<td align="right">3.0000000</td>
+<td align="right">3.0000000</td>
+<td align="right">5.000000</td>
+<td align="right">19609</td>
+<td align="right">71</td>
+</tr>
+<tr class="even">
+<td align="right">2.2464911</td>
+<td align="right">0.9571498</td>
+<td align="right">1.000000</td>
+<td align="right">1.000000</td>
+<td align="right">2.0000000</td>
+<td align="right">2.0000000</td>
+<td align="right">3.0000000</td>
+<td align="right">5.000000</td>
+<td align="right">19609</td>
+<td align="right">87</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.0011526</td>
+<td align="right">0.6430187</td>
+<td align="right">0.895259</td>
+<td align="right">-3.726695</td>
+<td align="right">-0.4008406</td>
+<td align="right">-0.0003976</td>
+<td align="right">0.4944184</td>
+<td align="right">1.200536</td>
+<td align="right">19609</td>
+<td align="right">87</td>
+</tr>
+</tbody>
+</table>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Start a new RMarkdown document and put in your exercise answers. Have the output look like you would want it to look if you were showing it to someone else.</p>
+</div>
+</div>
+<div id="exercises-2" class="section level2 unnumbered hasAnchor">
+<h2>Exercises<a href="describing-relationships-in-the-general-social-survey.html#exercises-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li><p>Load the GSS data for the USA in 2016. From it, select the <code>advfront</code> (the federal government should support scientific research) and <code>astrosci</code> (is astrology scientific or not) variables, and drop the <code>NA</code> values.</p></li>
+<li><p>Knowing that <code>advfront</code> is coded 1 for <code>Strongly agree</code> positions and 4 for <code>Strongly disagree</code>, and that <code>astrosci</code> is coded 1 for <code>Very scientific</code>, 2 for <code>Sort of scientific</code> and 3 for <code>Not at all scientific</code>, recode the variables with their textual values. We’ll call the new variables <code>fedSuppScience</code> and <code>astroIsScience</code>. Make sure that these new variables are factors.</p></li>
+<li><p>Using the <code>xt</code> function from the <code>DAMisc</code> package, print a summary of the distribution of each category of the novel <code>fedSuppScience</code> and <code>astroIsScience</code> variables.</p></li>
+<li><p>Create visualizations for the distributions of the two variables. Make sure to name the axis properly and to use another theme than the basic <code>ggplot</code> one.</p></li>
+<li><p>We might be interested in the relationship between believing that science should be supported by the federal government and thinking astrology is science. Hence, summarize <code>fedSuppScience</code> by <code>astroIsScience</code> using the <code>sumStats</code> function and create a cross-tabulation using the <code>xt</code> function.</p></li>
+<li><p>It doesn’t look like there is a strong relationship between the two variables. Make sure by first visualizing the joint frequency distribution using <code>geom_tile</code> and then visualizing the standardized residuals.</p></li>
+<li><p>Using function <code>kable</code> from <code>knitr</code>, create a latex table of the variables’ cross-table.</p></li>
+<li><p>In section 2.2.2 of the chapter, we showed how to rearrange rows of data frame in order to impose a null hypothesis of no relationship. For this exercise, use the base R <code>sample</code> function and the <code>tau.b</code> function from <code>DAMisc</code> to produce one Kendall’s Tau-b from the resulting distribution of <code>fedSuppScience</code> and <code>astroIsScience</code>. (Hint: Create a new data frame containing only the required variables. This will prevent you from having to rerun everything above in case you make a mistake.)</p></li>
+<li><p>Now, using the code you wrote in exercise 8, simulate 2000 random distribution, storing in a vector the resulting statistic of each one. Use <code>set.seed(122)</code> in order to obtain the same results as the answer key. Present your results in the form of a histogram.</p></li>
+<li><p>Compute the p-value from the resulting distribution of Tau-b statistics. (Hint: you need two things for this, the distribution generated in exercise 9 and the original sample’s cross-table.)</p></li>
+</ol>
+
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="viz.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="linear-models.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["RBE.pdf", "RBE.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

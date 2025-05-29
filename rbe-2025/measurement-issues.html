@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 9 Measurement Issues | R: Learning by Example</title>
+  <meta name="description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 9 Measurement Issues | R: Learning by Example" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 9 Measurement Issues | R: Learning by Example" />
+  
+  <meta name="twitter:description" content="This book walks users through a number of the most relevant methods for social scientists in R. It is meant to get those who currently use other software comfortable with conventional social science workflows in R." />
+  
+
+<meta name="author" content="David A. Armstrong II and William Poirier" />
+
+
+<meta name="date" content="2025-05-29" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="time-series-cross-sectional-models.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<link href="libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.33/datatables.js"></script>
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">R: Learning by Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preliminaries</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#license"><i class="fa fa-check"></i>License</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#getting-r-and-rstudio"><i class="fa fa-check"></i>Getting R and Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#keeping-track-of-your-work"><i class="fa fa-check"></i>Keeping Track of Your Work</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#overview-of-rstudio"><i class="fa fa-check"></i>Overview of Rstudio</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#using-r"><i class="fa fa-check"></i>Using <em>R</em></a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#assigning-output-to-objects"><i class="fa fa-check"></i>Assigning Output to Objects</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#vectors-and-matrices"><i class="fa fa-check"></i>Vectors and Matrices</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#function-arguments"><i class="fa fa-check"></i>Function Arguments</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#importing-data"><i class="fa fa-check"></i>Importing Data</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#data-types-in-r"><i class="fa fa-check"></i>Data Types in <em>R</em></a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#examining-data"><i class="fa fa-check"></i>Examining Data</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#missing-values"><i class="fa fa-check"></i>Missing Values</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#filtering-with-logical-expressions-and-sorting"><i class="fa fa-check"></i>Filtering with Logical Expressions and Sorting</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#workhorse-functions"><i class="fa fa-check"></i>Workhorse Functions</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#exercises"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html"><i class="fa fa-check"></i>Datasets</a>
+<ul>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo"><i class="fa fa-check"></i><code>colo</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#colo_covid"><i class="fa fa-check"></i><code>colo_covid</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gss-canada"><i class="fa fa-check"></i><code>gss</code> (Canada)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#gsss16-usa"><i class="fa fa-check"></i><code>gsss16</code> (USA)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#davenport-soule-armstrong-data"><i class="fa fa-check"></i>Davenport-Soule-Armstrong Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#france-2004"><i class="fa fa-check"></i>France 2004</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#ces19"><i class="fa fa-check"></i><code>ces19</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#snijders-and-bosker-multileve-school-data"><i class="fa fa-check"></i>Snijders and Bosker Multileve School Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-multilevel"><i class="fa fa-check"></i>World Values Survey (multilevel)</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#repression-data"><i class="fa fa-check"></i>Repression Data</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#oil-and-democracy-dataset"><i class="fa fa-check"></i>Oil and Democracy Dataset</a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#politicaldemocracy"><i class="fa fa-check"></i><code>PoliticalDemocracy</code></a></li>
+<li class="chapter" data-level="" data-path="datasets.html"><a href="datasets.html#world-values-survey-measurement"><i class="fa fa-check"></i>World Values Survey (measurement)</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="viz.html"><a href="viz.html"><i class="fa fa-check"></i><b>1</b> Visualizing</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="viz.html"><a href="viz.html#wrangling-data"><i class="fa fa-check"></i><b>1.1</b> Wrangling data</a>
+<ul>
+<li class="chapter" data-level="1.1.1" data-path="viz.html"><a href="viz.html#merging-datasets"><i class="fa fa-check"></i><b>1.1.1</b> Merging Datasets</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="viz.html"><a href="viz.html#ggplot"><i class="fa fa-check"></i><b>1.2</b> GGplot</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="viz.html"><a href="viz.html#bar-plots"><i class="fa fa-check"></i><b>1.2.1</b> Bar Plots</a></li>
+<li class="chapter" data-level="1.2.2" data-path="viz.html"><a href="viz.html#line-graphs"><i class="fa fa-check"></i><b>1.2.2</b> Line Graphs</a></li>
+<li class="chapter" data-level="1.2.3" data-path="viz.html"><a href="viz.html#histograms"><i class="fa fa-check"></i><b>1.2.3</b> Histograms</a></li>
+<li class="chapter" data-level="1.2.4" data-path="viz.html"><a href="viz.html#scatterplots"><i class="fa fa-check"></i><b>1.2.4</b> Scatterplots</a></li>
+<li class="chapter" data-level="1.2.5" data-path="viz.html"><a href="viz.html#multiple-series"><i class="fa fa-check"></i><b>1.2.5</b> Multiple Series</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="viz.html"><a href="viz.html#recap"><i class="fa fa-check"></i><b>1.3</b> Recap</a></li>
+<li class="chapter" data-level="" data-path="viz.html"><a href="viz.html#exercises-1"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html"><i class="fa fa-check"></i><b>2</b> Describing Relationships in the General Social Survey</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#the-canadian-gss."><i class="fa fa-check"></i><b>2.1</b> The Canadian GSS.</a></li>
+<li class="chapter" data-level="2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#looking-at-the-data."><i class="fa fa-check"></i><b>2.2</b> Looking at the data.</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#cross-tabulations"><i class="fa fa-check"></i><b>2.2.1</b> Cross-tabulations</a></li>
+<li class="chapter" data-level="2.2.2" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#permutation-tests-in-r."><i class="fa fa-check"></i><b>2.2.2</b> Permutation Tests in R.</a></li>
+<li class="chapter" data-level="2.2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#back-to-the-data"><i class="fa fa-check"></i><b>2.2.3</b> Back to the Data</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#descriptive-output-in-knitr"><i class="fa fa-check"></i><b>2.3</b> Descriptive Output in knitr</a></li>
+<li class="chapter" data-level="" data-path="describing-relationships-in-the-general-social-survey.html"><a href="describing-relationships-in-the-general-social-survey.html#exercises-2"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="linear-models.html"><a href="linear-models.html"><i class="fa fa-check"></i><b>3</b> Linear Models</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="linear-models.html"><a href="linear-models.html#effects-plots"><i class="fa fa-check"></i><b>3.1</b> Effects Plots</a></li>
+<li class="chapter" data-level="3.2" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-linearity"><i class="fa fa-check"></i><b>3.2</b> Diagnostic Tools: Linearity</a></li>
+<li class="chapter" data-level="3.3" data-path="linear-models.html"><a href="linear-models.html#diagnostic-tools-heteroskedasticity"><i class="fa fa-check"></i><b>3.3</b> Diagnostic Tools: Heteroskedasticity</a></li>
+<li class="chapter" data-level="3.4" data-path="linear-models.html"><a href="linear-models.html#diagnostics-outliers-and-influential-data"><i class="fa fa-check"></i><b>3.4</b> Diagnostics: Outliers and Influential Data</a></li>
+<li class="chapter" data-level="3.5" data-path="linear-models.html"><a href="linear-models.html#diagnostics-for-normality"><i class="fa fa-check"></i><b>3.5</b> Diagnostics for Normality</a>
+<ul>
+<li class="chapter" data-level="3.5.1" data-path="linear-models.html"><a href="linear-models.html#bootstrapping-regression-models"><i class="fa fa-check"></i><b>3.5.1</b> Bootstrapping Regression Models</a></li>
+</ul></li>
+<li class="chapter" data-level="3.6" data-path="linear-models.html"><a href="linear-models.html#interactions"><i class="fa fa-check"></i><b>3.6</b> Interactions</a></li>
+<li class="chapter" data-level="" data-path="linear-models.html"><a href="linear-models.html#exercises-3"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html"><i class="fa fa-check"></i><b>4</b> Generalized Linear Models - Logit.</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#evaluating-model-fit"><i class="fa fa-check"></i><b>4.1</b> Evaluating Model Fit</a></li>
+<li class="chapter" data-level="4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effects"><i class="fa fa-check"></i><b>4.2</b> Marginal Effects</a></li>
+<li class="chapter" data-level="4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#marginal-effect-plots"><i class="fa fa-check"></i><b>4.3</b> Marginal Effect Plots</a></li>
+<li class="chapter" data-level="4.4" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#interactions-in-binary-dv-models"><i class="fa fa-check"></i><b>4.4</b> Interactions in Binary DV Models</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-binary"><i class="fa fa-check"></i><b>4.4.1</b> Both binary</a></li>
+<li class="chapter" data-level="4.4.2" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#one-binary-one-continuous."><i class="fa fa-check"></i><b>4.4.2</b> One binary, one continuous.</a></li>
+<li class="chapter" data-level="4.4.3" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#both-continuous"><i class="fa fa-check"></i><b>4.4.3</b> Both Continuous</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#other-glms."><i class="fa fa-check"></i><b>4.5</b> Other GLMs.</a></li>
+<li class="chapter" data-level="" data-path="generalized-linear-models---logit..html"><a href="generalized-linear-models---logit..html#exercises-4"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html"><i class="fa fa-check"></i><b>5</b> Ordered and Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#ordinal-dv-models"><i class="fa fa-check"></i><b>5.1</b> Ordinal DV Models</a></li>
+<li class="chapter" data-level="5.2" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#multinomial-logit"><i class="fa fa-check"></i><b>5.2</b> Multinomial Logit</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#parametric-bootstrap-for-confidence-intervals."><i class="fa fa-check"></i><b>5.2.1</b> Parametric Bootstrap for Confidence Intervals.</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ordered-and-multinomial-logit.html"><a href="ordered-and-multinomial-logit.html#conclusion"><i class="fa fa-check"></i><b>5.3</b> Conclusion</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html"><i class="fa fa-check"></i><b>6</b> Handling Complex Survey Data</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#frequency-distributions-and-contingency-tables"><i class="fa fa-check"></i><b>6.1</b> Frequency Distributions and Contingency Tables</a></li>
+<li class="chapter" data-level="6.2" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#summary-statistics"><i class="fa fa-check"></i><b>6.2</b> Summary Statistics</a></li>
+<li class="chapter" data-level="6.3" data-path="handling-complex-survey-data.html"><a href="handling-complex-survey-data.html#estimating-models"><i class="fa fa-check"></i><b>6.3</b> Estimating Models</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="multilevel-models.html"><a href="multilevel-models.html"><i class="fa fa-check"></i><b>7</b> Multilevel Models</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="multilevel-models.html"><a href="multilevel-models.html#data-structure."><i class="fa fa-check"></i><b>7.1</b> Data Structure.</a></li>
+<li class="chapter" data-level="7.2" data-path="multilevel-models.html"><a href="multilevel-models.html#clustering-standard-errors"><i class="fa fa-check"></i><b>7.2</b> Clustering Standard Errors</a></li>
+<li class="chapter" data-level="7.3" data-path="multilevel-models.html"><a href="multilevel-models.html#between-vs-within-relationships."><i class="fa fa-check"></i><b>7.3</b> Between vs Within Relationships.</a></li>
+<li class="chapter" data-level="7.4" data-path="multilevel-models.html"><a href="multilevel-models.html#random-intercepts"><i class="fa fa-check"></i><b>7.4</b> Random Intercepts</a></li>
+<li class="chapter" data-level="7.5" data-path="multilevel-models.html"><a href="multilevel-models.html#estimating-the-multilevel-model"><i class="fa fa-check"></i><b>7.5</b> Estimating the Multilevel Model</a>
+<ul>
+<li class="chapter" data-level="7.5.1" data-path="multilevel-models.html"><a href="multilevel-models.html#p-values-in-lmer-output"><i class="fa fa-check"></i><b>7.5.1</b> P-values in LMER Output</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="multilevel-models.html"><a href="multilevel-models.html#other-random-effects-models"><i class="fa fa-check"></i><b>7.6</b> Other Random-Effects Models</a></li>
+<li class="chapter" data-level="7.7" data-path="multilevel-models.html"><a href="multilevel-models.html#bayesian-models-with-brms"><i class="fa fa-check"></i><b>7.7</b> Bayesian Models with BRMS</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html"><i class="fa fa-check"></i><b>8</b> Time-Series Cross-Sectional Models</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#preliminaries-and-assumptions"><i class="fa fa-check"></i><b>8.1</b> Preliminaries and Assumptions</a></li>
+<li class="chapter" data-level="8.2" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#unit-effects"><i class="fa fa-check"></i><b>8.2</b> Unit Effects</a></li>
+<li class="chapter" data-level="8.3" data-path="time-series-cross-sectional-models.html"><a href="time-series-cross-sectional-models.html#the-plm-package"><i class="fa fa-check"></i><b>8.3</b> The plm Package</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="measurement-issues.html"><a href="measurement-issues.html"><i class="fa fa-check"></i><b>9</b> Measurement Issues</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="measurement-issues.html"><a href="measurement-issues.html#reliability-analysis"><i class="fa fa-check"></i><b>9.1</b> Reliability Analysis</a></li>
+<li class="chapter" data-level="9.2" data-path="measurement-issues.html"><a href="measurement-issues.html#exploratory-factor-analysis-and-principal-components-analysis"><i class="fa fa-check"></i><b>9.2</b> Exploratory Factor Analysis and Principal Components Analysis</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="measurement-issues.html"><a href="measurement-issues.html#rotations"><i class="fa fa-check"></i><b>9.2.1</b> Rotations</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="measurement-issues.html"><a href="measurement-issues.html#cfa-and-sem"><i class="fa fa-check"></i><b>9.3</b> CFA and SEM</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">R: Learning by Example</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="measurement-issues" class="section level1 hasAnchor" number="9">
+<h1><span class="header-section-number">Chapter 9</span> Measurement Issues<a href="measurement-issues.html#measurement-issues" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>I am really interested in measurement issues. In fact, I wrote a <a href="https://www.routledge.com/Analyzing-Spatial-Models-of-Choice-and-Judgment/II-Bakker-Carroll-Hare-Poole-Rosenthal/p/book/9781138715332">book</a> about it with some really smart co-authors. There, we mostly focus on things not well covered in other parts of this vast literature - Nomiante models, optimal classification, a bit of multidimensional scaling and Bayesian implementations of these various tools.</p>
+<p>Here, I want to talk, instead about some of the more conventional measures for dealing with multiple indicators.</p>
+<div id="reliability-analysis" class="section level2 hasAnchor" number="9.1">
+<h2><span class="header-section-number">9.1</span> Reliability Analysis<a href="measurement-issues.html#reliability-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Often times with measurement, a simple solution is sufficient. In this case, we might be interested in assessing the reliability of a set of indicators relative to some unknown, unidimensional latent construct. To illustrate, we’ll use Bollen’s measures of political democracy.</p>
+<div class="sourceCode" id="cb454"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb454-1"><a href="measurement-issues.html#cb454-1" tabindex="-1"></a><span class="fu">data</span>(PoliticalDemocracy, <span class="at">package=</span><span class="st">&quot;lavaan&quot;</span>)</span></code></pre></div>
+<p>In this dataset, <code>y1</code>-<code>y4</code> are indicators for 1960 and <code>y5</code>-<code>y8</code> are indicators for 1965. The variables <code>x1</code>-<code>x3</code> are different measures of development (GNP, energy consumption and labour force participation, respectively) for 1960.</p>
+<p>Let’s look at the 1965 democracy indicators. The first thing we could do is to simply look at the relationships in the data. The assumption here is that the relationship between the indicators and the latent dimension is monotonic.</p>
+<div class="sourceCode" id="cb455"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb455-1"><a href="measurement-issues.html#cb455-1" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
+<span id="cb455-2"><a href="measurement-issues.html#cb455-2" tabindex="-1"></a><span class="fu">ggpairs</span>(PoliticalDemocracy, <span class="dv">5</span><span class="sc">:</span><span class="dv">8</span>, </span>
+<span id="cb455-3"><a href="measurement-issues.html#cb455-3" tabindex="-1"></a>        <span class="at">columnLabels=</span><span class="fu">c</span>(<span class="st">&quot;Press Free&quot;</span>, <span class="st">&quot;Opp Free&quot;</span>, <span class="st">&quot;Fair Elec&quot;</span>, <span class="st">&quot;Leg Effect&quot;</span>), </span>
+<span id="cb455-4"><a href="measurement-issues.html#cb455-4" tabindex="-1"></a>        <span class="at">lower=</span><span class="fu">list</span>(<span class="at">continuous=</span><span class="st">&quot;smooth_loess&quot;</span>))</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-263-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>The correlations here are all reasonably strong and the relationsihps seem to be more or less monotonic in nature.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>We’re going to use a different version of the WVS data that has all of the indicators for the secular and emancipatory values and the moral variable. Load the data as follows:</p>
+<div class="sourceCode" id="cb456"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb456-1"><a href="measurement-issues.html#cb456-1" tabindex="-1"></a><span class="fu">load</span>(<span class="st">&quot;data/wvsb.rda&quot;</span>)</span></code></pre></div>
+<p>Now look at the correlations and relationships between the indicators:
+- <code>V198</code>-<code>V210</code> are the indicators for the moral variable.
+- <code>I_INDEP</code>-<code>I_VOICE2</code> are the indicators for the emancipatory values scale.
+- <code>I_AUTHORITY</code>-<code>I_TRUSTCOURTS</code> are the indicators for secular values.</p>
+</div>
+<p>The <code>psych</code> package has a function called <code>alpha</code> that does reliability analaysis. Let’s see what it looks like. The <code>check.keys=TRUE</code> will reverse items that are negatively related to the underlying dimension.</p>
+<div class="sourceCode" id="cb457"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb457-1"><a href="measurement-issues.html#cb457-1" tabindex="-1"></a><span class="fu">library</span>(psych)</span>
+<span id="cb457-2"><a href="measurement-issues.html#cb457-2" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">alpha</span>(<span class="fu">scale</span>(PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;y5&quot;</span>, <span class="st">&quot;y6&quot;</span>, <span class="st">&quot;y7&quot;</span>, <span class="st">&quot;y8&quot;</span>)]), </span>
+<span id="cb457-3"><a href="measurement-issues.html#cb457-3" tabindex="-1"></a>      <span class="at">check.keys =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb457-4"><a href="measurement-issues.html#cb457-4" tabindex="-1"></a>a</span></code></pre></div>
+<pre><code>## 
+## Reliability analysis   
+## Call: alpha(x = scale(PoliticalDemocracy[, c(&quot;y5&quot;, &quot;y6&quot;, &quot;y7&quot;, &quot;y8&quot;)]), 
+##     check.keys = TRUE)
+## 
+##   raw_alpha std.alpha G6(smc) average_r S/N   ase     mean   sd median_r
+##       0.88      0.88    0.86      0.66 7.7 0.022 -4.6e-16 0.86     0.65
+## 
+##     95% confidence boundaries 
+##          lower alpha upper
+## Feldt     0.84  0.88  0.92
+## Duhachek  0.84  0.88  0.93
+## 
+##  Reliability if an item is dropped:
+##    raw_alpha std.alpha G6(smc) average_r S/N alpha se  var.r med.r
+## y5      0.87      0.87    0.83      0.69 6.7    0.026 0.0055  0.71
+## y6      0.86      0.86    0.81      0.67 6.2    0.028 0.0017  0.68
+## y7      0.85      0.85    0.80      0.65 5.6    0.031 0.0092  0.63
+## y8      0.83      0.83    0.77      0.62 4.8    0.034 0.0033  0.61
+## 
+##  Item statistics 
+##     n raw.r std.r r.cor r.drop     mean sd
+## y5 75  0.83  0.83  0.74   0.70  2.6e-16  1
+## y6 75  0.85  0.85  0.78   0.73 -5.2e-16  1
+## y7 75  0.87  0.87  0.81   0.76 -1.4e-15  1
+## y8 75  0.90  0.90  0.87   0.81 -2.1e-16  1</code></pre>
+<p>The overal alpha of the scale is .88 and that can’t be improved upon by deleting any of the indicators from the analysis. This suggests a pretty good fit, overall. If we wanted to use the variable in subsequent analyses, we could simply get the <code>scores</code> element out of the object <code>a</code> and that is our estimate of the latent construct.</p>
+<p>We could also construct the democracy variable for 1960:</p>
+<div class="sourceCode" id="cb459"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb459-1"><a href="measurement-issues.html#cb459-1" tabindex="-1"></a>a2 <span class="ot">&lt;-</span> <span class="fu">alpha</span>(<span class="fu">scale</span>(PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;y1&quot;</span>, <span class="st">&quot;y2&quot;</span>, <span class="st">&quot;y3&quot;</span>, <span class="st">&quot;y4&quot;</span>)]), </span>
+<span id="cb459-2"><a href="measurement-issues.html#cb459-2" tabindex="-1"></a>      <span class="at">check.keys =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb459-3"><a href="measurement-issues.html#cb459-3" tabindex="-1"></a>a2</span></code></pre></div>
+<pre><code>## 
+## Reliability analysis   
+## Call: alpha(x = scale(PoliticalDemocracy[, c(&quot;y1&quot;, &quot;y2&quot;, &quot;y3&quot;, &quot;y4&quot;)]), 
+##     check.keys = TRUE)
+## 
+##   raw_alpha std.alpha G6(smc) average_r S/N   ase     mean   sd median_r
+##       0.87      0.87    0.85      0.63 6.7 0.025 -5.3e-16 0.85     0.64
+## 
+##     95% confidence boundaries 
+##          lower alpha upper
+## Feldt     0.81  0.87  0.91
+## Duhachek  0.82  0.87  0.92
+## 
+##  Reliability if an item is dropped:
+##    raw_alpha std.alpha G6(smc) average_r S/N alpha se  var.r med.r
+## y1      0.81      0.81    0.77      0.59 4.4    0.038 0.0182  0.61
+## y2      0.85      0.85    0.80      0.66 5.8    0.029 0.0020  0.68
+## y3      0.86      0.86    0.81      0.67 6.1    0.028 0.0037  0.69
+## y4      0.80      0.80    0.75      0.58 4.1    0.040 0.0135  0.60
+## 
+##  Item statistics 
+##     n raw.r std.r r.cor r.drop     mean sd
+## y1 75  0.88  0.88  0.82   0.77  1.8e-16  1
+## y2 75  0.82  0.82  0.74   0.67 -4.5e-16  1
+## y3 75  0.81  0.81  0.71   0.66 -1.2e-15  1
+## y4 75  0.89  0.89  0.85   0.79 -3.8e-16  1</code></pre>
+<p>In Bollen’s model, he also estimates the latent variable relating to the <code>x</code> variables. We could see what that looks like as well.</p>
+<div class="sourceCode" id="cb461"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb461-1"><a href="measurement-issues.html#cb461-1" tabindex="-1"></a>a3 <span class="ot">&lt;-</span> <span class="fu">alpha</span>(<span class="fu">scale</span>(PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;x1&quot;</span>, <span class="st">&quot;x2&quot;</span>, <span class="st">&quot;x3&quot;</span>)]), </span>
+<span id="cb461-2"><a href="measurement-issues.html#cb461-2" tabindex="-1"></a>            <span class="at">check.keys=</span><span class="cn">TRUE</span>)</span>
+<span id="cb461-3"><a href="measurement-issues.html#cb461-3" tabindex="-1"></a>a3</span></code></pre></div>
+<pre><code>## 
+## Reliability analysis   
+## Call: alpha(x = scale(PoliticalDemocracy[, c(&quot;x1&quot;, &quot;x2&quot;, &quot;x3&quot;)]), check.keys = TRUE)
+## 
+##   raw_alpha std.alpha G6(smc) average_r S/N   ase    mean   sd median_r
+##       0.94      0.94    0.92      0.85  17 0.011 1.1e-15 0.95     0.85
+## 
+##     95% confidence boundaries 
+##          lower alpha upper
+## Feldt     0.92  0.94  0.96
+## Duhachek  0.92  0.94  0.97
+## 
+##  Reliability if an item is dropped:
+##    raw_alpha std.alpha G6(smc) average_r S/N alpha se var.r med.r
+## x1      0.92      0.92    0.85      0.85  11    0.019    NA  0.85
+## x2      0.89      0.89    0.80      0.80   8    0.026    NA  0.80
+## x3      0.94      0.94    0.89      0.89  17    0.013    NA  0.89
+## 
+##  Item statistics 
+##     n raw.r std.r r.cor r.drop     mean sd
+## x1 75  0.95  0.95  0.91   0.88  5.0e-15  1
+## x2 75  0.97  0.97  0.95   0.92 -1.0e-15  1
+## x3 75  0.93  0.93  0.87   0.85 -4.8e-16  1</code></pre>
+<div class="sourceCode" id="cb463"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb463-1"><a href="measurement-issues.html#cb463-1" tabindex="-1"></a>PoliticalDemocracy<span class="sc">$</span>d65 <span class="ot">&lt;-</span> a<span class="sc">$</span>scores</span>
+<span id="cb463-2"><a href="measurement-issues.html#cb463-2" tabindex="-1"></a>PoliticalDemocracy<span class="sc">$</span>d60 <span class="ot">&lt;-</span> a2<span class="sc">$</span>scores</span>
+<span id="cb463-3"><a href="measurement-issues.html#cb463-3" tabindex="-1"></a>PoliticalDemocracy<span class="sc">$</span>i60 <span class="ot">&lt;-</span> a3<span class="sc">$</span>scores</span>
+<span id="cb463-4"><a href="measurement-issues.html#cb463-4" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(d65 <span class="sc">~</span> d60 <span class="sc">+</span> i60, <span class="at">data=</span>PoliticalDemocracy)</span>
+<span id="cb463-5"><a href="measurement-issues.html#cb463-5" tabindex="-1"></a><span class="fu">summary</span>(mod)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = d65 ~ d60 + i60, data = PoliticalDemocracy)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.08110 -0.26988  0.02386  0.27966  1.12847 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -3.183e-16  4.782e-02   0.000   1.0000    
+## d60          7.953e-01  6.173e-02  12.883   &lt;2e-16 ***
+## i60          1.823e-01  5.523e-02   3.301   0.0015 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.4141 on 72 degrees of freedom
+## Multiple R-squared:  0.7755, Adjusted R-squared:  0.7693 
+## F-statistic: 124.4 on 2 and 72 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Evaluate the reliability of the three different scales.
+- Then, estimate the model of emancipatory values scale on secular values, moral atitudes as well as <code>V248</code> (education), <code>V242</code> (age), <code>V240</code> (gender), and <code>V238</code> (income).</p>
+</div>
+</div>
+<div id="exploratory-factor-analysis-and-principal-components-analysis" class="section level2 hasAnchor" number="9.2">
+<h2><span class="header-section-number">9.2</span> Exploratory Factor Analysis and Principal Components Analysis<a href="measurement-issues.html#exploratory-factor-analysis-and-principal-components-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The EFA and PCA models are both essentially dimension reduction techniques, but with different underlying assumptions. The EFA model is a causal model (or sometimes called a spurious correlation model) where we assume that the inter-relationships among indicators exist because of their relationship to a common latent variable (or set of latent variables). That is, once we account for the latent variable, the observed indicators are independent. The principal components model is just a variance maximizing linear transformation of the observed indicators. Basically, the PCA model is trying to identify <em>independent</em> sources of systematic variation in the observed indicators.</p>
+<p>One of the benefits of EFA (or PCA) relative to the summated rating model (the one we estimated with <code>alpha()</code>) is that Cronbach’s <span class="math inline">\(\alpha\)</span> is not a good <em>test</em> of dimensionality. It assumes unidimensional structure and can actually mask multidimensional structure in the data. If there is any question about the underlying dimensionality of the data, then one of these other tools is more appropriate.</p>
+<p>One of the potential problems here is that despite the important theoretical differences between the two models, there are distinct similarities in the technical tools used to estimate the models - ultimately they both depend on the singular value decomposition (or eigen decomposition when the input data is a correlation matrix).</p>
+<p>First, let’s consider PCA. One tool we can use as a sort of diagnostic is a biplot. This allows us to visualize the underling structure in the data, at least in one or two (or sometimes three) dimensions. We can use the <code>ggbiplot()</code> function in the package of the same name to make a biplot.</p>
+<div class="sourceCode" id="cb465"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb465-1"><a href="measurement-issues.html#cb465-1" tabindex="-1"></a><span class="co"># remotes::install_github(&quot;vqv/ggbiplot&quot;)</span></span>
+<span id="cb465-2"><a href="measurement-issues.html#cb465-2" tabindex="-1"></a><span class="fu">library</span>(ggbiplot)</span>
+<span id="cb465-3"><a href="measurement-issues.html#cb465-3" tabindex="-1"></a>pcafit <span class="ot">&lt;-</span> <span class="fu">princomp</span>(PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;y5&quot;</span>, <span class="st">&quot;y6&quot;</span>, <span class="st">&quot;y7&quot;</span>, <span class="st">&quot;y8&quot;</span>)], </span>
+<span id="cb465-4"><a href="measurement-issues.html#cb465-4" tabindex="-1"></a>                 <span class="at">cor=</span><span class="cn">TRUE</span>)</span>
+<span id="cb465-5"><a href="measurement-issues.html#cb465-5" tabindex="-1"></a><span class="fu">ggbiplot</span>(pcafit) <span class="sc">+</span> </span>
+<span id="cb465-6"><a href="measurement-issues.html#cb465-6" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb465-7"><a href="measurement-issues.html#cb465-7" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio=</span><span class="dv">1</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-269-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>The way that we can interpret the biplot is in terms of the angles between the vectors and the <span class="math inline">\(x\)</span>- and <span class="math inline">\(y\)</span>-axes. Geometrically, the correlation is the cosine of the angle between two vectors. FYI: angles in R are measured in <strong>radians</strong>, not degrees. To convert your degrees to radians, use the equation</p>
+<p><span class="math display">\[\text{raidans} = \text{degrees}\times \frac{\pi}{180}\]</span></p>
+<p>Right, back to the plot. All of the vectors for the four variables have relative close angles with each other and with the main (horizontal) axis. They are less well closely related to the second axis. This, to me, would argue that there is really one dimension here.</p>
+<p>Looking at the results of the principal components fit above, we see a vector of standard deviations. These tell us how much of the underlying variation is captured by each component. When <code>cor=TRUE</code>, each variable has a indicator contributes a variance of 1 to the variance to be explained. If we square the standard deviations (to make them variances) and divide each one by the total, that gives us the proportion of variance explained by each component. Here, the first component captures about <span class="math inline">\(74\%\)</span> of the total variance. The next component captures only about <span class="math inline">\(12\%\)</span> of the variance to be explained. This is less than a single variable’s worth of variance (which would be <span class="math inline">\(25\%\)</span> because there are four indicators). Again, this corroborates the unidimensionality.</p>
+<div class="sourceCode" id="cb466"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb466-1"><a href="measurement-issues.html#cb466-1" tabindex="-1"></a><span class="fu">summary</span>(pcafit)</span></code></pre></div>
+<pre><code>## Importance of components:
+##                           Comp.1    Comp.2     Comp.3     Comp.4
+## Standard deviation     1.7250783 0.6946489 0.56639263 0.46985874
+## Proportion of Variance 0.7439738 0.1206343 0.08020015 0.05519181
+## Cumulative Proportion  0.7439738 0.8646080 0.94480819 1.00000000</code></pre>
+<p>If we look at the <code>loadings</code> element of the <code>pcafit</code> obeject, we will see the transformation applied to each variable to arrive at each component.</p>
+<div class="sourceCode" id="cb468"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb468-1"><a href="measurement-issues.html#cb468-1" tabindex="-1"></a>pcafit<span class="sc">$</span>loadings</span></code></pre></div>
+<pre><code>## 
+## Loadings:
+##    Comp.1 Comp.2 Comp.3 Comp.4
+## y5  0.480  0.645  0.593       
+## y6  0.492 -0.624  0.326 -0.512
+## y7  0.505  0.315 -0.720 -0.357
+## y8  0.522 -0.309 -0.156  0.779
+## 
+##                Comp.1 Comp.2 Comp.3 Comp.4
+## SS loadings      1.00   1.00   1.00   1.00
+## Proportion Var   0.25   0.25   0.25   0.25
+## Cumulative Var   0.25   0.50   0.75   1.00</code></pre>
+<p>Above, we see that the first component has all variables “loading” on the component with approximately the same coefficient. It is worth noting that the summated rating model assumes, at least in the construction of the index, that all indicators are equally reliable. Here, there is not much evidence that runs counter to that assumption. If we wanted to save the variable, we could do that with the <code>scores</code> element of the output. It will always have as many columns as there are original variables. In this case, we just want the first one.</p>
+<p>We could do the same for the other two models as well. We see pretty similar things with the other two models</p>
+<div class="sourceCode" id="cb470"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb470-1"><a href="measurement-issues.html#cb470-1" tabindex="-1"></a>pcafit2 <span class="ot">&lt;-</span> <span class="fu">princomp</span>(PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;y1&quot;</span>, <span class="st">&quot;y2&quot;</span>, <span class="st">&quot;y3&quot;</span>, <span class="st">&quot;y4&quot;</span>)], </span>
+<span id="cb470-2"><a href="measurement-issues.html#cb470-2" tabindex="-1"></a>                    <span class="at">cor=</span><span class="cn">TRUE</span>)</span>
+<span id="cb470-3"><a href="measurement-issues.html#cb470-3" tabindex="-1"></a>pcafit2<span class="sc">$</span>loadings</span></code></pre></div>
+<pre><code>## 
+## Loadings:
+##    Comp.1 Comp.2 Comp.3 Comp.4
+## y1  0.518  0.221  0.826       
+## y2  0.481 -0.656 -0.121 -0.569
+## y3  0.472  0.684 -0.476 -0.289
+## y4  0.527 -0.231 -0.276  0.770
+## 
+##                Comp.1 Comp.2 Comp.3 Comp.4
+## SS loadings      1.00   1.00   1.00   1.00
+## Proportion Var   0.25   0.25   0.25   0.25
+## Cumulative Var   0.25   0.50   0.75   1.00</code></pre>
+<div class="sourceCode" id="cb472"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb472-1"><a href="measurement-issues.html#cb472-1" tabindex="-1"></a>pcafit3 <span class="ot">&lt;-</span> <span class="fu">princomp</span>(PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;x1&quot;</span>, <span class="st">&quot;x2&quot;</span>, <span class="st">&quot;x3&quot;</span>)], </span>
+<span id="cb472-2"><a href="measurement-issues.html#cb472-2" tabindex="-1"></a>                    <span class="at">cor=</span><span class="cn">TRUE</span>)</span>
+<span id="cb472-3"><a href="measurement-issues.html#cb472-3" tabindex="-1"></a>pcafit3<span class="sc">$</span>loadings</span></code></pre></div>
+<pre><code>## 
+## Loadings:
+##    Comp.1 Comp.2 Comp.3
+## x1  0.577  0.585  0.569
+## x2  0.588  0.186 -0.787
+## x3  0.567 -0.789  0.237
+## 
+##                Comp.1 Comp.2 Comp.3
+## SS loadings     1.000  1.000  1.000
+## Proportion Var  0.333  0.333  0.333
+## Cumulative Var  0.333  0.667  1.000</code></pre>
+<p>So, we could save those scores:</p>
+<div class="sourceCode" id="cb474"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb474-1"><a href="measurement-issues.html#cb474-1" tabindex="-1"></a>PoliticalDemocracy<span class="sc">$</span>pcd65 <span class="ot">&lt;-</span> pcafit<span class="sc">$</span>scores[,<span class="dv">1</span>]</span>
+<span id="cb474-2"><a href="measurement-issues.html#cb474-2" tabindex="-1"></a>PoliticalDemocracy<span class="sc">$</span>pcd60 <span class="ot">&lt;-</span> pcafit2<span class="sc">$</span>scores[,<span class="dv">1</span>]</span>
+<span id="cb474-3"><a href="measurement-issues.html#cb474-3" tabindex="-1"></a>PoliticalDemocracy<span class="sc">$</span>pci60 <span class="ot">&lt;-</span> pcafit3<span class="sc">$</span>scores[,<span class="dv">1</span>]</span></code></pre></div>
+<p>And we could look at the correlations between the SRM variables and the PCA variables:</p>
+<div class="sourceCode" id="cb475"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb475-1"><a href="measurement-issues.html#cb475-1" tabindex="-1"></a><span class="fu">cor</span>(PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;i60&quot;</span>, <span class="st">&quot;d60&quot;</span>, <span class="st">&quot;d65&quot;</span>)], </span>
+<span id="cb475-2"><a href="measurement-issues.html#cb475-2" tabindex="-1"></a>    PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;pci60&quot;</span>, <span class="st">&quot;pcd60&quot;</span>, <span class="st">&quot;pcd65&quot;</span>)])</span></code></pre></div>
+<pre><code>##         pci60     pcd60     pcd65
+## i60 0.9999937 0.3958996 0.5069449
+## d60 0.3935625 0.9998969 0.8606081
+## d65 0.5084075 0.8628187 0.9999486</code></pre>
+<p>The diagonals of the matrix above are the correlations between the SRM variable and its corresponding PCA variable. As you can see, these correlations are more than .999, meaning that they are nearly perfectly related.</p>
+<p>Next, we could look at the exploratory factor analysis (EFA) also sometimes referred to as the common factor model. The PCA model doesn’t inherently reduce dimensionality - if there are <span class="math inline">\(k\)</span> observed variables, it will always return four components, but it might be that the variables could be reproduced with relatively little error using only <span class="math inline">\(m&lt;k\)</span> components. In exploratory factor analysis, the model does (usually) reduce dimensionality, because it is hypothesized that there is a small number of dimensions that account for the inter-relationships among the observed indicators. It also assumes (or can assume) that some of each indicator’s variance is unique to itself (that is, cannot be explained by the common factors).</p>
+<p>There are several ways to do factor analysis in R, but I like the one in the <code>psych</code> package, called <code>fa()</code>. Here’s how we could estimate the model.</p>
+<div class="sourceCode" id="cb477"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb477-1"><a href="measurement-issues.html#cb477-1" tabindex="-1"></a>f1 <span class="ot">&lt;-</span> <span class="fu">fa</span>(PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;y5&quot;</span>, <span class="st">&quot;y6&quot;</span>, <span class="st">&quot;y7&quot;</span>, <span class="st">&quot;y8&quot;</span>)], </span>
+<span id="cb477-2"><a href="measurement-issues.html#cb477-2" tabindex="-1"></a>         <span class="at">nfactors =</span> <span class="dv">1</span>, </span>
+<span id="cb477-3"><a href="measurement-issues.html#cb477-3" tabindex="-1"></a>         <span class="at">SMC =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb477-4"><a href="measurement-issues.html#cb477-4" tabindex="-1"></a>         <span class="at">fm =</span> <span class="st">&quot;pa&quot;</span>)</span>
+<span id="cb477-5"><a href="measurement-issues.html#cb477-5" tabindex="-1"></a>f1</span></code></pre></div>
+<pre><code>## Factor Analysis using method =  pa
+## Call: fa(r = PoliticalDemocracy[, c(&quot;y5&quot;, &quot;y6&quot;, &quot;y7&quot;, &quot;y8&quot;)], nfactors = 1, 
+##     SMC = TRUE, fm = &quot;pa&quot;)
+## Standardized loadings (pattern matrix) based upon correlation matrix
+##     PA1   h2   u2 com
+## y5 0.75 0.56 0.44   1
+## y6 0.79 0.62 0.38   1
+## y7 0.82 0.68 0.32   1
+## y8 0.89 0.79 0.21   1
+## 
+##                 PA1
+## SS loadings    2.64
+## Proportion Var 0.66
+## 
+## Mean item complexity =  1
+## Test of the hypothesis that 1 factor is sufficient.
+## 
+## df null model =  6  with the objective function =  2.29 with Chi Square =  164.19
+## df of  the model are 2  and the objective function was  0.09 
+## 
+## The root mean square of the residuals (RMSR) is  0.04 
+## The df corrected root mean square of the residuals is  0.07 
+## 
+## The harmonic n.obs is  75 with the empirical chi square  1.57  with prob &lt;  0.46 
+## The total n.obs was  75  with Likelihood Chi Square =  6.33  with prob &lt;  0.042 
+## 
+## Tucker Lewis Index of factoring reliability =  0.917
+## RMSEA index =  0.169  and the 90 % confidence intervals are  0.028 0.329
+## BIC =  -2.31
+## Fit based upon off diagonal values = 1
+## Measures of factor score adequacy             
+##                                                    PA1
+## Correlation of (regression) scores with factors   0.95
+## Multiple R square of scores with factors          0.90
+## Minimum correlation of possible factor scores     0.79</code></pre>
+<p>There is a lot of output above. The main thing to look at is the loadings and the proportion of variance explained. The columns labeled <code>PA1</code> (PA stands for principal axis) are the loadings. These show that there is some difference in the reliability of the indicators with <code>y5</code> being a fair bit lower than <code>y8</code>. The column labeled <code>h2</code> is the “communality” - this is the proportion of the variable’s variance that is explained by the factor. The column labeled <code>u2</code> is the variable’s uniqueness. This is the proportion of the variable’s variance that cannot be explained by the latent factor. The higher this number, the more reliable the indicator.</p>
+<p>Above, I chose a single factor. One of the ways that we tend to choose the number of factors is with a <strong>scree plot</strong>. This plots te factor number on the <span class="math inline">\(x\)</span>-axis and the eigen-value (amount of variance explained by the factor) on the <span class="math inline">\(y\)</span>-axis. You’re looking for an “elbow” in the plot and you choose the solution indicated directly to the left of the elbow. Here’s the scree plot for our data:</p>
+<div class="sourceCode" id="cb479"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb479-1"><a href="measurement-issues.html#cb479-1" tabindex="-1"></a><span class="fu">scree</span>(PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;y5&quot;</span>, <span class="st">&quot;y6&quot;</span>, <span class="st">&quot;y7&quot;</span>, <span class="st">&quot;y8&quot;</span>)])</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-276-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>Notice, that the elbow here happens at 2 factors, so we choose the one directly to the left - a one-factor solution. We could look at the scree plots for the other two sets of variables, too:</p>
+<div class="sourceCode" id="cb480"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb480-1"><a href="measurement-issues.html#cb480-1" tabindex="-1"></a><span class="fu">scree</span>(PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;y1&quot;</span>, <span class="st">&quot;y2&quot;</span>, <span class="st">&quot;y3&quot;</span>, <span class="st">&quot;y4&quot;</span>)])</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-277-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb481"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb481-1"><a href="measurement-issues.html#cb481-1" tabindex="-1"></a><span class="fu">scree</span>(PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;x1&quot;</span>, <span class="st">&quot;x2&quot;</span>, <span class="st">&quot;x3&quot;</span>)])</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-278-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<p>We see the same thing in both of those plots. So we could estimate the other two one-factor solutions.</p>
+<div class="sourceCode" id="cb482"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb482-1"><a href="measurement-issues.html#cb482-1" tabindex="-1"></a>f2 <span class="ot">&lt;-</span> <span class="fu">fa</span>(PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;y1&quot;</span>, <span class="st">&quot;y2&quot;</span>, <span class="st">&quot;y3&quot;</span>, <span class="st">&quot;y4&quot;</span>)], </span>
+<span id="cb482-2"><a href="measurement-issues.html#cb482-2" tabindex="-1"></a>         <span class="at">nfactors =</span> <span class="dv">1</span>, </span>
+<span id="cb482-3"><a href="measurement-issues.html#cb482-3" tabindex="-1"></a>         <span class="at">SMC =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb482-4"><a href="measurement-issues.html#cb482-4" tabindex="-1"></a>         <span class="at">fm =</span> <span class="st">&quot;pa&quot;</span>)</span>
+<span id="cb482-5"><a href="measurement-issues.html#cb482-5" tabindex="-1"></a>f3 <span class="ot">&lt;-</span> <span class="fu">fa</span>(PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;x1&quot;</span>, <span class="st">&quot;x2&quot;</span>, <span class="st">&quot;x3&quot;</span>)], </span>
+<span id="cb482-6"><a href="measurement-issues.html#cb482-6" tabindex="-1"></a>         <span class="at">nfactors =</span> <span class="dv">1</span>, </span>
+<span id="cb482-7"><a href="measurement-issues.html#cb482-7" tabindex="-1"></a>         <span class="at">SMC =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb482-8"><a href="measurement-issues.html#cb482-8" tabindex="-1"></a>         <span class="at">fm =</span> <span class="st">&quot;pa&quot;</span>)</span></code></pre></div>
+<p>Now, we could put all of those in the data as well.</p>
+<div class="sourceCode" id="cb483"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb483-1"><a href="measurement-issues.html#cb483-1" tabindex="-1"></a>PoliticalDemocracy<span class="sc">$</span>fad60 <span class="ot">&lt;-</span> f2<span class="sc">$</span>scores</span>
+<span id="cb483-2"><a href="measurement-issues.html#cb483-2" tabindex="-1"></a>PoliticalDemocracy<span class="sc">$</span>fad65 <span class="ot">&lt;-</span> f1<span class="sc">$</span>scores</span>
+<span id="cb483-3"><a href="measurement-issues.html#cb483-3" tabindex="-1"></a>PoliticalDemocracy<span class="sc">$</span>fai60 <span class="ot">&lt;-</span> f3<span class="sc">$</span>scores</span></code></pre></div>
+<p>Now, let’s look at the correlation of all of the 1965 latent measures.</p>
+<div class="sourceCode" id="cb484"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb484-1"><a href="measurement-issues.html#cb484-1" tabindex="-1"></a><span class="fu">cor</span>(PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;d65&quot;</span>, <span class="st">&quot;pcd65&quot;</span>, <span class="st">&quot;fad65&quot;</span>)])</span></code></pre></div>
+<pre><code>##             d65     pcd65     fad65
+## d65   1.0000000 0.9999486 0.9936469
+## pcd65 0.9999486 1.0000000 0.9946834
+## fad65 0.9936469 0.9946834 1.0000000</code></pre>
+<p>These are all <em>really</em> highly inter-correlated.</p>
+<div class="sourceCode" id="cb486"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb486-1"><a href="measurement-issues.html#cb486-1" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span>
+<span id="cb486-2"><a href="measurement-issues.html#cb486-2" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(d65 <span class="sc">~</span> i60 <span class="sc">+</span> d60, <span class="at">data=</span>PoliticalDemocracy)</span>
+<span id="cb486-3"><a href="measurement-issues.html#cb486-3" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> PoliticalDemocracy <span class="sc">%&gt;%</span> </span>
+<span id="cb486-4"><a href="measurement-issues.html#cb486-4" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">&quot;pcd65&quot;</span>, <span class="st">&quot;pcd60&quot;</span>, <span class="st">&quot;pci60&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb486-5"><a href="measurement-issues.html#cb486-5" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="st">&quot;d65&quot;</span> <span class="ot">=</span> <span class="st">&quot;pcd65&quot;</span>, <span class="st">&quot;d60&quot;</span> <span class="ot">=</span> <span class="st">&quot;pcd60&quot;</span>, <span class="st">&quot;i60&quot;</span> <span class="ot">=</span> <span class="st">&quot;pci60&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb486-6"><a href="measurement-issues.html#cb486-6" tabindex="-1"></a>  <span class="fu">lm</span>(d65 <span class="sc">~</span> i60 <span class="sc">+</span> d60, <span class="at">data=</span>.)</span>
+<span id="cb486-7"><a href="measurement-issues.html#cb486-7" tabindex="-1"></a>m3 <span class="ot">&lt;-</span> PoliticalDemocracy <span class="sc">%&gt;%</span> </span>
+<span id="cb486-8"><a href="measurement-issues.html#cb486-8" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">&quot;fad65&quot;</span>, <span class="st">&quot;fad60&quot;</span>, <span class="st">&quot;fai60&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb486-9"><a href="measurement-issues.html#cb486-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="st">&quot;d65&quot;</span> <span class="ot">=</span> <span class="st">&quot;fad65&quot;</span>, <span class="st">&quot;d60&quot;</span> <span class="ot">=</span> <span class="st">&quot;fad60&quot;</span>, <span class="st">&quot;i60&quot;</span> <span class="ot">=</span> <span class="st">&quot;fai60&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb486-10"><a href="measurement-issues.html#cb486-10" tabindex="-1"></a>  <span class="fu">lm</span>(d65 <span class="sc">~</span> i60 <span class="sc">+</span> d60, <span class="at">data=</span>.)</span>
+<span id="cb486-11"><a href="measurement-issues.html#cb486-11" tabindex="-1"></a><span class="fu">stargazer</span>(m1, m2, m3, <span class="at">type=</span><span class="st">&quot;text&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## ==============================================================
+##                                     Dependent variable:       
+##                               --------------------------------
+##                                             d65               
+##                                  (1)        (2)        (3)    
+## --------------------------------------------------------------
+## i60                            0.182***   0.206***   0.165*** 
+##                                (0.055)    (0.064)    (0.061)  
+##                                                               
+## d60                            0.795***   0.797***   0.788*** 
+##                                (0.062)    (0.062)    (0.064)  
+##                                                               
+## Constant                        -0.000     0.000      -0.000  
+##                                (0.048)    (0.096)    (0.054)  
+##                                                               
+## --------------------------------------------------------------
+## Observations                      75         75         75    
+## R2                              0.776      0.776      0.762   
+## Adjusted R2                     0.769      0.770      0.755   
+## Residual Std. Error (df = 72)   0.414      0.833      0.468   
+## F Statistic (df = 2; 72)      124.385*** 124.761*** 115.312***
+## ==============================================================
+## Note:                              *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+<p>All three of these methods produce very similar results.</p>
+<p>One of the potential problems with the above is that there the models are estimated assuming that our estimated latent variables are observed. We might rather have all of these things - the latent structure and the model parameters - estimated simultaneously to prevent that from happening. This is what a full structural equation model does.</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Estimate the EFA for the three scales each independently.</p>
+</div>
+<div id="rotations" class="section level3 hasAnchor" number="9.2.1">
+<h3><span class="header-section-number">9.2.1</span> Rotations<a href="measurement-issues.html#rotations" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>EFA solutions are only identified up to a rotation - that is any rotation of the factors in the factor space fits the data equally well. Each rotation gives a slightly different view of the same configuration of points - it’s kind of like walking around a statue. Each time you move you’re still looking at the statue, but some things reveal themselves more plainly from some views than others. One isn’t “right” and the others “wrong” - some views might be more useful or interesting than others, though. We need to estimate at least two factors for rotations to make sense. So, let’s estimate the democracy and development factors for 1960 simultaneously.</p>
+<div class="sourceCode" id="cb488"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb488-1"><a href="measurement-issues.html#cb488-1" tabindex="-1"></a>fa60 <span class="ot">&lt;-</span> <span class="fu">fa</span>(PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;y1&quot;</span>, <span class="st">&quot;y2&quot;</span>, <span class="st">&quot;y3&quot;</span>, <span class="st">&quot;y4&quot;</span>, <span class="st">&quot;x1&quot;</span>, <span class="st">&quot;x2&quot;</span>, <span class="st">&quot;x3&quot;</span>)], </span>
+<span id="cb488-2"><a href="measurement-issues.html#cb488-2" tabindex="-1"></a>           <span class="at">nfactors =</span> <span class="dv">2</span>, </span>
+<span id="cb488-3"><a href="measurement-issues.html#cb488-3" tabindex="-1"></a>           <span class="at">SMC=</span><span class="cn">TRUE</span>, </span>
+<span id="cb488-4"><a href="measurement-issues.html#cb488-4" tabindex="-1"></a>           <span class="at">fm=</span><span class="st">&quot;pa&quot;</span>)</span>
+<span id="cb488-5"><a href="measurement-issues.html#cb488-5" tabindex="-1"></a>fa60<span class="sc">$</span>loadings</span></code></pre></div>
+<pre><code>## 
+## Loadings:
+##    PA1    PA2   
+## y1         0.858
+## y2         0.769
+## y3         0.706
+## y4  0.104  0.840
+## x1  0.900       
+## x2  0.969       
+## x3  0.893       
+## 
+##                  PA1   PA2
+## SS loadings    2.566 2.537
+## Proportion Var 0.367 0.362
+## Cumulative Var 0.367 0.729</code></pre>
+<p>We can visualize the factor structure like below. This is the un-rotated solution. Here, you see that the first dimension tries to capture the main parts of both factors even though both factors are clearly distinct.</p>
+<div class="sourceCode" id="cb490"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb490-1"><a href="measurement-issues.html#cb490-1" tabindex="-1"></a>load60 <span class="ot">&lt;-</span> fa60<span class="sc">$</span>loadings</span>
+<span id="cb490-2"><a href="measurement-issues.html#cb490-2" tabindex="-1"></a><span class="fu">class</span>(load60) <span class="ot">&lt;-</span> <span class="st">&quot;matrix&quot;</span></span>
+<span id="cb490-3"><a href="measurement-issues.html#cb490-3" tabindex="-1"></a>loads <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(load60, </span>
+<span id="cb490-4"><a href="measurement-issues.html#cb490-4" tabindex="-1"></a>                   <span class="at">rownames=</span><span class="st">&quot;var&quot;</span>)</span>
+<span id="cb490-5"><a href="measurement-issues.html#cb490-5" tabindex="-1"></a><span class="fu">ggplot</span>(loads) <span class="sc">+</span> </span>
+<span id="cb490-6"><a href="measurement-issues.html#cb490-6" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="dv">0</span>, <span class="at">y=</span><span class="dv">0</span>, </span>
+<span id="cb490-7"><a href="measurement-issues.html#cb490-7" tabindex="-1"></a>                  <span class="at">xend=</span>PA1, </span>
+<span id="cb490-8"><a href="measurement-issues.html#cb490-8" tabindex="-1"></a>                  <span class="at">yend=</span>PA2), </span>
+<span id="cb490-9"><a href="measurement-issues.html#cb490-9" tabindex="-1"></a>               <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.1</span>, <span class="st">&quot;inches&quot;</span>))) <span class="sc">+</span> </span>
+<span id="cb490-10"><a href="measurement-issues.html#cb490-10" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x=</span>PA1, <span class="at">y=</span>PA2, <span class="at">label=</span>var), <span class="at">nudge_x=</span>.<span class="dv">05</span>) <span class="sc">+</span> </span>
+<span id="cb490-11"><a href="measurement-issues.html#cb490-11" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb490-12"><a href="measurement-issues.html#cb490-12" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb490-13"><a href="measurement-issues.html#cb490-13" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="dv">0</span>, <span class="at">col=</span><span class="st">&quot;gray50&quot;</span>, <span class="at">lty=</span><span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb490-14"><a href="measurement-issues.html#cb490-14" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">0</span>, <span class="at">col=</span><span class="st">&quot;gray50&quot;</span>, <span class="at">lty=</span><span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb490-15"><a href="measurement-issues.html#cb490-15" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb490-16"><a href="measurement-issues.html#cb490-16" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio=</span><span class="dv">1</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-284-1.png" width="65%" style="display: block; margin: auto;" />
+We can use a “varimax” rotation to solve this problem. The varimax rotation is an <em>orthogonal</em> rotation meaning that it maintains the uncorrelated nature of the factors. It tries to maximize variance in the columns of the factor loadings. This happens when some entries are really big and some are really small (rather than all being somewhere in the middle). You can implement this as an argument to the <code>fa()</code> function.</p>
+<div class="sourceCode" id="cb491"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb491-1"><a href="measurement-issues.html#cb491-1" tabindex="-1"></a>fa60v <span class="ot">&lt;-</span> <span class="fu">fa</span>(PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;y1&quot;</span>, <span class="st">&quot;y2&quot;</span>, <span class="st">&quot;y3&quot;</span>, <span class="st">&quot;y4&quot;</span>, <span class="st">&quot;x1&quot;</span>, <span class="st">&quot;x2&quot;</span>, <span class="st">&quot;x3&quot;</span>)], </span>
+<span id="cb491-2"><a href="measurement-issues.html#cb491-2" tabindex="-1"></a>           <span class="at">nfactors =</span> <span class="dv">2</span>, </span>
+<span id="cb491-3"><a href="measurement-issues.html#cb491-3" tabindex="-1"></a>           <span class="at">SMC=</span><span class="cn">TRUE</span>, </span>
+<span id="cb491-4"><a href="measurement-issues.html#cb491-4" tabindex="-1"></a>           <span class="at">fm=</span><span class="st">&quot;pa&quot;</span>, </span>
+<span id="cb491-5"><a href="measurement-issues.html#cb491-5" tabindex="-1"></a>           <span class="at">rotate=</span><span class="st">&quot;varimax&quot;</span>)</span>
+<span id="cb491-6"><a href="measurement-issues.html#cb491-6" tabindex="-1"></a>fa60v<span class="sc">$</span>loadings</span></code></pre></div>
+<pre><code>## 
+## Loadings:
+##    PA1   PA2  
+## y1 0.160 0.831
+## y2       0.731
+## y3 0.163 0.691
+## y4 0.286 0.843
+## x1 0.889 0.251
+## x2 0.945 0.216
+## x3 0.860 0.154
+## 
+##                  PA1   PA2
+## SS loadings    2.566 2.545
+## Proportion Var 0.367 0.364
+## Cumulative Var 0.367 0.730</code></pre>
+<p>Above, you can see that the first factor seems to capture the development variables now and the second factor the democracy variables. We can see what that structure looks like, too.</p>
+<div class="sourceCode" id="cb493"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb493-1"><a href="measurement-issues.html#cb493-1" tabindex="-1"></a>load60v <span class="ot">&lt;-</span> fa60v<span class="sc">$</span>loadings</span>
+<span id="cb493-2"><a href="measurement-issues.html#cb493-2" tabindex="-1"></a><span class="fu">class</span>(load60v) <span class="ot">&lt;-</span> <span class="st">&quot;matrix&quot;</span></span>
+<span id="cb493-3"><a href="measurement-issues.html#cb493-3" tabindex="-1"></a>loads <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(load60v, </span>
+<span id="cb493-4"><a href="measurement-issues.html#cb493-4" tabindex="-1"></a>                   <span class="at">rownames=</span><span class="st">&quot;var&quot;</span>)</span>
+<span id="cb493-5"><a href="measurement-issues.html#cb493-5" tabindex="-1"></a><span class="fu">ggplot</span>(loads) <span class="sc">+</span> </span>
+<span id="cb493-6"><a href="measurement-issues.html#cb493-6" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="dv">0</span>, <span class="at">y=</span><span class="dv">0</span>, </span>
+<span id="cb493-7"><a href="measurement-issues.html#cb493-7" tabindex="-1"></a>                  <span class="at">xend=</span>PA1, </span>
+<span id="cb493-8"><a href="measurement-issues.html#cb493-8" tabindex="-1"></a>                  <span class="at">yend=</span>PA2), </span>
+<span id="cb493-9"><a href="measurement-issues.html#cb493-9" tabindex="-1"></a>               <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.1</span>, <span class="st">&quot;inches&quot;</span>))) <span class="sc">+</span> </span>
+<span id="cb493-10"><a href="measurement-issues.html#cb493-10" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x=</span>PA1, <span class="at">y=</span>PA2, <span class="at">label=</span>var), <span class="at">nudge_x=</span>.<span class="dv">05</span>) <span class="sc">+</span> </span>
+<span id="cb493-11"><a href="measurement-issues.html#cb493-11" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb493-12"><a href="measurement-issues.html#cb493-12" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb493-13"><a href="measurement-issues.html#cb493-13" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="dv">0</span>, <span class="at">col=</span><span class="st">&quot;gray50&quot;</span>, <span class="at">lty=</span><span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb493-14"><a href="measurement-issues.html#cb493-14" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">0</span>, <span class="at">col=</span><span class="st">&quot;gray50&quot;</span>, <span class="at">lty=</span><span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb493-15"><a href="measurement-issues.html#cb493-15" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb493-16"><a href="measurement-issues.html#cb493-16" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio=</span><span class="dv">1</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-286-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb494"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb494-1"><a href="measurement-issues.html#cb494-1" tabindex="-1"></a>fa60p <span class="ot">&lt;-</span> <span class="fu">fa</span>(PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;y1&quot;</span>, <span class="st">&quot;y2&quot;</span>, <span class="st">&quot;y3&quot;</span>, <span class="st">&quot;y4&quot;</span>, <span class="st">&quot;x1&quot;</span>, <span class="st">&quot;x2&quot;</span>, <span class="st">&quot;x3&quot;</span>)], </span>
+<span id="cb494-2"><a href="measurement-issues.html#cb494-2" tabindex="-1"></a>           <span class="at">nfactors =</span> <span class="dv">2</span>,</span>
+<span id="cb494-3"><a href="measurement-issues.html#cb494-3" tabindex="-1"></a>           <span class="at">SMC=</span><span class="cn">TRUE</span>, </span>
+<span id="cb494-4"><a href="measurement-issues.html#cb494-4" tabindex="-1"></a>           <span class="at">fm=</span><span class="st">&quot;pa&quot;</span>, </span>
+<span id="cb494-5"><a href="measurement-issues.html#cb494-5" tabindex="-1"></a>           <span class="at">rotate=</span><span class="st">&quot;promax&quot;</span>)</span>
+<span id="cb494-6"><a href="measurement-issues.html#cb494-6" tabindex="-1"></a>fa60p<span class="sc">$</span>loadings</span></code></pre></div>
+<pre><code>## 
+## Loadings:
+##    PA1    PA2   
+## y1         0.854
+## y2         0.765
+## y3         0.702
+## y4  0.115  0.836
+## x1  0.901       
+## x2  0.970       
+## x3  0.893       
+## 
+##                  PA1   PA2
+## SS loadings    2.569 2.511
+## Proportion Var 0.367 0.359
+## Cumulative Var 0.367 0.726</code></pre>
+<p>These are a bit more difficult to visualize because they are in a non-orthogonal coordinate space. We can do it with the following though. Note that the <code>fac.rotate2()</code> function is in the source code for the chapter, but is not printed as output you can see in the book.</p>
+<div class="sourceCode" id="cb496"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb496-1"><a href="measurement-issues.html#cb496-1" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="fu">fac.rotate2</span>(<span class="at">rotproc=</span><span class="st">&quot;promax&quot;</span>, </span>
+<span id="cb496-2"><a href="measurement-issues.html#cb496-2" tabindex="-1"></a>                 <span class="at">data=</span>PoliticalDemocracy[,<span class="fu">c</span>(<span class="st">&quot;y1&quot;</span>, <span class="st">&quot;y2&quot;</span>, <span class="st">&quot;y3&quot;</span>, <span class="st">&quot;y4&quot;</span>, <span class="st">&quot;x1&quot;</span>, <span class="st">&quot;x2&quot;</span>, <span class="st">&quot;x3&quot;</span>)])</span>
+<span id="cb496-3"><a href="measurement-issues.html#cb496-3" tabindex="-1"></a>newax <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(r<span class="sc">$</span>new.hlvl)</span>
+<span id="cb496-4"><a href="measurement-issues.html#cb496-4" tabindex="-1"></a>loads <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(r<span class="sc">$</span>loads, <span class="at">rownames=</span><span class="st">&quot;var&quot;</span>)</span>
+<span id="cb496-5"><a href="measurement-issues.html#cb496-5" tabindex="-1"></a></span>
+<span id="cb496-6"><a href="measurement-issues.html#cb496-6" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb496-7"><a href="measurement-issues.html#cb496-7" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">data=</span>newax, </span>
+<span id="cb496-8"><a href="measurement-issues.html#cb496-8" tabindex="-1"></a>               <span class="fu">aes</span>(<span class="at">x=</span><span class="dv">0</span>, <span class="at">y=</span><span class="dv">0</span>, <span class="at">xend =</span> V1, <span class="at">yend=</span>V2), </span>
+<span id="cb496-9"><a href="measurement-issues.html#cb496-9" tabindex="-1"></a>               <span class="at">col=</span><span class="st">&quot;gray50&quot;</span>, </span>
+<span id="cb496-10"><a href="measurement-issues.html#cb496-10" tabindex="-1"></a>               <span class="at">lty=</span><span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb496-11"><a href="measurement-issues.html#cb496-11" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">data=</span>loads, </span>
+<span id="cb496-12"><a href="measurement-issues.html#cb496-12" tabindex="-1"></a>               <span class="fu">aes</span>(<span class="at">x=</span><span class="dv">0</span>, <span class="at">y=</span><span class="dv">0</span>, <span class="at">xend=</span>PA1, <span class="at">yend=</span>PA2), </span>
+<span id="cb496-13"><a href="measurement-issues.html#cb496-13" tabindex="-1"></a>               <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length=</span><span class="fu">unit</span>(.<span class="dv">1</span>, <span class="st">&quot;inches&quot;</span>))) <span class="sc">+</span> </span>
+<span id="cb496-14"><a href="measurement-issues.html#cb496-14" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data=</span>loads, <span class="fu">aes</span>(<span class="at">x=</span>PA1, <span class="at">y=</span>PA2, <span class="at">label=</span>var), <span class="at">nudge_x=</span>.<span class="dv">05</span>) <span class="sc">+</span> </span>
+<span id="cb496-15"><a href="measurement-issues.html#cb496-15" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb496-16"><a href="measurement-issues.html#cb496-16" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb496-17"><a href="measurement-issues.html#cb496-17" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb496-18"><a href="measurement-issues.html#cb496-18" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio=</span><span class="dv">1</span>)</span></code></pre></div>
+<p><img src="RBE_files/figure-html/unnamed-chunk-289-1.png" width="65%" style="display: block; margin: auto;" /></p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Estimate the EFA of all of the indicators for the three latent variables and evaluate the dimensionality of the solution.</p>
+</div>
+</div>
+</div>
+<div id="cfa-and-sem" class="section level2 hasAnchor" number="9.3">
+<h2><span class="header-section-number">9.3</span> CFA and SEM<a href="measurement-issues.html#cfa-and-sem" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The idea behind exploratory factor analysis is that all factors are related to all variables. This may not be a reasonable assumption and, in fact you may want to impose a certain structure on the data. The way to do this is with confirmatory factor analysis and structural equation models. CFA is a method of estimate factor models where force certain paths to be zero to impose simple structure on the model. SEM includes CFA, but allows regression parameters between latent variables and observed variables to be estimated.</p>
+<p>This is a huge area of research, but I thought I’d just give you a sense of how to fit these models in R. The <code>lavaan</code> package is in active development and hopes to become a sort of mirror of MPlus in R. It is the most robust and feature-rich way of estimating SEMs in R. The main parts of a lavaan model are the <code>=~</code> which identifies the latent variables (LHS) and their indicators (RHS), the <code>~~</code> which frees variances or covariances to be estimates and <code>~</code>, which defines the predictive part of the models that include the latent variables. Here’s an example from Bollen’s book.</p>
+<p>The default method for identifying these models is to set the coefficient (factor loading) for the first indicator to 1. This is a common method. Another common method is to set the latent variable variances to 1. Both do the job in that they provide identification for the model and the substantive inferences following either will be identical.</p>
+<div class="sourceCode" id="cb497"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb497-1"><a href="measurement-issues.html#cb497-1" tabindex="-1"></a><span class="fu">library</span>(lavaan)</span>
+<span id="cb497-2"><a href="measurement-issues.html#cb497-2" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="st">&#39;</span></span>
+<span id="cb497-3"><a href="measurement-issues.html#cb497-3" tabindex="-1"></a><span class="st">  # measurement model</span></span>
+<span id="cb497-4"><a href="measurement-issues.html#cb497-4" tabindex="-1"></a><span class="st">    ind60 =~ x1 + x2 + x3</span></span>
+<span id="cb497-5"><a href="measurement-issues.html#cb497-5" tabindex="-1"></a><span class="st">    dem60 =~ y1 + y2 + y3 + y4</span></span>
+<span id="cb497-6"><a href="measurement-issues.html#cb497-6" tabindex="-1"></a><span class="st">    dem65 =~ y5 + y6 + y7 + y8</span></span>
+<span id="cb497-7"><a href="measurement-issues.html#cb497-7" tabindex="-1"></a><span class="st">  # regressions</span></span>
+<span id="cb497-8"><a href="measurement-issues.html#cb497-8" tabindex="-1"></a><span class="st">    dem60 ~ a*ind60</span></span>
+<span id="cb497-9"><a href="measurement-issues.html#cb497-9" tabindex="-1"></a><span class="st">    dem65 ~ b*ind60 + c*dem60 </span></span>
+<span id="cb497-10"><a href="measurement-issues.html#cb497-10" tabindex="-1"></a><span class="st">  # indirect effect of ind60</span></span>
+<span id="cb497-11"><a href="measurement-issues.html#cb497-11" tabindex="-1"></a><span class="st">    ac := a*c</span></span>
+<span id="cb497-12"><a href="measurement-issues.html#cb497-12" tabindex="-1"></a><span class="st">    total := a*c + b</span></span>
+<span id="cb497-13"><a href="measurement-issues.html#cb497-13" tabindex="-1"></a><span class="st">  # residual correlations</span></span>
+<span id="cb497-14"><a href="measurement-issues.html#cb497-14" tabindex="-1"></a><span class="st">    # freedom of the press</span></span>
+<span id="cb497-15"><a href="measurement-issues.html#cb497-15" tabindex="-1"></a><span class="st">    y1 ~~ y5</span></span>
+<span id="cb497-16"><a href="measurement-issues.html#cb497-16" tabindex="-1"></a><span class="st">    # freedom of political opposition</span></span>
+<span id="cb497-17"><a href="measurement-issues.html#cb497-17" tabindex="-1"></a><span class="st">    y2 ~~  y6</span></span>
+<span id="cb497-18"><a href="measurement-issues.html#cb497-18" tabindex="-1"></a><span class="st">    # fairness of election</span></span>
+<span id="cb497-19"><a href="measurement-issues.html#cb497-19" tabindex="-1"></a><span class="st">    y3 ~~ y7</span></span>
+<span id="cb497-20"><a href="measurement-issues.html#cb497-20" tabindex="-1"></a><span class="st">    # effectiveness of legislature</span></span>
+<span id="cb497-21"><a href="measurement-issues.html#cb497-21" tabindex="-1"></a><span class="st">    y4 ~~ y8</span></span>
+<span id="cb497-22"><a href="measurement-issues.html#cb497-22" tabindex="-1"></a><span class="st">&#39;</span></span>
+<span id="cb497-23"><a href="measurement-issues.html#cb497-23" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">sem</span>(model, <span class="at">data=</span>PoliticalDemocracy, <span class="at">mimic=</span><span class="st">&quot;MPlus&quot;</span>)</span>
+<span id="cb497-24"><a href="measurement-issues.html#cb497-24" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code></pre></div>
+<pre><code>## lavaan 0.6-19 ended normally after 58 iterations
+## 
+##   Estimator                                         ML
+##   Optimization method                           NLMINB
+##   Number of model parameters                        40
+## 
+##   Number of observations                            75
+##   Number of missing patterns                         1
+## 
+## Model Test User Model:
+##                                                       
+##   Test statistic                                50.835
+##   Degrees of freedom                                37
+##   P-value (Chi-square)                           0.064
+## 
+## Parameter Estimates:
+## 
+##   Standard errors                             Standard
+##   Information                                 Observed
+##   Observed information based on                Hessian
+## 
+## Latent Variables:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|)
+##   ind60 =~                                            
+##     x1                1.000                           
+##     x2                2.181    0.139   15.671    0.000
+##     x3                1.819    0.152   11.949    0.000
+##   dem60 =~                                            
+##     y1                1.000                           
+##     y2                1.388    0.195    7.134    0.000
+##     y3                1.053    0.158    6.645    0.000
+##     y4                1.368    0.164    8.337    0.000
+##   dem65 =~                                            
+##     y5                1.000                           
+##     y6                1.317    0.188    7.007    0.000
+##     y7                1.326    0.174    7.603    0.000
+##     y8                1.391    0.182    7.634    0.000
+## 
+## Regressions:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|)
+##   dem60 ~                                             
+##     ind60      (a)    1.435    0.383    3.741    0.000
+##   dem65 ~                                             
+##     ind60      (b)    0.507    0.217    2.333    0.020
+##     dem60      (c)    0.816    0.100    8.188    0.000
+## 
+## Covariances:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|)
+##  .y1 ~~                                               
+##    .y5                0.892    0.395    2.261    0.024
+##  .y2 ~~                                               
+##    .y6                1.893    0.764    2.477    0.013
+##  .y3 ~~                                               
+##    .y7                1.268    0.652    1.944    0.052
+##  .y4 ~~                                               
+##    .y8                0.141    0.500    0.281    0.778
+## 
+## Intercepts:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|)
+##    .x1                5.054    0.084   60.127    0.000
+##    .x2                4.792    0.173   27.657    0.000
+##    .x3                3.558    0.161   22.066    0.000
+##    .y1                5.465    0.301   18.172    0.000
+##    .y2                4.256    0.452    9.409    0.000
+##    .y3                6.563    0.376   17.464    0.000
+##    .y4                4.453    0.384   11.587    0.000
+##    .y5                5.136    0.299   17.160    0.000
+##    .y6                2.978    0.388    7.676    0.000
+##    .y7                6.196    0.378   16.406    0.000
+##    .y8                4.043    0.372   10.865    0.000
+## 
+## Variances:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|)
+##    .x1                0.082    0.020    4.135    0.000
+##    .x2                0.120    0.070    1.704    0.088
+##    .x3                0.467    0.089    5.227    0.000
+##    .y1                2.181    0.496    4.396    0.000
+##    .y2                6.490    1.240    5.235    0.000
+##    .y3                5.490    1.020    5.383    0.000
+##    .y4                2.470    0.712    3.469    0.001
+##    .y5                2.662    0.531    5.009    0.000
+##    .y6                4.249    0.835    5.091    0.000
+##    .y7                3.560    0.724    4.918    0.000
+##    .y8                2.531    0.650    3.891    0.000
+##     ind60             0.448    0.087    5.169    0.000
+##    .dem60             3.678    0.915    4.021    0.000
+##    .dem65             0.350    0.189    1.848    0.065
+## 
+## Defined Parameters:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|)
+##     ac                1.170    0.335    3.493    0.000
+##     total             1.677    0.372    4.505    0.000</code></pre>
+<p>You can get a bunch of fit measures with the <code>fitMeasures</code> function. There are lots of things to look at here. The CFI and TLI are both over .95, which is what Hu and Bentler suggested. The Hu and Bentler criteria apply here since we’re using normal-theory ML estimation with continuous indicators just as in their simulation. The <span class="math inline">\(\chi^2\)</span> statistic is insigificant suggesting no strong evidence for lack of fit. This suggests that the model does a reasonably good job of recovering the correlation structure of the variables.</p>
+<div class="sourceCode" id="cb499"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb499-1"><a href="measurement-issues.html#cb499-1" tabindex="-1"></a><span class="fu">fitMeasures</span>(fit)</span></code></pre></div>
+<pre><code>##                         npar                         fmin                        chisq 
+##                       40.000                        0.339                       50.835 
+##                           df                       pvalue               baseline.chisq 
+##                       37.000                        0.064                      730.654 
+##                  baseline.df              baseline.pvalue                          cfi 
+##                       55.000                        0.000                        0.980 
+##                          tli                   cfi.robust                   tli.robust 
+##                        0.970                        0.980                        0.970 
+##                         nnfi                          rfi                          nfi 
+##                        0.970                        0.897                        0.930 
+##                         pnfi                          ifi                          rni 
+##                        0.626                        0.980                        0.980 
+##                  nnfi.robust                   rni.robust                         logl 
+##                        0.970                        0.980                    -1554.146 
+##            unrestricted.logl                          aic                          bic 
+##                    -1528.728                     3188.292                     3280.991 
+##                       ntotal                         bic2                        rmsea 
+##                       75.000                     3154.922                        0.071 
+##               rmsea.ci.lower               rmsea.ci.upper               rmsea.ci.level 
+##                        0.000                        0.115                        0.900 
+##                 rmsea.pvalue               rmsea.close.h0        rmsea.notclose.pvalue 
+##                        0.234                        0.050                        0.396 
+##            rmsea.notclose.h0                 rmsea.robust        rmsea.ci.lower.robust 
+##                        0.080                        0.071                        0.000 
+##        rmsea.ci.upper.robust          rmsea.pvalue.robust rmsea.notclose.pvalue.robust 
+##                        0.115                        0.234                        0.396 
+##                          rmr                   rmr_nomean                         srmr 
+##                        0.297                        0.321                        0.046 
+##                 srmr_bentler          srmr_bentler_nomean                         crmr 
+##                        0.046                        0.050                        0.050 
+##                  crmr_nomean                   srmr_mplus            srmr_mplus_nomean 
+##                        0.055                        0.046                        0.050 
+##                        cn_05                        cn_01                          gfi 
+##                       78.002                       89.363                        0.994 
+##                         agfi                         pgfi                          mfi 
+##                        0.988                        0.478                        0.912 
+##                         ecvi 
+##                        1.744</code></pre>
+<p>There are also commands that will produce modification indices (<code>modificationIndices()</code>).</p>
+<div class="dobox" style="background-color: #81A2BE80; padding: 10px; border: 1px #505F70">
+<p><strong>You Try It!</strong></p>
+<p>Estimate the SEM for the model represented above.
+- How does it fit?</p>
+</div>
+
+
+</div>
+</div>
+
+
+
+
+
+
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="time-series-cross-sectional-models.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["RBE.pdf", "RBE.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

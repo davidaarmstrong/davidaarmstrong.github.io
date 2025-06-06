@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Party Placement Bakeoff!</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong Professor of Political Science CRC in Political Methodology" />
+    <meta name="author" content="Jan Eckardt PhD Student  Western University" />
+    <meta name="date" content="2025-06-06" />
+    <script src="dave-jan-toronto_files/header-attrs/header-attrs.js"></script>
+    <link href="dave-jan-toronto_files/panelset/panelset.css" rel="stylesheet" />
+    <script src="dave-jan-toronto_files/panelset/panelset.js"></script>
+    <script src="dave-jan-toronto_files/fabric/fabric.min.js"></script>
+    <link href="dave-jan-toronto_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="dave-jan-toronto_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#ff7f00"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <link href="dave-jan-toronto_files/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="dave-jan-toronto_files/tile-view/tile-view.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Party Placement Bakeoff!
+]
+.author[
+### Dave Armstrong<br>Professor of Political Science<br>CRC in Political Methodology
+]
+.author[
+### Jan Eckardt<br>PhD Student<br><br>Western University
+]
+.date[
+### 2025-06-06
+]
+
+---
+
+class: title-slide, top, left, inverse
+background-image: url("figures/papers2.png")
+background-size: cover 
+
+&lt;style type="text/css"&gt;
+.remark-slide-content {
+    font-size: 26px;
+    padding: 1em 4em 1em 4em;
+}
+
+.purpleb {
+  font-weight: bold;
+  color: #4F2683;
+  font-size: 1.25em;
+}
+
+.small {
+  font-size:.75rem;
+}
+.shift { 
+  position:relative; 
+  top: -40px;
+  }
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid
+  #  23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.remark-code{
+  font-size: .7rem;
+}
+.bottom {
+  vertical-align: bottom;
+}
+.shift { 
+  position:relative; 
+  top: -100px;
+  }
+
+
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+## How to Compare?: Cross-sectional
+
+--
+
+&lt;img src="dave-jan-toronto_files/figure-html/unnamed-chunk-2-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## How to Compare?: Temporal
+
+--
+
+&lt;img src="dave-jan-toronto_files/figure-html/unnamed-chunk-3-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+    
+---
+
+## How to Compare?: With Eachother
+
+--
+
+&lt;img src="dave-jan-toronto_files/figure-html/unnamed-chunk-4-1.png" width="100%" /&gt;
+
+---
+
+## What Do These Have in Common? 
+
+---
+
+## What Do These Have in Common? VIBES!
+
+&lt;center&gt;
+&lt;div class="tenor-gif-embed" data-postid="10179242" data-share-method="host" data-aspect-ratio="1.51659" data-width="75%"&gt;&lt;a href="https://tenor.com/view/saturday-night-live-wheres-the-party-snl-snl-gifs-larry-david-gif-10179242"&gt;Party Time GIF&lt;/a&gt;from &lt;a href="https://tenor.com/search/saturday+night+live-gifs"&gt;Saturday Night Live GIFs&lt;/a&gt;&lt;/div&gt; &lt;script type="text/javascript" async src="https://tenor.com/embed.js"&gt;&lt;/script&gt;
+&lt;/center&gt;
+
+---
+
+## How to Compare?: Methodology
+
+--
+
+.pull-left[
+### Text
+
+- Coding of text
+- Aggregation model
+- Inferential technology
+
+]
+--
+.pull-right[
+### Experts
+
+- Vignettes
+- Implicit vs explicit dimensionality
+
+]
+
+---
+
+## Objective Comparison - Spatial Voting Model
+
+&lt;img src="dave-jan-toronto_files/figure-html/unnamed-chunk-5-1.png" width="100%" /&gt;
+
+---
+
+## Analytical Steps
+
+1. Rescale expert placements to the same scale as voters. 
+
+`$$\begin{align}
+\text{CSES Expert}_{j} &amp;= a + b\text{External Place}_{j} + e_j\\
+\text{Rescaled External Place}_{j} &amp;= a + b\text{External Place}_{j}
+\end{align}$$`
+
+
+---
+
+## Analytical Steps
+
+1. Rescale expert placements to the same scale as voters. 
+2. Estimate Conditional Logit for All Placements
+`$$\begin{align}
+Xb_{i,j} &amp;= d\mid\text{LR Self}_{i} - \text{Place}_{e.j}\mid + a_j\\
+\Pr(\text{Vote}_i = j) &amp;= \frac{\exp(Xb_{i,j})}{\sum_{k=1}^{K}\exp(Xb_{i,k})}
+\end{align}$$`
+
+---
+
+## Analytical Steps
+
+1. Rescale expert placements to the same scale as voters. 
+2. Estimate Conditional Logit for All Placements
+3. Calculate PRE 
+
+`$$\begin{align}
+\text{PMC} &amp;= \text{Proportion in Modal Category}\\
+\text{PCP} &amp;= \frac{1}{N}\sum_{i=1}^{N}I(\widehat{\text{Vote}}_{i} = \text{Vote}_{i})\\
+\text{PRE} &amp;= \frac{\text{PCP} - \text{PMC}}{1 - \text{PMC}}\\
+\end{align}$$`
+
+---
+
+## Analytical Steps
+
+1. Rescale expert placements to the same scale as voters. 
+2. Estimate Conditional Logit for All Placements
+3. Calculate PRE and ePRE
+
+Null model probabilities = `\(p^{(0)}_{i,j}\)`;  full model with probabilities = `\(p^{(1)}_{i,j}\)`.
+
+`$$\begin{align}
+\text{ePMC} &amp;= \frac{1}{N}\sum_{j=1}^{\text{# Parties}}\sum_{i \in \text{Party } j \text{ Voters}} p_{i,j}^{(0)}\\
+\text{ePCP} &amp;= \frac{1}{N}\sum_{j=1}^{\text{# Parties}}\sum_{i \in \text{Party } j \text{ Voters}} p_{i,j}^{(1)}\\
+\text{ePRE} &amp;= \frac{\text{ePCP} - \text{ePMC}}{1 - \text{ePMC}}\\
+\end{align}$$`
+---
+
+## Analytical Steps
+
+1. Rescale expert placements to the same scale as voters. 
+2. Estimate Conditional Logit for All Placements
+3. Calculate PRE and ePRE
+4. Evaluate whether (e)PRE is related to attributes of the context, system or placer. 
+
+`$$\begin{align}
+\text{ePRE}_{ctr} &amp;= b_0 + b_1X + b_2Z+b_3XZ+ a_c + m_r + \mathbf{g}(\text{Numer of Parties}_{ct}) + e_{ctr}\\
+a_c &amp;\sim N(0, \sigma_{c}^{2}) \quad \text{Country Random Effects}\\
+m_r &amp;\sim N(0, \sigma_{r}^{2}) \quad \text{Placer Random Effects}\\
+e_{ctr} &amp;\sim N(0, \sigma_{e}^{2})
+\end{align}$$`
+
+
+---
+
+## Overall Results
+
+
+&lt;img src="dave-jan-toronto_files/figure-html/unnamed-chunk-6-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Post-Communist States
+
+Hypothesis: Experts &gt; Manifestos in Post-Communist Places
+
+&lt;img src="dave-jan-toronto_files/figure-html/unnamed-chunk-7-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Young Systems
+
+Hypothesis: Manifestos &gt; Experts in Young Systems
+
+&lt;img src="dave-jan-toronto_files/figure-html/unnamed-chunk-8-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Polarization
+
+Hypothesis: Polarized places have better predictions. 
+
+&lt;img src="dave-jan-toronto_files/figure-html/unnamed-chunk-9-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Unconfirmed Hypotheses
+
+Placement effectiveness does not depend on: 
+- System volatility
+- Effective number of parties
+- Majoritarian systems 
+- Personalization of vote
+
+---
+
+## Are Manifestos Always Worse?
+
+.pull-left[
+1. Estimate BART model with all potential moderators and expert type. 
+2. Generate posterior assuming all obs are Experts: `\(\hat{\mathbf{Y}}^{(E)}\)`
+3. Generate posterior assuming all obs are Manifestors: `\(\hat{\mathbf{Y}}^{(M)}\)`
+4. Calculate `\(\mathbf{D} = \hat{\mathbf{Y}}^{(M)} - \hat{\mathbf{Y}}^{(E)}\)`
+5. Plot histogram of all `\(N\times \text{# Interations}\)` draws of `\(\mathbf{D}\)`. 
+]
+--
+.pull-right[
+&lt;img src="dave-jan-toronto_files/figure-html/unnamed-chunk-10-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Conclusions
+
+1. Experts are better in pretty much all situations. 
+2. The effectiveness of party placements in predicting votes is moderated by several system-level factors (Post-communism, system age and polarization). 
+
+---
+
+## Future Plans
+
+1. Party-level predictions
+  - Preliminary results suggest votes for special issue parties and extreme parties are less well predicted. 
+2. Closer investigation of the BART results to identify the conditions that lead to differential effect sizes. 
+
+
+---
+class: inverse center middle
+
+# Thanks!
+
+.large-text[Questions/Comments: dave.armstrong@uwo.ca or jeckardt@uwo.ca]
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

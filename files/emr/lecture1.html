@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 1</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <meta name="date" content="2024-06-18" />
+    <script src="lecture1_files/header-attrs/header-attrs.js"></script>
+    <script src="lecture1_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture1_files/fabric/fabric.min.js"></script>
+    <link href="lecture1_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture1_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture1_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture1_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture1_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture1_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture1_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 1
+]
+.subtitle[
+## What is Robustness?
+]
+.author[
+### Dave Armstrong
+]
+.date[
+### June 18, 2024
+]
+
+---
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+.remark-slide-content{
+  font-size: 1.25rem;
+}
+
+.large-text{
+  font-size: 2rem;
+}
+
+
+div.red {
+  color: #9A3324;
+}
+.left-narrow {
+  width: 38%;
+  height: 100%;
+  float: left;
+}
+.right-wide {
+  width: 58%;
+  float: right;
+  position:relative; 
+  top: -33px;
+}
+.right-wide100 {
+  width: 60%;
+  float: right;
+  position:relative; 
+  top: -100px;
+}
+.right-shift100 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -100px;
+}
+.middle-text {
+  position: relative; 
+  top: 125px;
+}
+
+&lt;/style&gt;
+&lt;style type="text/css"&gt;
+.remark-code{
+  font-size: 55%
+}
+&lt;/style&gt;
+
+
+
+## Introductions
+
+- Instructor: Dave Armstrong
+  - Office hours: 12:30 - 1:30 every day we have class or by appointment. 
+
+- TA: Harry Murtram (Political Science, UC Riverside)
+  - Office hours: TBD
+
+- Syllabus
+  - Software
+  - Content
+  - Assignments
+
+---
+class: center middle inverse
+
+.large-text[What are Models?]
+
+---
+
+## What are Models?
+
+- Necessarily simplified representations reality.
+
+---
+class: center middle inverse
+
+.large-text[Can Models be True?]
+
+---
+
+## Can models be true? 
+
+- .yellow[No] - "all models are wrong, some are useful" (Box)
+
+--
+
+- .yellow[No] - models can be useful or not (they are _purpose-relative_), but to think of them as true or false is not interesting (Clarke and Primo)
+
+--
+
+- .yellow[No] - could never actually make all the right choices and wouldn't know if you did (Neumayer and Plümper)
+
+--
+
+- .yellow[No] - models are simple, parametric representations of a complex, nonparametric reality (Burnham and Anderson)
+
+---
+class: center middle inverse
+
+.large-text[Can Models be Tested?]
+
+---
+
+## Can models be tested? 
+
+
+.yellow[No] - Clarke and Primo argue two reaosns why models cannot be tested. 
+  1. The hypothetico-deductive model doesn't really permit it. 
+      - _Modus Tollens_: `\(T \rightarrow H, \neg H  \vdash  \neg T\)`
+      - _Affirming the Consequent_: `\(T \rightarrow H, H \vdash T\)`
+      - Probabilistic _modus tollens_ doesn't work (Gill 1999)
+          - `\(T \rightarrow \text{High }\Pr(H) , \neg H \vdash \text{Low }\Pr(T)\)`
+  2. Don't confront theoretical models with data, but with models of data. 
+    
+--
+
+.yellow[Yes] - the EITM crowd
+
+---
+class: center middle inverse
+
+
+.large-text[What do Models Tell Us?]
+
+---
+
+## What Do Models Tell Us? 
+
+
+
+.middle-text[Whether our .red[theories and hypotheses] derived from an .green[unsystematic and/or anecdotal survey] of the world around us .yellow[are consistent with] .orange[systematically collected data] from the population of interest. ]
+
+---
+class: middle center inverse
+
+.large-text[Should our models be robust?]
+
+---
+
+## Should Models be Robsut?
+
+.yellow[Yes] - Reviewer 2
+
+--
+
+.yellow[Not Necessarily] - Neumayer and Plümper (2017, p. 31) suggest that 
+1. Exploring robustness is part of a well-defined research strategy
+2. Setting out to demonstrate robustness is a publication strategy. 
+
+---
+class: middle center inverse
+
+.large-text[What does model robustness mean to you?]
+
+
+---
+
+## What might robustness mean? 
+
+- .yellow[Similarity] "defined" as results being _close_, _substantively similar_, _not very different_, _essentially the same_ or other similarly vague ideas.  
+
+--
+
+- .yellow[Leamer] Same sign and significance across a wide range of alternative models. 
+
+--
+
+- .yellow[Neumayer and Plümper] Stability of effects (quantities of interest) from baseline to robustness models. 
+
+---
+
+## Conceptualizing Robustness
+
+&gt;... the stability of the baseline model's estimated effect to systematic alternative plausible model specification changes (Neumayer and Plümper 2017, p. 26)
+
+.pull-left[
+What proportion of an alternative plausible model effect's sampling distribution overlaps the baseline model effect's 95% confidence interval. 
+
+`$$\rho(\hat{\beta}_r) = \int_{\hat{\beta}_b - C\hat{\sigma}_b}^{\hat{\beta}_b + C\hat{\sigma}_b} f(\hat{\beta}_r|\mathbf{y}, \mathbf{X}, \hat{\theta})d\hat{\beta}_r$$` 
+
+]
+.pull-right[
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-3-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+]
+  
+---
+
+## Calculating Robustness in R
+
+
+
+.pull-left[
+
+|            | `\(\hat{\beta}\)` | `\(\hat{\sigma}\)` |
+|------------|:---------------:|:----------------:|
+| Baseline   |       2.0     |      0.5       |
+| Robustness |      1.5      |      0.35      |
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-5-1.png" width="100%" /&gt;
+
+
+]
+.pull-right[
+### Calculate Baseline 95% CI: 
+
+
+``` r
+base_ci &lt;- 2.0 + c(-1,1)*1.96*.5
+base_ci
+```
+
+```
+## [1] 1.02 2.98
+```
+
+### Calculate Robustness
+
+
+``` r
+pnorm(base_ci[2], 1.5, .35) - 
+  pnorm(base_ci[1], 1.5, .35)
+```
+
+```
+## [1] 0.9148675
+```
+
+]
+
+---
+
+## 4 Steps to Robustness Testing
+
+1. Define baseline model (theory + fit)
+2. Identify arbitrary modeling choices
+3. Develop models that change arbitrary choices 
+4. Calculate robustness for alternative models 
+
+---
+class: center middle inverse
+
+.large-text[What are some examples of arbitrary choices we make in modeling?]
+
+
+---
+
+## Arbitrary Choices
+
+- Distribution of the errors
+- Variance-covariance structure of the errors
+- Explanatory variables in the model
+- Measurement strategies for outcome and explanatory variables
+- Functional form of relationships between outcome and explanatory variables
+- Level of causal homogeneity assumed
+- Definition of population and relationship to sample
+- Assumptions about measurement error 
+- Temporal dynamics and dependence
+- Spatial dynamics and dependence
+
+We will discuss what kinds of tests we can do to solve these tomorrow and throughout the course.
+
+---
+
+## Example: Barry and Kleinberg (2015)
+
+Models of US FDI flows as a function of trade dependence and sanctions busting history. 
+
+1. In response to sanctions imposition, sender-state firms increase FDI disproportionately in host states that have a record of sanctions-busting against the sender state.
+    - Variable: _ab\_sum_ yearly count of sanction busing behavior. 
+    - variable: _hse\_sanction_ whether the country has US sanctions in place. 
+2. In response to sanctions imposition, sender-state firms increase FDI disproportionately in host states that are more highly dependent on trade with target states.
+    - variable: _tradeshare_ recipient country's dependence on trade with the countries sanctioned by the US. 
+3. In response to sanctions imposition, sender-state firms increase FDI disproportionately in host states upon whom target states are more highly trade dependent.
+    - variable: _sancmeanshare_ the extent to which sanctioned states are dependent on third party states for foreign trade. 
+
+---
+
+## Barry and Kleinberg Robustness Tests
+
+1. Split sample - developed and developing countries (Table 2)
+2. Within-country estimation (country fixed effects, Table 3)
+3. Remove high leverage points (sanctions-busting: Table A1, trade dependence: Table A2)
+4. Geo-political context and alliances for trade dependence (Table A3)
+5. Lagged DV to account for some temporal dynamics (Table A4)
+
+---
+
+## Split Sample: Run Models
+
+``` r
+ctrls &lt;- c("L_hse_sanction", "L_growth", "L_lnpercap", "L_lnpop", "L_polity2", 
+           "L_durable", "L_civintensity", "L_spending", "L_s_us", "L_lnustrade", 
+           "L_us_distance", "L_usstock2000_adj", "allfdi2000")
+f1 &lt;- reformulate(ctrls, response="usfdi2000_adj")
+f2 &lt;- reformulate(c("L_ab_sum", "L_hse_usnum", ctrls), 
+                  response="usfdi2000_adj")
+f3 &lt;- reformulate(c("L_sancmeanshare", "L_tradeshare", ctrls), 
+                  response="usfdi2000_adj")
+
+bkdat &lt;- rio::import("../data/barry_klineberg_2015.dta")
+m2 &lt;- lm(f2, data=bkdat)
+m3 &lt;- lm(f3, data=bkdat)
+m5 &lt;- lm(f2, data=subset(bkdat, highdev == 1))
+m6 &lt;- lm(f3, data=subset(bkdat, highdev == 1))
+m8 &lt;- lm(f2, data=subset(bkdat, highdev == 0))
+m9 &lt;- lm(f3, data=subset(bkdat, highdev == 0))
+```
+
+
+---
+
+## Generate Relevant Results
+
+
+.pull-left[
+
+``` r
+library(lmtest)
+library(sandwich)
+library(dplyr)
+base2 &lt;- tibble(b = coef(m2)[2:3], 
+  se= sqrt(diag(vcovHC(m2, type="HC1"))[2:3]), 
+  lwr = b - 1.96*se, upr = b + 1.96*se)
+base3 &lt;- tibble(b = coef(m3)[2:3], 
+  se= sqrt(diag(vcovHC(m3, type="HC1"))[2:3]), 
+  lwr = b - 1.96*se, upr = b + 1.96*se)
+rmod5 &lt;- tibble(b = coef(m5)[2:3], 
+  se= sqrt(diag(vcovHC(m5, type="HC1"))[2:3]))
+rmod6 &lt;- tibble(b = coef(m6)[2:3], 
+  se= sqrt(diag(vcovHC(m6, type="HC1"))[2:3])) 
+rmod8 &lt;- tibble(b = coef(m8)[2:3], 
+  se= sqrt(diag(vcovHC(m8, type="HC1"))[2:3]))
+rmod9 &lt;- tibble(b = coef(m9)[2:3], 
+  se= sqrt(diag(vcovHC(m9, type="HC1"))[2:3])) 
+```
+]
+.right-shift100[
+
+``` r
+pnorm(base2$upr, rmod5$b, rmod5$se) - 
+  pnorm(base2$lwr, rmod5$b, rmod5$se)
+```
+
+```
+##    L_ab_sum L_hse_usnum 
+##   0.8335857   0.5157081
+```
+
+``` r
+pnorm(base2$upr, rmod8$b, rmod8$se) - 
+  pnorm(base2$lwr, rmod8$b, rmod8$se)
+```
+
+```
+##    L_ab_sum L_hse_usnum 
+## 0.007498179 0.677961022
+```
+
+``` r
+pnorm(base3$upr, rmod6$b, rmod6$se) - 
+  pnorm(base3$lwr, rmod6$b, rmod6$se)
+```
+
+```
+## L_sancmeanshare    L_tradeshare 
+##      0.72081916      0.08960871
+```
+
+``` r
+pnorm(base3$upr, rmod9$b, rmod9$se) - 
+  pnorm(base3$lwr, rmod9$b, rmod9$se)
+```
+
+```
+## L_sancmeanshare    L_tradeshare 
+##      0.02796269      0.86113970
+```
+
+]
+
+---
+
+## Lab Exercise
+
+Your turn - consider robustness in the way we defined above for the other models. 
+
+1. add `as.factor(cowcode)` to `m5`, `m6`, `m8` and `m9`. 
+1. Remove high leverage points
+    - Add a dummy variable for `L_ab_sum &gt;= 4` to `m5` and `m8` 
+    - Remove Argentina, Brazil, China, Saudi Arabia, USSR/Russia from `m5` and `m8`. 
+    - Add a dummy variable for `sancmeanshare &gt;= 2` and a dummy variable for `tradeshare &gt;= 20` in `m6` and `m9`. 
+    - drop the outliers identified in the previous step from `rmod6` and `rmod9`. 
+1. Add `L_sanc_neigh`, `L_sanc_defpact` and `L_sanc_s` to `m9` each individually, then all at once. 
+1. Add a lagged DV (`L_usfdi2000_adj`) to `m8` and `m9`.  
+
+What do you conclude about robustness?
+
+---
+
+## GLMs
+
+GLMs have 4 components:
+
+1. Stochastic component: `\(\mathbf{Y}\)` is a random or stochastic component that we expect to change from sample to sample in the frequentist thought experiment.
+
+1. Systematic component: `\(\mathbf{\theta} = \mathbf{X\beta}\)`
+
+1. Link function: The stochastic and systematic components are linked through a function which "tricks" the model into thinking that it is still acting on normally distributed outcomes.
+
+1. Residuals: The residuals can be computed the same way as in the linear model, but there are other, perhaps more useful options here, too.
+
+---
+
+
+## Estimation
+
+Estimation could be done in a number of ways, easiest is with the generalized linear model. In our normal linear model: 
+
+`$$\begin{aligned}
+    \mathbf{Y} &amp;= \mathbf{X\beta} + \mathbf{\varepsilon}\\
+    E(\mathbf{Y}) &amp;= \mathbf{\theta} = \mathbf{X\beta}
+\end{aligned}$$`
+
+The generalization, is: 
+
+`$$g(\mathbf{\mu}) = \mathbf{\theta} = \mathbf{X\beta}$$`
+
+where `\(g(\cdot)\)` is a "link function" that transforms the unbounded linear predictor into the response space of `\(\mathbf{Y}\)`.  
+
+---
+
+
+## Model of Voting
+
+In our model of voting: 
+
+
+`$$\begin{aligned}
+\mathbf{X}\beta &amp;= b_0 + b_1\text{Age} + b_2\text{Education} + b_3\text{Income}  \\
+  &amp;+ b_4\text{Left-Right Self Placement} + b_5\text{Sex=Female}  \\
+  &amp;+ b_6\text{Race=White} + b_7\text{Race=Black}
+\end{aligned}$$`
+
+`$$\begin{aligned}
+log\left(\frac{Pr(\text{Voted}|\mathbf{X})}{1-Pr(\text{Voted}|\mathbf{X})}\right) &amp;= \mathbf{X}\beta\\
+\widehat{Pr(\text{Voted})} &amp;= \frac{e^{\mathbf{X}\beta}}{1+e^{\mathbf{X}\beta}}
+\end{aligned}$$`
+
+---
+
+## Full Model of Voting in 2008
+
+
+.left-narrow[
+
+Let's consider a more fully specified model of turnout.
+
+
+``` r
+library(car)
+library(rio)
+dat &lt;- import("../data/anes2008_binary.dta")
+
+dat$race &lt;- 1 + dat$white + 2*dat$black
+dat$race &lt;- factor(dat$race, 
+   levels=1:3, 
+   labels=c("Other", "White", "Black"))
+mod &lt;- glm(voted ~ age + educ + income + 
+    leftright + I(leftright^2) + female + 
+    race, data=dat, family=binomial(link="logit"))
+```
+]
+.right-wide[
+
+``` r
+S(mod, brief=TRUE)
+```
+
+```
+## Coefficients:
+##                 Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)    -4.513760   1.167732  -3.865 0.000111 ***
+## age             0.035713   0.008078   4.421 9.82e-06 ***
+## educ            0.284004   0.054528   5.208 1.90e-07 ***
+## income          0.082025   0.022528   3.641 0.000272 ***
+## leftright      -0.635040   0.264082  -2.405 0.016185 *  
+## I(leftright^2)  0.053850   0.020393   2.641 0.008274 ** 
+## female          0.395507   0.227926   1.735 0.082697 .  
+## raceWhite       0.634660   0.299785   2.117 0.034255 *  
+## raceBlack       2.041284   0.421783   4.840 1.30e-06 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 629.10  on 583  degrees of freedom
+## Residual deviance: 499.61  on 575  degrees of freedom
+## 
+##  logLik      df     AIC     BIC 
+## -249.80       9  517.61  556.93 
+## 
+## Number of Fisher Scoring iterations: 5
+```
+
+]
+
+---
+
+
+## Interpreting Coefficients
+
+We could interpret coefficients the same as in the linear model, but with a different dependent variable.  
+
+- For every one-unit change in education, the log of the odds of the probability of voting goes up by 0.28.  *How enlightening!*
+
+- This is often not an intuitive metric for your readers (or yourselves).  
+
+- And, it doesn't really tell us anything about the actual probability of voting.  
+
+---
+
+
+## Visual Display of Log-Odds `\(\rightarrow\)` Probabilities
+
+&lt;img src="lecture1_files/figure-html/odds2probs-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+## Interpretation of Coefficients II
+
+So, the coefficients do not have a great intuitive interpretation on their own.  Then, what do we do?  
+
+- Think back to what the coefficient told us in OLS - the predicted change in `\(y\)` for a unit change in `\(x\)`.  
+
+- In the OLS case, `\(y\)` was the quantity in which we were directly interested.  Here, however, the quantity in which we're interested is `\(Pr(y=1)\)`.  
+
+- Why not calculate how much we would predict `\(Pr(y=1)\)` to increase for every unit increase in `\(x\)`? 
+
+
+
+---
+
+
+## What does a one-unit change mean? 
+
+Here, we're going to move Education by one unit holding everything else constant at the following values: 
+
+
+- Age = 45: .0357 x 45 = 1.6065 
+- Income = 15: 0.082 x 15 = 0.123
+- Left-right = 5: -0.635 x 5 + 0.0539 x 25 = -1.8275
+- Female = 0: 0.3956 x 0 = 0
+- Race = White: 0.6347 x 1 + 2.0413 x 0 = 0.6347
+
+When we add all of that stuff up along with the intercept, we get: 
+
+`$$\begin{aligned}
+\mathbf{X}\beta_{-j} &amp;= -4.5138 + 1.6065 + 0.123 - 1.8275 + 0 + 0.6347 = -3.9771
+\end{aligned}$$`
+
+So, that gives us the following: `\(\mathbf{X}\beta = 0.284\times\text{Education} - 3.9771\)`.  
+
+---
+
+## One unit change in Education
+
+Let's think about what moving from 0 to 1 years of education does for the probability of voting: 
+
+`$$\begin{aligned}
+Pr(\text{Voted} | \text{Education} = 0) &amp;= \frac{e^{.284\times 0 - 3.9771}}{1+ e^{.284\times 0 - 3.9771}}\\
+                                        &amp;= \frac{0.0187}{1.0187} = 0.0184\\
+Pr(\text{Voted} | \text{Education} = 1) &amp;= \frac{e^{.284\times 1 - 3.9771}}{1+ e^{.284\times 1 - 3.9771}}\\
+                                        &amp;= \frac{0.0249}{1.0249} = 0.0243\\
+\Delta Pr(\text{Voted} | \text{Education}: 0\rightarrow 1) &amp;= 0.0243 - 0.0184\\
+                                                           &amp;= 0.0059
+\end{aligned}$$`
+
+---
+
+## A Different One-unit Change
+
+What if we changed education from 15$\rightarrow$16 instead of from 0$\rightarrow$1.  
+
+`$$\begin{aligned}
+Pr(\text{Voted} | \text{Education} = 15) &amp;= \frac{e^{.284\times 15 - 3.9771}}{1+ e^{.284\times 15 - 3.9771}}\\
+                                        &amp;= \frac{1.3270}{2.3270} = 0.5703\\
+Pr(\text{Voted} | \text{Education} = 16) &amp;= \frac{e^{.284\times 16 - 3.9771}}{1+ e^{.284\times 16 - 3.9771}}\\
+                                        &amp;= \frac{1.7628}{2.7628} = 0.6380\\
+\Delta Pr(\text{Voted} | \text{Education}: 15\rightarrow 16) &amp;= 0.6380 - 0.5703\\
+                                                           &amp;= 0.0677
+\end{aligned}$$`
+
+---
+
+
+## All One-unit Changes
+
+&lt;img src="lecture1_files/figure-html/educ1-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+
+## All One-unit Changes II
+
+&lt;img src="lecture1_files/figure-html/educ2-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Taking Stock
+
+What dowe know so far? 
+
+
+- The coefficients don't have a nice intuitive interpretation like they do in OLS. 
+
+- The coefficients do not necessarily indicate anything in particular about the absolute value of the predicted probability.  
+
+- Different one-unit changes can have different effects.  
+
+
+---
+
+
+## More Complications
+
+Before we get comfortable with our current situation, let's consider a different individual.  Someone the same as the person above, but who is extremely liberal.
+
+
+- Age = 45: .0357 x 45 = 1.6065 
+- Income = 15: 0.082 x 15 = 0.123
+- Left-right = 0: -0.635 x 0 + 0.0539 x 0 = 0
+- Female = 0: 0.3956 x 0 = 0
+- Race = White: 0.6347 x 1 + 2.0413 x 0 = 0.6347
+- `\(\mathbf{X}\beta\)` = -2.1496
+
+
+
+---
+
+## One unit change in Education
+
+Let's think about what moving from 0 to 1 years of education does for the probability of voting:
+
+`$$\begin{aligned}
+Pr(\text{Voted} | \text{Education} = 0) &amp;= \frac{e^{.284\times 0 - 2.1496}}{1+ e^{.284\times 0 - 2.1496}}\\
+                                        &amp;= 0.1046\\
+Pr(\text{Voted} | \text{Education} = 1) &amp;= \frac{e^{.284\times 1 - 2.1496}}{1+ e^{.284\times 1 - 2.1496}}\\
+                                        &amp;= 0.1343\\
+\Delta Pr(\text{Voted} | \text{Education}: 0\rightarrow 1) &amp;= 0.1343-0.1046\\
+                                                           &amp;= 0.0297
+\end{aligned}$$`
+---
+
+## A Different One-unit Change
+
+What if we changed education from 15$\rightarrow$16 instead of from 0$\rightarrow$1.
+
+`$$\begin{aligned}
+Pr(\text{Voted} | \text{Education} = 15) &amp;= \frac{e^{.284\times 15 - 2.1469}}{1+ e^{.284\times 15 - 2.1469}}\\
+                                        &amp;= 0.8282\\
+Pr(\text{Voted} | \text{Education} = 16) &amp;= \frac{e^{.284\times 16 - 2.1469}}{1+ e^{.284\times 16 - 2.1469}}\\
+                                        &amp;= \frac{1.7628}{2.7628} = 0.8607\\
+\Delta Pr(\text{Voted} | \text{Education}: 15\rightarrow 16) &amp;= 0.8607-0.8282\\
+                                                           &amp;= 0.0325
+\end{aligned}$$`
+
+---
+
+
+
+## All One-unit Changes, Both Observations
+
+&lt;img src="lecture1_files/figure-html/educ1a-1.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+## All One-unit Changes II
+
+&lt;img src="lecture1_files/figure-html/educ2a-1.png" width="85%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+## Taking Stock II
+
+What *else* do we know now? 
+
+- We know that not every change from one value to another (e.g., `\(15\rightarrow16\)`) has the same effect.  
+
+- In addition to knowing that not every change of the same size (e.g., one-unit) has the same effect. 
+
+
+So, how do we characterize the *effect* of a variable in a model? 
+
+---
+
+
+## Approaches to Discrete Changes
+
+
+- Hold all other variables constant at their means and calculate the change in `\(Pr(y=1)\)` for a unit, standard deviation or maximal change in `\(x\)`.  [Marginal Effect at Means]
+
+- Hold all other variables constant at reasonable/representative and calculate the change in `\(Pr(y=1)\)` for a unit, standard deviation or maximal change in `\(x\)`. [Marginal Effects at Reasonable values]
+
+- Calculate the discrete change in `\(Pr(y=1)\)` for all observations and then average the changes in predicted probabilities.  [Average Marginal Effects]
+
+---
+
+## Discrete Changes: MER approach
+
+.pull-left[
+
+``` r
+library(marginaleffects)
+comps &lt;- comparisons(mod, 
+                newdata=datagrid(grid_type="mean_or_mode"),
+                variables=list(
+                  age = "2sd", 
+                  educ = "2sd", 
+                  income = "2sd", 
+                  leftright="2sd",
+                  female = c(0,1), 
+                  race = "minmax"
+                )) 
+```
+]
+.pull-right[
+
+``` r
+comps %&gt;% 
+  select(term, estimate, std.error, conf.low, conf.high)
+```
+
+```
+## 
+##       Term Estimate Std. Error  CI low CI high
+##  age         0.1814     0.0421  0.0989  0.2640
+##  educ        0.2498     0.0503  0.1512  0.3484
+##  female      0.0748     0.0433 -0.0101  0.1597
+##  income      0.1644     0.0480  0.0704  0.2584
+##  leftright   0.0234     0.0378 -0.0507  0.0975
+##  race        0.2808     0.0689  0.1457  0.4158
+```
+]
+---
+
+## Discrete Changes: MER approach
+
+.pull-left[
+
+``` r
+acomps &lt;- avg_comparisons(mod, 
+                variables=list(
+                  age = "2sd", 
+                  educ = "2sd", 
+                  income = "2sd", 
+                  leftright="2sd",
+                  female = c(0,1), 
+                  race = "minmax"
+                )) 
+```
+]
+.pull-right[
+
+``` r
+acomps %&gt;% 
+  select(term, estimate, std.error, conf.low, conf.high)
+```
+
+```
+## 
+##       Term Estimate Std. Error   CI low CI high
+##  age         0.1468     0.0318  0.08446  0.2091
+##  educ        0.2089     0.0390  0.13250  0.2853
+##  female      0.0545     0.0313 -0.00695  0.1159
+##  income      0.1353     0.0369  0.06295  0.2076
+##  leftright   0.0226     0.0365 -0.04892  0.0941
+##  race        0.2619     0.0533  0.15737  0.3665
+```
+]
+
+---
+
+## Non-linear GLMs - Fixed Residaul Variance 
+
+
+
+
+
+.pull-left[
+Consider the following simple simulation: 
+
+`$$\begin{aligned}
+x &amp;\sim N(0,1)\\
+z &amp;\sim N(0,1)\\
+r_{x,z} &amp;\approx 0\\
+p_y &amp;= \frac{1}{1+e^{-(x + z)}}\\
+y &amp;\sim Bern(p_y)
+\end{aligned}$$`
+
+Imagine we estimate two models: 
+
+`$$\begin{aligned}
+y &amp;= b_0 + b_1 x\\
+y &amp;= g_0 + g_1 x + g_2 z
+\end{aligned}$$`
+]
+.pull-right[
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-14-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Non-linear GLMs - Fixed Residaul Variance 
+
+.pull-left[
+Consider the following simple simulation: 
+
+`$$\begin{aligned}
+x &amp;\sim N(0,1)\\
+z &amp;\sim N(0,1)\\
+r_{x,z} &amp;\approx 0\\
+p_y &amp;= \frac{1}{1+e^{-(x + z)}}\\
+y &amp;\sim Bern(p_y)
+\end{aligned}$$`
+
+Imagine we estimate two models: 
+
+`$$\begin{aligned}
+y &amp;= b_0 + b_1 x\\
+y &amp;= g_0 + g_1 x + g_2 z
+\end{aligned}$$`
+]
+.pull-right[
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-15-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Highlights
+
+1. In non-linear models (with fixed residual varainces), coefficients necessarily rescale when the specification changes. 
+
+
+---
+
+## Marginal Effects do not Rescale? 
+
+
+
+
+.pull-left[
+
+
+**Simple**
+`$$\begin{aligned}
+y &amp;= b_0 + b_1 x\\
+\frac{\partial Pr(y=1|x)}{\partial x} &amp;= f(b_0 + b_1x)b_1\\
+\end{aligned}$$`
+
+
+
+**Multiple**
+`$$\begin{aligned}
+y &amp;= g_0 + g_1 x + g_2 z\\
+\frac{\partial Pr(y=1|x,z)}{\partial x} &amp;= f(g_0 + g_1x + g_2 z)g_1
+\end{aligned}$$`
+]
+
+.pull-right[
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-17-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+
+]
+
+---
+
+## Marginal Effects do not Rescale
+
+.pull-left[
+**Average First Differences**
+`$$\begin{aligned}
+X_0 &amp;= X_1 = X \\
+X_0 &amp;: x \rightarrow x - \delta\\
+X_1 &amp;: x \rightarrow x + \delta\\
+p_0 &amp;= F(X_0\theta)\\
+p_1 &amp;= F(X_1\theta)\\
+\text{AFD} &amp;= \frac{1}{n}\sum_{i=1}^{n}(p_{1i}-p_{0i})
+\end{aligned}$$`
+]
+
+.pull-right[
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-18-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+
+]
+
+---
+
+## Highlights
+
+1. In non-linear models (with fixed residual varainces), coefficients necessarily rescale when the specification changes. 
+2. Average marginal effects and average first differences do not rescale for irrelevant specification changes. 
+
+---
+
+## Partial Robustness
+
+Partial robustness considers robustness at different values of a or some variable(s).  
+
+`$$\rho(\hat{\beta}_r)_j = \int_{\hat{\beta}_b - C\hat{\sigma}_b}^{\hat{\beta}_b + C\hat{\sigma}_b} f(\hat{\beta}_r|\mathbf{y}, \mathbf{X}=\mathbf{x}_j, \hat{\theta})d\hat{\beta}_r$$` 
+where `\(\mathbf{x}_j\)` represents a vector of values at which robustness will be explored. 
+- The result is robustness at a particular set of values which may change for a different set of values. 
+
+---
+
+## Lab Exercise
+
+Test how robust the effect of race is to the presence of `educ` and `income` in the model above. 
+
+---
+
+## Recap
+
+- What is robustness and how do we conceptualize it.
+- 4 steps of robustness testing. 
+- Example of robustness testing using Barry and Kleinberg example
+- How do GLMs work
+- Effects in non-Gaussian GLMs
+- Example of robustness in logit model 
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

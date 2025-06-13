@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 2</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <meta name="date" content="2024-06-20" />
+    <script src="lecture2_files/header-attrs/header-attrs.js"></script>
+    <script src="lecture2_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture2_files/fabric/fabric.min.js"></script>
+    <link href="lecture2_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture2_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture2_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture2_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture2_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture2_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture2_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 2
+]
+.subtitle[
+## GLMs and Partial Robustness?
+]
+.author[
+### Dave Armstrong
+]
+.date[
+### June 20, 2024
+]
+
+---
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+.remark-slide-content{
+  font-size: 1.25rem;
+}
+
+.large-text{
+  font-size: 2rem;
+}
+
+
+div.red {
+  color: #9A3324;
+}
+.left-narrow {
+  width: 38%;
+  height: 100%;
+  float: left;
+}
+.right-wide {
+  width: 58%;
+  float: right;
+  position:relative; 
+  top: -33px;
+}
+.right-wide100 {
+  width: 60%;
+  float: right;
+  position:relative; 
+  top: -100px;
+}
+.right-shift100 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -100px;
+}
+.middle-text {
+  position: relative; 
+  top: 125px;
+}
+
+&lt;/style&gt;
+&lt;style type="text/css"&gt;
+.remark-code{
+  font-size: 55%
+}
+&lt;/style&gt;
+
+## Partial Robustness
+
+Partial robustness considers robustness at different values of a or some variable(s).  
+
+`$$\rho(\hat{\beta}_r)_j = \int_{\hat{\beta}_b - C\hat{\sigma}_b}^{\hat{\beta}_b + C\hat{\sigma}_b} f(\hat{\beta}_r|\mathbf{y}, \mathbf{X}=\mathbf{x}_j, \hat{\theta})d\hat{\beta}_r$$` 
+where `\(\mathbf{x}_j\)` represents a vector of values at which robustness will be explored. 
+- The result is robustness at a particular set of values which may change for a different set of values. 
+
+---
+
+## Exercise
+
+How robust is the effect of race is to the presence of `educ` and `income` in the model above? 
+
+---
+
+## Education
+
+
+``` r
+library(marginaleffects)
+library(rio)
+dat &lt;- import("../data/anes2008_binary.dta")
+dat$race &lt;- rio::factorize(dat$race)
+mod &lt;- glm(voted ~ age + educ + income + 
+    leftright + I(leftright^2) + female + 
+    race, data=dat, family=binomial(link="logit"))
+mode &lt;- glm(voted ~ age + income + 
+    leftright + I(leftright^2) + female + 
+    race, data=dat, family=binomial(link="logit"))
+base_comp &lt;- avg_comparisons(mod, variables=list("race"="pairwise"))
+rob_comp &lt;- avg_comparisons(mode, variables=list("race"="pairwise"))
+pnorm(base_comp$conf.high, rob_comp$estimate, rob_comp$std.error) - 
+  pnorm(base_comp$conf.low, rob_comp$estimate, rob_comp$std.error) 
+```
+
+```
+## [1] 0.9235181 0.9344694 0.9087542
+```
+
+---
+
+## Income
+
+
+``` r
+modi &lt;- glm(voted ~ age + educ + 
+    leftright + I(leftright^2) + female + 
+    race, data=dat, family=binomial(link="logit"))
+base_comp &lt;- avg_comparisons(mod, variables=list("race"="pairwise"))
+rob_comp &lt;- avg_comparisons(modi, variables=list("race"="pairwise"))
+pnorm(base_comp$conf.high, rob_comp$estimate, rob_comp$std.error) - 
+  pnorm(base_comp$conf.low, rob_comp$estimate, rob_comp$std.error) 
+```
+
+```
+## [1] 0.9315937 0.8771542 0.9410346
+```
+
+---
+
+## Income and Education
+
+
+``` r
+modie &lt;- glm(voted ~ age +  
+    leftright + I(leftright^2) + female + 
+    race, data=dat, family=binomial(link="logit"))
+base_comp &lt;- avg_comparisons(mod, variables=list("race"="pairwise"))
+rob_comp &lt;- avg_comparisons(modie, variables=list("race"="pairwise"))
+pnorm(base_comp$conf.high, rob_comp$estimate, rob_comp$std.error) - 
+  pnorm(base_comp$conf.low, rob_comp$estimate, rob_comp$std.error) 
+```
+
+```
+## [1] 0.8998228 0.4951046 0.7651527
+```
+
+---
+
+## Income and Education
+
+
+``` r
+# remotes::install_github("davidaarmstrong/nprobust")
+library(nprobust)
+np_robust(mod, modie, vbl=list(race="pairwise"))
+```
+
+```
+## # A tibble: 3 × 7
+##   term  contrast      estimate std.error conf.low conf.high robust
+##   &lt;chr&gt; &lt;chr&gt;            &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;
+## 1 race  Black - Other   0.258     0.0635  0.157       0.366  0.900
+## 2 race  Black - White   0.0931    0.0391  0.0936      0.220  0.495
+## 3 race  White - Other   0.165     0.0587  0.00239     0.208  0.765
+```
+---
+
+## Partial Robustness of Education 
+
+Let's look at the partial robustness of education to the inclusion of income by race. 
+
+``` r
+base_dat &lt;- insight::get_data(mod)
+robust_dat &lt;- insight::get_data(modi)
+base_comp &lt;- avg_comparisons(mod, 
+                             variables="educ", 
+                             newdata=datagrid(newdata=base_dat, 
+                                              race = levels(base_dat$race), 
+                                              grid_type="counterfactual"), 
+                             by="race")
+robust_comp &lt;- avg_comparisons(modi, 
+                             variables="educ", 
+                             newdata=datagrid(newdata=robust_dat, 
+                                              race = levels(robust_dat$race), 
+                                              grid_type="counterfactual"), 
+                             by="race")
+pnorm(base_comp$conf.high, rob_comp$estimate, rob_comp$std.error) - 
+  pnorm(base_comp$conf.low, rob_comp$estimate, rob_comp$std.error) 
+```
+
+```
+## [1] 0.001061390 0.115899965 0.006174423
+```
+
+---
+
+## Using np_robust()
+
+
+``` r
+base_dat &lt;- insight::get_data(mod)
+robust_dat &lt;- insight::get_data(modi)
+np_robust(mod, 
+          modi, 
+          "educ", 
+          base_args = list(newdata=datagrid(newdata=base_dat, 
+                                              race = levels(base_dat$race), 
+                                              grid_type="counterfactual"), 
+                           by="race"), 
+          robust_args = list(
+            newdata=datagrid(newdata=robust_dat, 
+                                              race = levels(robust_dat$race), 
+                                              grid_type="counterfactual"), 
+                             by="race"))
+```
+
+```
+## # A tibble: 3 × 8
+##   term  contrast race  estimate std.error conf.low conf.high robust
+##   &lt;chr&gt; &lt;chr&gt;    &lt;fct&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;
+## 1 educ  +1       Other   0.0652   0.00791  0.0324     0.0663  0.557
+## 2 educ  +1       White   0.0517   0.00629  0.0268     0.0544  0.665
+## 3 educ  +1       Black   0.0273   0.00612  0.00919    0.0289  0.605
+```
+
+---
+
+## Lab Exercise
+
+Allen and Yuen (2020, _Journal of Peace Research_) attempt to understand what kinds of issues get considered at the UN.  Here are the three models specified: 
+
+
+``` r
+ay_dat &lt;- rio::import("allen_yuen_jpr_replication.dta")
+m1 &lt;- glm(active_month ~ thematic + agendadur+ peacekeeping+ annualtotal + 
+            time + time2 + time3 + e10pres, data=ay_dat, family=binomial) 
+m2 &lt;- glm(active_month ~ avgScore + adjCOVscore + agendadur + peacekeeping + 
+            annualtotal + time + time2 + time3 + e10pres, data=ay_dat, 
+          family = binomial)
+m3 &lt;- glm(active_month ~ MeanIP3 + COVideal + agendadur + peacekeeping + 
+            annualtotal + time + time2 + time3 + e10pres, data=ay_dat, 
+          family=binomial)
+```
+
+How robust are the `m1` findings for `agendadur`, `peacekeeping`, `annualtotal` and `e10pres`? 
+
+---
+
+## Types of Robustness Tests
+
+Robustness tests identify and gauge the importance of different _model uncertainties_. 
+
+**.blue[Tests against plausible alternatives]**
+&lt;ol&gt;
+&lt;li&gt; Model variation tests
+&lt;li&gt; Random permutation tests
+&lt;li&gt; Structured permutation tests
+&lt;/ol&gt;
+
+**.blue[Tests against (potentially) implausible alternatives]**
+
+&lt;ol start="4"&gt;
+&lt;li&gt; Robustness limit tests&lt;/li&gt;
+&lt;li&gt; Placebo tests &lt;/li&gt;
+&lt;/ol&gt;
+  
+---
+
+## Model Variation Tests
+
+_Changing aspects of the model specification (broadly speaking) to gauge robustness in the face of model uncertainty_. 
+
+- Add, remove or use alternate controls
+- Change operationalization of variable of interest or controls
+- Split the sample on covariates
+- Change the functional form of relationships in the model
+- Add or remove conditionalities
+- Change specification of temporal or spatial dynamic processes. 
+
+Details: 
+- Tests can be nested or not. 
+- Best suited for model uncertainty where a small set of discrete plausible alternatives exists.  
+
+---
+
+## Permutation Tests: Randomized
+
+- Randomly choose a few from many models that address model uncertainties. 
+- Care should be taken to ensure that only plausible models are considered. 
+- Possibilities (a non-exhaustive list)
+    - choosing different subsets of controls
+    - randomly injecting different levels of measurement error
+    - randomly split samples 
+        - With random splits and the like - averaging over many random splits makes sense. 
+        - Can help us build a sampling distribution of robustness under the null hypothesis. 
+
+---
+
+## Permutation Tests: Structured
+
+- Like randomized tests, but the particular alternative model specifications are chosen purposefully rather than randomly. 
+- If possible (and desirable) the entire model space (for a particular dimension of robustness) could be examined. 
+- Jackknife is an example of a structured permutation test. 
+- Testing all possible recoding decisions of grouping categories together is another example. 
+
+
+---
+
+## Robustness Limit Tests
+
+&gt; ... ask by how much the speciﬁcation of a model needs to change to render the baseline model estimate non-robust (Neumayer and Plümper 2017, p. 59)
+
+Can we generate a non-robust finding by ...
+- Changing the functional form
+- Adding an omitted variable with a known correlation to the variable of interest
+- Removing high leverage/residual/influence observations
+
+Ideally, we would be able to claim/demonstrate that the robustness limit test that _broke_ the result was misspecified or implausible. 
+
+---
+
+## Placebo Tests
+
+Placebo tests purposefully misspecify the model to see what the effects are. 
+
+- Often require the existence of a placebo variable. 
+- In the absence of a placebo variable, this would be a robustness limit test. 
+
+---
+
+## Recap
+
+- How do GLMs work
+- Effects in non-Gaussian GLMs
+- Example of robustness in logit model 
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

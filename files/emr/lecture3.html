@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 3</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="lecture3_files/header-attrs/header-attrs.js"></script>
+    <script src="lecture3_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture3_files/fabric/fabric.min.js"></script>
+    <link href="lecture3_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture3_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture3_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture3_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture3_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture3_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture3_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 3
+]
+.subtitle[
+## Monotonicity, Linearity Diagnostics
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+.remark-slide-content{
+  font-size: 1.25rem;
+}
+
+.large-text{
+  font-size: 2rem;
+}
+
+
+div.red {
+  color: #9A3324;
+}
+.left-narrow {
+  width: 38%;
+  height: 100%;
+  float: left;
+}
+.right-wide {
+  width: 58%;
+  float: right;
+  position:relative; 
+  top: -33px;
+}
+.right-wide100 {
+  width: 60%;
+  float: right;
+  position:relative; 
+  top: -100px;
+}
+.right-shift100 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -100px;
+}
+.middle-text {
+  position: relative; 
+  top: 125px;
+}
+.remark-code{
+  font-size: 55%
+}
+&lt;/style&gt;
+
+
+## Outline for Linearity Discussion
+  
+  
+- The linearity assumption
+- Diagnosis of un-modeled non-linearity (CR Plots, Smoothers)
+- Simple remedies for un-modeled non-linearity (transformations, polynomials).
+- More complicated remedies for un-modeled non-linearities (splines, ALSOS).
+- For their own sake in modeling non-linearities.
+- For use in testing theories about functional form.
+
+---
+  
+## The Linearity Assumption
+  
+Perhaps the most important assumption of the linear model is that the relationship between `\(y\)` and `\(x\)` is accurately described by a line.
+
+`$$y_{i} = \beta_{0} + \beta_{1}x_{i} + \varepsilon_{i}$$`
+  
+This allows us to:
+- Characterize the relationship between `\(y\)` and `\(x\)` with a single (or small set of) numbers.
+
+- Easily interpret the marginal effect of `\(x\)`.
+
+- Easily present the results of the modeling enterprise.
+
+---
+  
+  
+## Diagnosing Non-Linearity
+
+We are often interested in the extent to which data we observe follow the assumption of linearity.
+
+- Binary variables are always linearly related to the observed variables (two points define a line)
+
+- Binary regressors operationalizing a single categorical variable allow for any type of non-linearity to be modeled, leaving no un-modeled non-linearity.
+
+- Continuous (and quasi-continuous) variables are not always linearly related to the response and present opportunities for un-modeled non-linearity.
+
+-  We want to know the extent to which these variables exhibit linear relationships.
+
+---
+  
+  
+## Linearity and Multi-Category Variables
+
+Nominal Variables `\(\rightarrow\)` Dummy Regressors `\(\rightarrow\)` 😄
+
+The waters are a bit murkier for ordinal variables (e.g., state repression or political ideology).
+
+- These variables are often operationalized with relatively few categories.
+- However, we often have a strong suspicion that the relationship between these variables and the response is "roughly linear".
+
+- If the relationship is *not* linear and we represent it with a line, then we are getting a *biased* estimate of the relationship.
+- If the relationship could be represented linearly, and we represent it with a series of dummy regressors, we are getting estimates that are *inefficient*
+  
+  
+  
+---
+
+## Testing the Hypothesis
+
+Consider the model (Covariates can be added to the model below without loss of generality):
+
+`$$	y = f(x)  + \varepsilon$$`
+
+Ultimately, we want to test whether a linear approximation is sufficient.
+
+`$$\begin{aligned}
+H_{0}:&amp; f(x) = \beta_{0} + \beta_{1} x\\
+H_{A}:&amp; f(x) \neq \beta_{0} + \beta_{1} x\quad \text{(i.e., the function is more complicated)}
+\end{aligned}$$`
+  
+  We don't have to have know or specify the functional form of the alternative hypothesis, rather just that it is more complicated than linear.
+
+
+
+
+---
+
+# Testing the Hypothesis: Ordinal Variables
+
+The hypothesis suggested above is relatively easy to test when the independent variable is ordinal (i.e., categorical).
+
+`$$\begin{aligned}
+	H_{0}:&amp; f(x) = \beta_{0} + \beta_{x}\\
+	H_{A}:&amp; f(x) = \beta_{0} + \beta_{1}^{*}I(x = 2) + \beta_{2}^{*}I(x = 3) + \beta_{3}^{*}I(x = 4) + \beta_{4}^{*}I(x = 5)
+\end{aligned}$$`
+
+where `\(I()\)` is an indicator function such that `\(I(\cdot)\)` is 1 if the expression inside is true and 0 otherwise. 
+
+
+
+---
+
+
+## Expectations
+
+
+.left-narrow[
+Consider the model: `\(y = \alpha + \beta x + \varepsilon\)` where `\(x = \{1, 2, 3, 4, 5\}\)`.  What would we expect if `\(x\)` and `\(y\)` are perfectly linearly related?
+
+`\begin{align*}
+	\beta_{2}^{*} &amp;= 2\beta_{1}^{*}\\
+	\beta_{3}^{*} &amp;= 3\beta_{1}^{*}\\
+	\beta_{4}^{*} &amp;= 4\beta_{1}^{*}\\
+\end{align*}`
+]
+.right-wide100[
+&lt;img src="lecture3_files/figure-html/linhyp1-1.png" width="85%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+
+
+---
+
+
+## An Example
+
+I generated data with the following such that `\(x_{i} \in \{1,2,3,4,5\}\)` and
+`$$y_{i} = 2 + x + \varepsilon_{i}$$`
+
+where `\(\varepsilon_{i} \sim N(0,2)\)`.
+
+We can use an F-test to get the desired result.  To accomplish this, we need to do:
+
+- Run the model by creating dummy variables for all but the smallest category of the variable in question.
+
+- Test the appropriate restrictions on the model.
+
+
+
+
+
+
+---
+
+
+## Example Continued
+
+Here is the model output:
+
+
+
+```
+## 
+## Call:
+## lm(formula = y ~ x)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -5.5335 -1.2756 -0.0546  1.3060  6.6972 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   3.1808     0.1945  16.354  &lt; 2e-16 ***
+## x2            0.6041     0.2751   2.196   0.0285 *  
+## x3            2.0601     0.2751   7.490 3.19e-13 ***
+## x4            2.7467     0.2751   9.986  &lt; 2e-16 ***
+## x5            4.0309     0.2751  14.655  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.945 on 495 degrees of freedom
+## Multiple R-squared:  0.3609,	Adjusted R-squared:  0.3557 
+## F-statistic: 69.87 on 4 and 495 DF,  p-value: &lt; 2.2e-16
+```
+
+---
+
+## Hypothesis Test
+
+We can also perform a hypothesis test using the general linear hypothesis testing:
+
+
+
+``` r
+## Using linearHypothesis to test
+## the expectations in slide "Expectations"
+library(car)
+hyps &lt;- c("2*x2 = x3", "3*x2 = x4",
+	"4*x2 = x5")
+linearHypothesis(mod, hyps)
+```
+
+```
+## 
+## Linear hypothesis test:
+## 2 x2 - x3 = 0
+## 3 x2 - x4 = 0
+## 4 x2 - x5 = 0
+## 
+## Model 1: restricted model
+## Model 2: y ~ x
+## 
+##   Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
+## 1    498 1888.4                           
+## 2    495 1872.5  3    15.896 1.4008 0.2418
+```
+
+
+
+
+---
+
+## Linear vs. Non-linear effect
+&lt;img src="lecture3_files/figure-html/nlsimfig-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+## Results
+
+The results of the `\(F\)`-test suggest that the dummy variable model is not significantly better than the model with one linear term (i.e., `\(p &gt; 0.05\)`).
+
+There is another, equivalent way to do this test:
+
+
+
+``` r
+## Show how to do the linear hypothesis
+## test with an anova on 2 models
+tmpu &lt;- data.frame(y=y, x=x)
+tmpr &lt;- data.frame(y=y, x=as.numeric(x))
+restricted.mod &lt;- lm(y ~ x, data=tmpr)
+unrestricted.mod &lt;- lm(y ~ x, data=tmpu)
+anova(restricted.mod, unrestricted.mod, test="F")
+```
+
+```
+## Analysis of Variance Table
+## 
+## Model 1: y ~ x
+## Model 2: y ~ x
+##   Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
+## 1    498 1888.4                           
+## 2    495 1872.5  3    15.896 1.4008 0.2418
+```
+
+
+---
+
+## Robustness
+
+
+``` r
+library(nprobustness)
+library(marginaleffects)
+rdat &lt;- insight::get_data(restricted.mod)
+udat &lt;- insight::get_data(unrestricted.mod)
+
+np_robust(restricted.mod, 
+          unrestricted.mod, 
+          vbl=list(x=1:5),  
+          type = "pred")
+```
+
+```
+## # A tibble: 5 × 6
+##   x     estimate std.error conf.low conf.high robust
+##   &lt;fct&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;
+## 1 1         3.18     0.194     2.73      3.32  0.758
+## 2 2         3.78     0.194     3.84      4.26  0.382
+## 3 3         5.24     0.194     4.90      5.24  0.459
+## 4 4         5.93     0.194     5.88      6.30  0.567
+## 5 5         7.21     0.194     6.81      7.41  0.820
+```
+
+
+
+---
+
+## Real Data Example
+
+
+
+``` r
+## Read in example data, estimate linear model
+## with polity in numerical form (polity_dem) and
+## polity in factor form and test to see if the
+## factor is better than the linear version.
+dat &lt;- rio::import("../data/linear_ex.dta")
+datu &lt;- dat %&gt;% mutate(polity_dem = as.factor(polity_dem))
+restricted.mod &lt;- lm(rep1 ~ polity_dem + iwar +
+    cwar + logpop + gdppc,data=dat)
+unrestricted.mod &lt;- lm(rep1 ~ polity_dem + iwar +
+    cwar + logpop + gdppc,data=datu)
+anova(restricted.mod, unrestricted.mod, test="F")
+```
+
+```
+## Analysis of Variance Table
+## 
+## Model 1: rep1 ~ polity_dem + iwar + cwar + logpop + gdppc
+## Model 2: rep1 ~ polity_dem + iwar + cwar + logpop + gdppc
+##   Res.Df    RSS Df Sum of Sq      F    Pr(&gt;F)    
+## 1   2677 2538.3                                  
+## 2   2668 2163.3  9    374.98 51.385 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+## Partial Robustness
+
+
+``` r
+np_robust(restricted.mod, 
+          unrestricted.mod, 
+          vbl=list("polity_dem" = 0:10), 
+          type="pred")
+```
+
+```
+## # A tibble: 11 × 6
+##    polity_dem estimate std.error conf.low conf.high   robust
+##    &lt;fct&gt;         &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1 0           0.404      0.0278   0.342     0.453  9.49e- 1
+##  2 1           0.479      0.0897   0.236     0.332  4.75e- 2
+##  3 2           0.114      0.0980   0.128     0.213  2.87e- 1
+##  4 3           0.261      0.127    0.0186    0.0956 6.80e- 2
+##  5 4           0.470      0.160   -0.0932   -0.0195 9.06e- 4
+##  6 5           0.0324     0.106   -0.208    -0.132  4.87e- 2
+##  7 6           0.149      0.0732  -0.325    -0.242  4.88e- 8
+##  8 7          -0.00104    0.0744  -0.444    -0.350  1.42e- 6
+##  9 8           0.0778     0.0641  -0.564    -0.456  3.87e-17
+## 10 9          -0.0519     0.0711  -0.685    -0.562  3.62e-13
+## 11 10         -1.53       0.0500  -0.807    -0.667  0
+```
+
+
+
+---
+
+## Plot of effects
+&lt;img src="lecture3_files/figure-html/plotlm1-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+
+
+
+
+
+
+---
+
+## Linearity of Factors in GLMs
+
+
+
+``` r
+library(foreign)
+## read in ANSS data
+anes &lt;- rio::import("../data/anes1992.dta")
+## make PID a factor and store in pidfac
+anesu &lt;- anes %&gt;% mutate(pid = as.factor(pid))
+## estimate the linear (restricted) and
+## dummy variable (unrestricted) models
+unrestricted.mod &lt;- glm(votedem ~ retnat + pid + age + male +
+	 educ + black + south, data=anesu, family=binomial)
+restricted.mod &lt;- glm(votedem ~ retnat + pid + age + male + educ +
+	black + south, data=anes, family=binomial)
+## test the difference in two models
+anova(restricted.mod, unrestricted.mod, test='Chisq')
+```
+
+```
+## Analysis of Deviance Table
+## 
+## Model 1: votedem ~ retnat + pid + age + male + educ + black + south
+## Model 2: votedem ~ retnat + pid + age + male + educ + black + south
+##   Resid. Df Resid. Dev Df Deviance  Pr(&gt;Chi)    
+## 1      1031     804.35                          
+## 2      1026     769.71  5   34.633 1.781e-06 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+## Robustness
+
+
+``` r
+np_robust(restricted.mod, 
+          unrestricted.mod, 
+          vbl=list("pid" = 1:7), 
+          type="pred", 
+          base_args = list(type="link"), 
+          robust_args = list(type="link"))
+```
+
+```
+## # A tibble: 7 × 6
+##   pid   estimate std.error conf.low conf.high robust
+##   &lt;fct&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;
+## 1 1        2.55      0.296    1.91      2.55  0.477 
+## 2 2        0.766     0.179    1.08      1.56  0.0399
+## 3 3        0.981     0.189    0.220     0.599 0.0216
+## 4 4       -0.456     0.252   -0.694    -0.306 0.552 
+## 5 5       -2.30      0.322   -1.66     -1.16  0.0233
+## 6 6       -1.83      0.248   -2.65     -1.98  0.260 
+## 7 7       -3.52      0.515   -3.66     -2.80  0.524
+```
+
+
+---
+
+
+## Plot of effects
+&lt;img src="lecture3_files/figure-html/plotglm1-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+## Monotonicity
+
+Sometimes we may want to consider only a subset of possible alternative forms.  
+
+- With ordinal variables, if relationships are monotonic, they might very well be consistent with our hypotheses even if they are not linear.  
+- Testing whether a monotonic (though perhaps not linear) model is not significantly worse than a fully unconstrained model is a nice "middle-ground". 
+
+
+---
+
+
+## Example 1
+
+.pull-left[
+
+
+``` r
+set.seed(519)
+x &lt;- rep(1:5, 100)
+x &lt;- x[order(x)]
+means &lt;- c(0, .25, .5, .45, 1)
+y &lt;- 2 + means[x] + rnorm(500,0,1)
+x &lt;- as.factor(x)
+df &lt;- data.frame(y=y, x=x)
+m1 &lt;- lm(y ~ x, data=df)
+
+df &lt;- df %&gt;% mutate(
+    x_num = as.numeric(x), 
+    x_mono = case_when(
+      x_num == 4 ~ 3, TRUE ~ x_num), 
+    x_mono = factor(x_mono, levels=c(1,2,3,5), 
+                    labels=c("1", "2", "3-4", "5"))
+  )
+m2 &lt;- lm(y ~ x_mono, data=df)
+```
+]
+.pull-right[
+
+``` r
+summary(m1)
+```
+
+```
+## 
+## Call:
+## lm(formula = y ~ x, data = df)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.94925 -0.64909 -0.01495  0.66791  2.85968 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   2.0532     0.0983  20.887  &lt; 2e-16 ***
+## x2            0.1164     0.1390   0.837 0.402747    
+## x3            0.5169     0.1390   3.718 0.000224 ***
+## x4            0.3678     0.1390   2.646 0.008405 ** 
+## x5            0.9019     0.1390   6.487 2.12e-10 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.983 on 495 degrees of freedom
+## Multiple R-squared:  0.09551,	Adjusted R-squared:  0.0882 
+## F-statistic: 13.07 on 4 and 495 DF,  p-value: 3.994e-10
+```
+]
+
+
+---
+
+
+## The test
+
+.pull-left[
+
+``` r
+plot_predictions(m1, condition="x") + 
+  theme_xaringan()
+```
+
+&lt;img src="lecture3_files/figure-html/unnamed-chunk-7-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+]
+.right-shift100[
+
+``` r
+anova(m1, m2, test="F")
+```
+
+```
+## Analysis of Variance Table
+## 
+## Model 1: y ~ x
+## Model 2: y ~ x_mono
+##   Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
+## 1    495 478.32                           
+## 2    496 479.43 -1   -1.1106 1.1493 0.2842
+```
+
+``` r
+car::linearHypothesis(m1, 
+                      "x3=x4")
+```
+
+```
+## 
+## Linear hypothesis test:
+## x3 - x4 = 0
+## 
+## Model 1: restricted model
+## Model 2: y ~ x
+## 
+##   Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
+## 1    496 479.43                           
+## 2    495 478.32  1    1.1106 1.1493 0.2842
+```
+]
+
+
+---
+
+
+## Automatic Inference
+
+
+.pull-left[
+
+Sometimes, it is not obvious what is the best way to change the pattern to make it monotonic.  
+
+
+``` r
+library(ic.infer)
+mon.x &lt;- make.mon.ui(df$x)
+mon.mod &lt;- orlm(m1,ui=mon.x, index=2:5)
+```
+
+
+```
+Order-restricted linear model with restrictions of coefficients of 
+x2 x3 x4 x5 
+
+
+ Inequality restrictions:
+     x2 x3 x4 x5                   
+1:   1  0  0  0  %*%colnames  &gt;=  0
+2:   -1 1  0  0  %*%colnames  &gt;=  0
+3: A 0  -1 1  0  %*%colnames  &gt;=  0
+4:   0  0  -1 1  %*%colnames  &gt;=  0
+
+ Note: Restrictions marked with A are active. 
+```
+]
+.pull-right-shift[
+
+``` r
+summary(mon.mod, brief=TRUE)
+```
+
+```
+## Order-restricted linear model with restrictions of coefficients of 
+## x2 x3 x4 x5 
+## 
+## 
+## Coefficients from order-restricted model: 
+##   (Intercept)          R x2          R x3          R x4          R x5 
+##     2.0532369     0.1164204     0.4423570     0.4423570     0.9018621 
+## 
+##  Note: Coefficients marked with R are involved in restrictions. 
+## 
+## 
+## Hypothesis tests ( 495 error degrees of freedom ): 
+## Overall model test under the order restrictions: 
+##        Test statistic: 0.09360797,   p-value: &lt;0.0001
+## 
+## Type 1 test: H0: all restrictions active(=) 
+##          vs. H1: at least one restriction strictly true (&gt;) 
+##        Test statistic: 0.09360797,   p-value: &lt;0.0001
+## Type 2 test: H0: all restrictions true 
+##          vs. H1: at least one restriction false 
+##        Test statistic: 0.002316513,   p-value: 0.6841
+## Type 3 test: H0: at least one restriction false or active (=) 
+##          vs. H1: all restrictions strictly true (&gt;) 
+##        Test statistic: -1.072071,   p-value: 0.8579
+## 
+## Type 3 test based on t-distribution (one-sided), 
+## all other tests based on mixture of beta distributions
+```
+]
+
+
+
+---
+
+
+## Polity Example
+
+Testing fully constrained (linear) against fully unconstrained (factor) model: 
+
+
+
+``` r
+unrestricted.mod &lt;- lm(rep1 ~ polity_dem + iwar +
+    cwar + logpop + gdppc,data=datu)
+restricted.mod &lt;- lm(rep1 ~ polity_dem + iwar +
+    cwar + logpop + gdppc,data=dat)
+anova(restricted.mod, unrestricted.mod, test="F")
+```
+
+```
+## Analysis of Variance Table
+## 
+## Model 1: rep1 ~ polity_dem + iwar + cwar + logpop + gdppc
+## Model 2: rep1 ~ polity_dem + iwar + cwar + logpop + gdppc
+##   Res.Df    RSS Df Sum of Sq      F    Pr(&gt;F)    
+## 1   2677 2538.3                                  
+## 2   2668 2163.3  9    374.98 51.385 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+
+---
+
+
+
+
+``` r
+## *-1 because the pattern is monotone negative
+mon.polity &lt;- make.mon.ui(datu$polity_dem)*-1
+mon.mod &lt;- orlm(unrestricted.mod,ui=mon.polity, 
+                index=2:11)
+summary(mon.mod, brief = TRUE)
+```
+
+```
+## Order-restricted linear model with restrictions of coefficients of 
+## polity_dem1 polity_dem2 polity_dem3 polity_dem4 polity_dem5 polity_dem6 polity_dem7 polity_dem8 polity_dem9 polity_dem10 
+## 
+## 
+## Coefficients from order-restricted model: 
+##    (Intercept)  R polity_dem1  R polity_dem2  R polity_dem3  R polity_dem4 
+##   -1.649968068    0.000000000   -0.183968744   -0.183968744   -0.183968744 
+##  R polity_dem5  R polity_dem6  R polity_dem7  R polity_dem8  R polity_dem9 
+##   -0.297738444   -0.297738444   -0.365601155   -0.365601155   -0.461183725 
+## R polity_dem10           iwar           cwar         logpop          gdppc 
+##   -1.937221990    0.893868406    0.657546894    0.232332361   -0.000064166 
+## 
+##  Note: Coefficients marked with R are involved in restrictions. 
+## 
+## 
+## Hypothesis tests ( 2668 error degrees of freedom ): 
+## Overall model test under the order restrictions: 
+##        Test statistic: 0.7016129,   p-value: &lt;0.0001
+## 
+## Type 1 test: H0: all restrictions active(=) 
+##          vs. H1: at least one restriction strictly true (&gt;) 
+##        Test statistic: 0.2768493,   p-value: &lt;0.0001
+## Type 2 test: H0: all restrictions true 
+##          vs. H1: at least one restriction false 
+##        Test statistic: 0.002170722,   p-value: 0.7097
+## Type 3 test: H0: at least one restriction false or active (=) 
+##          vs. H1: all restrictions strictly true (&gt;) 
+##        Test statistic: -1.026567,   p-value: 0.8476
+## 
+## Type 3 test based on t-distribution (one-sided), 
+## all other tests based on mixture of beta distributions
+```
+
+---
+
+## Robustness
+
+.left-narrow[
+
+``` r
+restricted.mod &lt;- lm(rep1 ~ polity_dem + iwar +
+    cwar + logpop + gdppc,data=dat)
+unrestricted.mod &lt;- lm(rep1 ~ polity_dem + iwar +
+    cwar + logpop + gdppc,data=datu)
+
+cw &lt;- function(x){
+  x &lt;- case_when(x %in% 0:1 ~ 0, 
+                 x %in% 2:4 ~ 1, 
+                 x %in% 5:6 ~ 2, 
+                 x %in% 7:8 ~ 3, 
+                 x ==9 ~ 4, 
+                 x==10 ~ 5); as.factor(x)}
+mono.mod &lt;- lm(rep1 ~ cw(polity_dem) + iwar +
+    cwar + logpop + gdppc,data=dat)
+```
+]
+.right-wide[
+
+``` r
+np_robust(restricted.mod, 
+          mono.mod, 
+          vbl=list("polity_dem" = 0:10), 
+          type="pred")
+```
+
+```
+## # A tibble: 11 × 6
+##    polity_dem estimate std.error conf.low conf.high   robust
+##         &lt;int&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1          0   0.409     0.0267   0.342     0.453  9.44e- 1
+##  2          1   0.409     0.0267   0.236     0.332  2.11e- 3
+##  3          2   0.225     0.0700   0.128     0.213  3.50e- 1
+##  4          3   0.225     0.0700   0.0186    0.0956 3.06e- 2
+##  5          4   0.225     0.0700  -0.0932   -0.0195 2.35e- 4
+##  6          5   0.111     0.0606  -0.208    -0.132  3.05e- 5
+##  7          6   0.111     0.0606  -0.325    -0.242  2.95e- 9
+##  8          7   0.0433    0.0487  -0.444    -0.350  3.43e-16
+##  9          8   0.0433    0.0487  -0.564    -0.456  5.19e-25
+## 10          9  -0.0523    0.0711  -0.685    -0.562  3.79e-13
+## 11         10  -1.53      0.0500  -0.807    -0.667  0
+```
+]
+---
+
+## Robustness Against Unrestricted Model 
+
+
+``` r
+np_robust(unrestricted.mod, 
+          mono.mod, 
+          vbl=list("polity_dem" = 0:10), 
+          type="pred")
+```
+
+```
+## # A tibble: 11 × 6
+##    polity_dem estimate std.error conf.low conf.high robust
+##         &lt;int&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;
+##  1          0   0.409     0.0267  0.349      0.458   0.954
+##  2          1   0.409     0.0267  0.303      0.655   1.00 
+##  3          2   0.225     0.0700 -0.0780     0.306   0.877
+##  4          3   0.225     0.0700  0.0121     0.511   0.999
+##  5          4   0.225     0.0700  0.156      0.784   0.838
+##  6          5   0.111     0.0606 -0.175      0.240   0.983
+##  7          6   0.111     0.0606  0.00512    0.292   0.958
+##  8          7   0.0433    0.0487 -0.147      0.145   0.982
+##  9          8   0.0433    0.0487 -0.0478     0.203   0.969
+## 10          9  -0.0523    0.0711 -0.191      0.0874  0.950
+## 11         10  -1.53      0.0500 -1.63      -1.43    0.950
+```
+
+---
+
+## Monotonicity in GLMs
+
+The full suite of functions for testing is not available for non-Gaussian GLMs. Could dothe following: 
+
+1. Estimate the unrestricted (factor) GLM. 
+2. Save the fitted response `\(\hat{\eta}\)`. 
+3. Regress `\(g(\hat{\eta})\)` on the monotone restrictions, where `\(g(\cdot)\)` is the link function. 
+4. Use the results impose the appropriate monotonicity constraints on the variable of interest. 
+5. Re-estimate the GLM with the imposed monotonicity restrictions and test against the unconstrained model. 
+
+
+---
+
+## Example
+
+- Estimate Model: 
+
+``` r
+anes_tmp &lt;- anesu %&gt;% 
+  dplyr::select(votedem, retnat, pid, age, male, educ, black, south, pid) %&gt;% 
+  na.omit()
+unrestricted.mod &lt;- glm(votedem ~ retnat + pid + age + male +
+	 educ + black + south, data=anes_tmp, family=binomial)
+```
+
+- Save `\(\hat{\eta}\)` to use later. 
+
+``` r
+anes_tmp &lt;- anes_tmp %&gt;% 
+  mutate(eta_hat = predict(unrestricted.mod, 
+                           type="response"))
+```
+
+- Regress `\(g(\hat{\eta})\)` on the monotone restrictions. 
+
+
+``` r
+mon.anes &lt;- make.mon.ui(anes_tmp$pid)*-1
+tmp_mod &lt;- lm(qlogis(eta_hat) ~  retnat + pid + 
+	 age + male + educ + black + south, data=anes_tmp)
+mon.mod &lt;- orlm(tmp_mod, ui=mon.anes, index=4:9)
+mon.mod
+```
+
+```
+## 
+## Constrained linear model:
+## 
+## 
+## Restricted model: R2 reduced from 1 to 0.3942472 
+## 
+## Coefficients:
+## (Intercept)       retnat         pid2         pid3         pid4         pid5  
+##    -4.04035      1.30973      1.13003      0.00000      0.00000      0.00000  
+##        pid6         pid7          age         male         educ        black  
+##     0.00000      0.00000      0.00000     -0.60071     -0.03021      3.72433  
+##       south  
+##     0.03758
+```
+
+
+---
+
+## Example continued
+
+.left-narrow[
+- Use results from `orlm` to impose appropriate restrictions
+
+
+``` r
+cw &lt;- function(x){
+  x &lt;- case_when(x == 1 ~ 1, 
+                 x %in% 2:3 ~ 2, 
+                 x ==4 ~ 3, 
+                 x %in% 5:6 ~ 4, 
+                 x == 7 ~ 5, 
+                 TRUE ~ NA_real_)
+  as.factor(x)
+}
+```
+]
+.right-wide[
+- Re-estimate model and test against unconstrained model. 
+
+
+``` r
+mon.glm &lt;- glm(votedem ~ retnat + cw(pid) + age + male +
+	 educ + black + south, data=anes_tmp, family=binomial)
+umod &lt;- update(unrestricted.mod, data=anes_tmp)
+rmod &lt;- glm(votedem ~ retnat + as.numeric(pid) + age + male +
+	 educ + black + south, data=anes_tmp, family=binomial)
+anova(mon.glm, umod, test='Chisq')
+```
+
+```
+## Analysis of Deviance Table
+## 
+## Model 1: votedem ~ retnat + cw(pid) + age + male + educ + black + south
+## Model 2: votedem ~ retnat + pid + age + male + educ + black + south
+##   Resid. Df Resid. Dev Df Deviance Pr(&gt;Chi)
+## 1      1028     771.85                     
+## 2      1026     769.71  2   2.1372   0.3435
+```
+]
+
+---
+
+## Robustness: Unrestricted
+
+
+``` r
+np_robust(umod, 
+          mon.glm, 
+          vbl=list(pid=as.factor(1:7)), 
+          type="pred", 
+          base_args = list(type="link"), 
+          robust_args = list(type="link"))
+```
+
+```
+## # A tibble: 7 × 6
+##   pid   estimate std.error conf.low conf.high robust
+##   &lt;fct&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;
+## 1 1        2.55      0.296    1.97     3.13    0.950
+## 2 2        0.868     0.133    0.416    1.12    0.969
+## 3 3        0.868     0.133    0.610    1.35    0.974
+## 4 4       -0.458     0.252   -0.950    0.0382  0.950
+## 5 5       -2.02      0.197   -2.93    -1.67    0.963
+## 6 6       -2.02      0.197   -2.31    -1.34    0.929
+## 7 7       -3.52      0.515   -4.53    -2.51    0.950
+```
+
+---
+
+## Robustness: Restricted
+
+
+``` r
+np_robust(rmod, 
+          umod, 
+          vbl=list(pid=as.factor(1:7)), 
+          type="pred", 
+          base_args = list(type="link"), 
+          robust_args = list(type="link"))
+```
+
+```
+## # A tibble: 7 × 6
+##   pid   estimate std.error conf.low conf.high robust
+##   &lt;fct&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;
+## 1 1        2.55      0.296    1.91      2.55  0.477 
+## 2 2        0.766     0.179    1.08      1.56  0.0399
+## 3 3        0.981     0.189    0.220     0.599 0.0216
+## 4 4       -0.456     0.252   -0.694    -0.306 0.552 
+## 5 5       -2.30      0.322   -1.66     -1.16  0.0233
+## 6 6       -1.83      0.248   -2.65     -1.98  0.260 
+## 7 7       -3.52      0.515   -3.66     -2.80  0.524
+```
+
+---
+
+## Exercise
+
+In Fearon and Laitin's widely-cited 2003 _APSR_ piece, they predict the civil war onsets with a number of variables. 
+
+
+``` r
+fldat &lt;- rio::import("../data/fl_repdata.dta")
+fldat$onset &lt;- ifelse(fldat$onset &gt; 1, 1, fldat$onset)
+base_mod &lt;- glm(onset ~ warl + gdpenl + lpopl1 + lmtnest + ncontig + Oil +
+                nwstate + instab + polity2l + ethfrac + relfrac, 
+                data=fldat, family=binomial)
+```
+
+If we think about `polity2l` (which ranges from -10 to 10) as an ordinal variable, how robust is its effect to the models we talked about today?
+
+---
+
+## Recap
+
+1. Linearity diagnostics for ordinal explanatory variables. 
+2. Monotonicity constrained models. 
+3. Robustness of predicted values.
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 4</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="lecture4_files/header-attrs/header-attrs.js"></script>
+    <script src="lecture4_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture4_files/fabric/fabric.min.js"></script>
+    <link href="lecture4_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture4_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture4_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture4_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture4_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture4_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture4_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 4
+]
+.subtitle[
+## Linearity in Continuous Variables
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+.remark-slide-content{
+  font-size: 1.25rem;
+}
+
+.large-text{
+  font-size: 2rem;
+}
+
+
+div.red {
+  color: #9A3324;
+}
+.left-narrow {
+  width: 38%;
+  height: 100%;
+  float: left;
+}
+.right-wide {
+  width: 58%;
+  float: right;
+  position:relative; 
+  top: -33px;
+}
+.right-wide100 {
+  width: 60%;
+  float: right;
+  position:relative; 
+  top: -100px;
+}
+.right-shift100 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -100px;
+}
+.right-shift50 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -50px;
+}
+.middle-text {
+  position: relative; 
+  top: 125px;
+}
+
+.remark-code{
+  font-size: 55%
+}
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.left-code-shift2 {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+  position:relative; 
+  top: -50px;
+
+}
+.left-code-shift {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+  position:relative; 
+  top: -100px;
+
+}
+
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+.right-plot-shift2 {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+.right-plot-shift {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-left-shift2 {
+  float: left;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+
+}
+.shift { 
+  position:relative; 
+  top: -100px;
+  }
+
+.pull-right ~ * {
+  clear: both;
+}
+&lt;/style&gt;
+
+
+## Diagnosing Non-Linearity
+
+Diagnosing non-linearity in relationships between continuous predictors is a bit more tricky. 
+
+We will use an analysis of the residuals to diagnose whether the relationship between `\(\mathbf{X}\)` and `\(y\)` is well-characterized by a line.  
+
+We will also need to figure out a flexible way to model the dependencies between `\(\mathbf{X}\)` and the residuals.
+- To do this, we will need to learn something about non-parametric regression
+
+
+---
+
+## Goals for Today
+
++ Develop local polynomial regression as a tool for modeling bivariate relationships. + Use C+R Plots to diagnose unmodeled non-linearity. 
++ Discuss non-linear transformations for fixing simple, monotone non-linearity. 
++ Discuss polynomial regression for fixing non-linear relationships that are not simple and monotone. 
+
+---
+
+## Parametric vs. Non-parametric
+
+
+Our goal is to trace the dependence of `\(y\)` on `\(x\)`.  Specifically, we usually want to get something like:
+
+`$$y_{i}|x_{i} = f(x_{i}) + e_{i}$$`
+
+We usually define `\(f(\cdot)\)` to be "smooth".
+
+- The linear functional form - `\(f(x_{i}) = \alpha + \beta x_{i}\)` - is the "smoothest" of smooth function.
+
+The above model is parametric, because we are estimating *parameters* that describe relationship between `\(y\)` and `\(x\)`.
+
+It is possible to characterize the relationship without estimating global parameters (i.e., parameters that apply to all of the observations equally) - what we call *non-parametric* models. 
+
+
+
+
+
+---
+
+
+## Global vs. Local Parametric Models
+
+All of the models we will talk about below are *locally* parametric.
+
+- They fit a parametric model to a relatively small subset of the data.
+
+- The sum total of these many local parametric fits is a non-parametric fit - one that does not impose the same functional form for all of the data.
+
+Because these models remain locally parametric, we can usually use information from the many local models to derive standard errors for the fit.  (More on this later)
+
+
+
+
+
+---
+
+
+## Local Polynomial Regression
+
+To estimate the local polynomial regression between `\(y\)` and `\(x\)`, start with the smallest unique value of `\(x\)`, call it `\(x_{0}\)`,  and you would estimate:
+
+`$$y_{i}w_{i} = \beta_{0} + \beta_{1}x_{i}w_{i} + \beta_{2}x_{i}^{2}w_{i} + \varepsilon_{i}w_{i}$$`
+
+for the `\(span\times 100\%\)` of the observations closest to `\(x_{0}\)`.  Let's say for the sake or argument that the `\(\text{span}=0.5\)`.
+
+
+- Find the `\(50\%\)` of the points closes to `\(x_{0}\)` by calculating `\(d_{i} = |x_{i}-x_{0}|\)` and then taking the `\(50\%\)` smallest values of `\(d_{i}\)`.
+
+- For the observations in the subsample, calculate the scaled distance such that `\(\tilde d_{i} = \frac{d_{i}}{max(d_{i})}\)`.  This makes the largest distance in the subsample equal to 1.
+
+
+
+
+---
+
+
+## Local Polynomial Regression II
+
+.pull-left[
+- Calculate the weights for the subset using the tricube weight function.
+
+`$$w_{i} = \left(1-\tilde d^3\right)^3$$`
+
+`\(w_{i}\)` for observations outside the subset will be 0.
+
+]
+.pull-right-shift2[
+&lt;img src="lecture4_files/figure-html/tricube-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+]
+
+
+
+---
+
+
+## Robustness Weighting in LPR
+
+- Fit the local regressions using weights `\(w_{i}\)`
+- Calculate the residuals `\(\hat{\varepsilon}_{i} = y_{i} - \hat{y}_{i}\)`
+- Determine the median of the absolute values of the residuals `\(\hat{q}_{.5}\)`
+- Find the robustness weights (with the Bisquare weight function):
+
+`$$r_{i} = B\left(\frac{\hat{\varepsilon}_{i}}{6\hat{q}_{.5}}\right)$$`
+
+where:
+
+`$$B(u) = \left\{
+  \begin{array}{ll}
+    (1-u^{2})^{2}, &amp; \text{if } |u| &lt; 1; \\
+    0, &amp; \text{otherwise.}
+  \end{array}
+\right.$$`
+
+- Repeat the loess procedure using weights `\(r_{i}w_{i}\)`
+- Repeat steps 2-5 until the loess model converges.
+
+
+
+
+---
+
+
+## Bisquare Weighting Function
+
+What does the bisquare weight function look like?
+
+&lt;img src="lecture4_files/figure-html/bisquare-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+
+## Choosing the Span
+
+The choice of *span* (i.e., the number of points included in each local model) - this encapsulates the bias-variance tradeoff.
+
+- A bigger span can induce bias which results in a non-parametric estimate that is not faithful to the local patterns in the data
+- A smaller span can exhibit considerable variability while sticking very closely to the local pattern in the data.  Overfitting is a potential problem here.
+
+Overfitting is not necessarily a problem if we *only* care about the relationship in this sample.  However, if we are (either explicitly or implicitly) trying to say something about a population with the sample, then overfitting can be a real problem.
+
+
+
+
+
+---
+
+
+## Choosing Polynomial Degree and Weight Function
+
+Polynomial Degree:
+
+- Higher degree polynomials are more likely to overfit the data.
+- The most common advice is to set the polynomial degree to 2 and adjust the span to generate the required smoothness of fit.
+
+Weight Function:
+
+- The default in R is the *tricube* weight function.
+- There is little reason to change this as it generally has a relatively small effect on the overall estimate.
+
+
+
+
+
+
+---
+
+
+## LPR in R
+
+There are two different versions of this type of regression: Loess and Lowess.
+
+- In R, The important difference between these two is that Loess can take multiple predictors (i.e., multiple nonparametric regression) whereas Lowess only takes 1.  Further, the user has much more control over `loess` than `lowess`, so we spend time on the former.
+  - Both `loess` and `lowess` are in the `stats` package that comes with every distribution of R.
+  - The robustness weighting is done by specifying `family = symmetric` in the `loess` command. Otherwise, if `family = gaussian`, no robustness weighting (only distance weighting) will be done.
+
+
+
+
+---
+
+
+## Loess Graph
+
+&lt;img src="lecture4_files/figure-html/loess-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+
+
+
+---
+
+
+## Interpretation of Non-Parametric Fits
+
+Often, we are tempted to impose some meaning on small bumps and dips in the local fit.  As Keele (2007) suggests - "it is a temptation analysis should resist.''
+  - It is often useful to consider the overall general pattern in the data and if there appears to be a pattern that can be modeled parametrically - impose that fit and assess the difference between the parametric and non-parametric models (more on this later).
+
+
+
+
+
+
+
+---
+
+
+## Plotting the LOESS curve
+
+.left-code[
+
+``` r
+## You can estimate and plot the loess model with ggplot2
+ggplot(Prestige, aes(x=income, y=prestige)) + 
+ stat_smooth(method="loess", 
+             span=.75, 
+             geom="line",
+             method.args=list(
+               family="symmetric")) +
+  geom_point(pch=1) + 
+  theme_bw() + 
+  theme_xaringan() + 
+  labs(x="Income", 
+       y="Prestige")
+## you could also estimate the loess model with: 
+## loess(prestige ~ income, data=Prestige, span=.75)
+```
+]
+.right-plot[
+&lt;img src="lecture4_files/figure-html/unnamed-chunk-3-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+## Non-linearity
+
+The assumption that the average error `\(E(\varepsilon)\)` is everywhere zero implies that the regression surface accurately reflects the dependency of `\(Y\)` on the `\(X\)`'s
+- We can see this as linearity in the broad sense
+- i.e., non-linearity refers to a partial relationship between two variables that is not summarized by a straight line, but it could also refer to situations when two variables specified to have additive effects actually interact.
+  - Violating this assumption implies that the model fails to account for a systematic pattern between `\(Y\)` and the `\(X\)`'s
+  - Often models characterized by this violation will still provide a useful approximation of the pattern in the data, but they can also be misleading
+
+It is impossible to directly view the regression surface when more than two predictors are specified, but we can employ
+*partial residual plots* to assess non-linearity.
+
+
+
+
+
+
+---
+
+## Partial-Residual Plots (C+R plots)
+
+
+The partial residual for the `\(j^{th}\)` explanatory variable from a multiple regression is
+
+`$$E_{i}^{(j)} = E_{i} + B_{j}X_{ij}$$`
+
+- This simply adds the linear component of the partial regression between `\(Y\)` and `\(X_{j}\)` (which may be characterized by a non-linear component)
+to the least squares residuals
+- The "partial residuals" `\(E^{(j)}\)` are plotted versus `\(X_{j}\)`, meaning that `\(B_{j}\)` is the slope of the multiple simple regression of `\(E^{(j)}\)` on `\(X_{j}\)`
+- A non-parametric smooth helps assess whether the linear trend adequately captures the partial relationship between `\(Y\)` and `\(X\)`.
+    
+
+
+
+
+
+
+
+---
+
+## Example: The Canadian Prestige Data
+
+.left-code[
+
+``` r
+## load data
+data(Prestige, package="carData")
+## divide income by 1000 to make
+## income coefficient readable
+Prestige$income &lt;- Prestige$income/1000
+## Estimate model
+Prestige.model&lt;-lm(prestige ~ 
+  income + education +
+	women, data=Prestige)
+## produce C+R Plots for each variable
+crPlot(Prestige.model, "income")
+crPlot(Prestige.model, "education")
+crPlot(Prestige.model, "women")
+```
+]
+.right-plot-shift2[
+&lt;img src="lecture4_files/figure-html/cpr1-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+
+---
+
+
+## Testing Non-linearity with CR Plots
+
+While this is not a substitute for looking at the graphs, I have written a couple of functions that will allow you to use an F-test to evaluate significant departures from linearity.
+
+
+``` r
+library(DAMisc)
+## use the crTest function to figure out
+## whether the loess curves in the C+R plots
+## deviate significantly from the straight line
+crTest(Prestige.model, adjust.method="holm")
+```
+
+```
+##              RSSp   RSSnp DFnum DFdenom     F     p
+## income    6033.57 5107.50 2.356  97.644 7.514 0.001
+## education 6033.57 5740.21 1.235  98.765 4.088 0.075
+## women     6033.57 5909.90 1.366  98.634 1.511 0.227
+```
+
+There is an option to use automatic span selection through wither AICc or GCV - both of which we'll talk about next lecture. 
+
+
+
+---
+
+## Inference for Nonparametric Models
+
+In the example above, we are testing the local polynomial regression against the straight line in the CR Plot.  The main issue is figuring out the degrees of freedom for the LPR. 
+
+We know in OLS:
+- `\(\hat{\mathbf{y}} = \mathbf{Hy}\)` and `\(df_{\text{model}} = tr(\mathbf{H})\)`
+- `\(\mathbf{H}\)` is symmetric and idempotent so `\(tr(\mathbf{H}) = tr(\mathbf{HH}^{\prime})\)`
+- Residual variance is `\(\frac{\mathbf{e}^{\prime}\mathbf{e}}{tr[(\mathbf{I}-\mathbf{H})^{\prime}(\mathbf{I}-\mathbf{H})]}\)` where the denominator is the residual degrees of freedom.
+
+
+
+
+
+
+---
+
+
+## Degrees of Freedom II
+
+In LPR, `\(\mathbf{y} = \mathbf{Sy}\)`, we have three different degrees of freedom estimates based on the OLS properties from above:
+
+
+- `\(tr(\mathbf{S})\)` (df model)
+
+- `\(tr(\mathbf{SS}^{\prime})\)` (df model)
+
+- `\(tr[(\mathbf{I}-\mathbf{S})^{\prime}(\mathbf{I}-\mathbf{S})] = n-tr(2\mathbf{S} + \mathbf{SS}^{\prime})\)` (df residual), so `\(tr(2\mathbf{S} - \mathbf{SS}^{\prime})\)` would be the model df.
+
+
+Each provides a potentially different number with none being particularly preferred over the other.
+
+
+
+---
+
+
+## F-Tests and Nonparametric Models
+
+We can perform an incremental `\(F\)`-tests for a local polynomial model versus a linear model with: 
+
+`$$F = \frac{\frac{RSS_{linear} - RSS_{loess}}{tr(S)-2}}{\frac{RSS_{loess}}{n-tr(S)}}$$`
+
+- This statistic follows and `\(F\)` distribution with `\(tr(S)-2\)` numerator and `\(n-tr(S)\)` denominator degrees of freedom.
+
+
+
+---
+
+
+## Example
+
+
+``` r
+linmod &lt;- lm(prestige ~ income, data=Prestige)
+lomod &lt;- loess(prestige ~ income, data=Prestige, span = .5)
+DAMisc::testLoess(linmod, lomod)
+```
+
+```
+## F = 3.6
+## Pr( &gt; F) = 0.002
+## LOESS preferred to alternative
+```
+
+---
+
+## Robustness
+
+We can also see how robust the predictions from the linear model are to the loess model. 
+
+
+``` r
+nd &lt;- data.frame(income = quantile(Prestige$income, seq(0,1, by=.1)))
+base_ci &lt;- predict(linmod, newdata=nd, interval="confidence")
+rob &lt;- predict(lomod, newdata=nd, se=TRUE)
+pnorm(base_ci[,"upr"], rob$fit, rob$se.fit) - 
+  pnorm(base_ci[,"lwr"], rob$fit, rob$se.fit) 
+```
+
+```
+##         0%        10%        20%        30%        40%        50%        60% 
+## 0.23906970 0.21355759 0.46045793 0.71901431 0.53782266 0.62454026 0.59972361 
+##        70%        80%        90%       100% 
+## 0.33335126 0.39012130 0.06193482 0.04529637
+```
+---
+
+
+## Two Dimensions of Nonlinearity
+
+Simple vs. Complex
+- Simple means the curvature of the function relating `\(x\)` to `\(y\)` does not change direction (i.e., there is no inflection point).
+- Complex means that there is an inflection point.
+	
+
+Monotone vs Non-monotone
+  - Monotone means that as `\(x\)` increases the function relating `\(x\)` to `\(y\)` never decreases or  `\(x\)` increases the function relating `\(x\)` to `\(y\)` never increases, depending on the nature of the function.
+
+---
+
+## Handling Non-linearity: Common Strategies
+
+**Simple, monotone**
+
+- Transformations of `\(Y\)` and/or `\(X\)`
+
+**Complicated Non-linearity**
+
+- Polynomial Regression
+- If pattern has too many turns, polynomials tend to oversmooth peaks
+- Regression Splines
+- More complicated non-parametric models.
+
+
+
+
+
+---
+
+
+## Transformable Non-linearity: Bulging rule
+
+.pull-left[
+- The direction of the bulge indicates the appropriate type of power transformation for `\(Y\)` and/or `\(X\)`
+- A bulge to the top left of the scatterplot suggests transforming `\(Y\)` up the ladder of powers and/or `\(X\)` down the ladder of powers will straighten the relationship
+]
+.pull-right[
+&lt;img src="lecture4_files/figure-html/fox46.png" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+## Maximum Likelihood Transformation Methods
+
+Although the *ad hoc* methods for assessing non-linearity are usually effective, there are more sophisticated techniques based on maximum likelihood estimation
+- These techniques embed the usual multiple-regression model in a more general non-linear model that contains (a) parameter(s) for the transformation(s)
+- The transformation parameter `\(\lambda\)` is estimated simultaneously with the usual regression parameters by maximizing the likelihood and this obtaining MLEs: `\(\mathcal{L}(\lambda, \alpha, \beta_{1}, \ldots, \beta_{k},\sigma_{\varepsilon}^{2})\)`
+- If `\(\lambda = \lambda_{0}\)` (i.e., there is no transformation), a likelihood ratio test, Wald test, or score test of `\(H_{0}: \lambda = \lambda_{0}\)` can assess whether the transformation is required
+- If several variables need to be transformed, several such parameters need to be included
+
+
+
+
+
+---
+
+## Box-Tidwell Transformation of the `\(X\)`'s (1)
+
+- Maximum likelihood can also be used to find an appropriate linearizing transformation for the `\(X\)` variables
+
+- The Box-Tidwell model is a non-linear model that estimates transformation parameters for the `\(X\)`'s simultaneously with the regular parameters
+
+`$$Y_{i} = \alpha + \beta_{1}X_{i1}^{\gamma_{1}} + \cdots + \beta_{k}X_{ik}^{\gamma_{k}} + \varepsilon_i$$`
+
+where the errors are `\(iid\)`: `\(\varepsilon \sim \mathcal{N}(0, \sigma_{\varepsilon}^{2}\mathbf{I}_{n})\)` and the `\(X_{ij}\)` are positive
+- Explicit in this model is a power transformation of each of the `\(X\)`'s
+
+- Of course, we would not want to transform dummy variables and the like, so we should not attempt to estimate transformation parameters for them
+
+
+
+
+---
+
+
+## Box-Tidwell Transformation of the `\(X\)`'s (2)
+
+The Box and Tidwell procedure yields a constructed variable diagnostic in the following way:
+
+- Regress `\(Y\)` on the `\(X\)`'s and obtain `\(A, B_{1}, \ldots, B_{k}\)`.
+- Regress `\(Y\)` on the `\(X\)`'s and the constructed variables `\(X_{1}\log_{e}X_{1}, \ldots, X_{k}\log_{e}X_{k}\)`
+to obtain `\(A^{\prime}, B_{1}^{\prime}, \ldots, B_{k}^{\prime}, D_{1}, \ldots, D_{k}\)`
+- The constructed variables are used to assess the need for a transformation of `\(X_{j}\)` by testing the null hypothesis
+`\(H_{0}:\delta_{j}=0\)` where `\(D_{j} = \hat{\delta}_{j}\)`
+- A preliminary estimate of the transformation parameter `\(\gamma_{j}\)` is given by
+
+`$$\tilde \gamma_{j} = 1+\frac{D_{j}}{B_{j}}$$`
+
+where `\(B_{j}\)` is the coefficient on `\(X_{j}\)` from the original equation in step 1
+- Steps 1,2, and 4 are iterated until the transformation parameters converge
+
+
+
+
+
+---
+
+## Box-Tidwell transformation Example: Prestige Data
+  
+  
+
+``` r
+## Use box-tidwell test to figure out transformations
+## for income and education, functional form of women
+## is assumed known.
+data(Prestige)
+boxTidwell(prestige ~ income ,
+           ~ education + women, data=Prestige)
+```
+
+```
+##  MLE of lambda Score Statistic (t)  Pr(&gt;|t|)    
+##        0.08073             -4.8338 5.021e-06 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## iterations =  10
+```
+
+- The statistically significant score test indicates that a transformation is needed for income
+- The MLE of Power suggests that income should be transformed by a power of 0.08 (suggesting the log might work well) 
+
+
+
+---
+
+  
+## Testing the Transformations
+  
+If you wanted to test whether the transformations were "close enough", you could just re-run the Box-Tidwell function on the new model with the transformed variables.
+
+- If the transformations you provided (e.g., the log instead of 0.08) were good enough, then the transformation powers on the new data should be insignificant.
+
+
+``` r
+## use transformed variables to evaluate the
+## adequacy of "close" transformations.
+boxTidwell(prestige ~ log(income),
+           ~ education + women, data=Prestige)
+```
+
+```
+##  MLE of lambda Score Statistic (t) Pr(&gt;|t|)
+##           1.76              0.6638   0.5084
+## 
+## iterations =  5
+```
+
+Notice that the p-value is `\(&gt;0.05\)`
+  
+
+
+---
+
+## Inverse Hyperbolic Sine Transformation
+.pull-left[
+Sometimes, the log transform is not the most useful because a variable has lots of zeros and you don't want to add a constant to all counts.  The IHS transformation is a good alternative.
+
+`$$\begin{aligned}
+\text{IHS}(x) &amp;= \frac{\text{sinh}^{-1}(\theta x)}{\theta}\\ 
+&amp;= \frac{log\left(\theta x + log(\theta x^2+1)^{\left(\frac{1}{2}\right)}\right)}{\theta}
+\end{aligned}$$`
+]
+
+
+.pull-right[
+&lt;img src="lecture4_files/figure-html/ihs1-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+
+
+---
+
+## Using the IHS Transform
+
+
+
+``` r
+## define IHS transform
+IHS &lt;- function(x,theta = 1){asinh(theta*x)/theta}
+## estimate model with IHS transform of income
+trans.mod2 &lt;- lm(prestige ~ IHS(income) + education+ 
+women, data=Prestige)
+## show model summary
+summary(trans.mod2)
+```
+
+```
+## 
+## Call:
+## lm(formula = prestige ~ IHS(income) + education + women, data = Prestige)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -17.364  -4.429  -0.101   4.316  19.179 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -120.2805    16.1459  -7.450 3.72e-11 ***
+## IHS(income)   13.4382     1.9138   7.022 2.90e-10 ***
+## education      3.7305     0.3544  10.527  &lt; 2e-16 ***
+## women          0.0469     0.0299   1.568     0.12    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 7.093 on 98 degrees of freedom
+## Multiple R-squared:  0.8351,	Adjusted R-squared:   0.83 
+## F-statistic: 165.4 on 3 and 98 DF,  p-value: &lt; 2.2e-16
+```
+
+---
+
+
+# Effect plot
+.pull-left[
+
+``` r
+library(marginaleffects)
+plot_predictions(trans.mod2, condition="income") + 
+  theme_xaringan() + 
+  labs(x="Income", y="Predicted Prestige")
+```
+]
+.pull-right-shift[
+&lt;img src="lecture4_files/figure-html/unnamed-chunk-7-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+## Yeo-Johnson Transformation
+
+The Y-J transform is also an alternative when the variable of interest has negative or zero values.  The transformation (with the parameter `\(\lambda = [0,2]\)`) is as follows: 
+
+`$$y_i^{(\lambda)} = \left\{\begin{array}{ll} ((y_i+1)^\lambda-1)/\lambda     &amp;  \text{if }\lambda \neq 0, y \geq 0 \\ 
+                            \log(y_i + 1)                                    &amp;  \text{if }\lambda =    0, y \geq 0 \\ 
+                            -[(-y_i + 1)^{(2-\lambda)} - 1] / (2 - \lambda)  &amp;  \text{if }\lambda \neq 2, y &lt;    0 \\ 
+                            -\log(-y_i + 1)                                  &amp;  \text{if }\lambda =    2, y &lt;    0
+              \end{array} \right.$$`
+
+
+
+
+
+---
+
+## Y-J vs IHS
+
+.pull-left[
+&lt;img src="lecture4_files/figure-html/yj1-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="lecture4_files/figure-html/unnamed-chunk-8-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+## Finding Optimal Values of `\(\lambda\)`
+
+
+``` r
+library(DAMisc)
+summary(yj_trans(prestige ~ income + education + 
+women + type, data=Prestige, 
+trans.vars=c("income"), round.digits=3))
+```
+
+```
+## 
+## Call:
+## lm(formula = form, data = data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -13.8760  -4.0575   0.5504   4.2132  16.6404 
+## 
+## Coefficients:
+##                          Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)            -115.69605   18.80605  -6.152 1.96e-08 ***
+## yeo.johnson(income, 0)   14.65764    2.31198   6.340 8.43e-09 ***
+## education                 2.97382    0.60206   4.939 3.49e-06 ***
+## women                     0.08381    0.03223   2.601   0.0108 *  
+## typeprof                  5.29196    3.55588   1.488   0.1401    
+## typewc                   -3.21579    2.40657  -1.336   0.1848    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 6.44 on 92 degrees of freedom
+##   (4 observations deleted due to missingness)
+## Multiple R-squared:  0.8654,	Adjusted R-squared:  0.8581 
+## F-statistic: 118.3 on 5 and 92 DF,  p-value: &lt; 2.2e-16
+```
+
+
+
+---
+
+
+## Box-Cox Transformation of `\(Y\)`
+
+- The Box-Cox transformation of `\(Y\)` functions to *normalize the error distribution, stabilize the error variance and straighten the relationship* of `\(Y\)` to the `\(X\)`'s
+- The general Box-Cox model is:
+
+`$$Y_{i}^{\lambda} = \alpha + \beta_{1}X_{i1}+ \cdots + \beta_{k}X_{ik} + \varepsilon_i$$`
+where `\(\varepsilon_{i} \sim \mathcal{N}(0, \sigma_{\varepsilon}^{2})\)` and
+
+`$$Y_{i}^{\lambda} = \left\{
+\begin{array}{ll}
+\frac{Y_{i}^{\lambda}-1}{\lambda}, &amp; \text{for } \lambda \neq 0 \\
+\log_{e}Y_{i}, &amp; \text{for } \lambda = 0
+\end{array}\right.$$`
+
+- If `\(\lambda\)`=1, no transformation is necessary
+- Note that all of the `\(Y_{i}\)` *must* be positive
+
+
+
+
+
+
+---
+
+## Box-Cox Transformation Example: Ornstein Data (1)
+  
+
+``` r
+library(car)
+data(Ornstein)
+optpwr &lt;- powerTransform(I(interlocks + 1)  ~  log(assets) + 
+                           sector + nation, data=Ornstein)
+summary(optpwr)
+```
+
+```
+## bcPower Transformation to Normality 
+##    Est Power Rounded Pwr Wald Lwr Bnd Wald Upr Bnd
+## Y1    0.2227        0.22        0.126       0.3193
+## 
+## Likelihood ratio test that transformation parameter is equal to 0
+##  (log transformation)
+##                            LRT df       pval
+## LR test, lambda = (0) 19.75696  1 8.7941e-06
+## 
+## Likelihood ratio test that no transformation is needed
+##                            LRT df       pval
+## LR test, lambda = (1) 243.4049  1 &lt; 2.22e-16
+```
+---
+## Model
+  
+
+.pull-left[
+You can then run the model with the optimized `\(\lambda\)` parameter from the previous slide: 
+]
+.pull-right-shift[  
+.small[
+
+``` r
+mod &lt;- lm(bcPower(I(interlocks + 1), optpwr$roundlam) ~ 
+            log(assets) + sector + nation, data=Ornstein)
+S(mod, brief=TRUE)
+```
+
+```
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -2.17047    0.58490  -3.711 0.000258 ***
+## log(assets)  0.73699    0.08089   9.112  &lt; 2e-16 ***
+## sectorBNK   -0.26138    0.61547  -0.425 0.671461    
+## sectorCON   -0.59772    0.64389  -0.928 0.354213    
+## sectorFIN    0.05439    0.40505   0.134 0.893293    
+## sectorHLD   -0.45594    0.54763  -0.833 0.405935    
+## sectorMAN   -0.02196    0.28093  -0.078 0.937775    
+## sectorMER    0.12710    0.36024   0.353 0.724542    
+## sectorMIN    0.38246    0.29021   1.318 0.188843    
+## sectorTRN    0.43596    0.39201   1.112 0.267232    
+## sectorWOD    0.63923    0.36788   1.738 0.083600 .  
+## nationOTH   -0.31476    0.36648  -0.859 0.391292    
+## nationUK    -0.51269    0.36460  -1.406 0.161007    
+## nationUS    -1.17941    0.20387  -5.785 2.31e-08 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard deviation: 1.337 on 234 degrees of freedom
+## Multiple R-squared: 0.5051
+## F-statistic: 18.37 on 13 and 234 DF,  p-value: &lt; 2.2e-16 
+##    AIC    BIC 
+## 863.49 916.20
+```
+]
+]
+
+
+
+---
+
+## Other Transformations
+  
+We talked about the IHS and Y-J transforms above, both of which permit negative values. Hawkins and Weisberg (2017) developed a new version of the Box-Cox transform that allows negative values.  This distribution has two parameters `\(\lambda\)` and `\(\gamma\)`. 
+
+`$$BCN(x_{i}) = \left\{\begin{array}{ll}
+\log(.5 (x_{i} + s_{i})) &amp; \text{if } \lambda \approx 0\\
+\frac{(0.5(x_{i} + s_{i}))^{\lambda}}{\lambda} &amp; \text{if }|\lambda| &gt; 0
+\end{array}\right.$$`
+  
+where `\(s_{i} = \sqrt{x_{i}^{2} + \gamma^{2}}\)`
+  
+
+
+
+---
+
+# Example of Other Power Transforms
+  
+.pull-left[  
+
+``` r
+p1 &lt;- powerTransform(I(interlocks + 1) ~ log(assets) + 
+                       nation + sector, data=Ornstein)
+p2 &lt;- powerTransform(interlocks ~ log(assets) + 
+                       nation + sector, data=Ornstein, family="yjPower")
+p3 &lt;- powerTransform(interlocks ~ log(assets) + 
+                       nation + sector, data=Ornstein, family="bcnPower")
+m1 &lt;- lm(bcPower(I(interlocks +1), p1$roundlam) ~ 
+           log(assets) + nation + sector, data=Ornstein)
+m2 &lt;- update(m1, yjPower(interlocks, p2$roundlam) ~ .)
+m3 &lt;- update(m1, bcnPower(interlocks, 
+                          p3$roundlam, gamma=p3$gamma) ~ .)
+
+cis &lt;- bind_rows(
+  as.data.frame(confint(m1)), 
+  as.data.frame(confint(m2)), 
+  as.data.frame(confint(m3)))
+```
+]
+.pull-right[
+
+``` r
+df &lt;- tibble(
+  b = c(coef(m1), coef(m2), coef(m3)), 
+  lower = cis[,1], 
+  upper = cis[,2],
+  model = factor(rep(1:3, each=length(coef(m1))), 
+                 labels=c("BC", "YJ", "BCN")), 
+  var = factor(rep(1:length(coef(m1)), 3), 
+               labels=names(coef(m1)))
+)
+```
+
+
+``` r
+ggplot(df, aes(y=var, x=b, colour=model)) + 
+  geom_point(size=2, position = position_dodge(.5)) + 
+  geom_errorbarh(aes(xmin=lower, xmax=upper), 
+                 position = position_dodge(.5), 
+                 height=0) + 
+  scale_colour_manual(values = pal3) + 
+  theme_xaringan() + 
+  labs(x="Coefficient (95% CI)", y="") 
+```
+]
+
+
+
+---
+
+## Figure
+
+&lt;img src="lecture4_files/figure-html/unnamed-chunk-10-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+## CR Plots
+  
+
+&lt;img src="lecture4_files/figure-html/crt1-1.png" width="90%" /&gt;
+
+
+
+---
+
+## Polynomial Regression
+
+Two or more regressors of ascending power (i.e., linear, quadratic and cubic terms) are used to capture the effects of a single variable
+- For every bend in the curve, we add another term to the model, going up in power each time
+- Polynomial models are linear in the parameters even though they are non-linear in the variables
+
+
+|Order | Equation |
+|:---:|:---|
+|First | `\(Y= \alpha + \beta_{1}X\)` |
+|Second | `\(Y = \alpha + \beta_{1}X + \beta_{2}X^{2}\)` |
+|Third  | `\(Y = \alpha + \beta_{1}X + \beta_{2}X^{2} + \beta_{3}X^{3}\)` |
+
+
+
+
+
+---
+
+## Polynomial equations: How to choose the order
+
+It is initially useful to look at the bends in a smooth of the scatterplot or partial residual plot
+- If there is only one, a second order polynomial should be tried.  For each extra bulge, we go up one in order
+- A good strategy is to start with one more than you think the model needs and drop the term if it is not statistically significant
+- Incremental `\(F\)`-tests can be used to help pick the "right" order to use in the equation
+  - If the term is not statistically significant, it is usually advisable to delete the term from the model - we want as few order terms as possible
+- For orthogonal polynomials, t-tests can be used
+
+If the order is too high, however, the results will not be easy to interpret (higher than third order is rarely used)
+
+
+
+
+
+
+---
+
+
+## Orthogonal Polynomials: Prestige
+
+One can fit a polynomial regression by calculating the regressors individually and adding them to the regression equation - i.e., calculate and add a quadratic term `\(X^{2}\)` and a cubic term
+`\(X^{3}\)` manually.
+- *Orthogonal Polynomials* can be added in a much more simple - and better - way in R, however, by specifying a `poly` function of the variable.  
+- Non-orthogonal polynomials can be specified with the `raw=T` argument to `poly`.
+- The order of the polynomial is specified after the variable name: eg `poly(income, 3)`
+
+Note, in R, the `poly()` function doesn't allow missing values. 
+
+
+
+---
+
+## Orthogonalizing Regressors
+
+
+It is possible to orghotonalize the power regressors before fitting the model, below is an example for a `\(3^{rd}\)` degree polynomial.
+
+- Create `\((p_{1}, p_{2}, p_{3}) = (X, X^2, X^3)\)`
+- Use `\(p_{1}\)`  as the value for the first-degree term.
+- Regress the `\(p_{2}\)` and `\(p_{3}\)` on `\(p_1\)` and create residuals `\(e_{2}^{(1)}\)` and `\(e_{3}^{(1)}\)`, respectively.  Use `\(e_{2}^{(1)}\)` as the value for the second-degree term
+- Regress `\(e_{3}^{(1)}\)` on `\(p_{1}\)` and `\(e_{2}^{(1)}\)` and use the residuals from that equation (call them `\(e_{3}^{(2)}\)`) as the third degree term.
+
+
+This is not exactly what `poly` in R does, but the idea is similar.  `poly()` also does some other normalization, so results using the above method, while equivalent in model fit terms will generate different coefficient estimates.
+
+
+
+---
+
+## Regression Output
+
+.pull-left[
+
+```
+## Coefficients:
+##                     Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)          -62.910     15.916  -3.953 0.000149 ***
+## log(income)           12.672      1.836   6.901 5.74e-10 ***
+## poly(education, 3)1  106.494      9.284  11.471  &lt; 2e-16 ***
+## poly(education, 3)2   15.045      6.977   2.156 0.033577 *  
+## poly(education, 3)3  -13.348      6.984  -1.911 0.058972 .  
+## poly(women, 2)1       11.978      9.384   1.276 0.204893    
+## poly(women, 2)2       18.465      6.828   2.704 0.008110 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard deviation: 6.721 on 95 degrees of freedom
+## Multiple R-squared: 0.8564
+## F-statistic: 94.46 on 6 and 95 DF,  p-value: &lt; 2.2e-16 
+##    AIC    BIC 
+## 686.89 707.89
+```
+]
+.pull-right[
+- After evaluating the `\(3^{rd}\)` degree polynomial in education, it appears only two of those terms are needed.  The third degree term is significant at the 0.1 level, so you might leave it in, but it would be a judgment call. 
+- Since the `\(2^{nd}\)` degree term for women is significant we would have to leave in the first degree term as well.  The inclusion of the first degree term allows the function to be non-monotonic. 
+]
+
+
+
+
+
+---
+
+
+## Effect Display for Income
+
+.left-code[
+
+``` r
+plot_predictions(mod, condition="income") + 
+  theme_xaringan() + 
+  labs(x="Average Income of Incumbents", 
+         y="Predicted Prestige")
+```
+]
+.right-plot[
+&lt;img src="lecture4_files/figure-html/unnamed-chunk-11-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+
+---
+
+
+## Effect Display for Women
+
+.left-code[
+
+``` r
+plot_predictions(mod, condition="women") + 
+  theme_xaringan() + 
+  labs(x="% Women Incumbents", 
+         y="Predicted Prestige")
+```
+]
+.right-plot[
+&lt;img src="lecture4_files/figure-html/unnamed-chunk-12-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+
+---
+
+
+## Effect Display for Education
+
+.left-code[
+
+``` r
+plot_predictions(mod, condition="education") + 
+  theme_xaringan() + 
+  labs(x="Years of Education", 
+       y="Predicted Prestige")
+```
+]
+.right-plot[
+&lt;img src="lecture4_files/figure-html/unnamed-chunk-13-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Simlpe Semi-parametric Test
+
+.pull-left[
+Neumayer and Plümper suggest a semi-parametric functional form test continuous variables - break them into categories and treat them as categorical.  
+
+
+``` r
+fldat &lt;- rio::import("fl_repdata.dta")
+fldat$onset &lt;- ifelse(fldat$onset &gt; 1, 1, fldat$onset)
+base_mod &lt;- glm(onset ~ warl + gdpenl + lpopl1 + lmtnest + ncontig + Oil +
+                  nwstate + instab + polity2l + ethfrac + relfrac, 
+                data=fldat, family=binomial)
+```
+
+]
+.pull-right[
+
+``` r
+library(ggplot2)
+mk_break &lt;- function(x, n=10){
+  x &lt;- na.omit(x)
+  qtl &lt;- quantile(x, seq(0,1,length=n+1))
+  qtl[1] &lt;- qtl[1]-.1 
+  qtl[length(qtl)] &lt;- qtl[length(qtl)] + .1
+  qtl
+}
+brks &lt;- mk_break(fldat$gdpenl)
+rob_mod &lt;- glm(onset ~ warl + cut(gdpenl, breaks=brks) + lpopl1 + 
+                 lmtnest + ncontig + Oil + nwstate + instab + 
+                 polity2l + ethfrac + relfrac, 
+                data=fldat, family=binomial)
+
+library(nprobustness)
+irob &lt;- ind_robust(base_mod, 
+   rob_mod, 
+   type="pred", 
+   base_args = list(type = "link"), 
+   robust_args = list(type = "link"))
+```
+]
+
+---
+
+## Summary and Plot
+
+.pull-left[
+
+
+``` r
+irob %&gt;%
+  group_by(cut(gdpenl, brks)) %&gt;%
+  summarise(robust = mean(robust)) %&gt;% 
+  setNames(c("gdpenl", "robust")) %&gt;% 
+  mutate(gdpenl = paste0("group", 1:(length(brks)-1)))
+```
+
+```
+## # A tibble: 10 × 2
+##    gdpenl   robust
+##    &lt;chr&gt;     &lt;dbl&gt;
+##  1 group1  0.791  
+##  2 group2  0.744  
+##  3 group3  0.833  
+##  4 group4  0.854  
+##  5 group5  0.841  
+##  6 group6  0.584  
+##  7 group7  0.751  
+##  8 group8  0.793  
+##  9 group9  0.780  
+## 10 group10 0.00330
+```
+
+
+
+]
+.right-shift100[
+
+&lt;img src="lecture4_files/figure-html/unnamed-chunk-17-1.png" width="85%" style="display: block; margin: auto;" /&gt;
+
+
+]
+
+
+
+
+---
+
+## Exercise 
+
+Considering the "optimal" modeling decisions we made above with the Prestige data, how do the effects fare regarding robustness? 
+- Use a structured permutation test where we take all possible combinations of the baseline and optimal functional forms for all three variables.  Evaluate robustness of all effects. 
+
+---
+
+## What would we expect from these tests? 
+
+What we might want to know is - if our baseline model is "right", how robust would we _expect_ the result to be to alternatives?
+
+**Simulation**
+1. Estimate all models and calculate robustness. 
+2. Simulate a DV that is consistent with the baseline model. 
+3. Re-estimate baseline and all robustness models with the simulated DV. 
+4. Calculate robustness for all models relative to the baseline. 
+5. Repeat 1-3 lots of times. 
+6. Compare observed robustness to simulated robustness. 
+
+---
+
+## Estimate all models 
+
+.pull-left[
+
+``` r
+Prestige.model&lt;-lm(prestige ~ 
+                     income + education +
+                     women, data=Prestige)
+
+p1m &lt;- lm(prestige ~ log(income) + education + women, data=Prestige)
+p2m &lt;- lm(prestige ~ poly(income, 2) + education + women, data=Prestige)
+p3m &lt;- lm(prestige ~ poly(income, 3) + education + women, data=Prestige)
+p4m &lt;- lm(prestige ~ poly(income, 4) + education + women, data=Prestige)
+p5m &lt;- lm(prestige ~ poly(income, 5) + education + women, data=Prestige)
+r1m &lt;- ind_robust(Prestige.model, p1m, type="pred")
+r2m &lt;- ind_robust(Prestige.model, p2m, type="pred")
+r3m &lt;- ind_robust(Prestige.model, p3m, type="pred")
+r4m &lt;- ind_robust(Prestige.model, p4m, type="pred")
+r5m &lt;- ind_robust(Prestige.model, p5m, type="pred")
+
+irob2 &lt;- r1m %&gt;% 
+  mutate(transform = "log") %&gt;% 
+  bind_rows(
+    r2m %&gt;% mutate(transform = "poly-2"),
+    r3m %&gt;% mutate(transform = "poly-3"),
+    r4m %&gt;% mutate(transform = "poly-4"),
+    r5m %&gt;% mutate(transform = "poly-5")
+  ) %&gt;% 
+  mutate(transform = factor
+         (transform, 
+         levels=c("log", "poly-2", "poly-3", "poly-4", "poly-5"))) 
+```
+]
+.pull-right[
+&lt;img src="lecture4_files/figure-html/unnamed-chunk-19-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Simulate and repeat
+
+.pull-left[
+
+``` r
+X &lt;- model.matrix(Prestige.model)
+b &lt;- coef(Prestige.model)
+sd_e &lt;- summary(Prestige.model)$sigma
+tmp_dat &lt;- insight::get_data(Prestige.model)
+```
+]
+.right-shift50[
+
+``` r
+res &lt;- array(dim=c(nrow(tmp_dat), 5, 1000))
+
+for(i in 1:1000){
+  tmp_dat$sim_y &lt;- X %*%b + rnorm(nrow(X), 0, sd_e)
+  bas &lt;- update(Prestige.model, sim_y ~ ., data=tmp_dat)
+  u1 &lt;- update(p1m, sim_y ~ ., data=tmp_dat)
+  u2 &lt;- update(p2m, sim_y ~ ., data=tmp_dat)
+  u3 &lt;- update(p3m, sim_y ~ ., data=tmp_dat)
+  u4 &lt;- update(p4m, sim_y ~ ., data=tmp_dat)
+  u5 &lt;- update(p5m, sim_y ~ ., data=tmp_dat)
+  r1u &lt;- ind_robust(bas, u1, type="pred") %&gt;% select(robust) %&gt;% pull()
+  r2u &lt;- ind_robust(bas, u2, type="pred") %&gt;% select(robust) %&gt;% pull()
+  r3u &lt;- ind_robust(bas, u3, type="pred") %&gt;% select(robust) %&gt;% pull()
+  r4u &lt;- ind_robust(bas, u4, type="pred") %&gt;% select(robust) %&gt;% pull()
+  r5u &lt;- ind_robust(bas, u5, type="pred") %&gt;% select(robust) %&gt;% pull()
+  
+  res[,,i] &lt;- cbind(r1u, r2u, r3u, r4u, r5u)
+}
+```
+]
+
+---
+
+## Compare
+
+.pull-left[
+
+
+
+``` r
+qtl &lt;- apply(res, c(1,2), \(x)quantile(x, c(.025,.975)))
+rob_bnds &lt;- lapply(1:5, \(i)as_tibble(t(qtl[,,i]))
+                   %&gt;% setNames(c("lwr", "upr")))
+names(rob_bnds) &lt;- c("log", "poly-2", "poly-3", 
+                    "poly-4", "poly-5") 
+
+rob_bnds &lt;- bind_rows(rob_bnds, .id="transform")
+irob2 &lt;- irob2 %&gt;% 
+  bind_cols(rob_bnds %&gt;% select(-transform)) %&gt;% 
+  mutate(in_bounds1 = as.numeric(robust &gt;= lwr &amp; robust &lt;= upr),
+         in_bounds2 = as.numeric(robust &gt;= lwr))
+```
+]
+.right-shift50[
+&lt;img src="lecture4_files/figure-html/unnamed-chunk-24-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Recap 
+
+1. Local polynomial regression
+2. Component + Residual plots
+3. Simple vs complex non-linearity
+4. Transformations
+5. Polynomials
+6. Robustness
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

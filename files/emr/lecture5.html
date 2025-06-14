@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 5</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="lecture5_files/header-attrs/header-attrs.js"></script>
+    <script src="lecture5_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture5_files/fabric/fabric.min.js"></script>
+    <link href="lecture5_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture5_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture5_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture5_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture5_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture5_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture5_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 5
+]
+.subtitle[
+## Modeling More Complex Non-linearity
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+.remark-slide-content{
+  font-size: 1.25rem;
+}
+
+.large-text{
+  font-size: 2rem;
+}
+
+
+div.red {
+  color: #9A3324;
+}
+.left-narrow {
+  width: 38%;
+  height: 100%;
+  float: left;
+}
+.right-wide {
+  width: 58%;
+  float: right;
+  position:relative; 
+  top: -33px;
+}
+.right-wide100 {
+  width: 60%;
+  float: right;
+  position:relative; 
+  top: -100px;
+}
+.right-shift100 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -100px;
+}
+.right-shift50 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -50px;
+}
+.middle-text {
+  position: relative; 
+  top: 125px;
+}
+
+.remark-code{
+  font-size: 55%
+}
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.left-code-shift2 {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+  position:relative; 
+  top: -50px;
+
+}
+.left-code-shift {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+  position:relative; 
+  top: -100px;
+
+}
+
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+.right-plot-shift2 {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+.right-plot-shift {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-left-shift2 {
+  float: left;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+
+}
+.shift { 
+  position:relative; 
+  top: -100px;
+  }
+
+.pull-right ~ * {
+  clear: both;
+}
+&lt;/style&gt;
+
+
+## Definition of Splines
+
+Splines are:
+
+&gt; ... piecewise regression functions we constrain to join at points called knots (Keele 2007, 70)
+
+- In their simplest form, they are dummy regressors that we use to force the regression line to change direction at some value(s) of `\(X\)`.
+- These are similar in spirit to LPR models where we use a subset of data to fit local regressions (but the window doesn't move here).
+- These are also allowed to take any particular functional form, but they are a bit more constrained than the LPR model.
+
+---
+
+
+## Splines vs. LPR Models
+
+Splines provide a better MSE fit to the data.
+
+- Where `\(MSE\left(\hat{\theta}\right) = \text{Var}\left(\hat{\theta}\right) + \text{Bias}\left(\hat{\theta}, \theta\right)^{2}\)`
+
+- Generally, LPR models will have smaller bias, but much greater variance.
+
+- Splines can be designed to prevent over-fitting (smoothing splines)
+
+- Splines are more easily incorporated in *semi*-parametric models.
+
+---
+
+
+## Regression Splines
+.pull-left[
+We start with the following familiar model:
+
+`$$y = f(x) + \varepsilon$$`
+
+Here, we would like to estimate this with one model rather than a series of local models.
+]
+.pull-right-shift2[
+&lt;img src="lecture5_files/figure-html/simplespline-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+
+## Failure of Polynomials and LPR
+
+.pull-left[
+Given what we already learned, we could fit a quadratic polynomial or a LPR:
+]
+.right-shift50[
+&lt;img src="lecture5_files/figure-html/polyfig-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Simple Example
+
+In this simple example, it is easy to figure out what sort of model we want:
+
+- It appears that the relationship between `\(x\)` and `\(y\)` would be well-characterized by two lines.
+
+  - One with a negative slope in the range `\(x = [0, 60)\)`
+  - One with a positive slope in the range `\(x = [60,100]\)`
+
+
+These are all the things we need to know right now to model the relationship.
+
+
+
+---
+
+
+## Dummy Interaction
+
+.pull-left[
+You might ask, couldn't we just use an interaction between `\(x\)` and a dummy variable coded 1 if `\(x &gt; 60\)` and zero otherwise.
+
+`$$y = b_{0} + b_{1}x_{1} + b_{2}d + b_{3}x\times d + e$$`
+
+This seems like a perfectly reasonable thing to do.  What can it give you though:
+]
+.right-shift50[
+&lt;img src="lecture5_files/figure-html/dumint-1.png" width="100%" height="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+
+## Basis Functions
+
+A basis function is really just a function that transforms the values of X. So, instead of estimating:
+
+`$$y_i = \beta_0 + \beta_1x_i + \varepsilon_i$$`
+
+we estimate:
+
+`$$y_i = \beta_0 + \beta_1b_1(x_i) + \beta_2b_2(x_i) + \ldots +\beta_kb_k(x_i) + \varepsilon_i$$`
+
+The basis functions `\(b_k(\cdot)\)` are known ahead of time (not estimated by the model).
+- We can think of polynomials as basis functions where `\(b_j(x_i) = x_i^j\)`
+
+---
+
+## Piecewise Polynomials
+
+One way that we can think about regression splines is as piecewise polynomial functions:
+
+`$$y_i = \left\{\begin{array}{lc}
+  \beta_{01} + \beta_{11}x_i + \beta_{21}x_i^2 + \beta_{31}x_i^3 + \varepsilon_i &amp; x_i &lt; c\\
+  \beta_{02} + \beta_{12}x_i + \beta_{22}x_i^2 + \beta_{32}x_i^3 + \varepsilon_i &amp; x_i \geq c
+\end{array}\right.$$`
+
+Just as above though, these polynomials are unconstrained and can generate a discontinuity at the *knot* location `\(c\)`.
+
+---
+
+## Constraining the Model
+
+To constrain the model, the splines are constructed:
+
+- such that the first and second derivatives of the function continuous.
+
+- Each constraint reduces the number of degrees of freedom we use by one.
+
+- In general, the model uses: Polynomial Degree `\(+\)` \# Knots `\(+\)` 1 (for the intercept) degrees of freedom
+
+---
+
+## Truncated Power Basis Functions
+
+The easiest set of Spline functions to consider (for knot location `\(k\)`) are called truncated power functions, defined as:
+
+`$$h(x, k) = (x - k)_{+}^{3} = \left\{\begin{array}{ll}(x-k)^{3} &amp; \text{if } x &gt; k\\ 0 &amp; \text{otherwise}\end{array}\right.$$`
+
+When using these basis functions in, we put the full (i.e., global) parametric function in and a truncated power function of degree `\(n\)` for each knot.
+
+---
+
+
+## Linear Truncated Power Functions
+
+To use the truncated power basis for our problem, we need:
+- The global linear model
+- One truncated power function for the `\(x\)` values greater than the knot location (60).
+
+
+`$$y = b_{0} + b_{1}x + b_{2}(x-60)_{+}^{1} + e$$`
+
+This sets up essentially 2 equations:
+
+`$$\begin{aligned}
+   x \leq 60:&amp; y = b_{0} + b_{1}x\\
+   x &gt; 60:&amp; y = b_{0} + b_{1}x + b_{2}(x-60) = (b_{0} - 60b_{2}) + (b_{1}+b_{2})x
+\end{aligned}$$`
+
+Notice that here we are only estimating 3 parameters, where the interaction would estimate 4 parameters.  Thus, this is a constrained version of the interaction.
+
+
+---
+
+
+## Fixing the Discontinuity
+
+
+.pull-left[
+Including `\(x\)` and `\((x-60)_{+}\)` as regressors, which generates the following predictions:
+
+
+``` r
+pwl &lt;- function(x, k)ifelse(x &gt;= k, x-k, 0)
+
+ggplot(mapping=aes(x=x, y=y)) + 
+  geom_smooth(method="lm", 
+              formula=y ~ x + pwl(x, 60)) + 
+  geom_point() + 
+  theme_xaringan()
+```
+]
+.right-shift50[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-3-1.png" width="100%" height="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+(Note, with piecewise linear functions, we're not constraining the derivatives to be continuous).
+
+---
+
+## Polity Example
+
+.pull-left[
+Thinking back to the Polity example from Lecture 4.  We suggested we maybe could fit a piecewise polynomial model: 
+
+
+
+``` r
+dat &lt;- import("../data/linear_ex.dta")
+f &lt;- function(x)factor(x)
+unrestricted.mod &lt;- lm(rep1 ~ f(polity_dem) + iwar +
+    cwar + logpop + gdppc, data=dat)
+pwlin.mod &lt;- lm(rep1 ~ polity_dem + pwl(polity_dem, 9) + 
+                iwar + cwar + logpop + gdppc,data=dat)
+anova(pwlin.mod, unrestricted.mod, test="F")
+```
+
+```
+## Analysis of Variance Table
+## 
+## Model 1: rep1 ~ polity_dem + pwl(polity_dem, 9) + iwar + cwar + logpop + 
+##     gdppc
+## Model 2: rep1 ~ f(polity_dem) + iwar + cwar + logpop + gdppc
+##   Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
+## 1   2676 2172.9                           
+## 2   2668 2163.3  8     9.651 1.4878 0.1562
+```
+]
+.right-shift50[
+&lt;img src="lecture5_files/figure-html/pwfig-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+
+## Example: Cubic Spline
+
+&lt;img src="lecture5_files/figure-html/simnl-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+
+
+
+---
+
+
+## Cubic Spline
+
+.pull-left[
+
+`$$\begin{aligned}
+y =&amp; b_{0} + b_{1}x + b_{2}x^2 + b_{3}x^{3}\\
+&amp;+ \sum_{m-1}^{\text{# knots}}b_{k+3}(x-k_m)_{+}^{3}
+\end{aligned}$$`
+
+Let's consider our example with 3 knots `\(k = \{.2, .4, .6, .8\}\)`
+
+
+]
+.right-shift50[
+
+``` r
+## summarize model
+car::S(csmod, brief=TRUE)
+```
+
+```
+## Coefficients:
+##                                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                    8.602e-02  6.836e-01   0.126   0.8999    
+## x                             -3.885e+00  1.894e+01  -0.205   0.8376    
+## I(x^2)                         5.772e+02  1.386e+02   4.164 3.84e-05 ***
+## I(x^3)                        -1.703e+03  2.877e+02  -5.921 6.99e-09 ***
+## I((x - k[1])^3 * (x &gt;= k[1]))  2.771e+03  3.789e+02   7.314 1.48e-12 ***
+## I((x - k[2])^3 * (x &gt;= k[2])) -1.474e+03  1.821e+02  -8.094 7.36e-15 ***
+## I((x - k[3])^3 * (x &gt;= k[3]))  3.866e+02  1.821e+02   2.123   0.0344 *  
+## I((x - k[4])^3 * (x &gt;= k[4]))  7.080e+02  3.789e+02   1.869   0.0624 .  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard deviation: 1.951 on 392 degrees of freedom
+## Multiple R-squared: 0.6665
+## F-statistic: 111.9 on 7 and 392 DF,  p-value: &lt; 2.2e-16 
+##     AIC     BIC 
+## 1679.71 1715.63
+```
+]
+
+---
+
+## Predictions
+
+
+&lt;img src="lecture5_files/figure-html/csp1-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+
+
+
+
+---
+
+
+## Problems with Truncated Power Basis Functions
+
+- Highly collinear and can lead to instability and singularities (i.e., computationally bad stuff) at worst.
+- Not as "local" as some other options, the support of the piecewise functions can be over the whole range of the data or nearly the whole range of the data.
+- Can produce erratic tail behavior.
+
+Other basis functions, like the B-spline basis functions solve all of these problems:
+- Reduces collinearity (though doesn't eliminate it)
+- Support of the function is more narrowly bounded.
+- Uses knots at the boundaries of `\(x\)` and assumes linearity beyond the knots.
+
+---
+
+
+## Example: B-spline
+
+.pull-left[
+
+``` r
+## load the splines package
+library(splines)
+k &lt;- c(.2,.4,.6,.8)
+## estimate the model with knots in the same locations
+csmod2 &lt;- lm(y ~ bs(x, knots=k), data=df)
+## Summarize the model
+car::S(csmod2, brief=TRUE)
+```
+
+```
+## Coefficients:
+##                   Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)        0.08602    0.68358   0.126   0.8999    
+## bs(x, knots = k)1 -0.25898    1.26296  -0.205   0.8376    
+## bs(x, knots = k)2 14.61385    0.80729  18.102  &lt; 2e-16 ***
+## bs(x, knots = k)3  1.33876    0.96742   1.384   0.1672    
+## bs(x, knots = k)4  3.73773    0.83755   4.463 1.06e-05 ***
+## bs(x, knots = k)5  2.30614    1.01655   2.269   0.0238 *  
+## bs(x, knots = k)6 -1.83334    0.99321  -1.846   0.0657 .  
+## bs(x, knots = k)7  0.80657    0.97507   0.827   0.4086    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard deviation: 1.951 on 392 degrees of freedom
+## Multiple R-squared: 0.6665
+## F-statistic: 111.9 on 7 and 392 DF,  p-value: &lt; 2.2e-16 
+##     AIC     BIC 
+## 1679.71 1715.63
+```
+]
+.pull-right[
+
+Notice that the fit here is precisely the same as with the the truncated power basis functions
+
+
+
+``` r
+## create predictions for both models
+p1 &lt;- predict(csmod, se=TRUE)
+p2 &lt;- predict(csmod2, se=TRUE)
+## correlate predictions
+cor(p1$fit, p2$fit)
+```
+
+```
+## [1] 1
+```
+
+``` r
+cor(p1$se.fit, p2$se.fit)
+```
+
+```
+## [1] 1
+```
+]
+
+
+---
+
+## Interpreting Spline Coefficients
+
+So, how do you interpret the spline coefficients?
+- You don't.
+- Remember that these are all functions of `\(x\)`, so we cannot change the values of one component of the basis function while holding the others constant, the others would have to change, too.
+
+
+
+---
+
+
+## Choices in Spline Models
+
+- **Degree**: the analyst has to choose the degree of the polynomial fit to the subsets of the data.
+- **Number of knots**: the analyst has to choose the number of knots
+- **Location of knots**: Often, knots are spaced evenly over the support of the data (i.e., the range of `\(x\)`), but that needn't be the case.
+  - Knot placement can be guided by theory if possible.
+  - Otherwise, for the functions we generally need to estimate, a few knots should probably work just fine.
+
+---
+
+
+## How important is knot placement?
+
+I did a simulation where I did the following:
+- Using the function created above, I first estimated a `\(B\)`-spline with 1-10 knots. 
+  - Then, I calculated the `\(R^{2}\)` with respect to the true point location. 
+- For each number of knots, randomly draw knots from a uniform distribution. 
+  - Estimate the model and calculate `\(R^{2}\)` with respect to the truth. 
+
+---
+
+
+## Results
+
+
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-7-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+## How Important is Knot Placement? II
+
+- So long as the polynomial degree is reasonably high (3 should be high enough for what we do, but 4 might be useful if you have a very complicated function), knot placement is not particularly important.
+- Use theory, if it exists, to place knots.
+- If theory doesn't exist, knots placed evenly across the range of `\(\mathbf{x}\)` will, in general, minimize error.
+- If you think about the knots as random variables (because we don't know their values) and further that they are distributed uniformly (i.e., neither middle or extreme values are more likely), then technically evenly spaced knots minimize distance to the true, but unknown knots.
+   
+---
+
+
+## How Important is Polynomial Degree?
+
+- Pretty important, particularly if we don't know or have a really good sense of where the knots should be.
+- B-splines are more forgiving of knot placement errors the higher the polynomial degree.
+- Generally no good reason to use something more restrictive than a cubic spline.
+- We are generally not trying to model particularly complicated functions.
+- More knots are more likely to be used than a higher polynomial degree to make the function more flexible.
+
+---
+
+
+## How Important is the Number of Knots
+
+- Flexibility increases with number of knots and polynomial degree.
+
+- Increasing number of knots can make the function more flexible.
+
+- We can use AIC, BIC or Cross-Validation to choose number of knots.
+
+
+
+
+---
+
+
+## Choosing Number of Knots
+
+&lt;img src="lecture5_files/figure-html/aicchoose-1.png" width="100%" /&gt;
+
+
+
+---
+
+
+## Worked Example
+
+``` r
+library(car)
+library(rio)
+dat &lt;- import("../data/jacob.dta")
+
+rawlm &lt;- lm(chal_vote ~ perotvote + chal_spend + 
+    exp_chal, data=dat)
+```
+
+
+---
+
+
+## Raw Model
+
+
+
+``` r
+car::S(rawlm, brief=TRUE)
+```
+
+```
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 15.95365    1.59703   9.990  &lt; 2e-16 ***
+## perotvote    0.31943    0.06655   4.800 2.48e-06 ***
+## chal_spend   3.33294    0.27869  11.959  &lt; 2e-16 ***
+## exp_chal     2.22053    0.98576   2.253    0.025 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard deviation: 6.74 on 308 degrees of freedom
+## Multiple R-squared: 0.4552
+## F-statistic:  85.8 on 3 and 308 DF,  p-value: &lt; 2.2e-16 
+##     AIC     BIC 
+## 2082.02 2100.74
+```
+
+
+
+
+---
+
+
+## C+R Plots
+
+
+``` r
+crPlots(rawlm, layout=c(1,3))
+```
+
+&lt;img src="lecture5_files/figure-html/crplots1-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+## Transformation Model
+
+
+``` r
+boxTidwell(chal_vote ~ perotvote, 
+           ~ chal_spend + exp_chal, data=dat)
+```
+
+```
+##  MLE of lambda Score Statistic (t)  Pr(&gt;|t|)    
+##        -1.0634             -4.1129 5.023e-05 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## iterations =  9
+```
+
+``` r
+trans.mod &lt;- lm(chal_vote ~ I(1/perotvote) + 
+                  chal_spend + exp_chal, data=dat)
+car::S(trans.mod, brief=TRUE)
+```
+
+```
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)     27.0997     1.4276  18.983  &lt; 2e-16 ***
+## I(1/perotvote) -74.0400    11.6678  -6.346  7.9e-10 ***
+## chal_spend       3.1989     0.2737  11.687  &lt; 2e-16 ***
+## exp_chal         2.2218     0.9610   2.312   0.0214 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard deviation: 6.571 on 308 degrees of freedom
+## Multiple R-squared: 0.4822
+## F-statistic:  95.6 on 3 and 308 DF,  p-value: &lt; 2.2e-16 
+##     AIC     BIC 
+## 2066.19 2084.91
+```
+
+---
+
+## C+R Plots
+
+
+``` r
+crPlots(trans.mod, layout=c(1,3))
+```
+
+&lt;img src="lecture5_files/figure-html/crplots1a-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Degrees of Freedom
+
+.pull-left[
+
+``` r
+library(DAMisc)
+nkp &lt;- NKnots(chal_vote ~ chal_spend + exp_chal, 
+  "perotvote", max.knots=3, data=dat, includePoly=T,
+  criterion="CV", plot=FALSE, cviter=10)
+nkp$df &lt;- 1:6
+nkp$min &lt;- factor(ifelse(nkp$stat == min(nkp$stat), 1, 0), 
+                  levels=c(0,1), 
+                  labels=c("Other", "Minimum"))
+```
+]
+.right-shift50[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-10-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+
+## Polynomial
+
+
+``` r
+poly.mod &lt;- lm(chal_vote ~ poly(perotvote, 3) + 
+                 chal_spend + exp_chal, data=dat)
+car::S(poly.mod, brief=TRUE)
+```
+
+```
+## Coefficients:
+##                     Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)          22.6040     1.1222  20.143  &lt; 2e-16 ***
+## poly(perotvote, 3)1  33.2168     6.6421   5.001 9.63e-07 ***
+## poly(perotvote, 3)2 -25.5074     6.5992  -3.865 0.000136 ***
+## poly(perotvote, 3)3  11.8753     6.6112   1.796 0.073444 .  
+## chal_spend            3.2001     0.2738  11.688  &lt; 2e-16 ***
+## exp_chal              2.2016     0.9613   2.290 0.022683 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard deviation: 6.571 on 306 degrees of freedom
+## Multiple R-squared: 0.4856
+## F-statistic: 57.76 on 5 and 306 DF,  p-value: &lt; 2.2e-16 
+##     AIC     BIC 
+## 2068.16 2094.36
+```
+
+---
+
+
+## More CR Plots
+
+
+
+``` r
+crPlots(poly.mod, layout=c(1,3))
+```
+
+&lt;img src="lecture5_files/figure-html/crplots2-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+## Which is better?
+
+
+``` r
+library(clarkeTest)
+clarke_test(trans.mod, poly.mod)
+```
+
+```
+## 
+## Clarke test for non-nested models
+## 
+## Model 1 log-likelihood: -1028
+## Model 2 log-likelihood: -1027
+## Observations: 312
+## Test statistic: 207 (66%)
+## 
+## Model 1 is preferred (p = 8e-09)
+```
+
+---
+
+
+## Challenger Spending
+
+
+``` r
+boxTidwell(chal_vote ~ chal_spend, 
+  ~ I(1/perotvote) + exp_chal, 
+  data=dat)
+```
+
+```
+##  MLE of lambda Score Statistic (t)  Pr(&gt;|t|)    
+##         2.2987              3.7127 0.0002435 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## iterations =  5
+```
+
+``` r
+boxTidwell(chal_vote ~ I(chal_spend^2), 
+  ~ I(1/perotvote) + exp_chal, 
+  data=dat)
+```
+
+```
+##  MLE of lambda Score Statistic (t) Pr(&gt;|t|)
+##         1.1495              0.8603   0.3903
+## 
+## iterations =  4
+```
+
+``` r
+trans.mod2 &lt;- lm(chal_vote ~I(chal_spend^2) + 
+                I(1/perotvote) + exp_chal, data=dat)
+```
+
+---
+
+## Degrees of Freedom
+
+.pull-left[
+
+``` r
+library(DAMisc)
+nkp &lt;- NKnots(chal_vote ~ I(1/perotvote) + exp_chal, 
+  "chal_spend", max.knots=3, data=dat, includePoly=T,
+  criterion="CV", plot=FALSE, cviter=10)
+nkp$df &lt;- 1:6
+nkp$min &lt;- factor(ifelse(nkp$stat == min(nkp$stat), 1, 0), 
+                  levels=c(0,1), 
+                  labels=c("Other", "Minimum"))
+```
+]
+.right-shift50[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-15-1.png" width="100%" height="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+
+## Spline Model
+
+
+``` r
+library(splines)
+spline.mod &lt;- dat %&gt;% 
+  mutate(inv_perotvote = 1/perotvote) %&gt;% 
+  lm(chal_vote ~ inv_perotvote + 
+                   bs(chal_spend, df=4) + 
+                   exp_chal, data=.)
+anova(trans.mod2, spline.mod, test="F")
+```
+
+```
+## Analysis of Variance Table
+## 
+## Model 1: chal_vote ~ I(chal_spend^2) + I(1/perotvote) + exp_chal
+## Model 2: chal_vote ~ inv_perotvote + bs(chal_spend, df = 4) + exp_chal
+##   Res.Df   RSS Df Sum of Sq      F   Pr(&gt;F)   
+## 1    308 12816                                
+## 2    305 12208  3    608.53 5.0679 0.001939 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+
+## Effects
+
+.pull-left[
+
+``` r
+s &lt;- seq(min(dat$chal_spend, na.rm=TRUE), 
+         max(dat$chal_spend, na.rm=TRUE), 
+         length=50)
+
+p.cs0 &lt;- predictions(rawlm, 
+   variables = list(chal_spend = s), 
+   newdata = datagrid(grid_type="mean_or_mode")) %&gt;% 
+   mutate(model = factor(1, levels=1:2, 
+                         labels=c("Orig", "Final"))) %&gt;% 
+  as.data.frame()
+p.cs1 &lt;- predictions(spline.mod, 
+   variables = list(chal_spend = s), 
+   newdata = datagrid(grid_type="mean_or_mode"))%&gt;% 
+   mutate(model = factor(2, levels=1:2, 
+                         labels=c("Orig", "Final"))) %&gt;% 
+  as.data.frame()
+p.cs &lt;- bind_rows(p.cs0, p.cs1)
+ggplot(p.cs, aes(x=chal_spend, y=estimate, 
+                 ymin = conf.low, 
+                 ymax=conf.high, 
+                 colour=model, fill=model)) + 
+  geom_ribbon(alpha=.2, col="transparent") + 
+  geom_line() + 
+  scale_colour_manual(values=pal2) + 
+  scale_fill_manual(values=pal2) + 
+  theme_xaringan() + 
+  theme(legend.position = "top") + 
+  labs(x="Challenger Spending", y="Predicted Challenger Vote")
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-17-1.png" width="100%" /&gt;
+]
+
+---
+
+## Exercise
+
+Consider the robustness of the initial raw model to the various changes we made to get to the final model estimated above. 
+
+
+---
+
+## Utility of Cross-validation
+
+Cross-validation is a way of helping us understand the consequences of introducing complexity in our models
+  - Ideally, we want to know when we increase complexity that we are not doing so at the expense of generalizability (i.e., are we overifitting?)
+
+Cross-validation is a way of trying to protect us against overfitting the model. 
+
+---
+
+## Cross-Validation (1)
+
+If no two observations have the same `\(Y\)`, a `\(p\)`-variable model fit to `\(p+1\)` observations will fit the data precisely
+- Of course, this will lead to biased estimators that are likely to give quite different predictions on another dataset (generated with the same DGP)
+- Model validation allows us to assess whether the model is likely to predict accurately on future observations or observations not used to develop this model
+  - External validation involves retesting the model on new data collected at a different point in time or from a different population
+  - Internal validation (or cross-validation) involves fitting and evaluating the model carefully using only one sample
+
+
+---
+
+## Cross-Validation (2)
+
+Cross-validation is similar to bootstrapping in that it resamples from the original data
+- The basic form involves randomly dividing the sample into two subsets:
+  - The first subset of the data (screening sample) is used to select or estimate a statistical model
+  - The second subset is then used to test the findings
+- Can be helpful in avoiding capitalizing on chance and over-fitting the data - i.e., findings from the first subset may not always be confirmed by the second subsets
+- Cross-validation is often extended to use several subsets (either a preset number chosen by the researcher or leave-one-out cross-validation)
+
+
+---
+
+## Cross-Validation (3)
+
+- The data are split into `\(k\)` subsets (usually `\(3 \leq k \leq 10\)` )
+- Each of the subsets are left out in turn, with the regression run on the remaining data
+- Prediction error is then calculated as the sum of the squared errors:
+
+`$$RSS = \sum(Y_{i}-\hat{Y}_{i})^{2}$$`
+
+- We choose the model with the smallest average "error"
+
+`$$MSE = \frac{\sum(Y_{i}-\hat{Y}_{i})^{2}}{n}$$`
+
+- We could also look to the model with the largest average `\(R^{2}\)`
+
+
+---
+
+
+## Cross-Validation (4)
+How many observations should I leave out from each fit?
+- There is no rule on how many cases to leave out, but Efron (1983) suggests that grouped cross-validation (with approximately `\(10\%\)` of the data left out each time) is better than leave-one-out cross-validation
+
+Number of repetitions
+- Harrell (2001:93) suggests that one may need to leave `\(\frac{1}{10}\)` of the sample out 200 times to get accurate estimates
+
+Cross-validation does not validate the complete sample
+- External validation, on the other hand, validates the model on a new sample
+- Of course, limitations in resources usually prohibits external validation in a single study
+
+
+---
+
+## Cross-Validation in R
+
+.pull-left[
+
+``` r
+library(boot)
+library(readr)
+## read in data
+wdat &lt;- read_csv("../data/weakliem.csv")
+## delete CzechRepublic and Slovakia
+wdat &lt;- wdat[-c(25,49), ]
+## Note that mod1 is very flexible and probably
+## overfitting, it has a much higher r-squared
+## than mod2
+mod1 &lt;- glm(secpay ~ poly(gini, 3)*democrat, data=wdat)
+mod2 &lt;- glm(secpay ~ gini*democrat, data=wdat)
+## finds cross-validation error for both models
+## in real life, we would want to repeat this lots of times
+## (like 200), but here we're just going to do 25
+## for the sake of time and convenience
+
+## initialize deltas
+deltas &lt;- NULL
+## do 25 times
+for(i in 1:25){
+deltas &lt;- rbind(deltas, c(
+## use cv.glm to calculate cross-validation error
+## for 5 folds.  You might use 10 if you had a bigger
+## dataset
+  cv.glm(wdat, mod1, K=5)$delta,
+  cv.glm(wdat, mod2, K=5)$delta)
+)}
+```
+]
+.pull-right[
+
+``` r
+out &lt;- matrix(colMeans(deltas), ncol=2)
+rownames(out) &lt;- c("delta_1", "delta_2")
+colnames(out) &lt;- c("Model 1", "Model 2")
+round(out, 4)
+```
+
+```
+##         Model 1 Model 2
+## delta_1  0.0086  0.0057
+## delta_2  0.0080  0.0056
+```
+
+The `delta_1` term is the average raw cross-validation error. The `delta_2` term corrects for using `\(k\)`-fold rather than leave-one-out CV. 
+
+]
+
+
+---
+
+
+## Tidy CV
+
+.pull-left[
+
+``` r
+cv_fun &lt;- function(split, ...){
+  u1 &lt;- update(mod1, data=analysis(split))
+  u2 &lt;- update(mod2, data=analysis(split))
+  e1_sq &lt;- (assessment(split)$secpay - 
+              predict(u1, newdata=assessment(split)))^2
+  e2_sq &lt;- (assessment(split)$secpay - 
+              predict(u2, newdata=assessment(split)))^2
+  tibble(
+    err = c(sum(e1_sq), sum(e2_sq)), 
+    n = c(length(e1_sq), length(e2_sq)), 
+    model = factor(c("poly_int", "linear_int")))
+}
+library(purrr)
+library(rsample)
+v &lt;- vfold_cv(wdat, v=5, repeats=250) %&gt;%
+  mutate(err = map(splits, cv_fun)) 
+```
+]
+.pull-right[
+
+``` r
+v %&gt;% unnest(err) %&gt;% 
+  group_by(id, model) %&gt;% 
+  summarise(mse = sum(err)/sum(n)) %&gt;% 
+  pivot_wider(names_from="model", values_from = "mse") %&gt;% 
+  mutate(diff = poly_int - linear_int) %&gt;% 
+  ungroup %&gt;% 
+  summarise(across(c(linear_int, poly_int), mean), 
+            "p(MSE Poly &gt; MSE Linear)" = mean(diff &gt; 0))
+```
+
+```
+## # A tibble: 1 × 3
+##   linear_int poly_int `p(MSE Poly &gt; MSE Linear)`
+##        &lt;dbl&gt;    &lt;dbl&gt;                      &lt;dbl&gt;
+## 1    0.00576   0.0114                          1
+```
+]
+
+
+---
+
+
+## Cross-validating Span in Loess
+
+We could use cross-validation to tell us something about the span in our Loess model.
+- First, split the sample into `\(K\)` groups (usually 10).
+- For each of the `\(k=10\)` groups, estimate the model on the other 9 and get predictions for the omitted groups observations. Do this for each of the 10 subsets in turn.
+- Calculate the CV error: `\(\frac{1}{n}\sum(y_{i} - \hat{y}_{i})^{2}\)`
+- Potentially, do this lots of times and average across the CV error.
+
+
+
+``` r
+## set random number generator seed
+set.seed(1)
+## set number of observations and create x
+n &lt;- 400
+x &lt;- 0:(n-1)/(n-1)
+## generate f(x)
+f &lt;- 0.2*x^11*(10*(1-x))^6+10*(10*x)^3*(1-x)^10
+## generate y as f(x)+e
+y &lt;- f + rnorm(n, 0, sd = 2)
+## make data into data frame
+tmp &lt;- data.frame(y=y, x=x)
+## estimate the loess model
+lo.mod &lt;- loess(y ~ x, data=tmp, span=.75)
+```
+
+
+---
+
+
+## Minimizing CV Criterion Directly
+
+
+
+``` r
+library(DAMisc)
+cvlo &lt;- DAMisc:::cv_lo2
+## the value in the "minimum" element
+## is the span with the lowest CV error.
+best.span &lt;- optimize(cvlo, c(.05,.95), form=y ~ x, data=tmp,
+ 	    numiter=5, K=10)
+best.span
+```
+
+```
+## $minimum
+## [1] 0.2611968
+## 
+## $objective
+## [1] 3.914841
+```
+
+
+
+
+
+---
+
+
+## Unknown Knot Location
+
+.pull-left[
+If you don't know the knot location, you could try a bunch of different options. 
+
+
+``` r
+dat &lt;- import("../data/linear_ex.dta")
+cvfun &lt;- function(split, ...){
+  mods &lt;- lapply(1:9, function(i){
+    lm(rep1 ~ polity_dem + pwl(polity_dem, i) + 
+         iwar + cwar + logpop + gdppc, 
+         data= analysis(split))})
+yhat &lt;- sapply(mods, function(x)predict(x, newdata=assessment(split)))
+y &lt;- assessment(split)$rep1
+e &lt;- apply(yhat, 2, function(z)(y-z)^2)
+sume2 &lt;- colSums(e)
+n &lt;- length(y)
+tibble(knot = 1:9, e2 = sume2, n = rep(n, 9))
+}
+out &lt;- dat %&gt;% 
+  vfold_cv(v=10, repeats=3) %&gt;% 
+  mutate(err = map(splits, cvfun)) %&gt;% 
+  unnest(err)  %&gt;% 
+  group_by(id, knot) %&gt;% 
+  summarise(mse = sum(e2)/sum(n)) %&gt;% 
+  ungroup %&gt;% 
+  group_by(knot) %&gt;% 
+  summarise(mse = mean(mse))
+```
+]
+.pull-right[
+
+``` r
+out
+```
+
+```
+## # A tibble: 9 × 2
+##    knot   mse
+##   &lt;int&gt; &lt;dbl&gt;
+## 1     1 0.934
+## 2     2 0.929
+## 3     3 0.919
+## 4     4 0.907
+## 5     5 0.900
+## 6     6 0.887
+## 7     7 0.869
+## 8     8 0.840
+## 9     9 0.815
+```
+]
+
+---
+
+## Number of Groups in Semi-parametric Test
+.pull-left[
+
+``` r
+fldat &lt;- rio::import("../data/fl_repdata.dta")
+fldat$onset &lt;- ifelse(fldat$onset &gt; 1, 1, fldat$onset)
+log_loss &lt;- function(y, yhat, ...){
+  p &lt;- ifelse(y == 1, yhat, 1-yhat)
+  z &lt;- min(p[which(p &gt; 0)])
+  z &lt;- mean(c(0, z))
+  p &lt;- ifelse(p == 0, z, p)
+  -mean(log(p), na.rm=TRUE)
+}
+
+mk_break &lt;- function(x, n=10){
+  x &lt;- na.omit(x)
+  qtl &lt;- quantile(x, seq(0,1,length=n+1))
+  qtl[1] &lt;- qtl[1]-.1 
+  qtl[length(qtl)] &lt;- qtl[length(qtl)] + .1
+  qtl
+}
+brks &lt;- mk_break(fldat$gdpenl)
+brks &lt;- lapply(5:25, \(i)mk_break(fldat$gdpenl, i)) 
+```
+]
+.pull-right[
+
+``` r
+cv_fun &lt;- function(split, ...){
+  an_mods &lt;- lapply(1:21, \(i){
+    glm(onset ~ warl + cut(gdpenl, breaks=brks[[i]]) + lpopl1 + 
+          lmtnest + ncontig + Oil + nwstate + instab + 
+          polity2l + ethfrac + relfrac, 
+        data=analysis(split), family=binomial)
+  })
+  loss &lt;- sapply(an_mods, \(x){
+    log_loss(assessment(split)$onset, 
+             predict(x, 
+                     newdata=assessment(split), 
+                     type="response"))
+  })  
+  tibble(
+    log_loss = loss, 
+    n = nrow(assessment(split)), 
+    n_groups = 5:25)
+}
+```
+]
+
+---
+
+## Results
+
+
+.pull-left[
+
+``` r
+library(purrr)
+library(rsample)
+v &lt;- vfold_cv(fldat, v=5, repeats=5) %&gt;%
+  mutate(ll = map(splits, cv_fun)) 
+out &lt;- v %&gt;% unnest(ll) %&gt;% 
+  group_by(id, n_groups) %&gt;% 
+  summarise(log_loss = sum(log_loss*(n/sum(n)))) %&gt;% 
+  group_by(n_groups) %&gt;% 
+  summarise(log_loss = mean(log_loss)) 
+```
+
+]
+.right-shift50[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-27-1.png" width="100%" /&gt;
+]
+
+
+---
+
+## Exercise
+
+Find the optimal number of groups for the non-parametric test for one of the other continuous variables - `lpopl1`, `lmtnest`,  `polity2l`, `ethfrac`,  `relfrac`.  
+
+Does the optimal number of groups for `gdpenl` depend on the number of groups you pick for the other variable?
+- Do a grid search over both dimensions `gdpenl` and the variable you picked with `\(\pm 3\)` groups around the optimal ones found above. 
+
+---
+
+## Recap
+
+- Splines - piecewise linear and cubic
+- Cross-validation
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

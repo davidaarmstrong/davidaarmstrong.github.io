@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 6</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="lecture6_files/header-attrs/header-attrs.js"></script>
+    <script src="lecture6_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture6_files/fabric/fabric.min.js"></script>
+    <link href="lecture6_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture6_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture6_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture6_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture6_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture6_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture6_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 6
+]
+.subtitle[
+## Regularization and GAMs
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+.remark-slide-content{
+  font-size: 1.25rem;
+}
+
+.large-text{
+  font-size: 2rem;
+}
+
+
+div.red {
+  color: #9A3324;
+}
+.left-narrow {
+  width: 38%;
+  height: 100%;
+  float: left;
+}
+.right-wide {
+  width: 58%;
+  float: right;
+  position:relative; 
+  top: -33px;
+}
+.right-wide100 {
+  width: 60%;
+  float: right;
+  position:relative; 
+  top: -100px;
+}
+.right-wide50 {
+  width: 60%;
+  float: right;
+  position:relative; 
+  top: -50px;
+}
+.right-shift100 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -100px;
+}
+.right-shift50 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -50px;
+}
+.middle-text {
+  position: relative; 
+  top: 125px;
+}
+
+.remark-code{
+  font-size: 55%
+}
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.left-code-shift2 {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+  position:relative; 
+  top: -50px;
+
+}
+.left-code-shift {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+  position:relative; 
+  top: -100px;
+
+}
+
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+.right-plot-shift2 {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+.right-plot-shift {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-left-shift2 {
+  float: left;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+
+}
+.shift { 
+  position:relative; 
+  top: -100px;
+  }
+
+.pull-right ~ * {
+  clear: both;
+}
+&lt;/style&gt;
+
+
+## Outline
+
+1. Shrinkage Estimators
+    - Ridge Regression
+    - LASSO
+    - Elastic Net
+    - Adaptive LASSO
+2. Penalized Splines
+3. GAMLSS
+
+---
+
+## Shrinkage Estimators
+
+Shrinkage estimators can reduce sampling variability and sometimes improve model fit (particularly in the presence of collinearity).
+- Shrinkage estimators impose constraints on the fitted model (particularly on the size of the coefficients).
+- The result of these constraints is to shrink the estimates toward zero.
+- Ridge Regression and the LASSO are the two most prominent shrinkage estimators.
+
+
+NB: these are *biased* estimators, so they might be good for stabilizing predictions, but they won't be particularly good for more conventional theory testing.
+
+
+---
+
+## Ridge Regression
+
+Ridge Regression minimizes the following function:
+
+`$$\sum_{i=1}^{N}\left(y_i - \beta_0 + \sum_{j=1}^{p}\beta_{j}x_{ij}\right)^{2} + \lambda \sum_{j=1}^{p}\beta_{j}^{2}$$`
+
+
+- `\(\lambda\)` is a tuning parameter that governs the relative of RSS and the penalty on fitting the regression surface.
+- As `\(\lambda \rightarrow 0\)`, the estimates get increasingly close to the OLS estimates.
+- As `\(\lambda \rightarrow \infty\)`, the estimates get increasingly close to zero.
+
+The choice of `\(\lambda\)` is important and is often done with cross-validation.
+
+---
+
+
+## Collinearity 
+
+.pull-left[
+
+``` r
+set.seed(1234)
+Sig &lt;- diag(5)
+Sig[3:5,3:5] &lt;- .99
+diag(Sig) &lt;- 1
+X &lt;- MASS::mvrnorm(500,rep(0,5), Sig)
+b &lt;- c(1,1,1,0,0)
+ystar &lt;- X %*% b
+y &lt;- ystar + rnorm(500, 0, 2)
+```
+]
+.pull-right[
+
+``` r
+summary(m1 &lt;- lm(y~ X))
+```
+
+```
+## 
+## Call:
+## lm(formula = y ~ X)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -5.4195 -1.3696 -0.0068  1.4012  5.3665 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  0.01686    0.08762   0.192   0.8475    
+## X1           1.17283    0.09359  12.532   &lt;2e-16 ***
+## X2           1.11657    0.09163  12.185   &lt;2e-16 ***
+## X3           1.17852    0.69279   1.701   0.0895 .  
+## X4           1.06271    0.68277   1.556   0.1202    
+## X5          -1.07864    0.70085  -1.539   0.1244    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.953 on 494 degrees of freedom
+## Multiple R-squared:  0.469,	Adjusted R-squared:  0.4636 
+## F-statistic: 87.27 on 5 and 494 DF,  p-value: &lt; 2.2e-16
+```
+]
+
+
+---
+
+
+## Collinearity (2)
+
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-5-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+## Collinearity (3)
+
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-6-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+## Prediction Variances
+
+.pull-left[
+
+``` r
+set.seed(207)
+library(boot)
+df &lt;- cbind(y, X)
+boot.ridge &lt;- function(data, inds, ...){
+  tmp &lt;- data[inds,]
+  y &lt;- tmp[,1]
+  X &lt;- tmp[,-1]
+  out &lt;- glmnet(X,y,alpha=0, lambda=.8736)
+  as.vector(coef(out))
+}
+br &lt;- boot(statistic=boot.ridge, 
+           data=df, R=100)
+v &lt;- var(br$t)
+pred.vars &lt;- diag(cbind(1, X) %*% 
+                    v %*% t(cbind(1,X)))
+lm.vars &lt;- diag(cbind(1, X) %*% 
+                  vcov(m1) %*% t(cbind(1,X)))
+```
+]
+.right-shift50[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-8-1.png" width="100%" height="80%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+
+## Predictions
+
+**Correlation**
+.pull-left[
+
+``` r
+ridge.preds &lt;- cbind(1, X) %*% as.matrix(coef(rcv2, s=rcv2$lambda.1se))
+lm.preds &lt;- cbind(1,X) %*% coef(m1)
+cor(as.vector(lm.preds), as.vector(ridge.preds))
+```
+
+```
+## [1] 0.9843517
+```
+
+**Average Bias**
+
+
+``` r
+bias2_lm &lt;- mean((lm.preds - ystar)^2)
+bias2_r &lt;- mean((ridge.preds - ystar)^2)
+c(bias2_lm, bias2_r)
+```
+
+```
+## [1] 0.08174584 0.10184582
+```
+]
+.right-shift50[
+**Mean Squared Error**
+
+
+``` r
+mse_lm &lt;- (lm.preds - ystar)^2 + lm.vars
+mse_r &lt;- (ridge.preds - ystar)^2 + pred.vars
+table(mse_r &lt; mse_lm)
+```
+
+```
+## 
+## FALSE  TRUE 
+##   199   301
+```
+
+``` r
+sum(mse_lm)
+```
+
+```
+## [1] 63.7483
+```
+
+``` r
+sum(mse_r)
+```
+
+```
+## [1] 62.07619
+```
+]
+
+
+
+---
+
+## LASSO (the L1 norm)
+
+The LASSO (Least Absolute Shrinkage and Selection Operator) is another regularization method for estimating regression.
+
+
+- Uses a different penalty than ridge regression:
+
+`$$\sum_{i=1}^{N}\left(y_i - \beta_0 + \sum_{j=1}^{p}\beta_{j}x_{ij}\right)^{2} + \lambda \sum_{j=1}^{p}|\beta_{j}|$$`
+
+- Doesn't necessarily use all of the variables (i.e., some coefficients could be zero)
+
+- Since not all variables are used in each fit, bootstrapping is more problematic here (though not impossible).
+
+
+---
+
+
+## LASSO and collinearity
+
+
+
+.pull-left[
+
+``` r
+s &lt;- seq(0.01, .99, length=25)
+cvg2 &lt;- cv.glmnet(scale(coll$X), coll$y, alpha=1)
+g2 &lt;- glmnet(scale(coll$X), coll$y, 
+             alpha=1, lambda=cvg2$lambda.min)
+r2 &lt;- glmnet(scale(coll$X), coll$y, 
+             alpha=0, lambda=rcv2$lambda.1se)
+coefs &lt;- tibble(
+  b = c(as.vector(m1$coef), as.vector(coef(r2)), 
+        as.vector(coef(g2))), 
+  model = factor(rep(1:3, each=length(coef(m1))), 
+          labels=c("LM", "Ridge", "LASSO")), 
+  variable = rep(names(m1$coef), 3))
+p1 &lt;- ggplot(coefs, aes(x=b, y=variable, 
+                  colour=model, shape=model)) + 
+  geom_point(size=3) + 
+  theme_bw() + 
+  scale_colour_manual(values=pal5[1:3]) + 
+  geom_vline(xintercept=0, lty=3)+ 
+  theme_xaringan()
+```
+]
+.right-shift50[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-14-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+## Elastic Net
+The *Elastic Net* is a compromise between Ridge and LASSO regression: 
+
+
+`$$\min_{\beta_0,\beta} \frac{1}{N} \sum_{i=1}^{N} w_i l(y_i,\beta_0+\beta^T x_i) + \lambda\left[(1-\alpha)||\beta||_2^2/2 + \alpha ||\beta||_1\right],$$`
+
+
+
+
+- LASSO: `\(\alpha = 1\)`, Ridge: `\(\alpha = 0\)` 
+
+- `\(\alpha\)` can be chosen a priori or you can experiment with several different values. 
+
+- Often setting `\(\alpha\)` close to, but not exactly, 1 has nice properties. 
+
+---
+
+
+## Elastic Net and Collinearity
+
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-15-1.png" width="55%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+
+## Adaptive Lasso
+
+The lasso gives all variables the same penalty `\((\lambda)\)`.  The adaptive lasso relaxes this assumption by allowing each parameter to have a different weight: 
+
+`$$\mathop{\mathrm{argmin}}_{\mathbf{\beta}} \left\| y-\sum_{j-1}^{p}\mathbf{x}_{j}\beta_{j}\right\|^{2} + \lambda \sum_{j=1}^{p}w_{j}|\beta_{j}|$$`
+
+Where we use results from an auxiliary regression (OLS, Ridge or LASSO) to make the weights: 
+
+`$$\hat{w}_{j} = \frac{1}{|\hat{\beta}_{j}|^{\gamma}}$$`
+
+`\(\gamma\)` is not usually estimated, but values 0.5, 1, and 2 are tried to evaluate sensitivity.  The only technical constraint is that `\(\gamma &gt; 0\)`.
+
+
+
+
+
+---
+
+## Oracle Property
+
+The Adaptive Lasso has been shown to have the Oracle property, that the selection procedure asymptotically chooses the right model:
+
+
+- True 0 coefficients are estimated as 0 with probability that tends toward 1 
+
+- True non-zero coefficients are estimated as if the true sub-model were known.  
+
+---
+
+## Steps for Adaptive LASSO
+
+
+- Estimate the initial coefficients via regression model (OLS, Ridge or LASSO). 
+
+- Calculate the weights `\(w_{j} = \frac{1}{|\beta_{j}|^{\gamma}}\quad \gamma = \{0.5, 1, 2\}\)`. 
+
+- Use the weights as input to the LASSO routine. 
+
+
+---
+
+## Adaptive LASSO and Collinearity
+
+.left-narrow[
+
+``` r
+b.ridge &lt;- coef(cv.glmnet(scale(coll$X),
+                          coll$y, alpha=0))
+## calculate weights
+gamma &lt;- 1
+w &lt;- 1/(abs(b.ridge)^gamma)
+## estimate the LASSO with the weights
+cval &lt;- cv.glmnet(scale(coll$X),coll$y, 
+                  penalty.factor=w[-1])
+```
+]
+
+.right-wide50[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-17-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Recap: Regularization
+
+Regularization is good for
+- Reducing dependence on irrelevant information
+- Reducing prediction variances and MSE
+- Adjudicating collinearity problems
+
+---
+
+## Penalized Splines 
+
+Sometimes spline smooths can be a bit too variable (particularly with many knots).  
+- Regularization can help solve this problem, while still retaining the systematically important part of the fit.  
+- Rather than choosing a small number of knots, choose many and regularize. 
+
+If we're using a truncated power basis function of order `\(p\)` with `\(k\)` knots, where the first `\(p+1\)` elements of the coefficient vector are the intercept and global polynomials, then we can define: 
+
+`$$\mathbf{D} = \left[\begin{array}{ll}\mathbf{0}_{p+1\times p+1} &amp; \mathbf{0}_{p+1\times k} \\
+\mathbf{0}_{k\times p+1} &amp; \mathbf{I}_{k\times k}\end{array}\right]$$`
+
+---
+
+## Penalized Splines (2)
+
+With `\(\mathbf{D}\)` defined, we could then minimize: 
+
+`$$\mid\mid\mathbf{y}-\mathbf{X}\beta\mid\mid^{2} + \lambda^2\beta^{\prime}\mathbf{D}\beta$$`
+
+The **roughness penalty** really captures the sum of squared penalized coefficients - the `\(\ell_{2}\)` norm.  
+
+The penalized coefficients are, then: 
+
+`$$\beta = (\mathbf{X}^{\prime}\mathbf{X} + \lambda^{2}\mathbf{D})^{-1}\mathbf{X}^{\prime}\mathbf{y}$$`
+
+---
+
+## Example
+
+&lt;img src="lecture6_files/figure-html/simnl-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Example 
+
+.pull-left[
+
+``` r
+tpb &lt;- function(x, degree=3, nknots=3){
+out &lt;- sapply(1:degree, function(d)x^d)
+s &lt;- seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length=nknots+2)
+s &lt;- s[-c(1, length(s))]
+for(i in 1:length(s)){
+  out &lt;- cbind(out, (x-s[i])^3*(x &gt;= s[i]))
+}
+colnames(out) &lt;- paste0("tpb", 1:ncol(out))
+return(out)
+}
+df &lt;- data.frame(x=x, y=y, f=f)
+mod &lt;- lm(y ~ tpb(x, 3, 20), data=df)
+D &lt;- diag(24)
+D[1:4,1:4] &lt;- 0
+X &lt;- cbind(1, tpb(x, 3, 20))
+y &lt;- model.response(model.frame(mod))
+
+lambda &lt;- .0025
+b.constr &lt;- solve(t(X) %*% X + lambda^2*D) %*% t(X) %*% y
+
+fit0 &lt;- X %*% mod$coef
+fit1 &lt;- X %*% b.constr
+v0 &lt;- predict(mod, se.fit=TRUE)$se.fit^2
+
+e1 &lt;- y-fit1
+spline_df &lt;- nrow(X) - sum(diag(X %*% solve(t(X) %*% X + lambda^2*D) %*% t(X)))
+sig1 &lt;- (sum(e1^2)/spline_df)
+v1 &lt;- diag(sig1*(X%*% solve(t(X) %*% X + lambda^2*D) %*% t(X)))
+```
+]
+.right-shift50[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-19-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## GAMLSS
+
+We usually don't do the penalizing ourselves, we embed it in a regression model.  GAMLSS is a framework for doing this (and many other things). 
+
+
+``` r
+library(gamlss)
+dframe &lt;- data.frame(x=x, y=y, f=f)
+mod &lt;- gamlss(y ~ pb(x), data=dframe)
+```
+
+---
+
+
+``` r
+summary(mod)
+```
+
+```
+## ******************************************************************
+## Family:  c("NO", "Normal") 
+## 
+## Call:  gamlss(formula = y ~ pb(x), data = dframe) 
+## 
+## Fitting method: RS() 
+## 
+## ------------------------------------------------------------------
+## Mu link function:  identity
+## Mu Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   6.2785     0.1913   32.83   &lt;2e-16 ***
+## pb(x)        -5.6310     0.3311  -17.01   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## ------------------------------------------------------------------
+## Sigma link function:  log
+## Sigma Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  0.65040    0.03536    18.4   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## ------------------------------------------------------------------
+## NOTE: Additive smoothing terms exist in the formulas: 
+##  i) Std. Error for smoothers are for the linear effect only. 
+## ii) Std. Error for the linear terms maybe are not accurate. 
+## ------------------------------------------------------------------
+## No. of observations in the fit:  400 
+## Degrees of Freedom for the fit:  12.25376
+##       Residual Deg. of Freedom:  387.7462 
+##                       at cycle:  2 
+##  
+## Global Deviance:     1655.469 
+##             AIC:     1679.976 
+##             SBC:     1728.887 
+## ******************************************************************
+```
+
+---
+
+## Smooth Term
+
+
+``` r
+mod$mu.coefSmo[[1]]
+```
+
+```
+## P-spline fit using the gamlss function pb() 
+## Degrees of Freedom for the fit : 11.25376 
+## Random effect parameter sigma_b: 1.29549 
+## Smoothing parameter lambda     : 0.613094
+```
+
+``` r
+## coefficients
+c(mod$mu.coefSmo[[1]]$coef)
+```
+
+```
+##  [1] -8.80532275 -7.07334035 -5.29320623 -2.54552539  1.14014680  3.66217710
+##  [7]  4.41469105  3.17578616  1.02161400  0.12984069 -0.18952821 -0.54987832
+## [13] -0.59184225  0.08041483  0.78006187  0.84320616  0.48724692 -0.51246890
+## [19] -1.22287182 -1.40918552 -0.95398350 -0.14971796  0.69056121
+```
+
+---
+
+## Plot
+.pull-left[
+
+``` r
+out &lt;- termplot(mod, se=TRUE, plot=FALSE)
+ggplot(out$x, aes(x=x, y=y)) + 
+  geom_ribbon(aes(ymin = y-1.96*se, 
+                  ymax=y+1.96*se), 
+              alpha=.15, fill=pal2[1], 
+              col="transparent") + 
+  geom_line(col=pal2[1]) + 
+  geom_line(data=df, aes(x=x, y=(f-mean(f))), colour=pal2[2], inherit.aes = FALSE) + 
+  theme_xaringan() + 
+  labs(x="x", y="y")
+```
+]
+.right-shift50[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-23-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## GAMLSS Algorithm
+
+1. Outer iteration: loops over moments - `\(\mu\)`, `\(\sigma\)`, `\(\nu\)` and `\(\tau\)` - calling inner iteration
+
+2. Inner iteration - Calculate `\(z_k\)` (working response) and weights `\(w_{k}\)` and call modified backfitting algorithm. 
+
+3. Smooth residuals against `\(X\)` to calculate new parameter estimates. 
+
+---
+
+## Estimating lambda
+
+- `\(\varepsilon = \mathbf{Z\gamma} + \mathbf{e}\)` (partial residual)
+- `\(e \sim \mathcal{N}(0,  \sigma_{e}^{2}\mathbf{W}^{-1})\)` (idiosyncratic residuals)
+- `\(\gamma \sim \mathcal{N}(\mathbf{0}, \sigma_{b}^{2}\mathbf{G}^{-1})\)` (parameters)
+
+1. `\(\hat{\gamma} = \left(\mathbf{Z}^{\prime}\mathbf{WZ} + \hat{\lambda}\mathbf{G}\right)^{-1}\mathbf{Z}^{\prime}\mathbf{W}\varepsilon\)` (weighted least squares)
+
+2. `\(\hat{\lambda} = \frac{\hat{\sigma}_{e}^{2}}{\hat{\sigma}_{b}^{2}}\)`, where: 
+  - `\(\hat{\varepsilon} = \mathbf{Z}\hat{\mathbf{\gamma}}\)`
+  - `\(\hat{\sigma}_{e}^{2} = (\varepsilon-\hat{\varepsilon})^{\prime}(\varepsilon-\hat{\varepsilon})/(n-tr(\mathbf{S}))\)`
+  - `\(\hat{\sigma}_{b}^{2} = \hat{\mathbf{\gamma}}^{\prime}\hat{\mathbf{\gamma}}/tr(\mathbf{S})\)`
+  - `\(S=\mathbf{Z}\left(\mathbf{Z}^{\prime}\mathbf{WZ} + \hat{\lambda}\mathbf{G}\right)^{-1}\mathbf{Z}^{\prime}\mathbf{W}\)`
+  
+---
+
+## Replicating Ourselves
+
+Let's do some of the same things we've done already in this framework: 
+
+1. Modeling non-linearity in the Jacobson Data. 
+2. Monotone smoothing of democracy and vote choice. 
+
+---
+
+## Jacobson Data 
+
+
+``` r
+library(gamlss)
+library(car)
+library(rio)
+dat &lt;- import("../data/jacob.dta")
+
+gmod &lt;- gamlss(chal_vote ~ pb(perotvote) + pb(chal_spend) + 
+    exp_chal, data=dat)
+
+invx &lt;- function(x)(1/x)
+spline.mod &lt;- gamlss(chal_vote ~ invx(perotvote) + 
+                   bs(chal_spend, df=4) + 
+                   exp_chal, data=dat)
+
+tp &lt;- termplot(gmod, se=TRUE, plot=FALSE)
+tp2 &lt;- termplot(spline.mod, se=TRUE, plot=FALSE)
+tp_pv &lt;- bind_rows(tp[[1]], tp2[[1]])
+tp_pv$model &lt;- factor(rep(1:2, each=nrow(tp[[1]])), 
+                      labels=c("GAMLSS", "OLS Spline"))
+tp_cs &lt;- bind_rows(tp[[2]], tp2[[2]])
+tp_cs$model &lt;- factor(rep(1:2, each=nrow(tp[[2]])), 
+                      labels=c("GAMLSS", "OLS Spline"))
+```
+
+---
+
+## plots
+
+.pull-left[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-25-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-26-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Testing the models
+
+We can use the Clarke test to evaluate the difference between the two models. 
+
+
+``` r
+VC.test(gmod, spline.mod)
+```
+
+```
+##  Vuong's test: -2.475 model spline.mod is preferred over gmod 
+## Clarke's test: 95 p-value= 0 spline.mod is preferred over gmod
+```
+
+In this case, the spline model is better - generally similar parametric models will be preferred to non-parametric models. 
+
+---
+
+## Monotonic Democracy
+
+
+.pull-left[
+We could use `gamlss()` to estimate a monotonic relationship. 
+
+
+``` r
+library(foreign)
+dat &lt;- import("../data/linear_ex.dta")
+dat$polity_dem_fac &lt;- as.factor(dat$polity_dem)
+unrestricted.mod1 &lt;- gamlss(rep1 ~ polity_dem_fac + iwar +
+    cwar + logpop + gdppc,data=dat)
+mono.mod1 &lt;- gamlss(rep1 ~ pbm(polity_dem, mono="down") + 
+    iwar + cwar + logpop + gdppc,data=dat)
+nonmono.mod1 &lt;- gamlss(rep1 ~ pb(polity_dem) + iwar +
+    cwar + logpop + gdppc,data=dat)
+mod.2p &lt;- gamlss(rep1 ~ polity_dem + 
+    I((polity_dem - 9)*(polity_dem &gt;= 9)) + iwar +
+    cwar + logpop + gdppc,data=dat)
+```
+]
+.pull-right-shift[
+
+``` r
+VC.test(unrestricted.mod1, mono.mod1)
+```
+
+```
+##  Vuong's test: -5.305 model mono.mod1 is preferred over unrestricted.mod1 
+## Clarke's test: 679 p-value= 0 mono.mod1 is preferred over unrestricted.mod1
+```
+
+``` r
+VC.test(mod.2p, nonmono.mod1)
+```
+
+```
+##  Vuong's test: 8.167 model mod.2p is preferred over nonmono.mod1 
+## Clarke's test: 2192 p-value= 0 mod.2p is preferred over nonmono.mod1
+```
+
+``` r
+VC.test(mono.mod1, nonmono.mod1)
+```
+
+```
+##  Vuong's test: 5.324 model mono.mod1 is preferred over nonmono.mod1 
+## Clarke's test: 1998 p-value= 0 mono.mod1 is preferred over nonmono.mod1
+```
+
+``` r
+VC.test(mono.mod1, mod.2p)
+```
+
+```
+##  Vuong's test: -7.701 model mod.2p is preferred over mono.mod1 
+## Clarke's test: 795 p-value= 0 mod.2p is preferred over mono.mod1
+```
+]
+
+---
+
+## Monotone Party ID
+
+
+``` r
+## read in ANSS data
+anes &lt;- import("../data/anes1992.dta")
+## make PID a factor and store in pidfac
+anes$pidfac &lt;- as.factor(anes$pid)
+## estimate the linear (restricted) and
+## dummy variable (unrestricted) models
+unrestricted.mod2 &lt;- gamlss(votedem ~ retnat + pidfac + age + male +
+	 educ + black + south, data=anes, family=BI)
+```
+
+```
+## GAMLSS-RS iteration 1: Global Deviance = 769.7147 
+## GAMLSS-RS iteration 2: Global Deviance = 769.7147
+```
+
+``` r
+mono.mod2 &lt;- gamlss(votedem ~ retnat + pbm(pid, mono="down") + 
+  age + male + educ + black + south, data=anes, family=BI)
+```
+
+```
+## GAMLSS-RS iteration 1: Global Deviance = 774.5032 
+## GAMLSS-RS iteration 2: Global Deviance = 774.5039
+```
+
+``` r
+## test the difference in two models
+VC.test(unrestricted.mod2, mono.mod2)
+```
+
+```
+##  Vuong's test: -3.648 model mono.mod2 is preferred over unrestricted.mod2 
+## Clarke's test: 328 p-value= 0 mono.mod2 is preferred over unrestricted.mod2
+```
+
+
+---
+
+## Plots
+
+.pull-left[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-31-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-32-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Exercise
+
+Using the Fearon and Laitin data, estimate the baseline model below and then estimate the model in the GAMLSS framework with penalized splines on the continuous variables.  How robust are the relationships to these changes?
+
+
+``` r
+fldat &lt;- import("../data/fl_repdata.dta")
+fldat$onset &lt;- ifelse(fldat$onset &gt; 1, 1, fldat$onset)
+bmod &lt;- glm(onset ~ warl + gdpenl + lpopl1 + 
+      lmtnest + ncontig + Oil + nwstate + instab + 
+      polity2l + ethfrac + relfrac, 
+    data=fldat, family=binomial)
+```
+
+
+---
+
+
+## Outline
+
+1. Shrinkage Estimators
+    - Ridge Regression
+    - LASSO
+    - Elastic Net
+    - Adaptive LASSO
+2. Penalized Splines
+3. GAMLSS
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

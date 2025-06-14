@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 9</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="lecture9_files/header-attrs/header-attrs.js"></script>
+    <script src="lecture9_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture9_files/fabric/fabric.min.js"></script>
+    <link href="lecture9_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture9_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture9_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture9_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture9_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture9_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture9_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 9
+]
+.subtitle[
+## Measurement
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+.remark-slide-content{
+  font-size: 1.25rem;
+}
+
+.large-text{
+  font-size: 2rem;
+}
+
+
+div.red {
+  color: #9A3324;
+}
+.left-narrow {
+  width: 38%;
+  height: 100%;
+  float: left;
+}
+.right-wide {
+  width: 58%;
+  float: right;
+  position:relative; 
+  top: -33px;
+}
+.right-wide100 {
+  width: 60%;
+  float: right;
+  position:relative; 
+  top: -100px;
+}
+.right-shift100 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -100px;
+}
+.right-shift50 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -50px;
+}
+.middle-text {
+  position: relative; 
+  top: 125px;
+}
+
+.remark-code{
+  font-size: 55%
+}
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.left-code-shift2 {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+  position:relative; 
+  top: -50px;
+
+}
+.left-code-shift {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+  position:relative; 
+  top: -100px;
+
+}
+
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+.right-plot-shift2 {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+.right-plot-shift {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-left-shift2 {
+  float: left;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+
+}
+.shift { 
+  position:relative; 
+  top: -100px;
+  }
+
+.pull-right ~ * {
+  clear: both;
+}
+&lt;/style&gt;
+
+## Outline
+
+1. What is an index - how do we know if we should make one? 
+    - Continuous measures
+    - Binary measures
+2. Principal Components and Exploratory Factor Analysis
+    - Multiple indpenendent sources of systematic variation. 
+3. Robustness Tests for Concept Validity
+3. Robustness Tests for Measurement Error. 
+
+---
+
+
+## Simple model
+
+&lt;img src="srmtheory.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Simple model: Equation form
+
+`$$\begin{aligned}
+y_{i1} &amp;= \beta_{1}z_{i} + \varepsilon_{i1}\\
+y_{i2} &amp;= \beta_{2}z_{i} + \varepsilon_{i2}\\
+y_{i3} &amp;= \beta_{3}z_{i} + \varepsilon_{i3}\\
+\vdots &amp;= \hspace{.25in}\vdots \\
+y_{ij} &amp;= \beta_{j}z_{i} + \varepsilon_{ij}\\
+\end{aligned}$$`
+
+
+
+- How many data points do we have?
+- How many parameters are there in this model?
+- Note, from here on out, we are assuming that the observed variables
+have been standardized to have 0 mean and variance=1.
+
+
+
+---
+
+## Simplifying Assumptions
+
+
+- `\(\beta_{1} = \beta_{2} = \beta_{3} = \ldots = \beta_{j} = 1\)`,
+which gives us the following:
+
+`$$\begin{aligned}
+y_{i1} &amp;= z_{i} + \varepsilon_{i1}\\
+y_{i2} &amp;= z_{i} + \varepsilon_{i2}\\
+y_{i3} &amp;= z_{i} + \varepsilon_{i3}\\
+\vdots &amp;= \hspace{.15in}\vdots \\
+y_{ij} &amp;= z_{i} + \varepsilon_{ij}
+\end{aligned}$$`
+
+- There is some error that keeps the observed variable from being a perfect reflection of the "true" score on `\(z\)`.
+
+
+---
+
+## One Observation
+
+- Now, let's look what happens to one observation `\(i\)`.  For
+simplicity of notation here, we remove the `\(i\)` subscripts:
+
+`$$\begin{aligned}
+Y &amp;= z + U \\
+E(Y) &amp;= E(z + U)\\ 
+&amp;= z + E(U)\\
+\end{aligned}$$`
+
+
+- Remember, `\(E(U) = \bar{\varepsilon}\)`.  If we can assume that the errors cancel out, that is that the sum of the errors is 0 (making the mean of the errors also 0), then we have the following result:
+
+`$$E(Y) = z$$`
+
+
+
+---
+
+## Is this model appropriate?
+
+
+- Have to assume that the "signal" is the same across all of the variables in this model.
+- Have to assume that there is no systematic measurement error. If every observation is off in the same direction, the estimate of the "true" dimension will also be biased, even in the limit.
+- Also have to make a couple of other assumptions, but we'll get into those later.
+
+---
+
+## Reliability
+
+
+- Let's look at one observed variable: `\(Y_{j} = z + U_{j}\)`.   One thing that we're often interested in is how can we account for the variance in a variable:
+
+`$$\begin{aligned}
+var(Y_{j}) &amp;= var(z + U_{j})\\
+&amp;= var(z) + var(U_{j}) + 2cov(z,U_{j})
+\end{aligned}$$`
+
+- If we now assume that `\(cov(z,U_{j}) = 0\)`, that is, the errors are independent of `\(z\)` and we'll also assume `\(cov(e_{i}e_{j}) = 0 \quad \forall \quad i \neq j\)` ( `\(\forall\)` just means "for every" ).
+
+`$$var(Y_{j}) = var(z) + var(U_{j})$$`
+
+---
+
+## Reliability II
+
+
+- Now, let's do a bit of rearranging:
+
+`$$1 = \frac{var(z)}{var(Y_{j})} + \frac{var(U_{j})}{var(Y_{j})}$$`
+
+- The first piece of the first equation on this page, is then like an R$^{2}$ between the unobserved "true" score and the observed variable `\(Y_{j}\)`. We call this "reliability" - the proportion of variance in the observed variable that is due to the true, but unobservable dimension.
+
+- In general, reliability refers to the repeatability and consistency of the measurement instrument.  Thus, a measure is reliable if, when repeated, it produces similar results.
+
+
+
+---
+
+## What does Reliability mean?
+
+
+- The higher a variable's reliability, the better a measure it is of the estimated underlying dimension.
+
+- If a variable has very low reliability, it is unlikely that it is measuring the same thing as the other variables **(no matter how much it's name or operationalization would suggest that it is)**.
+
+
+---
+
+## Assumptions thus far (and one new one)
+
+
+- `\(e_{ij} \sim iid\)` (i.e., no systematic measurement error).
+- `\(z_{i}\)` is the same for all `\(y_{ij}\)` (uni-dimensionality).
+
+
+Now, I'm going to introduce one more assumption now: Monotone
+Homogeneity.
+
+- Monotone Homogeneity means that the relationship between the observed variables and the true underlying dimension is monotonically increasing.
+- By monotonically increasing, I mean that as the true dimension increases, the observed variable cannot decrease (though it could stay the same).
+- This suggests that the input variables don't need to be interval-level, they only need to be ordinal.
+
+---
+
+
+## Theoretical Conclusions
+
+What does all of this mean?
+
+- It means, that if the assumptions of this model are reasonable, then you can get an estimate of the underlying dimension by adding up, or taking the mean, of the observed variables for each observation.
+- Remember, we found that:
+
+`$$E(Y) = z + \underbrace{E(U)}_{0}$$`
+
+- Now, we have to estimate reliability.
+
+---
+
+## Estimating Reliability
+
+
+- We can never know a variable's true reliability since it depends, in part, on the variance of the true score.
+- We can get an estimate of a scale's reliability.  In R, we do this with Cronbach's `\(\alpha\)`, `alpha()` in the `psych` package.
+- The formula for `\(\alpha\)` is as follows:
+
+`$$\alpha = \frac{k\bar{r}}{1+\bar{r}(k-1)}$$`
+
+where `\(\bar{r}\)` is the average of the elements below the diagnoal of the correlation matrix for the observed variables and `\(k\)` is the number of observed variables.
+
+
+---
+
+
+
+
+
+
+## More definitions.
+
+Assume that we have observed variables `\(y_{i1}, y_{i2}, \ldots, y_{ik}\)`
+
+- The "test score" is simply `\(\sum_{j=1}^{k} y_{ij}\)`.
+- The "rest score" for variable `\(y_{i1}\)` is simply `\(\sum_{j=2}^{k} y_{ij}\)`.  This is sum of the *rest* of the variables.  The rest score for `\(y_{i5}\)` would be `\(\sum_{j=1}^{4} y_{ij} + \sum_{j=6}^{k} y_{ij}\)`.
+
+
+---
+
+
+## Reliability Estimation
+
+.pull-left[
+We know that `\(0 \leq\)` Reliability `\(\leq 1\)` and the closer to 1, the more reliable the scale is.  This scale is quite reliable.
+]
+.right-shift50[
+
+``` r
+library(psych)
+dat &lt;- rio::import('../data/srm.dta')
+alpha(dat)
+```
+
+```
+## 
+## Reliability analysis   
+## Call: alpha(x = dat)
+## 
+##   raw_alpha std.alpha G6(smc) average_r S/N   ase  mean   sd median_r
+##       0.94      0.94    0.93       0.8  16 0.003 0.023 0.94      0.8
+## 
+##     95% confidence boundaries 
+##          lower alpha upper
+## Feldt     0.94  0.94  0.95
+## Duhachek  0.94  0.94  0.95
+## 
+##  Reliability if an item is dropped:
+##    raw_alpha std.alpha G6(smc) average_r S/N alpha se   var.r med.r
+## X1      0.93      0.93    0.89      0.81  13   0.0040 2.4e-04  0.81
+## X2      0.93      0.93    0.90      0.81  13   0.0039 1.4e-04  0.81
+## X3      0.92      0.92    0.89      0.80  12   0.0042 7.0e-05  0.80
+## X4      0.92      0.92    0.89      0.80  12   0.0043 7.1e-05  0.79
+## 
+##  Item statistics 
+##       n raw.r std.r r.cor r.drop   mean sd
+## X1 1000  0.92  0.92  0.88   0.86 0.0293  1
+## X2 1000  0.92  0.92  0.88   0.85 0.0302  1
+## X3 1000  0.93  0.93  0.90   0.87 0.0071  1
+## X4 1000  0.93  0.93  0.90   0.87 0.0254  1
+```
+]
+---
+
+
+## Reading the R Output
+
+
+- The `r.cor` column is the correlation between the individual variable and the test score (the scale created by all of the variables).
+
+
+- This may not be the best measure because the test score contains the variable of interest, so those two things are related by definition.
+
+
+- The `r.drop` column is the correlation between the individual variable and that variable's rest score (the scale made from summing all of the rest of the variables).
+
+- The `raw_alpha` column shows what Cronbach's `\(\alpha\)` would be if we omitted that variable from the scale.  Ideally, you want the overall `\(\alpha\)` to be bigger than it would be if you deleted any of the individual items.
+
+---
+
+
+## Evaluating Assumptions
+
+
+- Uni-dimensionality:  To evaluate this assumption, it is probably best to look at the correlation matrix.  What you want to see is relatively similar (hopefully high-ish) correlations across the matrix.  To the extent the blocks of high and low correlations exist, that is a problem.
+
+- Monotone homogeneity can be evaluated by plotting each variable against its rest score.  I've written an R program that will do this called "restplot".  The program just takes a variable list and then plots each variable against the row-mean of the remaining variables.
+
+---
+
+
+## Restplot in R
+.pull-left[
+
+``` r
+source("restplot.r")
+restplot(dat, 
+         span =	.7, 
+         family = "symmetric", 
+         degree = 2)
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture9_files/figure-html/unnamed-chunk-4-1.png" width="100%" /&gt;
+]
+---
+
+
+## Caveats and Cautions
+
+
+- Cronbach's `\(\alpha\)` is not a good *test* of dimensionality.  It is likely to give an underestimate of the dimensionality of your data.  Testing dimensionality is a task better suited to factor analysis, which we will talk about later.
+
+- As you include more variables, it is possible to see a relatively high `\(\alpha\)` value without very high inter-correlations.
+
+
+---
+
+## `\(\alpha\)` as a function of `\(k\)` and `\(\bar{r}\)`
+
+&lt;img src="alpha.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+## SRM Conclusion
+
+
+- At the end, you have a new variable (the sum of the observed variables for each observation) that is an estimate of the latent dimension.
+
+- If the assumptions of this model hold, the estimate is "better" than any of the individual variables because the idiosyncrasies and measurement error have canceled each other out.
+
+- The resulting variable is (roughly) an interval level variable after starting with ordinal level input data.
+
+
+---
+
+
+## Cumulative Scaling: Math Test
+
+
+- These methods originate from and are most commonly used in testing.
+- Imagine a math test where there are 6 questions, one each dealing with - arithmetic, algebra, geometry, trigonometry, calculus, and differential equations.
+- In a cumulative scale, we would expect people to stop answering questions correctly based on their mathematical ability.
+
+&lt;img src="mathcuts.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+## More Math Example
+
+
+- We would expect someone who has just finished high school to be able to answer maybe up to the geometry or trigonometry question, but it would be unlikely they would be able to answer the differential equation question.
+
+- Similarly, if someone could answer the differential equation question, we would expect that they would also be able to answer all the other questions.
+
+- Let's take this understanding and start to think of how we might operationalize this model.
+
+---
+
+## Cumulative Model and Cross-Tabs
+
+
+- Let's think about just two of these questions - let's say arithmetic and algebra.  What would we expect the cross-tab to look like?
+
+&lt;img src="mokken_errors.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+What responses make sense? `\(a\)`, `\(c\)` and `\(d\)` are all plausible; `\(b\)` is not. 
+
+---
+
+## Formal statement of the model
+
+
+-  We have two different sets of objects we're trying to model - the cut-points (we'll call `\(\delta_{j}\)` where `\(j\)` indexes observed variables and the individual abilities or ideal points, we'll call these `\(\theta_{i}\)` where `\(i\)` indexes individuals.
+    1.  For `\(j = 1, 2, \ldots, k\)`, if `\(\theta_{i}&lt; \delta_{j}\)`, then `\(\theta_{i}&lt; \delta_{j+1} &lt; \cdots &lt; \delta_{k}\)`.
+    2.  Conversely, if `\(\theta_{i}&gt; \delta_{j}\)`, then `\(\theta_{i}&gt; \delta_{j-1} &gt; \cdots &gt; \delta_{1}\)`.
+    3.  As a result of the above, we would expect that `\(\sum_{i=1}^{n}x_{i,j} &gt; \sum_{i=1}^{n}x_{i,j+1}\)`.  Fewer people total will answer a harder question correctly than an easier one.
+    4.  Let's go back to the math example...
+
+
+---
+
+
+## Back to the Math Test
+
+&lt;img src="mathcuts.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+The model says that since $\delta_{4} &lt; \theta_{1} &lt;
+\delta_{5}$, that this person should get the trigonometry question
+right and the calculus question wrong.
+
+---
+
+
+## Model Assumptions
+
+
+- This model assumes unidimensionality, though there are 2-dimensional IRT models as well.  They're more difficult to you're interested, there are lots of references.
+- The only other model assumption is called "double monotonicity" which states that two conditions must hold simultaneously:
+
+1.  For any fixed `\(\theta_{i}\)`, `\(p(x_{1}= 1) \geq p(x_{2}=1) \geq \cdots \geq p(x_{k}=1)\)` - the probabilities of a positive response should be monotonically decreasing.
+2.  For any fixed `\(\delta_j\)`, `\(p(v_{1j} = 1) &lt; p(v_{2j} = 1) &lt; \cdots \leq p(v_{nj}=1)\)` - the probability that any observation gives a positive response should be monotonically related to the ordering of the ideal points.
+
+---
+
+
+## Assessing the Assumptions
+
+Consider the following table:
+
+&lt;img src="assume_tab.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+
+- Let's assume `\(\delta_1 &lt; \delta_2\)`; that is to say `\(p(v_{2}) &lt; p(v_{1})\)`.  If this is the case, then we could expect to see `\(f_{00}\)`, `\(f_{10}\)` and `\(f_{11}\)`, but {\em not} `\(f_{01}\)`.  So, this is the cell that is in error.
+- We want to see how much in error it is, that is, how different
+from our expectations it is.   We'll denote our expected frequency
+as `\(f_{01}^{e}\)`.
+-We can calculate `\(f_{01}^{e} = \frac{f_{+1}f_{0+}}{n}\)`
+
+---
+
+
+## H-statistic
+
+
+- We can calculate what Mokken called the `\(H\)`-statistic for any pair of items:
+`$$H_{jk} = 1-\left(\frac{f_{01}}{f_{01}^{e}}\right)$$`
+where `\(f_{01}\)` is the error cell.  (Note: the error cell could be `\(f_{10}\)` depending on how you set up your cross-tab, so be careful to make sure you're looking at the right cell).
+
+-  We can similarly create an `\(H\)`-statistic for any particular item by summing observed and expected frequencies across all of the pairs involving that particular variable:
+
+`$$1-\left(\frac{\sum^{pairs}f_{01}}{\sum^{pairs}f_{01}^{e}}\right)$$`
+
+---
+
+
+## Evaluating `\(H\)`-statistics
+
+Mokken suggested the following rules of thumb for evaluating these coefficients.
+- For `\(H_{j}\)`, it should be bigger than 0.3 and would be nice if it were above 0.5.  Current thinking is that these limits might be a bit generous and that a more appropriate cut-off for acceptability is 0.4.
+- For `\(H_{ij}\)`, every one should be positive and statistically different from zero.
+- `\(H\)` is bound on the upper-end at 1, but has no particular lower bound.  Negative values are suggestive that other models might
+
+---
+
+
+## Generating Scores
+
+- As with all of these other methods, though we want to know the structure of the data, what we really want is an estimate for each individual of their position on the underlying dimension.
+1. By far the most common is to just sum up the number of ones: `\(\sum_{j=1}^{k} x_{ij}\)`.  This should work because if you answered 4 questions right, the model assumes they're the first 4.
+2. Another possibility is to stick individuals past the cut-point of the hardest item to which they gave a positive response.  This is marginal differences between these two methods.
+
+---
+
+## Principal Components
+
+&lt;img src="pca.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## In equation form
+
+`$$\begin{aligned}
+C_{1} &amp;= a_{11}x_{1} + a_{21}x_{2} + \ldots + a_{k1}x_{k} \\
+C_{2} &amp;= a_{12}x_{1} + a_{22}x_{2} + \ldots + a_{k2}x_{k} \\
+      &amp;\vdots  \\
+C_{k} &amp;= a_{1k}x_{1} + a_{2k}x_{2} + \ldots + a_{kk}x_{k}
+\end{aligned}$$`
+
+---
+
+## Things to note
+
+- There are as many `\(C\)` variables as there are `\(x\)` variables. So Principal Components analysis does not necessarily reduce dimensionality.  It is unlikely you can _perfectly_ reproduce the correlation matrix with fewer than `\(k\)` components unless one `\(x\)` is a perfect linear combination of the other `\(x\)`'s.
+- The causal direction goes from the observed to the unobserved variables, so this is not a "model" that proposes a small set of variables that can account for the covariation in the observed variables.
+- Notice, there are no errors here.  We are accounting for all of the variance in the observed variables by using `\(k\)` components to summarize `\(k\)` variables.
+
+---
+
+## PCA as Dimension Reducation
+
+- PCA can be used to reduce dimensionality if a relatively small number of the `\(k\)` components account for a disproportionately large proportion of the combined variance in the observed variables.
+    - Remember that our variables are all standardized now, so if we have 10 variables, and each one has a variance of 1, we will have a combined variance of 10.  If we could produce one component that accounted for a variance of 9, then we could use that one variable without losing _much_ of the original information (w.r.t variance).
+- This will induce some error because we are using fewer than `\(k\)` components, but note that in the "model" there is no error.  So this error and the uniqueness we see in factor analysis are somewhat different.
+- Further, PCA is not attempting to estimate some population parameter.  PCA produces an orthogonal linear combination of the observed variables.
+
+
+---
+
+## Singular Value Decomposition
+
+We employ a mathematical tool called the Singular Value Decomposition.
+
+- This uncovers the _basic structure_ of a matrix.
+- It has three components: `\(\underbrace{\mathbf{U}}_{n\times k}\)`, `\(\underbrace{\mathbf{D}}_{k \times k}\)` and `\(\underbrace{\mathbf{V}^{\prime}}_{k \times k}\)` where: 
+    - `\(n\)` is the number of rows in the original data, and 
+    - `\(k\)` is the number of columns in the original data
+    - `\(\mathbf{U}\)` gives information about the rows of the original matrix, 
+    - `\(\mathbf{V}\)` gives information about the columns of the original matrix, and 
+    - `\(\mathbf{D}\)` gives the variance accounted for by the rows of `\(\mathbf{U}\)` and `\(\mathbf{V}\)`.
+- The `\(\mathbf{d}\)`'s are what we call the _eigenvalues_ when the original matrix is square and symmetric.
+
+Here, `\(\mathbf{X} = \mathbf{UDV^{\prime}}\)`
+
+---
+
+## PCA and SVD
+
+We have the following pieces of information:
+`$$\begin{aligned}
+\mathbf{X} &amp;= \mathbf{UDV^{\prime}}\\
+\mathbf{C} &amp;= \mathbf{XA}
+\end{aligned}$$`
+
+Let's do the following:
+
+`$$\begin{aligned}
+\mathbf{X} &amp;= \mathbf{UDV^{\prime}}\\
+\mathbf{XV} &amp;= \mathbf{UD}\underbrace{\mathbf{V^{\prime}V}}_\mathbf{I}\\
+\mathbf{X}\underbrace{\mathbf{V}}_{\mathbf{A}} &amp;=
+\underbrace{\mathbf{UD}}_{\mathbf{C}}
+\end{aligned}$$`
+
+We can use the Singular Value Decomposition to solve for the coefficients relating the observed variables to the latent component and
+to generate an estimate for the latent component.
+
+---
+
+## In R
+
+
+``` r
+p &lt;- princomp(dat)
+summary(p)
+```
+
+```
+## Importance of components:
+##                           Comp.1     Comp.2     Comp.3    Comp.4
+## Standard deviation     1.8715365 0.47157847 0.45144655 0.4200220
+## Proportion of Variance 0.8532105 0.05417109 0.04964463 0.0429738
+## Cumulative Proportion  0.8532105 0.90738157 0.95702620 1.0000000
+```
+
+``` r
+cor(p$scores[,1], rowMeans(dat))
+```
+
+```
+## [1] 0.999997
+```
+
+---
+
+## Alternative Proxy Test
+
+.pull-left[
+
+``` r
+library(nprobustness)
+drn2 &lt;- rio::import("drn_proxies.dta")
+proxies &lt;- c("voice*veto", "v2x_polyarchy", "v2x_libdem", 
+"v2x_partipdem", "v2x_delibdem", "v2x_egaldem", "v2x_api", 
+"v2x_mpi", "democ", "autoc", "polity2")
+ctrls &lt;- c("logpop", "gdp10k", "cwar", "iwar")
+forms &lt;- sapply(proxies, \(x)reformulate(c(ctrls, x), response="rep"))
+base_form &lt;- forms[[1]]
+rob_forms &lt;- forms[-1]
+rob_res &lt;- vector(mode="list", length=length(rob_forms))
+for(i in 1:length(rob_forms)){
+  m1 &lt;- lm(base_form, data=drn2)
+  m2 &lt;- lm(rob_forms[[i]], data=drn2)
+  d1 &lt;- get_all_vars(base_form, data=drn2)
+  d2 &lt;- get_all_vars(rob_forms[[i]], data=drn2)
+  adds &lt;- setdiff(names(d2), names(d1))
+  d &lt;- cbind(d1, d2 %&gt;% select(adds))
+  d &lt;- na.omit(d)
+  m1 &lt;- lm(base_form, data=d)
+  m2 &lt;- lm(rob_forms[[i]], data=d)
+  rob_res[[i]] &lt;- ind_robust(m1, m2, type="pred")
+}
+```
+]
+.right-shift50[
+
+``` r
+res &lt;- sapply(rob_res, \(r){
+  c(mean(r$robust), unname(quantile(r$robust, c(.025, .25, .5, .75, .975))))
+})
+res &lt;- t(res)
+colnames(res) &lt;- c("mean", "q2.5", "q25", "q50", "q75", "q97.5")
+rownames(res) &lt;- names(rob_forms)
+round(res, 3)
+```
+
+```
+##                mean q2.5 q25   q50   q75 q97.5
+## v2x_polyarchy 0.277    0   0 0.017 0.616 0.982
+## v2x_libdem    0.266    0   0 0.010 0.584 0.987
+## v2x_partipdem 0.312    0   0 0.025 0.736 0.990
+## v2x_delibdem  0.257    0   0 0.003 0.533 0.985
+## v2x_egaldem   0.252    0   0 0.001 0.537 0.992
+## v2x_api       0.253    0   0 0.003 0.540 0.977
+## v2x_mpi       0.359    0   0 0.122 0.793 0.989
+## democ         0.316    0   0 0.063 0.702 0.979
+## autoc         0.255    0   0 0.002 0.570 0.963
+## polity2       0.289    0   0 0.022 0.632 0.970
+```
+]
+
+---
+
+## Different Scales
+
+There are three latent variables in the model - `voice`, `veto` and `rep` (repression).  
+- Let's look at `veto` and do the following: 
+    1. Principal Components test. 
+    2. Random permutation test of scale weights. 
+
+---
+
+## PCA test
+
+.pull-left[
+
+``` r
+drn2b &lt;- drn2 %&gt;% 
+  filter(if_all(c(polconiii, xconst, xrcomp, parcomp, 
+                  j, laworder), ~!is.na(.x)))
+
+veto_dat &lt;- drn2b %&gt;% select(c(polconiii, xconst, 
+                               xrcomp, parcomp, j, laworder))
+veto_dat &lt;- scale(veto_dat)
+p &lt;- princomp(veto_dat)
+drn2b &lt;- cbind(drn2b, as.data.frame(p$scores))
+base_form &lt;- reformulate(c("voice + veto", ctrls), response="rep")
+rob_forms &lt;- sapply(1:6, \(i){
+  reformulate(c(ctrls, paste0("Comp.", 1:i)), 
+              response="rep")
+})
+rob_res &lt;- vector(mode="list", length=length(rob_forms))
+for(i in 1:length(rob_forms)){
+  m1 &lt;- lm(base_form, data=drn2b)
+  m2 &lt;- lm(rob_forms[[i]], data=drn2b)
+  rob_res[[i]] &lt;- ind_robust(m1, m2, type="pred")
+}
+```
+]
+.right-shift50[
+
+``` r
+res &lt;- sapply(rob_res, \(r){
+  c(mean(r$robust), unname(quantile(r$robust, c(.025, .25, .5, .75, .975))))
+})
+res &lt;- t(res)
+colnames(res) &lt;- c("mean", "q2.5", "q25", "q50", "q75", "q97.5")
+round(res, 3)
+```
+
+```
+##       mean q2.5   q25   q50   q75 q97.5
+## [1,] 0.459    0 0.006 0.458 0.890 0.978
+## [2,] 0.201    0 0.000 0.000 0.284 0.962
+## [3,] 0.194    0 0.000 0.000 0.254 0.957
+## [4,] 0.180    0 0.000 0.001 0.215 0.933
+## [5,] 0.194    0 0.000 0.001 0.287 0.934
+## [6,] 0.189    0 0.000 0.002 0.268 0.925
+```
+]
+
+---
+
+## Different Weights
+
+.pull-left[
+
+``` r
+tmp &lt;- drn2b
+bform &lt;- reformulate(c("voice*veto", ctrls), response="rep")
+rform &lt;- reformulate(c("voice*veto_new", ctrls), response="rep")
+rob_res2 &lt;- matrix(nrow=2635, ncol=1000)
+library(progress)
+pb &lt;- progress_bar$new(total=1000)
+for(i in 1:1000){
+  if(i == 1){
+    b &lt;- rep(1/ncol(veto_dat), ncol(veto_dat))
+  }else{
+    b &lt;- runif(6)
+    b &lt;- b/sum(b)
+  }
+  tmp$veto_new &lt;- c(veto_dat %*% b)
+  bmod &lt;- lm(bform, data=tmp)
+  rmod &lt;- lm(rform, data=tmp)
+  rob_res2[,i] &lt;- c(ind_robust(bmod, rmod, type="pred")$robust)
+  pb$tick()
+}
+```
+]
+.right-shift50[
+
+``` r
+load("rob_res2.rda")
+ave_rob &lt;- colMeans(rob_res2)
+ggplot() + geom_histogram(aes(x=ave_rob)) + 
+  theme_xaringan() + 
+  labs(x="Average Robustness")
+```
+
+&lt;img src="lecture9_files/figure-html/unnamed-chunk-17-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Test for Measurement Error
+
+The Measurement Error Injection Test requires 4 decisions
+1. For which variable is measurement error a problem. 
+2. Maximum size of the measurement error 
+    - reasonable = random permutation test
+    - (potentially un)reasonable = robustness limit test
+3. What type of error to inject.
+    - Random
+    - Variance related to explanatory variable
+    - Correlated with explanatory variable
+4. Share of errors to add measurement error 
+
+---
+
+## Random Error
+
+.pull-left[
+
+``` r
+params &lt;- expand.grid(
+  prop = seq(.1, .9, by=.05), 
+  size = c(.25, .5, .75, 1, 1.5, 2, 4)
+)
+bmod &lt;- lm(rep ~ voice*veto + gdp10k + logpop + cwar + iwar, data=drn2)
+pb &lt;- progress_bar$new(total=119)
+allres &lt;- vector(mode="list", length=nrow(params))
+for(i in 1:nrow(params)){
+allres[[i]] &lt;- replicate(10, {
+  tmp &lt;- drn2
+  err &lt;- rnorm(nrow(drn2), 0, params$size[i])
+  nsamp &lt;- floor(params$prop[i] * nrow(drn2))
+  inds &lt;- sample(1:nrow(drn2), nsamp, replace=FALSE)
+  err[-inds] &lt;- 0
+  tmp$voice &lt;- tmp$voice + err
+  rmod &lt;- update(bmod, data=tmp)
+  ve &lt;- seq(min(drn2$veto, na.rm=TRUE), 
+            max(drn2$veto, na.rm=TRUE), 
+            length=10)
+  np_robust(bmod, rmod, 
+    type="slope", 
+    base_args = list(newdata=datagrid(model=bmod, 
+                                      veto =ve, 
+                                      grid_type="counterfactual"), 
+                     variables="voice", 
+                     by="veto"), 
+    robust_args = list(newdata=datagrid(model=bmod, 
+                                      veto =ve, 
+                                      grid_type="counterfactual"), 
+                     variables="voice", 
+                     by="veto")) %&gt;% 
+    mutate(iter = j) %&gt;% 
+    ungroup %&gt;% 
+    select(robust) %&gt;% pull()
+  
+    })
+ pb$tick() 
+}
+```
+]
+.right-shift100[
+&lt;img src="lecture9_files/figure-html/unnamed-chunk-19-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+## Error Var Related to Variable
+
+.pull-left[
+
+``` r
+params &lt;- expand.grid(
+  prop = seq(.1, .9, by=.05), 
+  size = c(.25, .5, .75, 1, 1.5, 2, 4)
+)
+drn2c &lt;- drn2 %&gt;% filter(!is.na(voice))
+bmod &lt;- lm(rep ~ voice*veto + gdp10k + logpop + cwar + iwar, data=drn2)
+pb &lt;- progress_bar$new(total=119)
+voice_scale &lt;- with(drn2c, voice - min(voice, na.rm=TRUE))
+voice_scale &lt;- voice_scale/max(voice_scale)
+allres &lt;- list()
+for(i in 1:nrow(params)){
+allres[[i]] &lt;- replicate(10, {
+tmp &lt;- drn2c
+err &lt;- rnorm(nrow(drn2), 0, params$size[i]*voice_scale)
+nsamp &lt;- floor(params$prop[i] * nrow(drn2))
+inds &lt;- sample(1:nrow(drn2), nsamp, replace=FALSE)
+err[-inds] &lt;- 0
+tmp$voice &lt;- tmp$voice + err
+rmod &lt;- update(bmod, data=tmp)
+ve &lt;- seq(min(drn2$veto, na.rm=TRUE), 
+          max(drn2$veto, na.rm=TRUE), 
+          length=10)
+np_robust(bmod, rmod, 
+  type="slope", 
+  base_args = list(newdata=datagrid(model=bmod, 
+                                    veto =ve, 
+                                    grid_type="counterfactual"), 
+                   variables="voice", 
+                   by="veto"), 
+  robust_args = list(newdata=datagrid(model=bmod, 
+                                    veto =ve, 
+                                    grid_type="counterfactual"), 
+                   variables="voice", 
+                   by="veto")) %&gt;% 
+  mutate(iter = j) %&gt;% 
+  ungroup %&gt;% 
+  select(robust) %&gt;% pull()
+})
+ pb$tick() 
+}
+```
+
+]
+.right-shift100[
+&lt;img src="lecture9_files/figure-html/unnamed-chunk-21-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+## Correlated w/Variable
+.pull-left[
+
+``` r
+params &lt;- expand.grid(
+  prop = seq(.1, .9, by=.05), 
+  r = c(0, .2, .4, .6, .8, .9)
+)
+drn2c &lt;- drn2 %&gt;% filter(!is.na(voice))
+bmod &lt;- lm(rep ~ voice*veto + gdp10k + logpop + cwar + iwar, data=drn2c)
+pb &lt;- progress_bar$new(total=nrow(params))
+allres &lt;- list()
+for(i in 1:nrow(params)){
+allres[[i]] &lt;- replicate(10, {
+tmp &lt;- drn2c
+err &lt;- rnorm(nrow(tmp), 0, 1)
+err &lt;- lm(err ~ tmp$voice)$residuals
+err &lt;- c(scale(err))
+err &lt;- params$r[i] * (tmp$voice - mean(tmp$voice)) / 
+  sd(tmp$voice) + sqrt(1 - params$r[i]^2) * err
+err &lt;- c(scale(err)*2)
+tmp$voice &lt;- tmp$voice + err
+rmod &lt;- update(bmod, data=tmp)
+ve &lt;- seq(min(drn2$veto, na.rm=TRUE), 
+          max(drn2$veto, na.rm=TRUE), 
+          length=10)
+np_robust(bmod, rmod, 
+  type="slope", 
+  base_args = list(newdata=datagrid(model=bmod, 
+                                    veto =ve, 
+                                    grid_type="counterfactual"), 
+                   variables="voice", 
+                   by="veto"), 
+  robust_args = list(newdata=datagrid(model=bmod, 
+                                    veto =ve, 
+                                    grid_type="counterfactual"), 
+                   variables="voice", 
+                   by="veto")) %&gt;% 
+  mutate(iter = j) %&gt;% 
+  ungroup %&gt;% 
+  select(robust) %&gt;% pull()
+})
+ pb$tick() 
+}
+```
+
+]
+.right-shift100[
+&lt;img src="lecture9_files/figure-html/unnamed-chunk-23-1.png" width="95%" style="display: block; margin: auto;" /&gt;
+]
+---
+
+## Recap
+
+1. What is an index - how do we know if we should make one? 
+    - Continuous measures
+    - Binary measures
+2. Principal Components and Exploratory Factor Analysis
+    - Multiple indpenendent sources of systematic variation. 
+3. Robustness Tests for Concept Validity
+3. Robustness Tests for Measurement Error. 
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

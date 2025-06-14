@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 10</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="lecture10_files/header-attrs/header-attrs.js"></script>
+    <script src="lecture10_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture10_files/fabric/fabric.min.js"></script>
+    <link href="lecture10_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture10_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture10_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture10_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture10_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture10_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture10_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 10
+]
+.subtitle[
+## Heteroskedasticity and Outliers
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+.remark-slide-content{
+  font-size: 1.25rem;
+}
+
+.large-text{
+  font-size: 2rem;
+}
+
+
+div.red {
+  color: #9A3324;
+}
+.left-narrow {
+  width: 38%;
+  height: 100%;
+  float: left;
+}
+.right-wide {
+  width: 58%;
+  float: right;
+  position:relative; 
+  top: -33px;
+}
+.right-wide100 {
+  width: 60%;
+  float: right;
+  position:relative; 
+  top: -100px;
+}
+.right-shift100 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -100px;
+}
+.right-shift50 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -50px;
+}
+.middle-text {
+  position: relative; 
+  top: 125px;
+}
+
+.remark-code{
+  font-size: 55%
+}
+&lt;/style&gt;
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.left-code-shift2 {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+  position:relative; 
+  top: -50px;
+
+}
+.left-code-shift {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+  position:relative; 
+  top: -100px;
+
+}
+
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+.right-plot-shift2 {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+.right-plot-shift {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-left-shift2 {
+  float: left;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+
+}
+.shift { 
+  position:relative; 
+  top: -100px;
+  }
+
+.pull-right ~ * {
+  clear: both;
+}
+&lt;/style&gt;
+
+## Goals for Today
+
+1. Discuss Diagnostics for Heteroskedasticity
+    - Robust Standard Errors
+    - Use variance modeling in GAMLSS to fix Heteroskedasticity
+2. Describe methods for identifying influential points
+    - Implement Robust Regression in GAMLSS framework. 
+    - Robustness Tests for Influence
+
+---
+
+## Heteroskedasticity
+
+- An important assumption of the least-squares regression model is that the variance of the errors around the regression surface is everywhere the same: `\(V(E)=V(Y|x_1,\ldots,x_k)=\sigma^{2}\)`.
+- Non-constant error variance does not cause biased estimates, but it does pose problems for efficiency and the usual formulas for standard errors are inaccurate
+  - OLS estimates are inefficient because they give equal weight to all observations regardless of the fact that those with large residuals contain less information about the regression
+- Two types of non-constant error variance are relatively common:
+  - Error variance increases as the expectation of `\(Y\)` increases;
+  - There is a systematic relationship between the errors and one of the `\(X\)`'s
+
+---
+
+## Example
+
+.pull-left[
+In the residual plot , we see the familiar "fanning" in the plot - i.e., the variance of the residuals is decreasing as the fitted values get larger
+
+
+``` r
+library(rio)
+Weakliem &lt;- import("../data/Weakliem.csv")
+W &lt;- Weakliem[-c(21,22,24, 25,49), ]
+mod2 &lt;- lm(secpay ~ log(gdp), data=W)
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture10_files/figure-html/unnamed-chunk-4-1.png" width="100%" /&gt;
+]
+
+---
+
+## Test of Heteroskedasticity
+
+- We start by calculating the standardized squared residuals
+
+`$$U_{i} = \frac{E_{i}^{2}}{\hat{\sigma}^{2}} = \frac{E_{i}^{2}}{\frac{\sum E_{i}^{2}}{n}}$$`
+
+- Regress the `\(U_{i}\)` on all of the explanatory variable `\(X\)`'s, finding the fitted values:
+
+
+`$$U_{i} = \eta_{0} + \eta_{1}X_{i1} + \cdots + \eta_{p}X_{ip} + \omega_{i}$$`
+
+- The score test, which s distributed as `\(\chi^{2}\)` with `\(p\)` degrees of freedom is:
+
+
+`$$S_{0}^{2} = \frac{\sum(\hat{U}_{i} - \bar{U})^{2}}{2}$$`
+
+---
+
+## Heteroskedasticity Test
+
+
+``` r
+ncvTest(mod2)
+```
+
+```
+## Non-constant Variance Score Test 
+## Variance formula: ~ fitted.values 
+## Chisquare = 6.025183, Df = 1, p = 0.014103
+```
+
+---
+
+## Robust Standard Errors
+
+- Robust standard errors can be calculated to compensate for an _unknown_ pattern of non-constant error variance
+- Robust standard errors do not change the OLS coefficient estimates or solve the inefficiency problem, but do give
+more accurate `\(p\)`-values.
+- There are several methods for calculating heteroskedasticity consistent standard errors (e.g., known variously
+as White, Eicker or Huber standard errors) but most are variants on the method originally proposed by White (1980).
+
+---
+
+## White's Robust SE
+- The covariance matrix of the OLS estimator is:
+`$$\begin{aligned}
+V(\mathbf{b}) &amp;= \mathbf{(X^{\prime}X)^{-1}X^{\prime}\Sigma X(X^{\prime}X)^{-1}}\\
+&amp;= \mathbf{(X^{\prime}X)^{-1}X^{\prime}}V(\mathbf{y})\mathbf{ X(X^{\prime}X)^{-1}}
+\end{aligned}$$`
+- Where `\(V(\mathbf{y}) = \sigma_{\varepsilon}^{2}\mathbf{I}_{n}\)` if the assumptions of normality and homoskedasticity are satisfied.  The variance simplifies to:
+`$$V(\mathbf{b}) = \sigma_{\varepsilon}^{2}(\mathbf{X^{\prime}X})^{-1}$$`
+
+- In the presence of non-constant error variance, however, `\(V(\mathbf{y})\)` contains nonzero covariance and unequal variances
+    - In these cases, White suggests a consistent estimator of the variance that constrains `\(\Sigma\)` to a diagonal matrix containing only squared residuals
+
+
+---
+
+## White's Robust SE
+
+- The _heteroskedasticity consistent covariance matrix_ (HCCM) estimator is then:
+`$$V(\mathbf{b}) = \mathbf{(X^{\prime}X)^{-1}X^{\prime}\hat{\Phi}X (X^{\prime}X)^{-1}}$$`
+where `\(\mathbf{\hat{\Phi}} = e^{2}_{i}\mathbf{I}_{n}\)` and the `\(e_{i}\)` are the OLS residuals
+
+- This is what is known as HC0 - White's (1980) original recipe.
+
+---
+
+## Hat Values
+.pull-left[
+Other HCCMs use the _hat value_ which are the diagonal elements of `\(\mathbf{X}\left(\mathbf{X}^{\prime}\mathbf{X}\right)^{-1}\mathbf{X}^{\prime}\)`
+- These give a sense of how far each observation is from the mean of the X's.
+- Below is a figure that shows two hypothetical `\(X\)` variables and the plotting symbols are proportional in size to the hat value
+]
+.pull-right[
+&lt;img src="lecture10_files/figure-html/unnamed-chunk-6-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Other HCCMs
+
+ MacKinnon and White (1985) considered three alternatives: HC1, HC2 and HC3, each of which offers a different method for finding `\(\mathbf{\Phi}\)`.
+
+- HC1: `\(\frac{N}{N-K}\times\text{HC0}\)`.
+
+- HC2: `\(\hat{\mathbf{\Phi}} = \text{diag}\left[\frac{e_{i}^{2}}{1-h_{ii}}\right]\)` where `\(h_{ii} =  \mathbf{x}_{i}(\mathbf{X}^{\prime}\mathbf{X})^{-1}\mathbf{x}_{i}^{\prime}\)`
+
+- HC3: `\(\hat{\mathbf{\Phi}} = \text{diag}\left[\frac{e_{i}^{2}}{(1-h_{ii})^{2}}\right]\)`
+
+---
+
+## HC4 SEs
+
+- HC3 standard errors are shown to outperform the alternatives in small samples
+- HC3 standard errors can still fail to generate the appropriate Type I error rate when outliers are present.
+- HC4 standard errors can produce the appropriate test statistics even in the presence of outliers:
+
+`$$\hat{\mathbf{\Phi}} = \text{diag}\left[\frac{e_{i}^{2}}{(1-h_{ii})^{\delta_{i}}}\right]$$`
+- `\(\delta_{i} = min\left\{4, \frac{N h_{ii}}{p}\right\}\)` with `\(n\)` = number of obs, and `\(p\)` = number of parameters in model
+- HC4 outperform HC3 in the presence of influential observations, but not in other situations.
+
+---
+
+## HC4m SEs
+
+- HC4 standard errors are not universally better than others and as Cribari-Neto and da Silva (2011) show, HC4 SEs have relatively poor performance when there are many regressors and when the maximal leverage point is extreme.
+- Cribari-Neto and da Silva propose a modified HC4 estimator, called HC4m, where, as above
+
+`$$\hat{\mathbf{\Phi}} = \text{diag}\left[\frac{e_{i}^{2}}{(1-h_{ii})^{\delta_{i}}}\right]$$`
+
+- and here, `\(\delta_{i} = min\left\{\gamma_{1}, \frac{nh_{ii}}{p}\right\} + min\left\{\gamma_{2}, \frac{nh_{ii}}{p}\right\}\)`
+- They find that the best values of the `\(\gamma\)` parameters are `\(\gamma_{1}=1\)` and `\(\gamma_{2}=1.5\)`.
+
+---
+
+## HC5 SEs
+- HC5 standard errors are supposed to also provide different discounting than HC4 and HC4m estimators.  The HC5 standard errors are operationalized as:
+`$$\hat{\mathbf{\Phi}} = \text{diag}\left[\frac{e_{i}^{2}}{(1-h_{ii})^{\delta_{i}}}\right]$$`
+
+- and here, `\(\delta_{i} = min\left\{\frac{nh_{ii}}{p}, max\left\{4, \frac{nkh_{max}}{p}\right\}\right\}\)` with `\(k=0.7\)`.
+- For observations with bigger hat-values, their residuals get increased in size, thus increasing the standard error (generally).
+
+---
+
+## Robustness to Heteroskedasticity
+.pull-left[
+
+``` r
+library(marginaleffects)
+s0 &lt;- avg_slopes(mod2, variables="gdp")
+s1 &lt;- avg_slopes(mod2, variables="gdp", vcov="HC0")
+s2 &lt;- avg_slopes(mod2, variables="gdp", vcov="HC1")
+s3 &lt;- avg_slopes(mod2, variables="gdp", vcov="HC2")
+s4 &lt;- avg_slopes(mod2, variables="gdp", vcov="HC3")
+s5 &lt;- avg_slopes(mod2, variables="gdp", vcov="HC4")
+s6 &lt;- avg_slopes(mod2, variables="gdp", vcov="HC4m")
+s7 &lt;- avg_slopes(mod2, variables="gdp", vcov="HC5")
+hets &lt;- bind_rows(s0, s1, s2, s3, s4, s5, s6, s7)
+hets$hccm &lt;- factor(c("None", "HC0", "HC1", "HC2", "HC3", 
+               "HC4", "HC4m", "HC5"), 
+               levels = c("None", "HC0", "HC1", "HC2", "HC3", 
+               "HC4", "HC4m", "HC5"))
+```
+]
+.pull-right[
+&lt;img src="lecture10_files/figure-html/unnamed-chunk-8-1.png" width="100%" /&gt;
+]
+
+
+
+---
+
+## Variance modeling
+
+If the variance in residuals is related to the independent variables in the model, we could model: 
+
+`$$log\left(\sigma_{\varepsilon}\right) = f(X)$$`
+
+where `\(f(\cdot)\)` is some functional relationship to be estimated between the covariates and the log variance. 
+
+---
+
+
+## In GAMLSS
+
+
+.pull-left[
+
+``` r
+library(gamlss)
+W2 &lt;- W %&gt;% 
+  dplyr::select(secpay, gdp, gini, 
+                hetero, union, 
+                democrat) %&gt;% 
+  na.omit
+mm &lt;- gamlss(secpay ~ log(gdp),data=W2)
+```
+
+```
+## GAMLSS-RS iteration 1: Global Deviance = -60.3546 
+## GAMLSS-RS iteration 2: Global Deviance = -60.3546
+```
+
+``` r
+vm &lt;- gamlss(secpay ~ log(gdp),
+             ~ log(gdp)
+             ,data=W2)
+```
+
+```
+## GAMLSS-RS iteration 1: Global Deviance = -64.0693 
+## GAMLSS-RS iteration 2: Global Deviance = -65.5385 
+## GAMLSS-RS iteration 3: Global Deviance = -65.7152 
+## GAMLSS-RS iteration 4: Global Deviance = -65.7267 
+## GAMLSS-RS iteration 5: Global Deviance = -65.7273
+```
+]
+.right-shift50[
+**Robustness**
+
+``` r
+library(marginaleffects)
+library(nprobustness)
+np_robust(mm, vm, 
+          vbl="gdp", 
+          base_args = list(what="mu"), 
+          robust_args = list(what="mu"))
+```
+
+```
+## # A tibble: 1 × 7
+##   term  contrast   estimate  std.error   conf.low  conf.high robust
+##   &lt;chr&gt; &lt;chr&gt;         &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;  &lt;dbl&gt;
+## 1 gdp   +1       0.00000732 0.00000119 0.00000130 0.00000986  0.984
+```
+]
+
+---
+
+## Outliers
+
+- Can cause us to misinterpret patterns in plots
+  - Temporarily removing them can sometimes help see patterns that we otherwise would not have
+  - Transformations can also spread out clustered observations and bring in the outliers
+- More importantly, separated points can have a strong influence on statistical models - removing outliers from a regression model can sometimes give completely different results
+  - Unusual cases can substantially influence the fit of the OLS model - Cases that are both outliers and high leverage exert influence on both the slopes and intercept of the model
+  - Outliers may also indicate that our model fails to capture important characteristics of the data
+
+---
+
+
+## Regression Outliers
+- An observation that is unconditionally unusual in either its `\(Y\)` or `\(X\)` value is called a univariate outlier, but it is not necessarily a regression outlier
+- A regression outlier is an observation that has an unusual value of the outcome variable `\(Y\)`, conditional on its value of the explanatory variable `\(X\)`
+  - In other words, for a regression outlier, neither the `\(X\)` nor the `\(Y\)` value is necessarily unusual on its own
+- Regression outliers often have large residuals but do not necessarily affect the regression slope coefficient
+- Also sometimes referred to as vertical outliers
+
+
+---
+
+
+## High leverage points
+- An observation that has an unusual `\(X\)` value - i.e., it is far from the mean of `\(X\)` - has leverage on the regression line
+  - The further the outlier sits from the mean of `\(X\)` (either in a positive or negative   direction), the more leverage it has
+- High leverage does not necessarily mean that it influences the regression coefficients
+  - It is possible to have a high leverage and yet follow straight in line with the pattern of the rest of the data. Such cases are sometimes called "good" leverage points because they help the precision of the estimates.
+Remember, `\(V(B) = \sigma_{\varepsilon}^{2}\mathbf{(X^{\prime} X)^{-1}}\)`, so outliers could increase the variance of `\(X\)`.
+
+---
+
+
+## Influential points
+
+- An observation with high leverage that is also a regression outlier will strongly influence the regression line
+  - In other words, it must have an unusual `\(X\)`-value with an unusual `\(Y\)`-value given its `\(X\)`-value
+- In such cases both the intercept and slope are affected, as the line chases the observation
+
+`$$\text{Discrepancy}\times\text{Leverage} = \text{Influence}$$`
+
+---
+
+
+## Influence
+
+
+.pull-left[
+- Figure (a): Outlier without influence because it is in the middle of the `\(X\)`-range
+- Figure (b) High leverage without influence because it has a high value of `\(X\)`, but its `\(Y\)` value is in line with the pattern. 
+- Figure (c): Discrepancy (unusual `\(Y\)` value) and leverage (unusual `\(X\)` value) results in strong influence. 
+]
+.pull-right-shift[
+&lt;img src="lecture10_files/figure-html/fox111.png" width="50%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+
+## Simple solutions 
+
+Find the left-out variable
+- Great if you can do it. 
+
+Leave influential observations in: 
+- potentially contaminate the relationship and miss important insights from the data. 
+
+Take influential observations out: 
+- potentially harm the external validity of your findings
+
+Include a dummy variable for the outlier
+- Same as taking it out, though more disingenuous. 
+
+---
+
+
+## Robustness Weighting
+
+Can down-weight influential observations to make them less "important" in the fit of the model.  
+
+`\(M\)`-estimation is an iterative technique that iteratively down-weights observations until it converges. 
+- Still susceptible to groups of influential points. 
+- For our purposes, it will probably work alright. 
+
+---
+
+
+## Inequality Data
+
+
+``` r
+W3 &lt;- Weakliem %&gt;% 
+  mutate(orig = 1:nrow(Weakliem), 
+         weight=1) %&gt;% 
+  dplyr::select(country, orig, secpay, gini, 
+                democrat, weight) %&gt;% 
+  na.omit
+
+mod1 &lt;- mod1o &lt;- gamlss(secpay ~ gini*democrat, data=W3, weights=weight, trace=FALSE)
+devDiff &lt;- 1
+prevDev &lt;- deviance(mod1)
+maxit &lt;- 30
+k &lt;- 1
+while(devDiff &gt; 0 &amp;&amp; k &lt; maxit){
+  e &lt;- residuals(mod1, type="simple")
+  S2e &lt;- sum(e^2)/mod1$df.residual
+  se &lt;- e/sqrt(S2e)
+  w &lt;- MASS:::psi.bisquare(se)
+  W3$weight &lt;-  w
+  mod1 &lt;- gamlss(secpay ~ gini*democrat, data=W3, weights = weight, trace=FALSE)
+  devDiff &lt;- abs(deviance(mod1) - prevDev)
+  prevDev &lt;- deviance(mod1)
+  k &lt;- k+1
+}
+```
+
+---
+
+
+## Result
+
+&lt;img src="lecture10_files/figure-html/unnamed-chunk-13-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+## Weights `\(&lt; 0.9\)`
+
+
+``` r
+W3 %&gt;% filter(weight &lt; .9) %&gt;% arrange(weight)
+```
+
+```
+##         country orig secpay gini democrat     weight
+## 1      Slovakia   49  1.622 19.5        0 0.02365962
+## 2 CzechRepublic   25  1.557 26.6        0 0.17255441
+## 3       Austria   32  1.112 23.1        1 0.83623754
+## 4        Norway   16  1.441 24.2        1 0.87843646
+## 5         Chile   22  1.361 56.5        0 0.89129054
+```
+---
+
+## Robustness
+
+
+``` r
+np_robust(
+  mod1o, mod1, 
+  vbl = "gini", 
+  type="slope", 
+  base_args = list(what="mu", 
+    newdata = datagrid(model=mod1o, democrat=c(0,1)), 
+    by="democrat"), 
+  robust_args = list(what="mu", 
+    newdata = datagrid(model=mod1, democrat=c(0,1)), 
+    by="democrat")
+)
+```
+
+```
+## # A tibble: 2 × 8
+##   term  contrast democrat estimate std.error conf.low conf.high robust
+##   &lt;chr&gt; &lt;chr&gt;       &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;
+## 1 gini  dY/dX           0  0.00436   0.00157 -0.00518  0.00366   0.328
+## 2 gini  dY/dX           1 -0.00590   0.00205 -0.0121   0.000413  0.998
+```
+
+---
+
+## Sequential Deletion - Levereage
+.pull-left[
+
+``` r
+res &lt;- list()
+outs &lt;- NULL
+rem &lt;- NULL
+newdata &lt;- W3
+bmod &lt;- newmod &lt;- gamlss(secpay ~ gini*democrat, data=W3, trace=FALSE)
+for(i in 1:10){
+  h &lt;- hatvalues(newmod)
+  outs &lt;- which.max(h)
+  rem &lt;- c(rem, newdata$country[outs])
+  newdata &lt;- newdata[-outs, ]
+  newmod &lt;- gamlss(secpay ~ gini*democrat, 
+                   data=newdata, trace=FALSE)
+  bargs &lt;- list(newdata=datagrid(model = bmod, 
+                                 democrat=c(0,1),
+                                 grid_type = "counterfactual"), 
+                 by="democrat", 
+                 what="mu")
+  rargs &lt;- list(newdata=datagrid(model= newmod, 
+                                 democrat=c(0,1),
+                                 grid_type = "counterfactual"), 
+                 by="democrat", 
+                 what="mu")
+  res[[i]] &lt;- np_robust(bmod, newmod, vbl="gini", 
+            base_args = bargs, 
+            robust_args = rargs, 
+            type="slope")
+}
+```
+
+```
+## 49 observations with 3 variables 
+## 48 observations with 3 variables 
+## 47 observations with 3 variables 
+## 46 observations with 3 variables 
+## 45 observations with 3 variables 
+## 44 observations with 3 variables 
+## 43 observations with 3 variables 
+## 42 observations with 3 variables 
+## 41 observations with 3 variables 
+## 40 observations with 3 variables
+```
+]
+.pull-right[
+&lt;img src="lecture10_files/figure-html/unnamed-chunk-17-1.png" width="100%" /&gt;
+]
+                    
+---
+
+## Sequential Deletion - Residuals
+.pull-left[
+
+``` r
+res &lt;- list()
+outs &lt;- NULL
+rem &lt;- NULL
+newdata &lt;- W3
+bmod &lt;- newmod &lt;- gamlss(secpay ~ gini*democrat, data=W3, trace=FALSE)
+for(i in 1:10){
+  e &lt;- residuals(newmod)^2
+  outs &lt;- which.max(e)
+  rem &lt;- c(rem, newdata$country[outs])
+  newdata &lt;- newdata[-outs, ]
+  newmod &lt;- gamlss(secpay ~ gini*democrat, 
+                   data=newdata, trace=FALSE)
+  bargs &lt;- list(newdata=datagrid(model = bmod, 
+                                 democrat=c(0,1),
+                                 grid_type = "counterfactual"), 
+                 by="democrat", 
+                 what="mu")
+  rargs &lt;- list(newdata=datagrid(model= newmod, 
+                                 democrat=c(0,1),
+                                 grid_type = "counterfactual"), 
+                 by="democrat", 
+                 what="mu")
+  res[[i]] &lt;- np_robust(bmod, newmod, vbl="gini", 
+            base_args = bargs, 
+            robust_args = rargs, 
+            type="slope")
+}
+```
+]
+.pull-right[
+&lt;img src="lecture10_files/figure-html/unnamed-chunk-19-1.png" width="100%" /&gt;
+]
+
+---
+
+## Jackknife
+
+.pull-left[
+
+``` r
+res &lt;- list()
+bmod &lt;- gamlss(secpay ~ gini*democrat, data=W3, trace=FALSE)
+for(i in 1:nrow(W3)){
+  newdata &lt;- W3
+  newdata &lt;- newdata[-i, ]
+  newmod &lt;- gamlss(secpay ~ gini*democrat, 
+                   data=newdata, trace=FALSE)
+  bargs &lt;- list(newdata=datagrid(model = bmod, 
+                                 democrat=c(0,1),
+                                 grid_type = "counterfactual"), 
+                 by="democrat", 
+                 what="mu")
+  rargs &lt;- list(newdata=datagrid(model= newmod, 
+                                 democrat=c(0,1),
+                                 grid_type = "counterfactual"), 
+                 by="democrat", 
+                 what="mu")
+  res[[i]] &lt;- np_robust(bmod, newmod, vbl="gini", 
+            base_args = bargs, 
+            robust_args = rargs, 
+            type="slope")
+}
+```
+]
+.right-shift50[
+
+``` r
+library(ggridges)
+res &lt;- bind_rows(res, .id="obs")
+ggplot(res, aes(x=robust, y=as.factor(democrat))) + 
+  geom_density_ridges(scale=.9) + 
+  xlim(0,1) + 
+  labs(x="Robustness", 
+       y="Democracy") + 
+  theme_xaringan()
+```
+
+&lt;img src="lecture10_files/figure-html/unnamed-chunk-21-1.png" width="100%" /&gt;
+]
+
+---
+
+## Robustness Limit Test
+
+.pull-left[
+
+``` r
+res &lt;- list()
+bmod &lt;- newmod &lt;- gamlss(secpay ~ gini*democrat, data=W3, trace=FALSE)
+newdat &lt;- W3
+for(i in 1:25){
+  e &lt;- residuals(newmod)
+  newdat &lt;- newdat[-which.max(e), ]
+  newmod &lt;- gamlss(secpay ~ gini*democrat, 
+                   data=newdat, trace=FALSE)
+  bargs &lt;- list(newdata=datagrid(model = bmod, 
+                                 democrat=c(0,1),
+                                 grid_type = "counterfactual"), 
+                 by="democrat", 
+                 what="mu")
+  rargs &lt;- list(newdata=datagrid(model= newmod, 
+                                 democrat=c(0,1),
+                                 grid_type = "counterfactual"), 
+                 by="democrat", 
+                 what="mu")
+  res[[i]] &lt;- np_robust(bmod, newmod, vbl="gini", 
+            base_args = bargs, 
+            robust_args = rargs, 
+            type="slope")
+}
+```
+]
+.right-shift50[
+
+``` r
+res &lt;- bind_rows(res, .id="n_removed")
+ggplot(res, aes(x=as.numeric(n_removed), y=estimate, 
+                ymin = estimate - 1.96*std.error, 
+                ymax = estimate + 1.96*std.error)) + 
+  geom_ribbon(alpha=.15) + 
+  geom_line() + 
+  facet_wrap(~democrat) + 
+  labs(x="# Obs Removed", 
+       y="Slope of Gini Coefficient") + 
+  theme_xaringan() 
+```
+
+&lt;img src="lecture10_files/figure-html/unnamed-chunk-23-1.png" width="100%" /&gt;
+]
+
+---
+## Recap
+
+1. Discuss Diagnostics for Heteroskedasticity
+    - Robust Standard Errors
+    - Use variance modeling in GAMLSS to fix Heteroskedasticity
+2. Describe methods for identifying influential points
+    - Implement Robust Regression in GAMLSS framework. 
+    - Robustness Tests for Influence
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

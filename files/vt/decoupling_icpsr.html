@@ -54,7 +54,7 @@ a:active {
 }
 
 .small {
-  font-size:.75rem;
+  font-size:.6rem;
 }
 .shift { 
   position:relative; 
@@ -82,6 +82,14 @@ a:active {
   position: relative; 
   top: -100px;
 }
+
+.pull-right-shift50 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
 .remark-code{
   font-size: .7rem;
 }
@@ -124,6 +132,7 @@ James L. Gibson (2024) "Losing Legitimacy: The Challenges of the Dobbs Ruling to
 ]
 
 ---
+count: false
 
 ## Confidence Intervals
 
@@ -144,6 +153,8 @@ _We should do away with the Supreme Court if it starts making decisions people d
 
 
 ---
+name: ci-page
+count: false
 
 ## Confidence Intervals
 
@@ -158,7 +169,7 @@ _We should do away with the Supreme Court if it starts making decisions people d
 
 1. Neither July estimate is statistically different from 0.16, but the December and March estimates are. 
 
-2. The estimates for December 2020 and July 2022 are different because the confidence intervals do not overlap. 
+2. The estimates for December 2020 and July 2022 are different because the confidence intervals do not overlap. [Show Math](#math-page)
 
 
 
@@ -166,26 +177,7 @@ _We should do away with the Supreme Court if it starts making decisions people d
 
 
 ---
-
-### _Question: Is it the case that if confidence intervals do not overlap, that necessarily indicates the two estimates are significantly different from each other?_
-
-For the converse to be true, we would need: 
-
-1. `\(\bar{x} + 2s_{\bar{x}} &lt; \bar{y}-2s_{\bar{y}}\)` where `\(x &lt; y\)`, `\(0 &lt; s_{\bar{x}}\)` and `\(0 &lt; s_{\bar{y}}\)` (i.e., intervals do not overlap) _and_
-
-2. `\(\frac{\bar{y}-\bar{x}}{\sqrt{s_{\bar{x}}^2 + s_{\bar{y}}^2 - 2s_{\bar{x},\bar{y}}}} &lt; 2\)` (i.e., `\(t\)`-statistic is insignificant)
-
-Which implies: 
-
-`$$s_{\bar{x}}^2 + s_{\bar{y}}^2 + 2s_xs_y &lt; \left(\frac{\bar{y}-\bar{x}}{2}\right)^2 &lt; s_{\bar{x}}^2 + s_{\bar{y}}^2 - 2s_{\bar{x},\bar{y}}$$`
-or
-
-`$$s_{\bar{x},\bar{y}} &lt; -s_xs_y$$`
-
-This cannot happen since the the covariance is bound in the range `\(s_{\bar{x},\bar{y}} \in [-s_xs_y, s_xs_y]\)`
-
-
----
+count: false
 
 ## Confidence Intervals
 
@@ -200,13 +192,14 @@ _We should do away with the Supreme Court if it starts making decisions people d
 
 1. Neither July estimate is statistically different from 0.16, but the December and March estimates are. 
 
-2. The estimates for December 2020 and July 2022 are different because the confidence intervals do not overlap. 
+2. The estimates for December 2020 and July 2022 are different because the confidence intervals do not overlap. [Show Math](#math-page)
 
 3. Pretty confident that the estimates for July 2020 and March 2021 are not different because the confidence intervals overlap substantially. _More on this later_. 
 
 ]
 
 ---
+count: false
 
 ## Confidence Intervals
 
@@ -298,6 +291,7 @@ If `\(\bar{x} &lt; \bar{y}\)`, `\(N_1 = \delta N_2\)` and `\(\sigma_{\bar{x}} = 
 ]
 
 ---
+count: false
 
 ## History of Visual Testing
 
@@ -324,82 +318,41 @@ If `\(\bar{x} &lt; \bar{y}\)`, `\(N_1 = \delta N_2\)` and `\(\sigma_{\bar{x}} = 
 
 ## Some Formalization
 
-For two estimates `\(m_i\)` and `\(m_j\)` with SEs `\(\sigma_i\)` and `\(\sigma_j\)`, respectively - `\((1-\alpha)\)` level confidence intervals will not overlap if: 
+For two estimates `\(m_i\)` and `\(m_j\)` with SEs `\(\sigma_i\)` and `\(\sigma_j\)`, respectively - `\(\beta\)` level confidence intervals will not overlap if: 
 
 `$$\begin{aligned}
-m_i + z_{(1-\alpha)} \sigma_i &amp;&lt; m_j - z_{(1-\alpha)} \sigma_j\\
-z_{(1-\alpha)} (\sigma_i + \sigma_j) &amp;&lt; m_j - m_i 
+m_i + z_{\beta} \sigma_i &amp;&lt; m_j - z_{\beta} \sigma_j\\
+z_{\beta} (\sigma_i + \sigma_j) &amp;&lt; m_j - m_i 
 \end{aligned}$$`
 
 This happens under `\(H_0\)` with probability `\(\gamma_{ij}\)`
 
-`$$\gamma_{ij} = 2\left[1-\Phi\left\{z_{(1-\alpha)} \frac{(\sigma_i + \sigma_j)}{\sigma_{ij}}\right\}\right]$$`
-To figure out the appropriate value of `\(z_{(1-\alpha)}\)` based on `\(\gamma_{ij}\)`: 
+`$$\gamma_{ij} = 2\left[1-\Phi\left\{z_\beta \frac{(\sigma_i + \sigma_j)}{\sqrt{\sigma_i^2 + \sigma_j^2 - 2\rho\sigma_i\sigma_j}}\right\}\right]$$`
 
-`$$z_{(1-\alpha)} = \frac{\Phi^{-1}\left(1-\frac{\gamma_{ij}}{2}\right)\sigma_{ij}}{\sigma_i + \sigma_j}\text{ where } \sigma_{ij} = \sqrt{\sigma_i^2 + \sigma_j^2}$$`  
+To figure out the appropriate value of `\(z_{\beta}\)` based on `\(\gamma_{ij}\)`: 
+
+`$$z_\beta = \frac{\Phi^{-1}\left(1-\frac{\gamma_{ij}}{2}\right)\sigma_{ij}}{\sigma_i + \sigma_j},\quad  \sigma_{ij} = \sqrt{\sigma_i^2 + \sigma_j^2 - 2\rho \sigma_i\sigma_j}$$`  
 .small[
-Harvey Goldstein and Michael J.R. Healy.  (1995) "The Graphical Presentation of A Collection of Means." _Journal of the Royal Statistical Society, Series A_ 158(1): 175-177. 
-]
-
----
-
-## Confidence Levels and Pr(Overlap)
-
-.pull-left[
-For confidence intervals to not overlap under the null hypothesis with probability `\(\gamma_{ij} = .05\)`, then 
-
-`$$z_{(1-\alpha)} = \frac{\Phi^{-1}\left(1-\frac{.05}{2}\right)\sigma_{ij}}{\sigma_i + \sigma_j}\text{ where } \sigma_{ij} = \sqrt{\sigma_i^2 + \sigma_j^2}$$`  
-
-Figure assumes `\(\sigma_j = 1\)`. 
-]
-.pull-right[
-&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-15-1.png" width="90%" style="display: block; margin: auto;" /&gt;
-]
-
-
----
-
-## Confidence Levels and Pr(Overlap)
-
-.pull-left[
-For confidence intervals to not overlap under the null hypothesis with probability `\(\gamma_{ij} = .05\)`, then 
-
-`$$z_{(1-\alpha)} = \frac{\Phi^{-1}\left(1-\frac{.05}{2}\right)\sigma_{ij}}{\sigma_i + \sigma_j}\text{ where } \sigma_{ij} = \sqrt{\sigma_i^2 + \sigma_j^2}$$`  
-
-Figure assumes `\(\sigma_j = 1\)`. 
-
-Tukey suggested: 
-- `\(\pm \sqrt{2}SE\)` (i.e., `\(84\%\)` CI) is approximately right for the test. 
-- `\(\Pr(\text{Overlap}) = 0.045\)` for `\(84\%\)` CI. 
-
-
-]
-.pull-right[
-&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-16-1.png" width="90%" style="display: block; margin: auto;" /&gt;
-]
-
-
----
-
-## Dependent Estimates
-
-.pull-left[
-
-When estimates are dependent (i.e., correlated), then
-
-`$$z_\beta = \frac{\Phi^{-1}\left(1-\frac{.05}{2}\right)\sigma_{ij}}{\sigma_i + \sigma_j}$$`
-
-where
-`$$\sigma_{ij} = \sqrt{\sigma_i^2 + \sigma_j^2 - 2\rho \sigma_i\sigma_j}$$`  
-and `\(\rho\)` is the correlation between the estimates and `\(\rho\sigma_i\sigma_j\)` is the covariance. 
-
-.small[
+Harvey Goldstein and Michael J.R. Healy.  (1995) "The Graphical Presentation of A Collection of Means." _Journal of the Royal Statistical Society, Series A_ 158(1): 175-177. &lt;/br&gt;
 David Afshartous and Richard A. Preston. (2010) "Confidence Intervals for Dependent Data: Equating Non-overlap with Statistical Significance." _Computational Statistics and Data Analysis_ 54: 2296-2305.
 ]
 
+---
+
+## Pr(Overlap)
+
+.pull-left[
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-15-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+.center[**Independent Estimates**]
+
 ]
-.pull-right-shift[
-&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-17-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+--
+
+.pull-right-shift50[
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-16-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+.center[**Correlated Estimates**]
+
 ]
 
 
@@ -421,12 +374,32 @@ When estimates are correlated, there can be considerable overlap of `\(95\%\)` c
 ]
 .pull-right-shift[
 
-&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-18-1.png" width="100%" /&gt;
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-17-1.png" width="100%" /&gt;
 
 
 ]
 
 ---
+count: false
+
+## Overlap and Correlations
+
+.pull-left[
+Consider the situation: 
+- `\(\bar{x} &lt; \bar{y}\)`
+- `\(\bar{x} + 1.96SE(\bar{x}) &gt; \bar{y} - 1.96SE(\bar{y})\)`
+- `\(\% \text{ Overlap} = \frac{(\bar{x} + 1.96SE(\bar{x})) - (\bar{y} - 1.96SE(\bar{y}))}{(\bar{x} + 1.96SE(\bar{x})) - (\bar{x} - 1.96SE(\bar{x}))} = \frac{\bar{x}_u - \bar{y}_l}{\bar{x}_u - \bar{x}_l}\)`
+
+When estimates are correlated, there can be considerable overlap of `\(95\%\)` confidence intervals even between estimates that are significantly different from each other.  
+
+.purpleb[How much?]
+]
+.pull-right-shift[
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-18-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+count: false
 
 ## Overlap and Correlations
 
@@ -442,45 +415,19 @@ When estimates are correlated, there can be considerable overlap of `\(95\%\)` c
 ]
 .pull-right-shift[
 &lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-19-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
 ]
 
 ---
 
-## Overlap and Correlations
+## What we know so far ...
 
-.pull-left[
-Consider the situation: 
-- `\(\bar{x} &lt; \bar{y}\)`
-- `\(\bar{x} + 1.96SE(\bar{x}) &gt; \bar{y} - 1.96SE(\bar{y})\)`
-- `\(\% \text{ Overlap} = \frac{(\bar{x} + 1.96SE(\bar{x})) - (\bar{y} - 1.96SE(\bar{y}))}{(\bar{x} + 1.96SE(\bar{x})) - (\bar{x} - 1.96SE(\bar{x}))} = \frac{\bar{x}_u - \bar{y}_l}{\bar{x}_u - \bar{x}_l}\)`
+- `\(95\%\)` intervals overlap under the null hypothesis at a rate `\(\neq 95\%\)`, so using them to do a test of difference at the `\(95\%\)` level doesn't work.
+- For a pair of estimates estimates `\(m_i\)` (with SE `\(\sigma_i\)`) and `\(m_j\)` (with SE `\(\sigma_j\)`) and correlation `\(\rho\)`, `\(\beta\)`-level confidence intervals will not under the null hypothesis at a rate of
 
-When estimates are correlated, there can be considerable overlap of `\(95\%\)` confidence intervals even between estimates that are significantly different from each other.  
-
-.purpleb[How much?]
-]
-.pull-right-shift[
-&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-20-1.png" width="100%" style="display: block; margin: auto;" /&gt;
-
-
-]
-
-
-
----
-
-## 84% Confidence Intervals
-
-.pull-left[
-`\(84\%\)` confidence intervals are a commonly proposed solution - owing to Tukey and other work around this time.
-
-- May work if intervals are of roughly equal lengths and uncorrelated. 
-
-White line indicates type I error rate of 0.05. 
-
-]
-.pull-right-shift[
-&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-21-1.png" width="100%" /&gt;
-]
+`$$\gamma_{ij} = 2\left[1-\Phi\left\{z_\beta \frac{(\sigma_i + \sigma_j)}{\sqrt{\sigma_i^2 + \sigma_j^2 - 2\rho\sigma_i\sigma_j}}\right\}\right], \quad z_\beta = \frac{\Phi^{-1}\left(1-\frac{.05}{2}\right)\sigma_{ij}}{\sigma_i + \sigma_j}$$`
+- (Non-)Overlaps may still not correspond with the significance of the difference.
 
 ---
 
@@ -488,12 +435,17 @@ White line indicates type I error rate of 0.05.
 
 .pull-left[
 
-Each pair of intervals will potentially have a different `\(z_\beta\)`.  But, ...
+Each pair of intervals will potentially have a different `\(z_\beta\)`.  
 - Each interval can only have one `\(z_\beta\)` 
-- It's easiest if all intervals have the same `\(z_\beta\)`. 
+- If all intervals have the same `\(z_\beta\)`, then all intervals will not overlap under the null at the desired rate. 
 
-For multiple intervals, take the average. 
+If there are multiple intervals
+- Average level of `\(z_\beta\)` across intervals involving the estimate. 
+- No one level may work for all relevant intervals. 
 ]
+
+--
+
 .pull-right[
 
 
@@ -508,28 +460,26 @@ This is a situation maximally conducive for this approach.
 
 
 
+
+In the examples to come, the type I error when using a common `\(z_\beta\)` are [.045, .057] and [.045, .086]
+
+
+
 ]
 
+
 ---
+class: inverse,middle,center
 
-## Redux
+## A New Approach
+## Inferential Confidence Intervals
 
-1. `\(95\%\)` intervals overlap under the null hypothesis at a rate `\(\neq 95\%\)`, so using them to do a test of difference at the `\(95\%\)` level doesn't work.
-2. For estimates `\(m_i\)` (with SE `\(\sigma_i\)`) and `\(m_j\)` (with SE `\(\sigma_j\)`) and correlation `\(\rho\)`, `\(\beta\)`-level confidence intervals will _overlap_ under the null hypothesis at a rate of
-
-`$$1 - \underbrace{2\left[1-\Phi\left\{z_\beta \frac{(\sigma_i + \sigma_j)}{\sqrt{\sigma_i^2 + \sigma_j^2 - 2\rho\sigma_i\sigma_j}}\right\}\right]}_{Pr(\text{Not Overlap})}, \quad z_\beta = \frac{\Phi^{-1}\left(1-\frac{.05}{2}\right)\sigma_{ij}}{\sigma_i + \sigma_j}$$`
---
-.purpleb[Importantly]
-- Burdens the display - intervals must also do the pairwise testing. 
-    - (Non-)Overlaps may still not represent significant differences. 
-- Only works "correctly" on a pair of intervals. 
 
 ---
 
-## A New Approach: Optimal Visual Testing
+## Do Pairwise Tests
 
 .pull-left[
-1. **Conduct all pairwise tests between estimates.**
 
 Can use whatever testing procedure suits your problem including: 
 - Robust or clustered SEs
@@ -552,7 +502,7 @@ Can use whatever testing procedure suits your problem including:
 ]
 ---
 
-## Optimal Visual Testing
+## Find Inferential Confidence Levels
 
 .pull-left[
 1. Conduct all pairwise tests between estimates.
@@ -622,8 +572,9 @@ _We should do away with the Supreme Court if it starts making decisions people d
 
 
 ---
+count: false
 
-## Optimal Visual Testing
+## Find Inferential Confidence Levels
 
 .pull-left[
 1. Conduct all pairwise tests between estimates.
@@ -692,8 +643,9 @@ _We should do away with the Supreme Court if it starts making decisions people d
 ]
 
 ---
+count: false
 
-## Optimal Visual Testing
+## Find Inferential Confidence Levels
 
 .pull-left[
 1. Conduct all pairwise tests between estimates.
@@ -804,7 +756,7 @@ A range of values often correspond equally well with the pairwise tests.  In our
 
 ---
 
-## Which Value is Best?
+## Pick the _Best_ Value 
 
 .pull-left[
 1. Conduct all pairwise tests between estimates.
@@ -855,8 +807,6 @@ df_master &lt;- factorize(df_master)
 mod &lt;- lm(searched ~ book*ad_type, data=df_master)
 
 eff &lt;- effect("book*ad_type", mod)
-## make coef function for effects object
-coef.eff &lt;- function(x, ...){x$fit}
 
 v_ate &lt;- viztest(eff, test_level=.025, include_zero=FALSE)
 v_ate
@@ -920,8 +870,9 @@ ggplot(eff, aes(x=ad_type, y = fit)) +
 
 
 ---
+count: false
 
-## Interpretation
+## Comparison
 
 .pull-left[
 &lt;img src="images/ate_bar.png" width="100%" /&gt;
@@ -1034,16 +985,6 @@ Thin lines are `\(95\%\)` confidence intervals.  The thick bars are inferential 
 &lt;img src="images/iw_plot.png" width="65%" style="display: block; margin: auto;" /&gt;
 ]
 
----
-
-## Sub-optimality of Existing Solution
-
-
-
-Is the existing solution _that_ bad? 
-- Morozov and Tuchman: nominal tests at the .05 level would be between .045 and .057. 
-- Iyengar and Westwood: nominal tests at the .05 level would be between .045 and .086. 
-
 
 
 ---
@@ -1083,6 +1024,27 @@ class: inverse center middle
 # Thanks!
 
 .large-text[Questions/Comments: dave.armstrong@uwo.ca]
+
+
+---
+name: math-page
+
+### _Question: Is it the case that if confidence intervals do not overlap, that necessarily indicates the two estimates are significantly different from each other?_
+
+For the converse to be true, we would need: 
+
+1. `\(\bar{x} + 2s_{\bar{x}} &lt; \bar{y}-2s_{\bar{y}}\)` where `\(x &lt; y\)`, `\(0 &lt; s_{\bar{x}}\)` and `\(0 &lt; s_{\bar{y}}\)` (i.e., intervals do not overlap) _and_
+
+2. `\(\frac{\bar{y}-\bar{x}}{\sqrt{s_{\bar{x}}^2 + s_{\bar{y}}^2 - 2s_{\bar{x},\bar{y}}}} &lt; 2\)` (i.e., `\(t\)`-statistic is insignificant)
+
+Which implies: 
+
+`$$s_{\bar{x}}^2 + s_{\bar{y}}^2 + 2s_xs_y &lt; \left(\frac{\bar{y}-\bar{x}}{2}\right)^2 &lt; s_{\bar{x}}^2 + s_{\bar{y}}^2 - 2s_{\bar{x},\bar{y}} \quad \Rightarrow \quad s_{\bar{x},\bar{y}} &lt; -s_xs_y$$`
+
+This cannot happen since the the covariance is bound in the range `\(s_{\bar{x},\bar{y}} \in [-s_xs_y, s_xs_y]\)` 
+
+[Return to Presentation](#ci-page)
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
@@ -1094,7 +1056,7 @@ class: inverse center middle
   "highlightStyle": "github",
   "highlightLines": true,
   "ratio": "16:9",
-  "countIncrementalSlides": true
+  "countIncrementalSlides": false
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));

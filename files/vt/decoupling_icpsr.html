@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Using Confidence Intervals for Visual Testing</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="decoupling_icpsr_files/header-attrs/header-attrs.js"></script>
+    <link href="decoupling_icpsr_files/panelset/panelset.css" rel="stylesheet" />
+    <script src="decoupling_icpsr_files/panelset/panelset.js"></script>
+    <script src="decoupling_icpsr_files/fabric/fabric.min.js"></script>
+    <link href="decoupling_icpsr_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="decoupling_icpsr_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <link href="decoupling_icpsr_files/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="decoupling_icpsr_files/tile-view/tile-view.js"></script>
+    <script src="decoupling_icpsr_files/kePrint/kePrint.js"></script>
+    <link href="decoupling_icpsr_files/lightable/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Using Confidence Intervals for Visual Testing
+]
+.subtitle[
+## Blalock Lecture - ICPSR Summer Program 2025
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+a:link {
+  color: #f89540;
+}
+a:visited {
+  color: #f89540;
+}
+a:hover {
+  color: #f89540;
+}
+a:active {
+  color: #f89540;
+}
+.purpleb {
+  font-weight: bold;
+  color: #4F2683;
+  font-size: 1.25em;
+}
+
+.small {
+  font-size:.75rem;
+}
+.shift { 
+  position:relative; 
+  top: -40px;
+  }
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid
+  #  23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.remark-code{
+  font-size: .7rem;
+}
+.bottom {
+  vertical-align: bottom;
+}
+.shift { 
+  position:relative; 
+  top: -100px;
+  }
+
+
+&lt;/style&gt;
+
+
+
+
+
+
+
+&lt;img src="images/paper_header.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Confidence Intervals
+
+.pull-left[
+&lt;img src="decoupling_icpsr_files/figure-html/gibfig-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+_We should do away with the Supreme Court if it starts making decisions people do not like - Likert Scale 5 pts._
+
+.small[
+James L. Gibson (2024) "Losing Legitimacy: The Challenges of the Dobbs Ruling to Conventional Legitimacy Theory" _American Journal of Political Science_ 68: 1041-1056. 
+]
+]
+.pull-right[
+
+
+
+]
+
+---
+
+## Confidence Intervals
+
+.pull-left[
+
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-3-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+_We should do away with the Supreme Court if it starts making decisions people do not like - Likert Scale 5 pts._
+]
+.pull-right[
+**What do we know?** 
+
+1. Neither July estimate is statistically different from 0.165, but the December and March estimates are. 
+
+
+
+]
+
+
+---
+
+## Confidence Intervals
+
+.pull-left[
+
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-4-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+_We should do away with the Supreme Court if it starts making decisions people do not like - Likert Scale 5 pts._
+]
+.pull-right[
+**What do we know?** 
+
+1. Neither July estimate is statistically different from 0.16, but the December and March estimates are. 
+
+2. The estimates for December 2020 and July 2022 are different because the confidence intervals do not overlap. 
+
+
+
+]
+
+
+---
+
+### _Question: Is it the case that if confidence intervals do not overlap, that necessarily indicates the two estimates are significantly different from each other?_
+
+For the converse to be true, we would need: 
+
+1. `\(\bar{x} + 2s_{\bar{x}} &lt; \bar{y}-2s_{\bar{y}}\)` where `\(x &lt; y\)`, `\(0 &lt; s_{\bar{x}}\)` and `\(0 &lt; s_{\bar{y}}\)` (i.e., intervals do not overlap) _and_
+
+2. `\(\frac{\bar{y}-\bar{x}}{\sqrt{s_{\bar{x}}^2 + s_{\bar{y}}^2 - 2s_{\bar{x},\bar{y}}}} &lt; 2\)` (i.e., `\(t\)`-statistic is insignificant)
+
+Which implies: 
+
+`$$s_{\bar{x}}^2 + s_{\bar{y}}^2 + 2s_xs_y &lt; \left(\frac{\bar{y}-\bar{x}}{2}\right)^2 &lt; s_{\bar{x}}^2 + s_{\bar{y}}^2 - 2s_{\bar{x},\bar{y}}$$`
+or
+
+`$$s_{\bar{x},\bar{y}} &lt; -s_xs_y$$`
+
+This cannot happen since the the covariance is bound in the range `\(s_{\bar{x},\bar{y}} \in [-s_xs_y, s_xs_y]\)`
+
+
+---
+
+## Confidence Intervals
+
+.pull-left[
+
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-5-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+_We should do away with the Supreme Court if it starts making decisions people do not like - Likert Scale 5 pts._
+]
+.pull-right[
+**What do we know?** 
+
+1. Neither July estimate is statistically different from 0.16, but the December and March estimates are. 
+
+2. The estimates for December 2020 and July 2022 are different because the confidence intervals do not overlap. 
+
+3. Pretty confident that the estimates for July 2020 and March 2021 are not different because the confidence intervals overlap substantially. _More on this later_. 
+
+]
+
+---
+
+## Confidence Intervals
+
+.pull-left[
+
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-6-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+_We should do away with the Supreme Court if it starts making decisions people do not like - Likert Scale 5 pts._
+]
+.pull-right[
+
+What about July 2020 and July 2022?  
+
+]
+
+---
+
+## T-test
+
+.pull-left[
+
+- July 2020: `$$\bar{x} = 0.1413, \text{SE}(\bar{x}) = 0.0152$$`
+- July 2022: `$$\bar{z} = 0.1890, \text{SE}(\bar{z}) = 0.0153$$`
+
+
+
+]
+.pull-right[
+
+**T-test**
+
+`$$\begin{aligned}
+t &amp;= \frac{\bar{z}-\bar{x}}{\sqrt{\text{SE}(\bar{z})^2 + \text{SE}(\bar{x})^2}}\\
+&amp;= \frac{0.1890 - 0.1413}{\sqrt{0.0153^2 +0.0152^2}}\\
+&amp;= \frac{0.0477}{0.0216}\\
+&amp;= 2.2083,  \text{ p (two-sided)}\approx 0.0273
+\end{aligned}$$`
+The difference is significant, even though the confidence intervals overlap.  
+
+]
+
+---
+
+## History of Visual Testing
+
+
+
+.pull-left[
+.pull-left[
+&lt;img src="images/lee_dice.png" width="90%" style="display: block; margin: auto;" /&gt;
+.center[_Lee Dice_]
+]
+.pull-right[
+&lt;img src="images/harold_leraas_s.png" width="90%" style="display: block; margin: auto;" /&gt;
+.center[_Harold Laraas_]
+]
+.small[
+Lee R. Dice and Harold J. Laraas. (1936) "A Graphic Method for Comparing Several Sets of Measurements."  _Contributions from the Lab of Vertebrate Genetics_ 3: 1-3
+]
+]
+.pull-right[
+Dice and Laraas (1936)
+
+&gt; It is assumed by many statisticians that a difference [2.15] times its [standard error] indicates practical freedom from chance.  Therefore, a difference which is between [1.9] and [2] times its [standard error] may be considered to be close to the dividing line between differences which are statistically significant and those which are not. 
+
+]
+
+---
+
+## History of Visual Testing
+
+.pull-left[
+&lt;img src="images/simpson_roe0.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+.center[_George Simpson &amp; Anne Roe_]
+
+.small[
+George G. Simpson and Anne Roe.  (1939). _Quantitative zoology: Numerical concepts and methods in the study of recent and fossil animals._ McGraw-Hill Book Company
+]
+
+]
+.pull-right-shift[
+
+If `\(\bar{x} &lt; \bar{y}\)`, `\(N_1 = \delta N_2\)` and `\(\sigma_{\bar{x}} = \theta\sigma_{\bar{y}}\)`, what is the implied p-value of the test if the two confidence bounds are nearly touching?
+
+&lt;img src="images/simpson_roe_table.png" width="85%" style="display: block; margin: auto;" /&gt;
+
+
+]
+
+---
+
+## History of Visual Testing
+
+.pull-left[
+&lt;img src="images/simpson_roe0.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+.center[_George Simpson &amp; Anne Roe_]
+
+.small[
+George G. Simpson and Anne Roe.  (1939). _Quantitative zoology: Numerical concepts and methods in the study of recent and fossil animals._ McGraw-Hill Book Company
+]
+
+]
+.pull-right-shift[
+
+If `\(\bar{x} &lt; \bar{y}\)`, `\(N_1 = \delta N_2\)` and `\(\sigma_{\bar{x}} = \theta\sigma_{\bar{y}}\)`, what is the implied p-value of the test if the two confidence bounds are nearly touching?
+
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-14-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+]
+
+---
+
+## Some Formalization
+
+For two estimates `\(m_i\)` and `\(m_j\)` with SEs `\(\sigma_i\)` and `\(\sigma_j\)`, respectively - `\((1-\alpha)\)` level confidence intervals will not overlap if: 
+
+`$$\begin{aligned}
+m_i + z_{(1-\alpha)} \sigma_i &amp;&lt; m_j - z_{(1-\alpha)} \sigma_j\\
+z_{(1-\alpha)} (\sigma_i + \sigma_j) &amp;&lt; m_j - m_i 
+\end{aligned}$$`
+
+This happens under `\(H_0\)` with probability `\(\gamma_{ij}\)`
+
+`$$\gamma_{ij} = 2\left[1-\Phi\left\{z_{(1-\alpha)} \frac{(\sigma_i + \sigma_j)}{\sigma_{ij}}\right\}\right]$$`
+To figure out the appropriate value of `\(z_{(1-\alpha)}\)` based on `\(\gamma_{ij}\)`: 
+
+`$$z_{(1-\alpha)} = \frac{\Phi^{-1}\left(1-\frac{\gamma_{ij}}{2}\right)\sigma_{ij}}{\sigma_i + \sigma_j}\text{ where } \sigma_{ij} = \sqrt{\sigma_i^2 + \sigma_j^2}$$`  
+.small[
+Harvey Goldstein and Michael J.R. Healy.  (1995) "The Graphical Presentation of A Collection of Means." _Journal of the Royal Statistical Society, Series A_ 158(1): 175-177. 
+]
+
+---
+
+## Confidence Levels and Pr(Overlap)
+
+.pull-left[
+For confidence intervals to not overlap under the null hypothesis with probability `\(\gamma_{ij} = .05\)`, then 
+
+`$$z_{(1-\alpha)} = \frac{\Phi^{-1}\left(1-\frac{.05}{2}\right)\sigma_{ij}}{\sigma_i + \sigma_j}\text{ where } \sigma_{ij} = \sqrt{\sigma_i^2 + \sigma_j^2}$$`  
+
+Figure assumes `\(\sigma_j = 1\)`. 
+]
+.pull-right[
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-15-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Confidence Levels and Pr(Overlap)
+
+.pull-left[
+For confidence intervals to not overlap under the null hypothesis with probability `\(\gamma_{ij} = .05\)`, then 
+
+`$$z_{(1-\alpha)} = \frac{\Phi^{-1}\left(1-\frac{.05}{2}\right)\sigma_{ij}}{\sigma_i + \sigma_j}\text{ where } \sigma_{ij} = \sqrt{\sigma_i^2 + \sigma_j^2}$$`  
+
+Figure assumes `\(\sigma_j = 1\)`. 
+
+Tukey suggested: 
+- `\(\pm \sqrt{2}SE\)` (i.e., `\(84\%\)` CI) is approximately right for the test. 
+- `\(\Pr(\text{Overlap}) = 0.045\)` for `\(84\%\)` CI. 
+
+
+]
+.pull-right[
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-16-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+## 84% Confidence Intervals
+
+.pull-left[
+`\(84\%\)` confidence intervals are a commonly proposed solution - owing to Tukey and other work around this time.
+
+- May work if intervals are of roughly equal lengths and uncorrelated. 
+
+White line indicates type I error rate of 0.05. 
+
+]
+.pull-right-shift[
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-17-1.png" width="100%" /&gt;
+]
+
+
+---
+
+## Overlap and Correlations
+
+.pull-left[
+Consider the situation: 
+- `\(\bar{x} &lt; \bar{y}\)`
+- `\(\bar{x} + 1.96SE(\bar{x}) &gt; \bar{y} - 1.96SE(\bar{y})\)`
+- `\(\% \text{ Overlap} = \frac{(\bar{x} + 1.96SE(\bar{x})) - (\bar{y} - 1.96SE(\bar{y}))}{(\bar{x} + 1.96SE(\bar{x})) - (\bar{x} - 1.96SE(\bar{x}))} = \frac{\bar{x}_u - \bar{y}_l}{\bar{x}_u - \bar{x}_l}\)`
+
+When estimates are correlated, there can be considerable overlap of `\(95\%\)` confidence intervals even between estimates that are significantly different from each other.  
+
+]
+.pull-right-shift[
+
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-18-1.png" width="100%" /&gt;
+
+
+]
+
+---
+
+## Overlap and Correlations
+
+.pull-left[
+Consider the situation: 
+- `\(\bar{x} &lt; \bar{y}\)`
+- `\(\bar{x} + 1.96SE(\bar{x}) &gt; \bar{y} - 1.96SE(\bar{y})\)`
+- `\(\% \text{ Overlap} = \frac{(\bar{x} + 1.96SE(\bar{x})) - (\bar{y} - 1.96SE(\bar{y}))}{(\bar{x} + 1.96SE(\bar{x})) - (\bar{x} - 1.96SE(\bar{x}))} = \frac{\bar{x}_u - \bar{y}_l}{\bar{x}_u - \bar{x}_l}\)`
+
+When estimates are correlated, there can be considerable overlap of `\(95\%\)` confidence intervals even between estimates that are significantly different from each other.  
+
+.purpleb[How much?]
+]
+.pull-right-shift[
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-19-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Overlap and Correlations
+
+.pull-left[
+Consider the situation: 
+- `\(\bar{x} &lt; \bar{y}\)`
+- `\(\bar{x} + 1.96SE(\bar{x}) &gt; \bar{y} - 1.96SE(\bar{y})\)`
+- `\(\% \text{ Overlap} = \frac{(\bar{x} + 1.96SE(\bar{x})) - (\bar{y} - 1.96SE(\bar{y}))}{(\bar{x} + 1.96SE(\bar{x})) - (\bar{x} - 1.96SE(\bar{x}))} = \frac{\bar{x}_u - \bar{y}_l}{\bar{x}_u - \bar{x}_l}\)`
+
+When estimates are correlated, there can be considerable overlap of `\(95\%\)` confidence intervals even between estimates that are significantly different from each other.  
+
+.purpleb[How much?]
+]
+.pull-right-shift[
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-20-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+]
+
+
+---
+
+## Dependent Estimates
+
+.pull-left[
+
+When estimates are dependent (i.e., correlated), then
+
+`$$z_\beta = \frac{\Phi^{-1}\left(1-\frac{.05}{2}\right)\sigma_{ij}}{\sigma_i + \sigma_j}$$`
+
+where
+`$$\sigma_{ij} = \sqrt{\sigma_i^2 + \sigma_j^2 - 2\rho \sigma_i\sigma_j}$$`  
+and `\(\rho\)` is the correlation between the estimates and `\(\rho\sigma_i\sigma_j\)` is the covariance. 
+
+.small[
+David Afshartous and Richard A. Preston. (2010) "Confidence Intervals for Dependent Data: Equating Non-overlap with Statistical Significance." _Computational Statistics and Data Analysis_ 54: 2296-2305.
+]
+
+]
+.pull-right-shift[
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-21-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Non-normal Distributions
+
+.pull-left[
+Radean (2023) extends Afshartous and Preston suggesting a percentile approach for distributions that are non-normal or of unknown functional form where random draws from the distribution exists. 
+- Radean still describes this approach for only a pair of intervals
+
+.small[
+Marius Radean. (2023) "The Significance of Differences Interval: Assessing the Statistical and Substantive Difference between Two Quantities of Interest." _Journal of Politics_ 85(3): 969-983. 
+]
+]
+.pull-right[
+&lt;img src="images/radean_percentile.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Multiple Intervals
+
+.pull-left[
+
+Each pair of intervals will potentially have a different `\(z_\beta\)`.  But, ...
+- Each interval can only have one `\(z_\beta\)` 
+- It's easiest if all intervals have the same `\(z_\beta\)`. 
+
+For multiple intervals, take the average. 
+]
+.pull-right[
+
+
+
+In the Gibson example, using a common `\(z_\beta\)` would mean that the tests we do using the `\(\beta\)` level confidence intervals would have type I error rates in the range `\([4.9\%, 5.1\%]\)`.  Not bad, but...
+- Estimates are independent `\((\rho = 0)\)`
+- There are relatively few estimates. 
+- Ratio of largest to smallest `\(\sigma\)` is 1.33 (close to 1)
+
+This is a situation maximally conducive for this approach. 
+
+
+
+
+]
+
+---
+
+## Redux
+
+1. `\(95\%\)` intervals overlap under the null hypothesis at a rate `\(\neq 95\%\)`, so using them to do a test of difference at the `\(95\%\)` level doesn't work.
+2. For estimates `\(m_i\)` (with SE `\(\sigma_i\)`) and `\(m_j\)` (with SE `\(\sigma_j\)`) and correlation `\(\rho\)`, `\(\beta\)`-level confidence intervals will _overlap_ under the null hypothesis at a rate of
+
+`$$1 - \underbrace{2\left[1-\Phi\left\{z_\beta \frac{(\sigma_i + \sigma_j)}{\sqrt{\sigma_i^2 + \sigma_j^2 - 2\rho\sigma_i\sigma_j}}\right\}\right]}_{Pr(\text{Not Overlap})}$$`
+--
+.purpleb[Importantly]
+- Burdens the display such that the intervals must also do the pairwise testing. 
+- Only works "correctly" on a pair of intervals. 
+
+---
+
+## A New Approach: Optimal Visual Testing
+
+.pull-left[
+1. **Conduct all pairwise tests between estimates.**
+
+Can use whatever testing procedure suits your problem including: 
+- Robust or clustered SEs
+- Multiplicity correction
+
+
+
+
+]
+.pull-right[
+
+|M1            |M2            |p.value |
+|:-------------|:-------------|:-------|
+|July 2020     |December 2020 |0.003   |
+|July 2020     |March 2021    |0.135   |
+|July 2020     |July 2022     |0.027   |
+|December 2020 |March 2021    |0.088   |
+|December 2020 |July 2022     |0.000   |
+|March 2021    |July 2022     |0.000   |
+]
+---
+
+## Optimal Visual Testing
+
+.pull-left[
+1. Conduct all pairwise tests between estimates.
+
+2. **Find the best value (or values) of the inferential confidence level.**
+
+Let's try `\(95\%\)` intervals:
+.small[
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; M1 &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; M2 &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Significant &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; No Overlap &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; July 2020 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; December 2020 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; July 2020 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; March 2021 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; FALSE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; FALSE &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(217, 95, 2, 255) !important;"&gt; July 2020 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(217, 95, 2, 255) !important;"&gt; July 2022 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(217, 95, 2, 255) !important;"&gt; TRUE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(217, 95, 2, 255) !important;"&gt; FALSE &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; December 2020 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; March 2021 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; FALSE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; FALSE &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; December 2020 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; July 2022 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; March 2021 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; July 2022 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+]
+
+.pull-right[
+
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-26-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+_We should do away with the Supreme Court if it starts making decisions people do not like - Likert Scale 5 pts._
+]
+
+
+---
+
+## Optimal Visual Testing
+
+.pull-left[
+1. Conduct all pairwise tests between estimates.
+
+2. **Find the best value (or values) of the inferential confidence level.**
+
+Let's try `\(84\%\)` intervals:
+.small[
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; M1 &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; M2 &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Significant &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; No Overlap &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; July 2020 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; December 2020 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; July 2020 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; March 2021 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; FALSE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; FALSE &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; July 2020 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; July 2022 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; December 2020 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; March 2021 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; FALSE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; FALSE &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; December 2020 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; July 2022 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; March 2021 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; July 2022 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+]
+
+.pull-right[
+
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-28-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+_We should do away with the Supreme Court if it starts making decisions people do not like - Likert Scale 5 pts._
+]
+
+---
+
+## Optimal Visual Testing
+
+.pull-left[
+1. Conduct all pairwise tests between estimates.
+
+2. **Find the best value (or values) of the inferential confidence level.**
+
+Let's try `\(73\%\)` intervals:
+
+.small[
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; M1 &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; M2 &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Significant &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; No Overlap &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; July 2020 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; December 2020 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; July 2020 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; March 2021 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; FALSE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; FALSE &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; July 2020 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; July 2022 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(217, 95, 2, 255) !important;"&gt; December 2020 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(217, 95, 2, 255) !important;"&gt; March 2021 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(217, 95, 2, 255) !important;"&gt; FALSE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(217, 95, 2, 255) !important;"&gt; TRUE &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; December 2020 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; July 2022 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; March 2021 &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; July 2022 &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+   &lt;td style="text-align:center;background-color: rgba(27, 158, 119, 255) !important;"&gt; TRUE &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+]
+
+.pull-right[
+
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-30-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+_We should do away with the Supreme Court if it starts making decisions people do not like - Likert Scale 5 pts._
+]
+
+---
+
+## Range of Values Often Work 
+
+A range of values often correspond equally well with the pairwise tests.  In our case, anywhere between `\(77.3\%\)` and `\(88.2\%\)` will produce equally "good"results
+
+
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Method &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Conf Level &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Correspondence w/PW Tests &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Lowest &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 77.3% &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 100% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Middle &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 82.7% &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 100% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Highest &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 88.2% &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 100% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Easiest &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 84.1% &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 100% &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+---
+
+## Which Value is Best?
+
+.pull-left[
+1. Conduct all pairwise tests between estimates.
+
+2. Find the best value (or values) of the inferential confidence level.
+
+3. **Pick the inferential confidence level that is cognitively easiest.**
+
+All options have their benefits and drawbacks.  We think about what happens with the two most difficult tests: 
+1. The significantly different estimates whose confidence bounds are separated by the smallest margin
+2. The estimates whose difference is insignificant, but whose confidence bounds overlap the least. 
+
+]
+.pull-right-shift[
+&lt;img src="images/FigureA5.png" width="100%" /&gt;
+
+]
+
+---
+class: inverse,middle,center
+
+## Software
+
+---
+
+## Case Study I: Weight Perception and BMI
+
+.pull-left[
+The Add Health survey asked respondents: 
+- how they feel about their own weight
+- Measured weight and height from which I calculated BMI. 
+
+How does the BMI for people who feel very underweight change over time?
+
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; W1 &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; W2 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; diff &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; se &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(217, 95, 2, 255) !important;"&gt; I &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(217, 95, 2, 255) !important;"&gt; II &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(217, 95, 2, 255) !important;"&gt; -0.923 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(217, 95, 2, 255) !important;"&gt; 0.911 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(217, 95, 2, 255) !important;"&gt; 0.31079 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; I &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; III &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(27, 158, 119, 255) !important;"&gt; 2.173 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(27, 158, 119, 255) !important;"&gt; 1.102 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(27, 158, 119, 255) !important;"&gt; 0.04856 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; I &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; IV &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(27, 158, 119, 255) !important;"&gt; 4.377 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(27, 158, 119, 255) !important;"&gt; 1.585 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(27, 158, 119, 255) !important;"&gt; 0.00575 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; II &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; III &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(27, 158, 119, 255) !important;"&gt; 3.096 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(27, 158, 119, 255) !important;"&gt; 1.225 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(27, 158, 119, 255) !important;"&gt; 0.01147 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; II &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(27, 158, 119, 255) !important;"&gt; IV &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(27, 158, 119, 255) !important;"&gt; 5.300 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(27, 158, 119, 255) !important;"&gt; 1.673 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(27, 158, 119, 255) !important;"&gt; 0.00153 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;background-color: rgba(217, 95, 2, 255) !important;"&gt; III &lt;/td&gt;
+   &lt;td style="text-align:left;background-color: rgba(217, 95, 2, 255) !important;"&gt; IV &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(217, 95, 2, 255) !important;"&gt; 2.204 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(217, 95, 2, 255) !important;"&gt; 1.784 &lt;/td&gt;
+   &lt;td style="text-align:right;background-color: rgba(217, 95, 2, 255) !important;"&gt; 0.21662 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+]
+.pull-right[
+&lt;img src="decoupling_icpsr_files/figure-html/unnamed-chunk-34-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+---
+
+## Case Study I: Weight Perception and BMI
+.pull-left[
+
+``` r
+library(VizTest)
+load("data/comb.rda")
+res &lt;- comb %&gt;% 
+  filter(!is.na(bmi) &amp; !is.na(weight_img)) %&gt;% 
+  group_by(wave, weight_img) %&gt;% 
+  summarise(mean_bmi = mean(bmi), 
+            s = sd(bmi), 
+            n = n(), 
+            se = s/sqrt(n)) %&gt;% 
+  filter(grepl("Very underweight", weight_img))
+
+vt_dat &lt;- make_vt_data(res$mean_bmi, res$se^2)
+v &lt;- viztest(vt_dat, 
+             test_level = .025, 
+             include_zero=FALSE)
+```
+
+]
+.pull-right[
+
+```
+## 
+## Correspondents of PW Tests with CI Tests
+##   level psame     pdiff        easy  method
+## 1  0.63     1 0.6666667 -0.82787857  Lowest
+## 2  0.74     1 0.6666667 -0.01253917  Middle
+## 3  0.85     1 0.6666667 -0.87676932 Highest
+## 4  0.74     1 0.6666667 -0.01253917 Easiest
+## 
+## All  6  tests properly represented for by CI overlaps.
+```
+
+]
+---
+
+## Add Health Figure 
+
+.pull-left[
+&lt;img src="decoupling_icpsr_files/figure-html/bmi_feel-1.png" width="100%" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(res, aes(x=wave, y=mean_bmi)) + 
+  geom_segment(aes(x=wave, 
+                   y=lwr95, 
+                   xend=wave, 
+                   yend=upr95), 
+               color="black") + 
+  geom_segment(aes(x=wave, 
+                   y=lwr73, 
+                   xend=wave, 
+                   yend=upr73), 
+               linewidth=3, 
+               color="black") + 
+  geom_point(color="white") + 
+  theme_bw() + 
+  labs(x="Wave", 
+    y="Average BMI for R Feeling\n'Very Underweight'")
+```
+]
+
+---
+
+## Interpretation
+
+.pull-left[
+&lt;img src="decoupling_r_files/figure-html/bmi_feel-1.png" width="100%" /&gt;
+
+]
+.pull-right[
+Lines are `\(95\%\)` confidence intervals.  Bars represent inferential confidence intervals (in this case `\(73\%\)` confidence intervals) such that overlapping intervals indicate no significant difference and non-overlapping intervals indicate a significant difference.  The white points represent the estimates. See Armstrong and Poirier (2025) for more details on inferential confidence intervals. 
+]
+
+
+
+---
+## Case Study II: Morozov and Tuchman (2024)
+
+.pull-left[
+Morozov and Tuchman (2024) investigate how different kinds of ads lead to searches and purchases.  
+
+&lt;img src="images/stateline.png" width="40%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="images/books.png" width="100%" /&gt;
+]
+
+.small[Morozov, Ilya and Anna Tuchman (2024) "Where Does Advertising Content Lead You? We Created a Bookstore to Find Out" _Marketing Science_ 43(5): 925-1151. ]
+---
+
+## Case Study II: Morozov and Tuchman (2024)
+
+.pull-left[
+
+``` r
+df_master &lt;- import("data/morozov_tuchman.dta")
+df_master &lt;- factorize(df_master)
+mod &lt;- lm(searched ~ book*ad_type, data=df_master)
+
+eff &lt;- effect("book*ad_type", mod)
+## make coef function for effects object
+coef.eff &lt;- function(x, ...){x$fit}
+
+v_ate &lt;- viztest(eff, test_level=.025, include_zero=FALSE)
+v_ate
+```
+
+```
+## 
+## Correspondents of PW Tests with CI Tests
+##   level psame     pdiff          easy  method
+## 1  0.66     1 0.6785714 -0.0069126348  Lowest
+## 2  0.75     1 0.6785714 -0.0009959121  Middle
+## 3  0.84     1 0.6785714 -0.0066862614 Highest
+## 4  0.76     1 0.6785714 -0.0002528717 Easiest
+## 
+## All  28  tests properly represented for by CI overlaps.
+```
+]
+.pull-right[
+
+``` r
+library(effects)
+eff76 &lt;- effect("book*ad_type", mod, 
+                confidence.level = .76)
+eff &lt;- as.data.frame(eff) %&gt;% 
+  rename(lwr95 = lower, upr95 = upper) %&gt;% 
+  select(-se)
+
+eff76 &lt;- eff76 %&gt;% 
+  as.data.frame() %&gt;% 
+  select(-c(fit, se)) %&gt;% 
+  rename(lwr76 = lower, upr76=upper)
+eff &lt;- eff %&gt;% left_join(eff76)
+
+ggplot(eff, aes(x=ad_type, y = fit)) + 
+  geom_bar(stat="identity", fill = "gray75") + 
+  geom_segment(aes(x=ad_type, xend=ad_type, 
+                   y=lwr95, yend=upr95), 
+               col="black") + 
+  geom_segment(aes(x=ad_type, xend=ad_type, 
+                   y=lwr76, yend=upr76), 
+               col="black", linewidth=3) + 
+  geom_point(color="white") + 
+  facet_wrap(~book) + 
+  theme_bw() + 
+  labs(y="Searched Ad Book", x="")
+```
+
+]
+
+---
+
+## Comparison
+
+.pull-left[
+&lt;img src="images/ate_bar.png" width="100%" /&gt;
+]
+.pull-right[
+&lt;img src="images/books.png" width="100%" /&gt;
+
+]
+
+
+---
+
+## Interpretation
+
+.pull-left[
+&lt;img src="images/ate_bar.png" width="100%" /&gt;
+]
+.pull-right[
+Thin black lines represent `\(95\%\)` confidence intervals.  Wide black bars represent the inferential confidence intervals (in this case, `\(76\%\)` intervals) such that overlapping intervals indicate estimate that are not significantly different from each other and non-overlapping intervals indicate significant differences.  The white points are predicted values. In this case, comparisons both within and across panels are valid. See Armstrong and Poirier (2025) for more details on inferential confidence intervals. 
+]
+
+
+
+---
+
+## Case Study III: Iyengar and Westwood (2014)
+
+Iyengar and Westwood (2014) investigate how partisan polarization operates.  They ask respondents to make a choice between two students of who gets a scholarship.  The treatments are: 
+- Qualification: GPA of 3.5 or 4.0 
+- Partisanship: President of the Young Democrats or Young Republicans.
+
+This generates three conditions: 
+1. Equally Qualified - both candidates have either 3.5 or 4.0 GPA. 
+2. Republican More Qualified - Republican has 4.0 GPA and Democrat has 3.5
+3. Democrat More Qualified - Democrat has 4.0 GPA and Republican has 3.5
+
+&lt;/br&gt;
+&lt;/br&gt;
+&lt;/br&gt;
+&lt;/br&gt;
+
+.small[Iyengar, S. &amp; S.J. Westwood (2014) "Fear and Loathing Across Party Lines: New Evidence on Group Polarization" _American Journal of Political Science_ 59(3): 690-707]
+
+---
+
+## Case Study III: Iyengar and Westwood (2014)
+
+&lt;img src="images/IWFig6.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Case Study III: Iyengar and Westwood (2014)
+
+.pull-left[
+
+``` r
+load("data/iw_dat.rda")
+#### 2. Model ####
+model&lt;-glm(partisanSelection~participantPID2*
+             mostQualifiedPerson,
+           data=iw_dat,
+           family = "binomial")
+
+eff &lt;- effect(
+  "participantPID2*mostQualifiedPerson", 
+  model)
+eff$fit &lt;- c(eff$fit)
+names(eff$fit) &lt;- apply(
+  eff$x, 
+  1, 
+  \(x)paste(x, collapse=": "))
+v_eff &lt;- viztest(eff, 
+                 test_level = .025, 
+                 include_zero=FALSE)
+```
+
+
+]
+.pull-right[
+
+```
+## 
+## Correspondents of PW Tests with CI Tests
+##   level     psame     pdiff         easy  method
+## 1  0.82 0.9904762 0.5333333 -0.091369751  Lowest
+## 2  0.84 0.9904762 0.5333333 -0.004225368  Middle
+## 3  0.86 0.9904762 0.5333333 -0.096402783 Highest
+## 4  0.84 0.9904762 0.5333333 -0.004225368 Easiest
+## 
+## Missed Tests for Lowest Level (n=1 of 105)
+##    bigger smaller pw_test ci_olap
+## 84  I: EQ LD: DMQ   Insig      No
+## 
+## Missed Tests for Middle Level (n=1 of 105)
+##    bigger smaller pw_test ci_olap
+## 84  I: EQ LD: DMQ   Insig      No
+## 
+## Missed Tests for Highest Level (n=1 of 105)
+##    bigger smaller pw_test ci_olap
+## 84  I: EQ LD: DMQ   Insig      No
+## 
+## Missed Tests for Easiest Level (n=1 of 105)
+##    bigger smaller pw_test ci_olap
+## 84  I: EQ LD: DMQ   Insig      No
+```
+
+]
+
+---
+
+## Case Study III: Iyengar and Westwood (2014)
+&lt;img src="decoupling_icpsr_files/figure-html/iw_plot-1.png" width="85%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Interpretation
+.pull-left[
+Thin lines are `\(95\%\)` confidence intervals.  The thick bars are inferential confidence intervals (in this case, `\(84\%\)` intervals) such that overlapping intervals indicate insignificant differences between the estimates and non-overlapping intervals indicate significant differences.  See Armstrong and Poirier (2025) for more details about inferential confidence intervals.  The points represent predicted probabilities of choosing the republican.  The confidence intervals were made on the scale of the linear predictor and transformed into the probability scale.   Comparisons both within and across panels are valid with one exception.  The intervals for Independents in the Equally Qualified treatment and Leaning Democrats in the Democrat Most Qualified treatment do not overlap, though their difference is not statistically significant. 
+]
+
+.pull-right-shift[
+&lt;img src="images/iw_plot.png" width="65%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+## Case Study IV: Muraoka and Rosas (2021)
+
+.pull-left[
+Muraoka and Rosas (2021) discuss the effect of income inequality on the discrepancy between individual and expert placements of parties.  They hypothesize the effect will vary by
+- Socio-economic position (Top, Second top, Second bottom, Bottom) and 
+- Party direction (Left, Center, Right).  
+
+They estimate Bayesian models that they summarise with 90% and 95% credible intervals
+
+.small[Muraoka, T and G. Rosas (2021) "Does Economic Inequality Drive Voters' Disagreement about Party Placement?" _American Journal of Political Science_ 65(3): 582-597]
+
+]
+.pull-right[
+&lt;img src="images/muraoka_rosas_cis.jpg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Case Study IV: Muraoka and Rosas (2021)
+
+.pull-left[
+
+``` r
+load("data/mr_all_data.rda")
+
+all_vt &lt;- make_vt_data(all.eta, type="sim")
+v_all &lt;- viztest(all_vt, test_level =.05, 
+                 range_levels=c(.6, .9),
+                 level_increment=.001, 
+                 include_zero = FALSE)
+v_all
+```
+
+```
+## 
+## Correspondents of PW Tests with CI Tests
+##   level     psame     pdiff          easy  method
+## 1 0.765 0.9848485 0.4848485 -1.330152e-04  Lowest
+## 2 0.765 0.9848485 0.4848485 -1.330152e-04  Middle
+## 3 0.766 0.9848485 0.4848485 -3.101877e-05 Highest
+## 4 0.766 0.9848485 0.4848485 -3.101877e-05 Easiest
+## 
+## Missed Tests for Lowest Level (n=1 of 66)
+##    bigger       smaller pw_test ci_olap
+## 26 L: Top L: Second-Top     Sig     Yes
+## 
+## Missed Tests for Middle Level (n=1 of 66)
+##    bigger       smaller pw_test ci_olap
+## 26 L: Top L: Second-Top     Sig     Yes
+## 
+## Missed Tests for Highest Level (n=1 of 66)
+##    bigger       smaller pw_test ci_olap
+## 26 L: Top L: Second-Top     Sig     Yes
+## 
+## Missed Tests for Easiest Level (n=1 of 66)
+##    bigger       smaller pw_test ci_olap
+## 26 L: Top L: Second-Top     Sig     Yes
+```
+]
+.pull-right[
+
+``` r
+ae_sum &lt;- all.eta %&gt;% 
+  as.data.frame() %&gt;% 
+  mutate(obs = row_number()) %&gt;% 
+  pivot_longer(-obs, 
+               names_to = "param", 
+               values_to = "vals") %&gt;% 
+  group_by(param) %&gt;% 
+  reframe(mn = mean(vals), 
+          p0 = mean(vals &gt; 0), 
+          lwr = quantile(vals, .1175), 
+          upr = quantile(vals, .8825), 
+          lwr95 = quantile(vals, .05), 
+          upr95 = quantile(vals, .95),
+          param = first(param)) %&gt;%  
+  mutate(ideo = case_when(
+    grepl("^L", param) ~ "Left", 
+    grepl("^C", param) ~ "Centre", 
+    grepl("^R", param) ~ "Right"),
+    ideo = factor(ideo, levels=c("Left", "Centre", "Right")), 
+    income_group = gsub("[LCR]: ", "", param), 
+    income_group = factor(income_group, 
+                          levels=c("Bottom", "Second-Bottom", 
+                                   "Second-Top", "Top")))
+```
+]
+
+---
+
+## Case Study IV: Muraoka and Rosas (2021)
+
+.pull-left[
+&lt;img src="decoupling_icpsr_files/figure-html/mrplot-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+
+``` r
+ggplot(ae_sum, aes(x=-mn, 
+                   y = income_group)) + 
+  geom_vline(xintercept=0, linetype=3) + 
+  geom_segment(aes(x = -lwr95, xend=-upr95, 
+                   yend=income_group)) +  
+  geom_segment(aes(x = -lwr, xend=-upr, 
+                   yend=income_group), 
+               linewidth=4) + 
+  geom_point(color="white") + 
+  facet_wrap(~ideo, ncol=1) + 
+  theme_bw() + 
+  labs(x="Posterior Mean and Inferential Credible\n Intervals of Inequality (Standardized)", 
+       y="")
+```
+]
+
+---
+
+## Interpretation
+
+.pull-left[
+&lt;img src="decoupling_r_files/figure-html/mrplot-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+The thin black lines represent the `\(95\%\)` credible intervals.  The wider black bars are inferential credible intervals (in this case `\(76.6\%\)` intervals) such that for any pair of intervals that overlap the probability that the parameter with the larger posterior mean is smaller than the parameter with the smaller posterior mean is greater than 0.05.  Further, for any pair of intervals that do not overlap, the probability that the parameter with the larger posterior mean is smaller than the estimate with the smaller posterior mean is less than 0.05.  Comparisons across and within panels are valid subject to one exception.  For Left parties, the Top and Second-top intervals overlap, but the effects are credibly different from each other. 
+]
+
+---
+
+## Recap
+
+1. History of visual testing - problems and solutions.
+2. New method for visual testing with inferential confidence intervals. 
+3. Software demonstration in R. 
+  - Descriptive Statistics (Add Health data)
+  - Linear Models (Marketing Science replication)
+  - GLMs (AJPS Replication)
+  - Bayesian Models (AJPS Replication)
+
+**Citation: **
+
+Armstrong II, David A. and William Poirier (2025) "Decoupling Visualization and Testing when Presenting Confidence Intervals"  _Political Analysis_ 33(3): 252-257.
+
+
+---
+
+## Other Resources
+
+**Longer version of the talk with software demo:**
+- [R](https://instats.org/seminar/using-confidence-intervals-for-visual-te4) 
+- [Stata](https://instats.org/seminar/using-confidence-intervals-for-visual-te5)
+
+## Software Tutorials
+- [R Journal Paper](https://www.dropbox.com/scl/fi/kdvz94gckhyic29lf8efa/viztest-r.pdf?rlkey=6rob9jkf8c4tpeg415uzvnxer&amp;dl=0) (Under Review)
+- [Stata Journal Paper](https://www.dropbox.com/scl/fi/lexylq1fks75ein1nmmz3/viztest-stata.pdf?rlkey=nx45kwbhjd08u58tpdhyo9xwr&amp;dl=0) (Under Review)
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+---
+title: "POLSCI 9592 Assignment 1"
+author: "Your Name"
+date: "2025-09-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Question 1
+Take a model that you estimated in POLSCI 9591 and re-estimate it using MLE.  How, if at all, do the results change? 
+

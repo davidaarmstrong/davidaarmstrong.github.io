@@ -46,9 +46,9 @@ Over my career, I have mostly taught courses on political methodology, though I 
 
 When I first arrived at Western, this was the only quantitative methods course on the books. I taught this as a primer for how to read quantitative papers and do some rudimentary analyses.  Over time, we expanded the sequence to two and now three courses.  Currently, this course covers introductory statistics ending with simple linear regression.  We spend a lot of time learning R to accomplish these tasks.  <br>[[Syllabus](/files/documents/9590_syllabus_2024.pdf)][[course page](uwo9590.html)]
 
-### POLSCI 9592 - Maximum Likelihood Estimation
+### [POLSCI 9592 - Maximum Likelihood Estimation](uwo9592.html)
 
-This is a pretty standard third course in methodology that covers GLMs (logits/probits and variants) as well as models for count data. We also consider hierarchical models, multiple imputation/missing data and basic scaling analysis. <br>[[Syllabus](/files/documents/9592_syllabus_2024.pdf)]
+This is a pretty standard third course in methodology that covers GLMs (logits/probits and variants) as well as models for count data. We also consider hierarchical models, multiple imputation/missing data and basic scaling analysis. <br>[[Syllabus](/files/documents/9592_syllabus_2025.pdf)]
 
 ### POLSCI 9596 - Applied Bayesian Modeling
 

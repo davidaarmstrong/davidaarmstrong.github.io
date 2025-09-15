@@ -1,18 +1,19 @@
-###################################
-## Code for POLSCI 9592 Week 2   ##
-## Dave Armstrong                ##
-## University of Western Ontario ##
-## dave.armstrong@uwo.ca         ##
-## 2024                          ##
-###################################
-
-## ----setup, include=FALSE----------------------------------------------------------------------
+## ----setup, include=FALSE---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+library(car)
+library(tibble)
 library(ggplot2)
 library(modelsummary)
+library(formatR)
+library(knitr)
+library(pander)
+library(xtable)
 library(dplyr)
 library(tidyr)
+library(flextable)
 
-## ----echo=FALSE--------------------------------------------------------------------------------
+
+
+## ----echo=FALSE-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 library(car)
 library(rio)
 load("anes_2008_binary.rda")
@@ -27,13 +28,13 @@ ggplot(dat, aes(x=age, y=voted)) +
 
 
 
-## ----------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 mod <- lm(voted ~ age, 
    data=dat)
 summary(mod)
 
 
-## ----echo=FALSE--------------------------------------------------------------------------------
+## ----echo=FALSE-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ggplot(dat, aes(x=age, y=voted)) + 
   geom_point(alpha=.25, position=position_jitter(height=.025)) + 
   geom_smooth(method="lm", se=FALSE) + 
@@ -43,18 +44,18 @@ ggplot(dat, aes(x=age, y=voted)) +
   labs(x="Age", y="Turnout")
 
 
-## ----------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 dat$ideo_strength <- abs(dat$leftright-5)
 mod <- lm(voted ~ age + educ + income + 
             ideo_strength + female + race, 
           data=dat)
 
 
-## ----------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 summary(mod)
 
 
-## ----echo=FALSE, out.width="90%", fig.align="center"-------------------------------------------
+## ----echo=FALSE, out.width="90%", fig.align="center"------------------------------------------------------------------------------------------------------------------------------------------------------------------
 x <- seq(-2,3,length=100)
 f <- plogis(-1+2*x)
 ggplot(mapping = aes(x=x, y=f)) + 
@@ -63,7 +64,7 @@ ggplot(mapping = aes(x=x, y=f)) +
   labs(x="x", y="Predicted Pr(Y=1|x)")
 
 
-## ----"age_turn1", echo=TRUE, eval=FALSE, out.width="90%", fig.align="center"-------------------
+## ----"age_turn1", echo=TRUE, eval=FALSE, out.width="90%", fig.align="center"------------------------------------------------------------------------------------------------------------------------------------------
 dat_ag <- dat %>%
   group_by(age) %>%
   summarise(turnout = mean(voted, na.rm=TRUE))
@@ -72,7 +73,8 @@ ggplot(dat_ag, aes(x=age, y=turnout)) +
   theme_classic() +
   labs(x="Age", y="Pr(Voted | Age)")
 
-## ----"age_turn2", echo=TRUE, eval=FALSE, out.width="90%", fig.align="center"-------------------
+
+## ----"age_turn2", echo=TRUE, eval=FALSE, out.width="90%", fig.align="center"------------------------------------------------------------------------------------------------------------------------------------------
 ggplot() +
   geom_line(data = dat_ag,
             aes(x=age, y=turnout),
@@ -86,7 +88,8 @@ ggplot() +
   theme_classic() +
   labs(x="Age", y="Pr(Voted | Age)")
 
-## ----"age_turn3", echo=TRUE, eval=FALSE, out.width="90%", fig.align="center"-------------------
+
+## ----"age_turn3", echo=TRUE, eval=FALSE, out.width="90%", fig.align="center"------------------------------------------------------------------------------------------------------------------------------------------
 ggplot() +
   geom_line(data = dat_ag,
             aes(x=age, y=turnout),
@@ -114,7 +117,7 @@ ggplot() +
        fill="Model")
 
 
-## ----"age_turn4", echo=TRUE, eval=FALSE, out.width="90%", fig.align="center"-------------------
+## ----"age_turn4", echo=TRUE, eval=FALSE, out.width="90%", fig.align="center"------------------------------------------------------------------------------------------------------------------------------------------
 mod <- glm(voted ~ age, data=dat, family=binomial)
 b <- mod$coef
 s <- seq(-200, 200, length = 1000)
@@ -128,17 +131,18 @@ ggplot(mapping=aes(x=s, y=p)) +
   theme_classic() +
   labs(x="Age", y="Pr(Voted | Age)")
 
-## ----fullmod, echo=T---------------------------------------------------------------------------
+
+## ----fullmod, echo=T--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 mod <- glm(voted ~ age + race, 
            data=dat, 
            family=binomial(link="logit"))
 
 
-## ----------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 summary(mod)
 
 
-## ----odds2probs, echo=F,  out.width="80%", fig.align="center", fig.height=5, fig.width=15------
+## ----odds2probs, echo=F,  out.width="80%", fig.align="center", fig.height=5, fig.width=15-----------------------------------------------------------------------------------------------------------------------------
 eg0 <- expand.grid(
   age=seq(18,78, by=1), 
   race = factor(1:3, labels=c("White", "Black", "Other"))
@@ -164,32 +168,32 @@ ggplot(eg0, aes(x=age,
   labs(x="Age", y="Change in Predicted Probabiliy\nFor a 10-year Change in Age")
 
 
-## ----------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 library(marginaleffects)
 comparisons(mod, newdata=datagrid(age = 40, race="White"), variables=list(age=10)) 
 
 
-## ----------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 comparisons(mod, newdata=datagrid(age=45), variables=list(race="pairwise"))
 
 
-## ----------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 comparisons(mod, newdata=datagrid(age = 40, race="White"), variables="age", comparison = "dydx") 
 
 
-## ----------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 avg_comparisons(mod, variables = list(age=10), comparison="difference")
 
 
-## ----------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 avg_comparisons(mod, variables = list(race="pairwise"))
 
 
-## ----------------------------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 avg_comparisons(mod, variables = "age", comparison="dydx")
 
 
-## ----echo=FALSE, out.width="90%", fig.align="center"-------------------------------------------
+## ----echo=FALSE, out.width="90%", fig.align="center"------------------------------------------------------------------------------------------------------------------------------------------------------------------
 age_comps <- comparisons(mod, newdat=dat, variables="age")
 ggplot(age_comps, mapping = aes(x=estimate)) + 
   geom_histogram() + 
@@ -200,10 +204,11 @@ ggplot(age_comps, mapping = aes(x=estimate)) +
   ggtitle("Distribution of Effects in Sample")
 
 
-## ----echo=FALSE, out.width="90%", fig.align="center"-------------------------------------------
+## ----echo=FALSE, out.width="90%", fig.align="center"------------------------------------------------------------------------------------------------------------------------------------------------------------------
 infs <- avg_comparisons(mod, variables="age") %>% 
-  inferences(method="simulation")
-ggplot(mapping=aes(x=c(attr(infs, "posterior_draws")))) + 
+  inferences(method="simulation") %>% 
+  posterior_draws()
+ggplot(infs, aes(x=draw)) + 
   geom_histogram() + 
   geom_vline(xintercept=infs$estimate[1], 
              col="red", linetype=2) + 
@@ -212,7 +217,7 @@ ggplot(mapping=aes(x=c(attr(infs, "posterior_draws")))) +
   ggtitle("Sampling Distribution of Average Effect")
 
 
-## ----echo=FALSE, out.width="90%", fig.align="center"-------------------------------------------
+## ----echo=FALSE, out.width="90%", fig.align="center"------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ggplot(age_comps, mapping = aes(x=estimate, fill=race)) + 
   geom_histogram(position="identity", alpha=.25) + 
   geom_vline(xintercept=mean(age_comps$estimate), 
@@ -224,7 +229,7 @@ ggplot(age_comps, mapping = aes(x=estimate, fill=race)) +
 
 
 
-## ----echo=FALSE, out.width="90%", fig.align="center"-------------------------------------------
+## ----echo=FALSE, out.width="90%", fig.align="center"------------------------------------------------------------------------------------------------------------------------------------------------------------------
 age_comps %>% 
   as.data.frame() %>% 
   group_by(age, race) %>% 
@@ -236,7 +241,7 @@ age_comps %>%
   labs(x="Age", y="Effect")
 
 
-## ----"age_eff", echo=TRUE, eval=FALSE, out.width="90%", fig.align="center"---------------------
+## ----"age_eff", echo=TRUE, eval=FALSE, out.width="90%", fig.align="center"--------------------------------------------------------------------------------------------------------------------------------------------
 p_age <- predictions(mod,
           newdata=datagrid(age=18:90))
 
@@ -248,7 +253,8 @@ ggplot(p_age, aes(x=age, y=estimate,
   theme_classic() +
   labs(x="Age", y="Predicted Pr(Voted)")
 
-## ----"ave_age_eff", echo=TRUE, eval=FALSE, out.width="90%", fig.align="center"-----------------
+
+## ----"ave_age_eff", echo=TRUE, eval=FALSE, out.width="90%", fig.align="center"----------------------------------------------------------------------------------------------------------------------------------------
 ap_age <- avg_predictions(mod,
           variables = list(age=18:90))
 
@@ -261,7 +267,7 @@ ggplot(ap_age, aes(x=age, y=estimate,
   labs(x="Age", y="Predicted Pr(Voted)")
 
 
-## ----"both_age_eff", echo=TRUE, eval=FALSE, out.width="90%", fig.align="center"----------------
+## ----"both_age_eff", echo=TRUE, eval=FALSE, out.width="90%", fig.align="center"---------------------------------------------------------------------------------------------------------------------------------------
 age_both <- p_age %>%
   as.data.frame() %>%
   mutate(type="Average Case") %>%
@@ -279,7 +285,8 @@ ggplot(age_both, aes(x=age, y=estimate,
   labs(x="Age", y="Predicted Pr(Voted)",
        color="", fill="")
 
-## ----"tabex", echo=TRUE, eval=FALSE, results='asis'--------------------------------------------
+
+## ----"tabex", echo=TRUE, eval=FALSE, results='asis'-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 tidy.comparisons <- function(x, ...){
   comps %>% select(term, estimate, std.error,
                    p.value, conf.low, conf.high)
@@ -308,4 +315,5 @@ modelsummary(
   gof_map = gm,
   notes = "* p < 0.05 (two-tailed)",
   output = "flextable"
-)
+) %>% autofit()
+

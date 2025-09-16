@@ -1,0 +1,20 @@
+---
+title: "POLSCI 9592 Assignment 2"
+author: "Your Name"
+date: "2025-09-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Exercises 
+If you load the file `ces0419.rda`, it will put an object in your workspace called `ces0421`, which has selected variables form the Canadian Election Study for the years 2004-2021.  The variables in the data are described [here](https://quantoid.net/files/9592/ces0421_documentation.html). Estimate a model that predicts support for the Liberal party (you'll have to make a dummy variable indicating liberal vote vs vote for another party, first).  Use whatever variables you like.  Then answer the following questions: 
+
+1. Which variables are statistically significant in the model? 
+2. Pick 2 variables and find the first differences using both the First Differences at Reasonable Values and Average First Differences approaches. 
+3. Pick 2 variables and make effects graphs for them, again using both the Reasonable Values and Average Effects approaches.  
+4. What can does your model say about the likelihood of voting for the Liberal Candidate? 
+

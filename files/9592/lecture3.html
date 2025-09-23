@@ -379,11 +379,8 @@ hypotheses(p1, "b3-b6 = b2 -b5",
 
 ```
 ## 
-##         Term Estimate Std. Error    t Pr(&gt;|t|)   S 2.5 % 97.5 % Df
+##   Hypothesis Estimate Std. Error    t Pr(&gt;|t|)   S 2.5 % 97.5 % Df
 ##  b3-b6=b2-b5     20.6       13.5 1.52    0.136 2.9 -6.83   48.1 35
-## 
-## Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high, df 
-## Type:  response
 ```
 
 ]
@@ -473,28 +470,26 @@ Q2: What is the nature of the interaction effect?
 
 ```
 ## 
-##    Term    Contrast type Estimate Std. Error    z Pr(&gt;|z|)    S 2.5 % 97.5 %
-##  income mean(dY/dX) bc      3.134      0.522 6.01  &lt; 0.001 29.0 2.112   4.16
-##  income mean(dY/dX) prof    0.624      0.222 2.82  0.00486  7.7 0.190   1.06
-##  income mean(dY/dX) wc      1.649      0.709 2.33  0.02002  5.6 0.259   3.04
+##  type Estimate Std. Error    z Pr(&gt;|z|)    S 2.5 % 97.5 %
+##  bc      3.134      0.522 6.01  &lt; 0.001 29.0 2.112   4.16
+##  prof    0.624      0.222 2.82  0.00486  7.7 0.190   1.06
+##  wc      1.649      0.709 2.33  0.02002  5.6 0.259   3.04
 ## 
-## Columns: term, contrast, type, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high, predicted_lo, predicted_hi, predicted 
-## Type:  response
+## Term: income
+## Type: response
+## Comparison: dY/dX
 ```
 
 ``` r
-hypotheses(s, hypothesis = "pairwise")
+hypotheses(s, hypothesis = ~pairwise)
 ```
 
 ```
 ## 
-##       Term Estimate Std. Error     z Pr(&gt;|z|)    S  2.5 % 97.5 %
-##  bc - prof     2.51      0.553  4.54   &lt;0.001 17.4  1.426  3.594
-##  bc - wc       1.49      0.872  1.70   0.0885  3.5 -0.224  3.195
-##  prof - wc    -1.02      0.740 -1.38   0.1664  2.6 -2.476  0.426
-## 
-## Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
-## Type:  response
+##   Hypothesis Estimate Std. Error     z Pr(&gt;|z|)    S  2.5 % 97.5 %
+##  (b2) - (b1)    -2.51      0.553 -4.54   &lt;0.001 17.4 -3.594 -1.426
+##  (b3) - (b1)    -1.49      0.872 -1.70   0.0885  3.5 -3.195  0.224
+##  (b3) - (b2)     1.02      0.740  1.38   0.1664  2.6 -0.426  2.476
 ```
 
 
@@ -593,24 +588,24 @@ num3 &lt;- function(x, mult=1){
 p2 &lt;- purrr::map(num3(Prestige$income), \(x)
              avg_predictions(mod, newdata= datagrid(income=x), variables=list(type=unique)))
              
-bind_rows(lapply(p2, \(x)hypotheses(x, hypothesis="pairwise")), .id="income") %&gt;% 
+bind_rows(lapply(p2, \(x)hypotheses(x, hypothesis=~pairwise)), .id="income") %&gt;% 
   as_tibble() %&gt;% 
-  select(income, term, estimate, std.error, conf.low, conf.high)
+  select(income, hypothesis, estimate, std.error, conf.low, conf.high)
 ```
 
 ```
 ## # A tibble: 9 × 6
-##   income    term      estimate std.error conf.low conf.high
-##   &lt;chr&gt;     &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
-## 1 Mean - SD prof - bc    18.8       4.48     9.98     27.5 
-## 2 Mean - SD prof - wc    15.4       3.44     8.68     22.2 
-## 3 Mean - SD bc - wc      -3.35      3.43   -10.1       3.38
-## 4 Mean      prof - bc     8.11      3.55     1.16     15.1 
-## 5 Mean      prof - wc    11.1       2.81     5.55     16.6 
-## 6 Mean      bc - wc       2.96      2.60    -2.14      8.07
-## 7 Mean + SD prof - bc    -2.55      4.01   -10.4       5.32
-## 8 Mean + SD prof - wc     6.72      4.88    -2.84     16.3 
-## 9 Mean + SD bc - wc       9.27      5.40    -1.32     19.9
+##   income    hypothesis  estimate std.error conf.low conf.high
+##   &lt;chr&gt;     &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 Mean - SD (b2) - (b1)    18.8       4.48     9.98     27.5 
+## 2 Mean - SD (b3) - (b1)     3.35      3.43    -3.38     10.1 
+## 3 Mean - SD (b3) - (b2)   -15.4       3.44   -22.2      -8.68
+## 4 Mean      (b2) - (b1)     8.11      3.55     1.16     15.1 
+## 5 Mean      (b3) - (b1)    -2.96      2.60    -8.07      2.14
+## 6 Mean      (b3) - (b2)   -11.1       2.81   -16.6      -5.55
+## 7 Mean + SD (b2) - (b1)    -2.55      4.01   -10.4       5.32
+## 8 Mean + SD (b3) - (b1)    -9.27      5.40   -19.9       1.32
+## 9 Mean + SD (b3) - (b2)    -6.72      4.88   -16.3       2.84
 ```
 
 ---
@@ -861,10 +856,10 @@ The debate, such as it is, in political science is whether or not compression co
 To figure out if there is an interaction, you need to calculate the second difference (or cross-derivative) in the outcome for the two variables in the interaction.  If the two variables are `\(X\)` and `\(Z\)`, you would calculate: s
 
 `$$\begin{aligned}
- \Delta\Delta Pr(Y=1|X,Z) =&amp; (Pr(Y=1|X = \text{high}, Z=\text{low}) \\
-  &amp;- Pr(Y=1|X=\text{low}, Z=\text{low}))\\
-  &amp;- (Pr(Y=1|X = \text{high}, Z=\text{high})\\
-  &amp;+ Pr(Y=1|X=\text{low}, Z=\text{high}))
+ \Delta\Delta Pr(Y=1|X,Z) =&amp; [Pr(Y=1|X = \text{high}, Z=\text{low}) \\
+  &amp;- Pr(Y=1|X=\text{low}, Z=\text{low})]\\
+  &amp;- [Pr(Y=1|X = \text{high}, Z=\text{high})\\
+  &amp;- Pr(Y=1|X=\text{low}, Z=\text{high})]
 \end{aligned}$$`
 
 We'll use R to do this for us below. 
@@ -928,14 +923,50 @@ avg_predictions(mod, variables = list(incgroup_num = c(9,22), lrself=c(3,8)),
 
 ```
 ## 
-##               Term Estimate Std. Error    z Pr(&gt;|z|)    S  2.5 % 97.5 %
+##         Hypothesis Estimate Std. Error    z Pr(&gt;|z|)    S  2.5 % 97.5 %
 ##  (b3-b1)-(b4-b2)=0    0.137     0.0289 4.74   &lt;0.001 18.8 0.0802  0.193
 ## 
-## Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
-## Type:  response
+## Type: response
 ```
 
 Since this is significant (the `\(2.5\%\)` value is greater than zero), it suggests there is a significant interaction between income and left-right self-placement.  
+
+---
+
+## Alternative Specification
+
+
+``` r
+avg_comparisons(mod, 
+                newdata = datagrid(lrself=c(3,8), grid_type = "counterfactual"), 
+                variables = list(incgroup_num = c(9,22)), by="lrself", 
+                hypothesis = ~ pairwise)
+```
+
+```
+## 
+##  Hypothesis Estimate Std. Error     z Pr(&gt;|z|)    S  2.5 %  97.5 %
+##   (8) - (3)   -0.137     0.0289 -4.74   &lt;0.001 18.8 -0.193 -0.0802
+## 
+## Type: response
+```
+
+
+``` r
+avg_comparisons(mod, 
+                newdata = datagrid(lrself=c(3,8), grid_type = "counterfactual"), 
+                variables = list(incgroup_num = c(9,22)), by="lrself", 
+                hypothesis = ~ revpairwise)
+```
+
+```
+## 
+##  Hypothesis Estimate Std. Error    z Pr(&gt;|z|)    S  2.5 % 97.5 %
+##   (3) - (8)    0.137     0.0289 4.74   &lt;0.001 18.8 0.0802  0.193
+## 
+## Type: response
+```
+
 
 ---
 ## Nature of Interaction
@@ -964,7 +995,7 @@ ggplot(pv, aes(x=incgroup_num,
 ```
 ]
 .pull-right[
-&lt;img src="Lecture3_files/figure-html/unnamed-chunk-9-1.png" width="504" /&gt;
+&lt;img src="Lecture3_files/figure-html/unnamed-chunk-11-1.png" width="504" /&gt;
 ]
 
 ---
@@ -993,13 +1024,13 @@ In 2012, Jaroslav Tir and Douglas Stinnett published an article arguing that int
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="libs/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"navigation": {
-"scroll": false
-},
-"highlightStyle": "github",
-"highlightLines": true,
-"countIncrementalSlides": false,
-"ratio": "16:9"
+  "navigation": {
+    "scroll": false
+  },
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));

@@ -1,0 +1,33 @@
+---
+title: 'POLSCI 9592: Assignment 3'
+output: html_document
+date: "2025-09-24"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In 2012, Jaroslav Tir and Douglas Stinnett published an article arguing that international water treaties can reduce the impact of water scarcity on conflict.  You can find the replication data at the [_JPR_ replication archive](https://www.prio.org/JPR/Datasets/)  here's a [link](https://files.prio.org/Journals/JPR/2012/49/1/TirAndStinnett49Replication.zip) directly to the data's zip archive and the data are attached to the assignment in a `.rda` file.
+
+1. In the model 2 of Table 1 (p. 220), they test their theory about hw the "River and Water Variables" affect conflict (`cwmid`).  The The main variables of interest are:  
+- `instcoop`: Level of river treaty institutionalization (0-4 scale)
+- `lnwaterpcmin` - water per capita in the water-poorer country in the dyad. 
+
+The other variables in the model are: 
+- `numbtreaties`: Number of treaties in effect in the dyad. 
+- `anyupdown`: whether the dyad is an upstream-downstream pair.
+- `dyaddem`: dyad democracy score. 
+- `gdpmax`: wealthier dyad member's GDP/capita. 
+- `interdep`: trade interdependence is the ratio of trade bvetween the dyad members rto the total trade they engage with in the world. 
+- `power1`: ratio of stronger to weaker state' militarty capabilities. 
+- `alliance`: whether the pair has a formal alliance. 
+- `contig`: whether the pair is contiguous.
+- `peaceyrs1`, `_spline1`, `_spline2` and `_spline3`: splines to control for time dependence.
+
+What is the effect of the water variables on conflict - Replicate their analysis. 
+
+2. In Model 3 of Table 1, they add an interaction between `lnwaterpcmin` and `instcoop`.  I want you to do the same. 
+  - Evaluate the need for the product term in the model.
+  - Is there evidence of an interaction between the two variables?
+  - Plot the nature of the interaction.  

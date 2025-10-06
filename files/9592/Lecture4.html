@@ -248,6 +248,7 @@ Here, `\(\text{Var}(\varepsilon)\)` identifies the model.  In logit it is `\(\fr
 ``` r
 library(DAMisc)
 load("data/anes_2008_binary.rda")
+dat$race &lt;- rio::factorize(dat$race)
 mod &lt;- glm(voted ~ age + educ + income + poly(leftright, 2) + 
     female + race, data=dat, family=binomial(link="logit"))
 binfit(mod)
@@ -255,14 +256,14 @@ binfit(mod)
 
 ```
 ##                    Names1    vals1                       Names2    vals2
-## 1 Log-Lik Intercept Only: -314.550          Log-Lik Full Model: -250.959
-## 2                 D(576):  501.918                       LR(7):  127.182
+## 1 Log-Lik Intercept Only: -314.550          Log-Lik Full Model: -249.803
+## 2                 D(575):  499.606                       LR(8):  129.495
 ## 3                                                    Prob &gt; LR:    0.000
-## 4          McFadden's R2:    0.202           McFadden's Adk R2:    0.177
-## 5      ML (Cox-Snell) R2:    0.196 Cragg-Uhler (Nagelkerke) R2:    0.297
-## 6  McKelvey &amp; Zavoina R2:    0.345                  Efron's R2:    0.208
-## 7               Count R2:    0.793                Adj Count R2:    0.097
-## 8                    BIC:  552.877                         AIC:  517.918
+## 4          McFadden's R2:    0.206           McFadden's Adk R2:    0.177
+## 5      ML (Cox-Snell) R2:    0.199 Cragg-Uhler (Nagelkerke) R2:    0.302
+## 6  McKelvey &amp; Zavoina R2:    0.357                  Efron's R2:    0.214
+## 7               Count R2:    0.795                Adj Count R2:    0.104
+## 8                    BIC:  556.935                         AIC:  517.606
 ```
 
 ---
@@ -330,16 +331,16 @@ pre(mod, sim=T)
 ## 
 ## Analytical Results
 ##  PMC =  0.771 
-##  PCP =  0.793 
-##  PRE =  0.097 
+##  PCP =  0.795 
+##  PRE =  0.104 
 ## ePMC =  0.646 
-## ePCP =  0.723 
-## ePRE =  0.215 
+## ePCP =  0.724 
+## ePRE =  0.220 
 ## 
 ## Simulated Results
 ##      median lower upper
-##  PRE 0.097  0.052 0.142
-## ePRE 0.210  0.145 0.266
+##  PRE 0.104  0.052 0.157
+## ePRE 0.215  0.152 0.269
 ```
 
 ---
@@ -419,8 +420,8 @@ lrtest(m1, m2)
 ## Model 1: voted ~ age + educ + income + poly(leftright, 2) + female + race
 ## Model 2: voted ~ educ + income + poly(leftright, 2)
 ##   #Df  LogLik Df  Chisq Pr(&gt;Chisq)    
-## 1   8 -250.96                         
-## 2   5 -277.46 -3 52.998  1.835e-11 ***
+## 1   9 -249.80                         
+## 2   5 -277.46 -4 55.311  2.797e-11 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -533,9 +534,9 @@ IC_delta(m1, m2)
 ```
 
 ```
-##     df    D_AIC   D_AICc    D_BIC
-## ..1  4 29.32345 29.28872 24.95354
-## ..2  5  0.00000  0.00000  0.00000
+##     df D_AIC D_AICc D_BIC
+## ..1  5 31.31  31.31 31.31
+## ..2  5  0.00   0.00  0.00
 ```
 
 ``` r
@@ -549,9 +550,9 @@ clarke_test(m1, m2)
 ## Model 1 log-likelihood: -293
 ## Model 2 log-likelihood: -277
 ## Observations: 584
-## Test statistic: 252 (43%)
+## Test statistic: 246 (42%)
 ## 
-## Model 2 is preferred (p = 0.0011)
+## Model 2 is preferred (p = 0.00016)
 ```
 
 ---
@@ -573,19 +574,19 @@ m2 &lt;-  glm(voted ~ educ + income +
            family=binomial(link="logit"))
 
 cv_logit &lt;- function(split, m1, m2, ...){
-  m1_up &lt;- update(m1, data=assessment(split))
-  m2_up &lt;- update(m2, data=assessment(split))
+  m1_up &lt;- update(m1, data=analysis(split))
+  m2_up &lt;- update(m2, data=analysis(split))
   y_out &lt;- model.response(
             model.frame(formula(m1), 
-                        data=analysis(split)))
+                        data=assessment(split)))
   p1 &lt;- predict(m1_up, 
-                newdata=analysis(split), 
+                newdata=assessment(split), 
                 type="response")
   p2 &lt;- predict(m2_up, 
-                newdata=analysis(split), 
+                newdata=assessment(split), 
                 type="response")
-  ll1 &lt;- sum(-y_out*log(p1) - (1-y_out)*(1-log(p1)))
-  ll2 &lt;- sum(-y_out*log(p2) - (1-y_out)*(1-log(p2)))
+  ll1 &lt;- sum(-y_out*log(p1) - (1-y_out)*log(1-p1))
+  ll2 &lt;- sum(-y_out*log(p2) - (1-y_out)*log(1-p2))
   tibble(model = factor(1:2, 
                         labels=c("Model1", "Model2")), 
          ll = c(ll1, ll2))
@@ -612,16 +613,16 @@ cv_out
 ## # Groups:   id [10]
 ##    id       Model1 Model2   diff
 ##    &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-##  1 Repeat01  -593.  -700. -107. 
-##  2 Repeat02  -599.  -707. -108. 
-##  3 Repeat03  -578.  -732. -154. 
-##  4 Repeat04  -606.  -716. -110. 
-##  5 Repeat05  -663.  -709.  -45.4
-##  6 Repeat06  -617.  -738. -120. 
-##  7 Repeat07  -604.  -694.  -89.6
-##  8 Repeat08  -631.  -690.  -58.8
-##  9 Repeat09  -649.  -708.  -58.7
-## 10 Repeat10  -627.  -726.  -99.7
+##  1 Repeat01   293.   283.  -9.83
+##  2 Repeat02   293.   283.  -9.91
+##  3 Repeat03   296.   282. -14.4 
+##  4 Repeat04   294.   285.  -9.44
+##  5 Repeat05   294.   284.  -9.92
+##  6 Repeat06   295.   283. -12.4 
+##  7 Repeat07   294.   283. -11.8 
+##  8 Repeat08   294.   284. -10.3 
+##  9 Repeat09   294.   283. -11.2 
+## 10 Repeat10   297.   286. -11.3
 ```
 ]
 
@@ -710,8 +711,8 @@ anova(m1, mnew, test='Chisq')
 ## Model 2: voted ~ age + educ + income + as.factor(leftright) + female + 
 ##     race
 ##   Resid. Df Resid. Dev Df Deviance Pr(&gt;Chi)  
-## 1       576     501.92                       
-## 2       568     485.68  8   16.236  0.03912 *
+## 1       575     499.61                       
+## 2       567     483.31  8     16.3  0.03828 *
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -909,13 +910,13 @@ pfl(mod3a)
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="libs/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"navigation": {
-"scroll": false
-},
-"highlightStyle": "github",
-"highlightLines": true,
-"countIncrementalSlides": false,
-"ratio": "16:9"
+  "navigation": {
+    "scroll": false
+  },
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));

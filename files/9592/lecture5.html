@@ -177,7 +177,7 @@ The mathematical notation for the above is
 
 `$$y_{i} = m \mbox{  if  } \tau_{m-1} \leq y_{i}^{*} &lt; \tau_{m} \mbox{  for  } m=\{1,\ldots, J\}$$`
 
- where `\(\tau_0 = -\infty\)` and `\(\tau_J = \infty\)`, the other `\(J-1\)` cut-points are estimated.\\[.2in] 
+ where `\(\tau_0 = -\infty\)` and `\(\tau_J = \infty\)`, the other `\(J-1\)` cut-points are estimated.
 
 In addition to above, we also set `\(b_0 = 0\)` so the model works (i.e., is identified). 
 
@@ -225,12 +225,15 @@ Pr(y = 2) &amp;= Pr(y\leq 2) - Pr(y \leq 1)\\
 
 Just like with binary logit models, the likelihood for an individual observation is the probability that the observation takes on its observed value. 
 
-`$$L(\mathbf{b} | \mathbf{x}_{i}) = \Lambda(\tau_{y_i} - Xb) - \Lambda(\tau_{y_i-1} - Xb)$$`
+`$$L(\mathbf{b} | \mathbf{x}_{i}) = \Lambda(\tau_{y_i} - \mathbf{x}_ib) - \Lambda(\tau_{y_i-1} - \mathbf{x}_ib)$$`
 
 
 And the log-likelihood is just: 
 
-`$$\log L(\mathbf{b} | \mathbf{x}_{i}) = \log\left(\Lambda(\tau_{y_i} - Xb) - \Lambda(\tau_{y_i-1} - Xb)\right)$$`
+`$$\log L(\mathbf{b} | \mathbf{x}_{i}) = \log\left(\Lambda(\tau_{y_i} - \mathbf{x}_ib) - \Lambda(\tau_{y_i-1} - \mathbf{x}_ib)\right)$$`
+
+`$$LL = \sum_{i=1}^{N} \log\left(\Lambda(\tau_{y_i} - \mathbf{x}_ib) - \Lambda(\tau_{y_i-1} - \mathbf{x}_ib)\right)$$`
+
 
 ---
 
@@ -269,7 +272,7 @@ summary(mod)
 ## data:    dat
 ## 
 ##  link  threshold nobs logLik   AIC     niter max.grad cond.H 
-##  logit flexible  2550 -2815.96 5651.91 6(0)  4.05e-11 1.9e+06
+##  logit flexible  2550 -2815.96 5651.91 6(0)  4.20e-11 1.9e+06
 ## 
 ## Coefficients:
 ##                   Estimate Std. Error z value Pr(&gt;|z|)    
@@ -309,11 +312,11 @@ Anova(mod)
 ## 
 ## Response: sd_fac
 ##                 Df   Chisq Pr(&gt;Chisq)    
-## cwarcow          1  38.947  4.355e-10 ***
-## iwarcow          1 103.624  &lt; 2.2e-16 ***
-## logpop           1 190.646  &lt; 2.2e-16 ***
-## logpcgnp         1 280.161  &lt; 2.2e-16 ***
-## poly(vanadd, 2)  2 358.783  &lt; 2.2e-16 ***
+## cwarcow          1 345.334  &lt; 2.2e-16 ***
+## iwarcow          1  23.134  1.511e-06 ***
+## logpop           1 246.530  &lt; 2.2e-16 ***
+## logpcgnp         1  97.422  &lt; 2.2e-16 ***
+## poly(vanadd, 2)  2 290.521  &lt; 2.2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -433,13 +436,13 @@ ave_comps %&gt;%
 
 ```
 ## # A tibble: 5 × 7
-##   term     contrast                    `1`    `2`    `3`    `4`    `5`   
-##   &lt;chr&gt;    &lt;chr&gt;                       &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt; 
-## 1 cwarcow  mean(1) - mean(0)           -0.25* -0.20* 0.02   0.21*  0.21* 
-## 2 iwarcow  mean(1) - mean(0)           -0.11* -0.04* 0.06*  0.05*  0.04* 
-## 3 logpcgnp mean(x + sd) - mean(x - sd) 0.15*  0.02*  -0.09* -0.05* -0.03*
-## 4 logpop   mean(x + sd) - mean(x - sd) -0.17* -0.05* 0.11*  0.07*  0.04* 
-## 5 vanadd   mean(x + sd) - mean(x - sd) 0.27*  0.02*  -0.17* -0.07* -0.05*
+##   term     contrast            `1`    `2`    `3`    `4`    `5`   
+##   &lt;chr&gt;    &lt;chr&gt;               &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt; 
+## 1 cwarcow  1 - 0               -0.25* -0.20* 0.02   0.21*  0.21* 
+## 2 iwarcow  1 - 0               -0.11* -0.04* 0.06*  0.05*  0.04* 
+## 3 logpcgnp (x + sd) - (x - sd) 0.15*  0.02*  -0.09* -0.05* -0.03*
+## 4 logpop   (x + sd) - (x - sd) -0.17* -0.05* 0.11*  0.07*  0.04* 
+## 5 vanadd   (x + sd) - (x - sd) 0.27*  0.02*  -0.17* -0.07* -0.05*
 ```
 
 
@@ -771,7 +774,8 @@ ggplot() +
   stat_density(aes(x=brant_stats, colour="Empirical"), geom="line") + 
   stat_function(fun = function(x)dchisq(x, 18), aes(colour="Theoretical"), geom="line") + 
   theme_classic() + 
-  theme(legend.position=c(.85, .85)) + 
+  theme(legend.position="inside", 
+        legend.position.inside = c(.85, .85)) + 
   labs(x="Brant Statistic", y = "Density", colour="")
 ```
 
@@ -830,13 +834,13 @@ If, as above, we reject `\(H_{0}\)` for the Brant Test, we must re-estimate a mo
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="libs/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"navigation": {
-"scroll": false
-},
-"highlightStyle": "github",
-"highlightLines": true,
-"countIncrementalSlides": false,
-"ratio": "16:9"
+  "navigation": {
+    "scroll": false
+  },
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));

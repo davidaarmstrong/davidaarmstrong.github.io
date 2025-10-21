@@ -467,11 +467,11 @@ ave_comps %&gt;%
 ## # A tibble: 5 × 8
 ##   term   contrast                           PCF   PS    Green UDF   `UMP*` FN   
 ##   &lt;chr&gt;  &lt;chr&gt;                              &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;
-## 1 age    mean(x + sd) - mean(x - sd)        0.03* -0.01 -0.0… 0.04* 0.02   -0.00
-## 2 lrself mean(x + sd) - mean(x - sd)        -0.0… -0.6… -0.0… 0.17* 0.44*  0.11*
-## 3 male   mean(1) - mean(0)                  -0.02 0.04  -0.02 0.02  0.00   -0.02
-## 4 retnat mean(worse) - mean(better)         0.03* 0.13* -0.03 -0.0… -0.12* 0.05*
-## 5 union  mean(yes, union member) - mean(no… 0.07* -0.07 0.02  -0.00 -0.00  -0.01
+## 1 age    (x + sd) - (x - sd)                0.03* -0.01 -0.0… 0.04* 0.02   -0.00
+## 2 lrself (x + sd) - (x - sd)                -0.0… -0.6… -0.0… 0.17* 0.44*  0.11*
+## 3 male   1 - 0                              -0.02 0.04  -0.02 0.02  0.00   -0.02
+## 4 retnat worse - better                     0.03* 0.13* -0.03 -0.0… -0.12* 0.05*
+## 5 union  yes, union member - no, not a uni… 0.07* -0.07 0.02  -0.00 -0.00  -0.01
 ```
 
 
@@ -913,10 +913,10 @@ fd %&gt;%
 ##   party  mean   lwr   upr  pval
 ##   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
 ## 1 PS    -0.58 -0.66 -0.5      0
-## 2 FN     0.39  0.26  0.53     0
-## 3 Green -0.07 -0.1  -0.04     0
-## 4 PCF   -0.1  -0.16 -0.05     0
-## 5 UDF    0.09  0.05  0.14     0
+## 2 FN     0.39  0.26  0.54     0
+## 3 Green -0.07 -0.11 -0.04     0
+## 4 PCF   -0.1  -0.17 -0.05     0
+## 5 UDF    0.09  0.05  0.15     0
 ## 6 UMP*   0.27  0.18  0.37     0
 ```
 ]
@@ -973,11 +973,11 @@ fd_ame %&gt;%
 ## # A tibble: 6 × 5
 ##   party     p   lwr   upr  pval
 ##   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 PS    -0.46 -0.5  -0.43     0
-## 2 FN     0.27  0.22  0.32     0
+## 1 PS    -0.46 -0.49 -0.42     0
+## 2 FN     0.27  0.22  0.31     0
 ## 3 Green -0.08 -0.1  -0.06     0
 ## 4 PCF   -0.1  -0.13 -0.07     0
-## 5 UDF    0.08  0.06  0.1      0
+## 5 UDF    0.08  0.07  0.09     0
 ## 6 UMP*   0.29  0.26  0.32     0
 ```
 ]
@@ -1109,13 +1109,13 @@ Since Anderson and Stephenson used CES data, we can replicate their work.  We wo
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="libs/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"navigation": {
-"scroll": false
-},
-"highlightStyle": "github",
-"highlightLines": true,
-"countIncrementalSlides": false,
-"ratio": "16:9"
+  "navigation": {
+    "scroll": false
+  },
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));

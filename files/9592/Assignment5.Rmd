@@ -1,0 +1,33 @@
+---
+title: "Assignment 5"
+author: "Your Name"
+date: "2025-10-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The data you'll use for this assignment come from a French election survey leading up to the 2012 election.  In this election, the Socialists would go on to win the Presidency from the center-right UMP party.  Use satisfaction with democracy `demsat` as the dependent variable. The variables in the dataset are as follows: 
+
+- `vote`  Party of vote
+- `votenum`  Party number of chosen party
+- `male`  R gender (0=female, 1=male)
+- `age`  Age of R
+- `urban`  size of city in which R lives
+- `soclass`  Subjective social class
+- `hhincome`  Household income (in francs/month)
+- `union`  Member of a union
+- `retnat`  Retrospective national economic evaluations
+- `demsat`  satisfaction with the functioning of democracy
+- `eusup`  Good choice for France to belong to EU
+- `lrself` position on left-right scale (0-10)
+
+The attached data are in Stata format, so you'll need to import them, for example, using the `rio` or the `haven` package. 
+
+1. Choose some variables as independent variables and estimate an ordered logit model of `demsat` using your chosen independent variables.
+    - How does the model fit?
+    - Choose two variables in the model and present their effects. 
+2. Does this model meet the assumptions of the ordered logit model (particularly, the parallel regressions assumption)?
+

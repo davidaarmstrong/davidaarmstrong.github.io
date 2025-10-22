@@ -1,0 +1,42 @@
+---
+title: "Assignment 6"
+author: "Your Name"
+date: "2025-10-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Anderson and Stephenson used CES data to examine whether environmental attitudes are best understood as positional or valence issues.   They say, 
+
+> We expect that, if the issue is positional, we should see clear differentiation between the parties based on the left-right ideological split. If the environment is a valence issue, however, then we expect to find that environmental support has the greatest effect on the party perceived as best able to govern on 
+
+We can use the Canadian Election Study to replicate their work.  
+
+- `year_int` - Year of Study
+- `party_id` - Partisan identification
+- `best_envir` - Party the respondent thinks is best on the environment
+- `lrself` - Respondent left-right self-placement
+- `rp_lib` - Respondent placement of the Liberal party
+- `rp_con` - Respondent placement of the Conservative party
+- `rp_ndp` - Respondent placement of the NDP
+- `rp_bq` - Respondent placement of the BQ
+- `female` - Gender dummy variable
+- `yob` - Respondent year of birth
+- `income` - Household income
+- `educ` - Education
+- `union` - Union membership
+- `region` - Region of residence
+- `religion` - Religious affiliation
+- `egoret` - Retrospective economic evaluation
+- `envir_spen` - How should spending on the environment change. 
+- `envir_jobs` - Protecting the environment is more important than creating jobs. 
+- `vote` - Vote choice 
+- `ethnicity` - Ethnicity
+- `univgrad` - University graduate 
+- `catholic` - Catholic 
+- `care_env` - Dummy variable coded as 1 if the respondent thinks environment spending should be increased and either agreed or strongly agreed that protecting the environment is more important than creating jobs.
+
+Using `vote` as the dependent variable, how would you estimate these models?  What do you find?

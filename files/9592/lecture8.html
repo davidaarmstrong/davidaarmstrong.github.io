@@ -384,9 +384,8 @@ car::linearHypothesis(mod,
 ```
 
 ```
-## Linear hypothesis test
 ## 
-## Hypothesis:
+## Linear hypothesis test:
 ## x  + tpb(x,1, knot_loc = 60) = 0
 ## 
 ## Model 1: restricted model
@@ -563,72 +562,12 @@ term.plot(mod)
 &lt;img src="lecture8_files/figure-html/unnamed-chunk-15-1.png" width="432" height="75%" style="display: block; margin: auto;" /&gt;
 ]
 
-
 ---
 
-## Replicating Ourselves
+## Democracy and Repression
 
-Let's do some of the same things we've done already in this framework: 
+We can use GAMLSS to estimate the relationship between democracy and repression - trying out different kinds of relationships. 
 
-1. Modeling non-linearity in the Jacobson Data. 
-2. Monotone smoothing of democracy and vote choice. 
-
----
-
-## Jacobson Data 
-
-
-``` r
-library(gamlss)
-library(car)
-dat &lt;- import("data/jacob.dta")
-
-gmod &lt;- gamlss(chal_vote ~ pb(perotvote) + pb(chal_spend) + 
-    exp_chal, data=dat)
-
-invx &lt;- function(x)(1/x)
-spline.mod &lt;- gamlss(chal_vote ~ invx(perotvote) + 
-                   bs(chal_spend, df=4) + 
-                   exp_chal, data=dat)
-
-tp &lt;- termplot(gmod, se=TRUE, plot=FALSE)
-tp2 &lt;- termplot(spline.mod, se=TRUE, plot=FALSE)
-tp_pv &lt;- bind_rows(tp[[1]], tp2[[1]])
-tp_pv$model &lt;- factor(rep(1:2, each=nrow(tp[[1]])), 
-                      labels=c("GAMLSS", "OLS Spline"))
-tp_cs &lt;- bind_rows(tp[[2]], tp2[[2]])
-tp_cs$model &lt;- factor(rep(1:2, each=nrow(tp[[2]])), 
-                      labels=c("GAMLSS", "OLS Spline"))
-```
-
----
-
-## plots
-
-.pull-left[
-&lt;img src="lecture8_files/figure-html/unnamed-chunk-17-1.png" width="90%" style="display: block; margin: auto;" /&gt;
-]
-.pull-right[
-&lt;img src="lecture8_files/figure-html/unnamed-chunk-18-1.png" width="90%" style="display: block; margin: auto;" /&gt;
-]
-
----
-
-## Testing the models
-
-We can use the Clarke test to evaluate the difference between the two models. 
-
-
-``` r
-VC.test(gmod, spline.mod)
-```
-
-```
-##  Vuong's test: -2.475 model spline.mod is preferred over gmod 
-## Clarke's test: 95 p-value= 0 spline.mod is preferred over gmod
-```
-
-In this case, the spline model is better - generally similar parametric models will be preferred to non-parametric models. 
 
 ---
 
@@ -735,11 +674,11 @@ VC.test(unrestricted.mod2, mono.mod2)
 ## Plots
 
 .pull-left[
-&lt;img src="lecture8_files/figure-html/unnamed-chunk-23-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-19-1.png" width="90%" style="display: block; margin: auto;" /&gt;
 ]
 
 .pull-right[
-&lt;img src="lecture8_files/figure-html/unnamed-chunk-24-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-20-1.png" width="90%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -757,8 +696,8 @@ cen_moddat &lt;- do.call(data.frame, cen_moddat)
 registerDoParallel(cores = 10)
 B1 &lt;- BayesianBoot(mono.mod1, B=100, newdata=cen_moddat)
 stopImplicitCluster()
-post_sum &lt;- t(apply(B1$par$mu, 1, \(x)c(mean(x), quantile(x, c(.025,.975)))))
-colnames(post_sum) &lt;- c("fit", "lwr", "upr")
+post_sum &lt;- t(apply(B1$par$mu, 1, \(x)c(mean(x), sd(x), quantile(x, c(.025,.975)))))
+colnames(post_sum) &lt;- c("fit", "sd", "lwr", "upr")
 
 cen_moddat &lt;- cbind(cen_moddat, post_sum)
 ```
@@ -776,7 +715,7 @@ ggplot(cen_moddat,
 
 ]
 .pull-right[
-&lt;img src="lecture8_files/figure-html/unnamed-chunk-27-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-23-1.png" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -810,9 +749,9 @@ out
 ## # A tibble: 3 × 4
 ##   condition      fit    lwr    upr
 ##   &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-## 1 Polity = 0   0.233  0.189  0.276
-## 2 Polity = 10 -1.70  -1.82  -1.59 
-## 3 Difference  -1.93  -2.06  -1.80
+## 1 Polity = 0   0.235  0.188  0.278
+## 2 Polity = 10 -1.68  -1.80  -1.58 
+## 3 Difference  -1.92  -2.02  -1.81
 ```
 
 
@@ -919,7 +858,7 @@ plot(i1)
 ## Baseline group not specified; choose treat = 0 as the baseline group.
 ```
 
-&lt;img src="lecture8_files/figure-html/unnamed-chunk-29-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-25-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -947,7 +886,7 @@ plot(i2)
 ## Baseline group not specified; choose treat = 0 as the baseline group.
 ```
 
-&lt;img src="lecture8_files/figure-html/unnamed-chunk-30-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-26-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 ]
 
 
@@ -1010,7 +949,7 @@ plot(b1)
 ```
 ]
 .right-plot-shift2[
-&lt;img src="lecture8_files/figure-html/unnamed-chunk-31-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-27-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 ]
 
 
@@ -1031,7 +970,7 @@ plot(b2)
 ```
 ]
 .right-plot-shift2[
-&lt;img src="lecture8_files/figure-html/unnamed-chunk-32-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-28-1.png" width="75%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -1053,7 +992,7 @@ We can then use a Wald test (i.e., F-test) to test whether all of the `\(\theta_
 
 
 ``` r
-data(Prestige)
+data(Prestige, package="carData")
 interflex("raw", Prestige, "prestige", "income", "education", ncols=3)
 ```
 
@@ -1097,20 +1036,20 @@ pres.b$tests
 ## $formula.restrict
 ## prestige ~ education + income + DX + women + Dummy.Covariate.1 + 
 ##     Dummy.Covariate.2
-## &lt;environment: 0x13facf1b0&gt;
+## &lt;environment: 0x115498368&gt;
 ## 
 ## $formula.full
 ## prestige ~ education + income + DX + G.2 + G.2.X + DG.2 + DG.2.X + 
 ##     G.3 + G.3.X + DG.3 + DG.3.X + women + Dummy.Covariate.1 + 
 ##     Dummy.Covariate.2
-## &lt;environment: 0x13facf1b0&gt;
+## &lt;environment: 0x115498368&gt;
 ## 
 ## $sub.test
 ## NULL
 ```
 ]
 .right-plot-shift2[
-&lt;img src="lecture8_files/figure-html/unnamed-chunk-34-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-30-1.png" width="75%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -1235,7 +1174,7 @@ ggplot(fake.dat, aes(x=X2, y=diff,
 ```
 ]
 .right-plot-shift2[
-&lt;img src="lecture8_files/figure-html/unnamed-chunk-36-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+&lt;img src="lecture8_files/figure-html/unnamed-chunk-32-1.png" width="75%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -1333,7 +1272,7 @@ plot_ly() %&gt;%
 
 ## Exercise
 
-Using the Fearon and Laitin data, estimate the baseline model below and then estimate the model in the GAMLSS framework with penalized splines on the continuous variables.  How robust are the relationships to these changes?
+Using the Fearon and Laitin data, estimate the baseline model below and then estimate the model in the GAMLSS framework with penalized splines on the continuous variables.  How do the relationships change relative to the parametric model?
 
 
 ``` r
@@ -1349,13 +1288,13 @@ bmod &lt;- glm(onset ~ warl + gdpenl + lpopl1 +
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="libs/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"navigation": {
-"scroll": false
-},
-"highlightStyle": "github",
-"highlightLines": true,
-"countIncrementalSlides": false,
-"ratio": "16:9"
+  "navigation": {
+    "scroll": false
+  },
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));

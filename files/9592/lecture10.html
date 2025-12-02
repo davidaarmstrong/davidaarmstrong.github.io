@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9592</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9592
+]
+.subtitle[
+## Lecture 10: Missing Data and Multiple Imputation
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+
+.tiny {
+  font-size: 1rem;
+}
+&lt;/style&gt;
+
+  
+## Goals for This Session
+
+1. Why are missing data problematic?
+2. What methods can we use to deal with missing data and what are their implications? 
+3. How do we know if our imputation "worked"?
+4. Example
+
+---
+# Why Care about Missing Data?
+
+
+- Can cause bias, if missingness is systematic.
+
+- Can reduce sample size to a point where reliable inferences are difficult to make, even if missingness is not systematic.
+
+- Systematic missingness can truncate the sample calling into question the generalizability of results.
+
+
+---
+
+# Consequences for Data Analysis
+
+The effects on data analysis are the ones most commonly acknowledged by the literature on missing data.
+
+
+- Missing data, at a minimum, can pose problems for statistical power (i.e., sample size).
+
+- Statistical procedures also make assumptions about distributions (i.e., error distributions).  Missing data can make some of these assumptions less likely to hold, especially if the missingness is not random.
+
+- Missing data can also, as previously stated, reduce reliability, which reduces effect size, which in turn reduces statistical power.
+
+
+
+---
+
+# Consequences for Validity
+
+Internal validity can be defined as - the extent to which a researcher can reasonably claim that a particular factor, usually an intervention of some sort, is responsible for the observed outcome.   Confounders and alternative explanations are threats to internal validity. *Selection bias* is an example:
+
+
+- There can be systematic differences between responders and non-responders in experiments/surveys.  These differences could be responsible for the outcome rather than the variable of interest.
+
+Missing data can lead to a more homogeneous sample that is not representative of the population which can cause all sorts of problems for generalizability.
+
+- The same can be true of missingness on particular variables.
+
+
+
+---
+
+# Rubin's Classification Scheme
+
+Rubin suggested three types of missing data - missing completely at random (MCAR), missing at random (MAR) and missing not at random (MNAR).  This classification scheme is based on:
+
+- The variables with the missing data,
+- Associated variables (i.e., covariates), and
+- a hypothetical mechanism underlying the missingness.
+
+
+
+---
+# Background on Rubin's Classification
+
+
+- Refer to `\(\mathbf{R}\)` as the matrix of dummy variables that mirrors the data matrix where 1 indicates missing and 0 indicates non-missing.
+
+- Refer to `\(\mathbf{Y}\)` as the data matrix - the matrix of variables for all observations.  Where `\(\mathbf{Y}_{obs}\)` refers to the observed (i.e., non-missing) values and `\(\mathbf{Y}_{miss}\)` as the missing values.
+
+- `\(\phi\)` is the relationship of the observed variable matrices `\(\mathbf{Y}_{obs}\)` and `\(\mathbf{Y}_{miss}\)` to the dummy variable matrix `\(\mathbf{R}\)`.  `\(\phi\)` is probabilistic (i.e., theoretical) here because we don't know the values of `\(\mathbf{Y}_{miss}\)` and thus can never calculate `\(\phi\)`.
+
+- `\(\phi\)` is the operative piece of information in Rubin's classification scheme.
+
+
+
+---
+
+# Classification of Missing Data Mechanisms
+
+
+- If `\(\phi = \mathbf{0}\)` (i.e., there is no relationship between `\(\mathbf{R}\)` and `\(\mathbf{Y}_{obs}\)`, and no relationship between `\(\mathbf{R}\)` and `\(\mathbf{Y}_{miss}\)`), then the data are MCAR.   Here, randomness is the mechanism that generated the missing data.
+
+- Data are MAR if there is a relationship between `\(\mathbf{R}\)` and `\(\mathbf{Y}_{obs}\)`, but there is no relationship between `\(\mathbf{R}\)` and `\(\mathbf{Y}_{miss}\)`.
+
+- Data are NMAR if there is a relationship between `\(\mathbf{R}\)` and `\(\mathbf{Y}_{miss}\)`.  The relationship between `\(\mathbf{R}\)` and `\(\mathbf{Y}_{obs}\)` is irrelevant here - it may or may not exist.  Note, that this is an impossible distinction for us to make with data.
+
+
+"Ignorability" is a property of MAR and MCAR data.  Here, the mechanism is ignorable if we can reasonably recover that information from other observable data.
+
+---
+
+# Dealing with Missing Data
+
+Two ways of dealing with missing data:
+
+
+- Listwise Deletion
+- Imputation
+  - Mean imputation
+  - Regression Imputation
+  - Hot-decking
+  - Multiple Imputation
+
+---
+
+# Listwise Deletion
+
+Listwise deletion involves deleting all observations that have at least one missing data point.  Conventional view is: 
+
+- In the best-case scenario, listwise deletion causes inefficiency.
+- In the worst-case scenario, listwise deletion causes bias and inefficiency.
+
+
+Often times, omitting variables with missing data can be preferable to listwise deletion in MSE terms (though other methods talked about later are better)
+
+
+---
+
+# Mean Imputation
+
+Both mean and regression imputation are trying to impute a "best guess" for missing data.  
+Mean imputation imputes the unconditional mean of the variable for every missing observation.
+
+- Mean imputation reduces variability in the offending `\(X\)` variable.
+- As a result, coefficient estimates will be biased (generally toward 0).
+- The variance of the coefficients will also be underestimated.
+
+
+
+
+---
+
+# Regression Imputation
+
+In regression imputation, the complete cases are used to estimate a regression model and predictions from that model are used as imputations. 
+
+That is, we are imputing each observation with it's *conditional mean*.
+
+- Impractical/impossible with complicated patterns of missing data.
+- Does a reasonably good job of recovering unbiased estimates of parameters in a wide range of situations.
+- Drastically underestimates variability in the parameters leading to overconfidence.
+
+---
+
+# Multiple Imputation
+
+MI has a similar flavor to regression imputation, but has more appealing properties.  Multiple imputation proceeds as follows:
+- Fill in starting values for all observations (random, mean, etc...)
+- Predict `\(X_{1}\)` using all other variables in estimation model (including `\(y\)`) and fill in the missing observations on `\(X_{1}\)` with a draw from the posterior (i.e., sampling distribution) of `\(\hat{X}_{1}\)`.
+- Using the previously predicted values for `\(X_{1}\)`, move to `\(X_{2}\)` and predict its values using all other variables.  Fill in the missing values on `\(X_{2}\)` with a draw from the posterior of  `\(\hat{X}_{2}\)`.
+- Move through all the variables similarly and then start over again using the conditionally imputed values from before as starting values.
+- Repeat until convergence.
+
+
+
+---
+
+# More MI
+
+
+- With multiple imputation, we impute `\(m \geq 2\)` and usually between 5 and 50 complete datasets.
+- We combine the estimates using the following set of equations:
+`$$\begin{aligned}
+\bar{Q} &amp;= \frac{1}{m}\sum_{t=1}^{m} \hat{Q}^{(t)}\\
+\bar{U} &amp;= \frac{1}{m}\sum_{t=1}^{m} U^{(t)}\\
+B &amp;= \frac{1}{m-1}\sum_{t=1}^{m} \left(\hat{Q}^{(t)} -\bar{Q}\right)\left(\hat{Q}^{(t)} -\bar{Q}\right)^{\prime}\\
+T &amp;= \bar{U} + \left(1 + \frac{1}{m}\right)B
+\end{aligned}$$`
+
+
+
+---
+
+# Sampling Distribution of Q-bar
+
+The distribution of the test statistic is harder than you might think to derive.  If we assume that proportion of missing information for every variable is the same, then, we can say:
+
+`$$\begin{aligned}
+\tilde T &amp;= \left(1-r_{1}\right)\bar{U}\\
+r_{1} &amp;= \left(1+\frac{1}{m}\right)\frac{tr\left(B\bar{U}^{-1}\right)}{k}
+\end{aligned}$$`
+
+---
+
+# Sampling Distribution of Q-bar (2)
+
+The test-statistic can be calculated against the null `\(Q_{0}\)` as:
+
+`$$D_{1} = \frac{\left(\bar{Q}-Q_{0}\right)^{\prime}\tilde T^{-1}\left(\bar{Q}-Q_{0}\right)}{k}$$`
+
+with a p-value of `\(P\left(F_{k,\nu_{1}} \geq D_{1}\right)\)` where:
+
+`$$\nu_{1} = 4 + (t-4)\left[1 + \left(1-t2^{-1}\right)r_{1}^{-1}\right]^{2}$$`
+
+
+
+&lt;!-- --- --&gt;
+
+&lt;!-- # More on the Sampling Distribution --&gt;
+
+
+&lt;!-- - This assumes that the percentage of missing information for each coefficient is the same. --&gt;
+
+
+&lt;!-- - Simulation studies show that the results are relatively robust to deviations from this assumption. --&gt;
+
+&lt;!-- - Deviations generally result in conservative p-values. --&gt;
+
+
+&lt;!-- - This also assumes that a `\(\chi^{2}\)` approximation for testing a single point estimate is correct (see Schafer 1997, Chapter 4, for a discussion) --&gt;
+
+---
+
+# Development of MI Algorithms
+
+
+- Initially, MI software used a multivariate normal approximation to impute the missing values.
+  - This has been shown to work relatively well even if normality is the wrong theoretical model (e.g., when trying to impute dummy variables).
+  - If using software that does this, you should transform variables to be theoretically unbounded and recode ordinal variables to include approximately cardinal information.
+  - Gary King and others' Amelia II uses this approximation.
+- Other methods (e.g., MICE) respect the level of measurement of the missing variables and use different regression techniques to impute the values.
+  - Transformations are still appropriate here because the underlying model for continuous data is still linear.
+  - No need to recode ordinal data.
+  - `mice` in R uses this technique.
+	
+---
+
+# Some other Advice
+
+- All variables (including `\(y\)`) that are in your analysis model should be in the imputation model (otherwise, potential bias results).
+  - In fact, Pepinsky as well as Arel-Bundock and Pelc suggest that imputation helps most when `\(y\)` has some missingness. 
+  - Extra variables can be included in the imputation model if they are relevant but recent results show this doesn't increase efficiency as much as we might expect. 
+  - Also needs to include non-linear trends if they exist (e.g., polynomials).
+- The conventional advice is that somewhere in the neighborhood of 5-10 complete datasets are sufficient to generate the result.
+  - You might be better off with somewhere around 100.  
+
+
+---
+
+# New Work on LWD
+
+Arel-Bundock and Pelc (2018, *PA*) argue that: 
+
+- LWD does not cause bias 
+  - if data are MCAR **or**
+  - if missingness is unrelated to the DV **or** 
+  - the missingness is related to observable covariates. 
+- MI only reduces bias when 
+  - data are MAR **and**
+  - the MI model assumptions hold **and** 
+  - the missingness is on the DV. 
+- In other cases, data are NI and neither LWD nor MI are guaranteed to reduce bias. 
+
+---
+
+# Pepinsky
+
+
+Pepinsky (2018, *PA*) shows: 
+
+&lt;img src="images/pepinsky.png" width="620" height="40%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Best Practices (A-B &amp; P)
+
+- Define the population of interest.
+- Report the share of missing values for each variable and descriptive statistics for both complete and incomplete cases. Do fully observed units differ systematically from partially observed ones?
+- Theorize the missingness mechanism. Is the pattern of missingness driven by (a) pure chance, (b) factors unrelated to the variables of interest, (c) values of the independentvariables, (d) values of the dependent variable, or (e) unobservable factors? 
+  - Under (a), (b),and (c), LWD can be used without fear that it will introduce bias in regression estimates.
+  - Under (d), MI can sometimes reduce bias, but it only offers guarantees if data are MAR and the imputation model’s assumptions are satisfied. 
+  - Under (e) data are NMAR and neither LWD nor MI promise unbiased estimates.
+
+---
+
+# Best Practices 2 (A-B &amp; P)
+
+- Check for divergence between LWD and MI results. If estimates do diverge, which "new" observations have a strong influence on the results? Are these observations theoretically distinct?
+- Robustness checks. Do alternative imputation procedures or tuning parameters produce different results? Does the imputation model have good predictive power? Does it fill in reasonable values for missing observations? 
+
+
+---
+# Methods for imputation in MICE
+
+There are many different ways of imputing missing data.
+- The default method for numerical data is Predictive Mean Matching (`pmm`).
+- There are a suite of GLM methods (`norm`, `logreg`, `polr`, `polyreg`)
+- There are machine learning approaches, `cart` and `rf`.
+- The `{ImputeRobust}` package in R has a number of `gamlss` imputation models that can be plugged into `mice`. 
+
+---
+
+# MD Pattern
+
+.left-code[
+
+``` r
+library(rio)
+library(mice)
+library(dplyr)
+poetate &lt;- rio::import("data/poetate.dta")
+poetate &lt;- poetate %&gt;% 
+  select(IDORIGIN, 
+         YEAR, AI, POLRT, LPOP, PCGNP, LEFT, 
+          MIL2, BRIT, CWARCOW, IWARCOW2) %&gt;% 
+  mutate(LEFT = as.factor(LEFT), 
+         MIL2 = as.factor(MIL2), 
+         BRIT = as.factor(BRIT), 
+         CWARCOW = as.factor(CWARCOW), 
+         IWARCOW2 = as.factor(IWARCOW2))
+
+md.pattern(poetate, rotate.names=TRUE)
+```
+]
+.right-plot-shift[
+&lt;img src="lecture10_files/figure-html/unnamed-chunk-3-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Missing DV Related to Observed Stuff?
+
+
+
+
+``` r
+mi_diag_plot(AI ~ POLRT + LPOP + PCGNP + LEFT + MIL2 + BRIT + CWARCOW + IWARCOW2, data=poetate, nrow=2)
+```
+
+&lt;img src="lecture10_files/figure-html/unnamed-chunk-5-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Some Useful Diagnostics
+
+**Inbound Statistic** - Proportion of usable cases for imputing `\(Y_j\)` from `\(Y_k\)`: 
+
+`$$I_{jk} = \frac{\sum_{i=1}^{N}(1-r_{ij})r_{ik}}{\sum_{i=1}^{n}1-r_{ij}}$$`
+where `\(r_{ij} = 1\)` if observation `\(i\)` has an observed value on variable `\(Y_{j}\)` and 0 otherwise. 
+
+**Outbound Statistic** - Evaluate whether `\(Y_j\)` could be a potential predictor of `\(Y_k\)`
+
+`$$O_{jk} = \frac{\sum_{i=1}^{N}r_{ij}(1-r_{ik})}{\sum_{i=1}^{n}r_{ij}}$$`
+
+---
+
+# In R
+
+
+``` r
+pats &lt;- md.pairs(poetate)
+inbound &lt;- pats$mr/(pats$mr+pats$mm)
+round(na.omit(inbound), 3)
+```
+
+```
+##          IDORIGIN YEAR    AI POLRT  LPOP PCGNP  LEFT  MIL2  BRIT CWARCOW
+## AI              1    1 0.000 0.642 0.917 0.660 0.631 0.644 0.728   0.621
+## POLRT           1    1 0.005 0.000 0.775 0.170 0.008 0.008 0.241   0.005
+## LPOP            1    1 0.235 0.252 0.000 0.017 0.261 0.235 0.539   0.252
+## PCGNP           1    1 0.185 0.284 0.745 0.000 0.271 0.282 0.472   0.244
+## LEFT            1    1 0.003 0.036 0.784 0.178 0.000 0.036 0.262   0.020
+## MIL2            1    1 0.010 0.008 0.770 0.168 0.008 0.000 0.241   0.008
+## BRIT            1    1 0.003 0.000 0.817 0.193 0.000 0.000 0.000   0.000
+## CWARCOW         1    1 0.012 0.066 0.789 0.177 0.054 0.069 0.287   0.000
+## IWARCOW2        1    1 0.005 0.003 0.776 0.171 0.003 0.003 0.237   0.000
+##          IWARCOW2
+## AI          0.644
+## POLRT       0.008
+## LPOP        0.261
+## PCGNP       0.289
+## LEFT        0.036
+## MIL2        0.008
+## BRIT        0.000
+## CWARCOW     0.066
+## IWARCOW2    0.000
+## attr(,"na.action")
+## IDORIGIN     YEAR 
+##        1        2 
+## attr(,"class")
+## [1] "omit"
+```
+---
+
+# Outbound
+
+
+``` r
+outbound &lt;- pats$rm/(pats$rm+pats$rr)
+round(outbound, 3)
+```
+
+```
+##          IDORIGIN YEAR    AI POLRT  LPOP PCGNP  LEFT  MIL2  BRIT CWARCOW
+## IDORIGIN        0    0 0.329 0.119 0.036 0.137 0.122 0.119 0.090   0.126
+## YEAR            0    0 0.329 0.119 0.036 0.137 0.122 0.119 0.090   0.126
+## AI              0    0 0.000 0.001 0.012 0.038 0.000 0.002 0.000   0.002
+## POLRT           0    0 0.240 0.000 0.010 0.044 0.005 0.001 0.000   0.010
+## LPOP            0    0 0.313 0.095 0.000 0.106 0.099 0.095 0.076   0.103
+## PCGNP           0    0 0.252 0.023 0.001 0.000 0.025 0.023 0.020   0.026
+## LEFT            0    0 0.236 0.001 0.011 0.042 0.000 0.001 0.000   0.008
+## MIL2            0    0 0.240 0.001 0.010 0.044 0.005 0.000 0.000   0.010
+## BRIT            0    0 0.263 0.031 0.021 0.071 0.035 0.031 0.000   0.040
+## CWARCOW         0    0 0.234 0.001 0.010 0.038 0.003 0.001 0.000   0.000
+## IWARCOW2        0    0 0.240 0.001 0.011 0.045 0.005 0.001 0.000   0.010
+##          IWARCOW2
+## IDORIGIN    0.118
+## YEAR        0.118
+## AI          0.001
+## POLRT       0.000
+## LPOP        0.095
+## PCGNP       0.023
+## LEFT        0.000
+## MIL2        0.000
+## BRIT        0.031
+## CWARCOW     0.000
+## IWARCOW2    0.000
+```
+
+---
+
+# More Statistics
+
+**Influx** - similar to the inbound statistic, but summed over all variables. 
+
+`$$I_{j} = \frac{\sum_{j=1}^{p}\sum_{k=1}^{p}\sum_{i=1}^{n} (1-r_{ij})r_{ik}}{\sum_{k=1}^{p}\sum_{i=1}^{n}r_{ik}}$$`
+
+**Outflux** - potential usefulness for imputing other variables.
+
+`$$O_{j} = \frac{\sum_{j=1}^{p}\sum_{k=1}^{p}\sum_{i=1}^{n} r_{ij}(1-r_{ik})}{\sum_{k=1}^{p}\sum_{i=1}^{n}1-r_{ij}}$$`
+---
+
+# More Statistics 
+
+**FICO** - Potential gain in efficiency from using MI over complete case analysis. 
+
+`$$F_{j} = \frac{\sum_{i=1}^{n} r_{ij}c_{i}}{\sum_{i=1}^{n} r_{ij}}$$`
+
+where `\(c_{i}\)` is 1 if observation `\(i\)` has complete data an 0 otherwise. 
+
+
+``` r
+round(flux(poetate), 3)
+```
+
+```
+##           pobs influx outflux  ainb  aout  fico
+## IDORIGIN 1.000  0.000   1.000 0.000 0.120 0.356
+## YEAR     1.000  0.000   1.000 0.000 0.120 0.356
+## AI       0.671  0.251   0.032 0.749 0.006 0.040
+## POLRT    0.881  0.039   0.229 0.322 0.031 0.270
+## LPOP     0.964  0.015   0.793 0.405 0.098 0.332
+## PCGNP    0.863  0.067   0.284 0.477 0.039 0.254
+## LEFT     0.878  0.042   0.220 0.335 0.030 0.267
+## MIL2     0.881  0.039   0.229 0.322 0.031 0.270
+## BRIT     0.910  0.028   0.399 0.301 0.052 0.293
+## CWARCOW  0.874  0.045   0.210 0.352 0.029 0.263
+## IWARCOW2 0.882  0.038   0.230 0.320 0.031 0.270
+```
+
+---
+
+# Imputation
+
+
+``` r
+pt.mice &lt;- mice(poetate, printFlag=F, m=5, maxit=20)
+```
+
+
+``` r
+summary(pt.mice)
+```
+
+```
+## Class: mids
+## Number of multiple imputations:  5 
+## Imputation methods:
+## IDORIGIN     YEAR       AI    POLRT     LPOP    PCGNP     LEFT     MIL2 
+##       ""       ""    "pmm"    "pmm"    "pmm"    "pmm" "logreg" "logreg" 
+##     BRIT  CWARCOW IWARCOW2 
+## "logreg" "logreg" "logreg" 
+## PredictorMatrix:
+##          IDORIGIN YEAR AI POLRT LPOP PCGNP LEFT MIL2 BRIT CWARCOW IWARCOW2
+## IDORIGIN        0    1  1     1    1     1    1    1    1       1        1
+## YEAR            1    0  1     1    1     1    1    1    1       1        1
+## AI              1    1  0     1    1     1    1    1    1       1        1
+## POLRT           1    1  1     0    1     1    1    1    1       1        1
+## LPOP            1    1  1     1    0     1    1    1    1       1        1
+## PCGNP           1    1  1     1    1     0    1    1    1       1        1
+```
+
+---
+
+# Diagnostic - Density
+
+
+``` r
+densityplot(pt.mice, layout = c(4,1))
+```
+
+&lt;img src="lecture10_files/figure-html/unnamed-chunk-12-1.png" width="100%" /&gt;
+
+When the distributions don't match, could be because: 
+- imputation model is a bad fit
+- missing data mechanism is not MCAR
+- both
+
+---
+
+# Attempt 2
+
+We could try logging `PCGNP` and greating, for the purposes of imputation, `AI` as a factor. 
+
+
+``` r
+poetate &lt;- poetate %&gt;% 
+  mutate(loggnp = log(PCGNP), 
+         AI = as.factor(AI))
+```
+
+Before we impute, we need to recognize that `loggnp` and `PCGNP` are deterministically related.  So we have to 
+
+- turn off the relationships between `PCGNP` and the other variables in the imputation model.
+
+- use passive imputation for `PCGNP` 
+
+---
+
+# Mice Control
+
+Turn off the relationships between `PCGNP` and the other variables in the imputation model. 
+
+
+``` r
+pm &lt;- make.predictorMatrix(poetate)
+pm["PCGNP", ] &lt;- pm[,"PCGNP"] &lt;- 0
+```
+
+Use passive imputation for `PCGNP` 
+
+
+``` r
+meth &lt;- make.method(poetate)
+meth["PCGNP"] &lt;- "~I(exp(loggnp))"
+```
+
+Generate the imputations again using the updated `meth` and `pm` values. 
+
+
+``` r
+pt.mice2 &lt;- mice(poetate, printFlag=F, m=5, maxit=20, 
+                 meth=meth, pred=pm)
+```
+
+
+
+---
+
+# Diagnostic - Density (again)
+
+
+``` r
+densityplot(pt.mice2, layout = c(4,1))
+```
+
+&lt;img src="lecture10_files/figure-html/unnamed-chunk-18-1.png" width="100%" /&gt;
+
+We are pretty confident about the GNP imputation now. 
+
+---
+
+# Factors
+
+
+``` r
+comps &lt;- lapply(1:5, function(x)complete(pt.mice2, x))
+comps &lt;- do.call(rbind, comps)
+comps &lt;- rbind(poetate %&gt;% mutate(loggnp = log(PCGNP)), comps)
+comps$draw &lt;- rep(0:5, each=nrow(poetate))
+obsai &lt;- as.numeric(!is.na(poetate$AI))
+obsai &lt;- factor(obsai, levels=c(0,1), 
+                labels=c("Imputed", "Observed"))
+comps$obs &lt;- rep(obsai, 6)
+comps &lt;- comps %&gt;% 
+  filter((draw == 0 &amp; obsai == "Observed") | 
+         (draw &gt; 0 &amp; obsai == "Imputed"))
+comps &lt;- comps %&gt;% 
+  group_by(draw, obs, AI) %&gt;% 
+  summarise(n = n()) %&gt;% 
+  ungroup %&gt;% 
+  group_by(draw, obs) %&gt;% 
+  mutate(pct = n/sum(n))
+
+ggplot(comps, aes(x=AI, y=pct)) + 
+  geom_bar(stat="identity") + 
+  facet_wrap(~draw) + 
+  theme_bw() 
+```
+
+---
+
+# Plot
+
+&lt;img src="lecture10_files/figure-html/unnamed-chunk-19-1.png" width="1080" height="75%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Imputations by Pr(incomplete)
+
+
+.pull-left[
+
+``` r
+library(gamlss)
+comps &lt;- lapply(1:5, function(x)complete(pt.mice2, x))
+```
+
+``` r
+mods &lt;- lapply(comps, function(D){
+  D$comp &lt;- ici(pt.mice2)
+  gamlss(comp ~ pb(loggnp) + 
+                pb(LPOP) + POLRT + 
+                AI + LEFT + MIL2 + 
+                IWARCOW2 + CWARCOW, 
+              data = D, family=BI)})
+```
+
+
+``` r
+fits &lt;- lapply(mods, predict, type="response")
+for(i in 1:5)comps[[i]]$pcomp &lt;- fits[[i]]
+comps &lt;- do.call(rbind, comps)
+comps$gnpobs &lt;- as.numeric(!is.na(poetate$loggnp))
+comps$gnpobs &lt;- factor(comps$gnpobs, 
+                       labels=c("Imputed", "Observed"))
+comps$draw &lt;- rep(1:5, each=nrow(poetate))
+```
+]
+.pull-right[
+
+``` r
+pal2 &lt;- c("#4F2683","#807F83")
+ggplot(comps, aes(x=pcomp, y=loggnp, 
+                  colour=gnpobs, fill=gnpobs, 
+                  alpha=gnpobs)) + 
+  geom_point() + 
+  facet_wrap(~draw) + 
+  theme_bw() +
+  scale_colour_manual(values=pal2) + 
+  scale_alpha_manual(values=c(.75,.1)) + 
+  theme(legend.position="top") + 
+  labs(x="Pr(Complete Case)", y="log(GNP/capita)", 
+       colour="", fill="", alpha="")
+```
+]
+---
+
+# Plot
+&lt;img src="lecture10_files/figure-html/unnamed-chunk-23-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Convergence of Imputation Models
+
+&lt;img src="lecture10_files/figure-html/unnamed-chunk-24-1.png" width="504" /&gt;&lt;img src="lecture10_files/figure-html/unnamed-chunk-24-2.png" width="504" /&gt;
+
+---
+
+# Missing TSCS Data
+
+Honaker and King (2010) show that MICE-type procedures tend to systematically miss trends in the data.
+- Amelia II has procedures to deal with TSCS missingness.
+- Essentially amounts to putting time-trends in the imputation models, either through polynomials or cubic-splines in time.
+- Can allow for unit-specific time-trends as well by interacting time polynomials with categorical indicator of group membership.
+- Still assumes a MAR mechanism.
+
+---
+
+# PTK Model
+
+
+``` r
+comps &lt;- lapply(1:5, function(x)complete(pt.mice2, x))
+library(plm)
+pcomps &lt;- lapply(comps, function(x)pdata.frame(x, index=c("IDORIGIN", "YEAR")))
+for(i in 1:length(pcomps)){
+  pcomps[[i]]$AI &lt;- as.numeric(pcomps[[i]]$AI)
+  pcomps[[i]]$lagAI &lt;- lag(pcomps[[i]]$AI)  
+}
+
+mice.mods &lt;- lapply(pcomps, function(x)
+    lm(AI ~ lagAI + POLRT + LPOP +  I(PCGNP/10000) +
+    LEFT + MIL2 + BRIT + CWARCOW + IWARCOW2, data=as.data.frame(x)))
+library(mitools)
+mice.pool &lt;- MIcombine(mice.mods)
+```
+
+---
+
+# Summarize Models
+
+
+``` r
+cis1 &lt;- as.matrix(summary(mice.pool)[,c(1,3,4)])
+```
+
+```
+## Multiple imputation results:
+##       MIcombine.default(mice.mods)
+##                    results          se      (lower      upper) missInfo
+## (Intercept)     0.71506971 0.141630536  0.43280491  0.99733450     25 %
+## lagAI           0.36558684 0.016496179  0.33308158  0.39809210     14 %
+## POLRT          -0.09931811 0.009721855 -0.11879560 -0.07984062     29 %
+## LPOP            0.08759185 0.008969079  0.06975737  0.10542632     24 %
+## I(PCGNP/10000) -0.26991491 0.029092209 -0.32726781 -0.21256202     15 %
+## LEFT1          -0.25352237 0.050594387 -0.35599564 -0.15104911     36 %
+## MIL21           0.12210403 0.037123331  0.04879007  0.19541800     17 %
+## BRIT1          -0.15310725 0.035713908 -0.22533347 -0.08088103     35 %
+## CWARCOW1        0.82470136 0.059119653  0.70541131  0.94399141     34 %
+## IWARCOW21       0.25880739 0.052730116  0.15513283  0.36248194     11 %
+```
+
+``` r
+cmod &lt;- lm(AI ~ lagAI + POLRT + LPOP +  I(PCGNP/10000) +
+    LEFT + MIL2 + BRIT + CWARCOW + IWARCOW2, 
+    data=subset(as.data.frame(pcomps[[1]]), ici(pt.mice2)))
+cis0 &lt;- cbind(coef(cmod), confint(cmod))
+x &lt;- rbind(cis1, cis0)
+x &lt;- as.data.frame(x)
+x$parm &lt;- rownames(cis1)
+rownames(x) &lt;- NULL
+x$parm &lt;- as.factor(x$parm)
+x$mod &lt;- factor(rep(c(1,2), each=nrow(cis1)), levels=c(1,2),
+    labels=c("mice", "CC"))
+names(x)[1:3]&lt;- c("coef", "lower", "upper")
+```
+
+---
+
+# Graph
+
+.left-code[
+
+``` r
+ggplot(x, aes(x=coef, 
+              y=parm, 
+              colour=mod)) + 
+  geom_point(
+    position=position_dodge(width=.5)) + 
+  geom_errorbarh(
+    aes(xmin=lower, xmax=upper), 
+    position = position_dodge(width=.5), 
+    height=0) + 
+  geom_vline(
+    xintercept=0, 
+    col="black", 
+    lty=2) + 
+  scale_colour_manual(
+    values=pal2) + 
+  theme_bw() + 
+  theme(
+    legend.position="top") + 
+  labs(
+    x="Coefficient (95%CI)", 
+    y="", 
+    colour="")
+```
+]
+.right-plot-shift[
+&lt;img src="lecture10_files/figure-html/unnamed-chunk-26-1.png" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+
+---
+# Posterior Predictive Checks
+
+Burgette and Reiter (2010, *American Journal of Epidemiology*) suggest that posterior predictive checks can help diagnose problems with inadequate imputations.
+
+- Create 500 imputations from the relevant imputation model
+
+- Create 500 imputations where each variable is missing completely and filled in by the imputation model
+
+- Estimate some quantity of analytical interest (e.g., a set of regression coefficients) on both steps 1 and 2 above,
+
+- Test to see if there is any difference between the two.
+
+
+---
+# Creating the Full Data Impuatations
+
+
+
+
+``` r
+ppdat &lt;- make_pp(AI ~ POLRT + LPOP + PCGNP + LEFT + MIL2 + BRIT + CWARCOW + IWARCOW2, data=poetate)
+
+pp.mice &lt;- mice(ppdat, printFlag=F, m=25, maxit=5)
+res &lt;- extract_pp(pp.mice, ppdat, poetate)
+orig.imp &lt;- mice(poetate, printFlag=F, m=25, maxit=5, 
+                 meth=meth, pred=pm)
+```
+
+
+---
+# Estimate Regression and p-values
+
+
+
+``` r
+library(plm)
+pt.comp &lt;- lapply(1:orig.imp$m, \(i)complete(orig.imp, i))
+l1 &lt;- lapply(pt.comp, function(x){
+  lm(as.numeric(AI) ~ POLRT + LPOP +  I(PCGNP/10000) +
+    LEFT + MIL2 + BRIT + CWARCOW + IWARCOW2, data=x)})
+l2 &lt;- lapply(res, function(x){
+    lm(as.numeric(AI) ~ POLRT + LPOP +  I(PCGNP/10000) +
+      LEFT + MIL2 + BRIT + CWARCOW + IWARCOW2, data=x)})
+b1 &lt;- sapply(l1, coef)
+b2 &lt;- sapply(l2, coef)
+pval &lt;- apply(b1&gt;b2, 1, mean)
+pval &lt;- 2*ifelse(pval &gt; .5, 1-pval, pval)
+pval
+```
+
+```
+##    (Intercept)          POLRT           LPOP I(PCGNP/10000)          LEFT1 
+##              0              0              0              0              0 
+##          MIL21          BRIT1       CWARCOW1      IWARCOW21 
+##              0              0              0              0
+```
+
+
+---
+# Omnibus Test for Regression Differences
+
+
+
+``` r
+library(car)
+coef &lt;- rowMeans(b1-b2)
+v &lt;- var(t(b1-b2))
+linearHypothesis(model=list(df.residual=NULL),
+  hypothesis.matrix=diag(length(coef)),
+  vcov.=v, coef.=coef, rhs=rep(0, length(coef)))
+```
+
+```
+## 
+## Linear hypothesis test:
+## 
+## 
+## Model 1: restricted model
+## Model 2: list(df.residual = NULL)
+## 
+## Note: Coefficient covariance matrix supplied.
+## 
+##   Df Chisq Pr(&gt;Chisq)    
+## 1                        
+## 2  9 624.5  &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+---
+
+## Sensitivity to MAR Assumption. 
+
+The MAR assumption assumes that there is no systematic difference between responders and non-responders in terms of the imputed values. 
+
+To test the sensitivity of our analysis to this assumption, we can systematically change the imputations to operationalize a particular violation of MAR.  
+- For numeric variables, add `\(\delta\)`, a value representing the difference between responders and non-responders on the variable of interest. 
+- For categorical variables, calculate the distribution of the imputed values for each observation.  Then, change the probabilities in a particular way (e.g., add `\(\delta\)` do some and subtract `\(\delta\)` from others).  Then, resample from the imputed values with the new probabilities. 
+
+
+
+---
+
+## Sensitivity in R. 
+
+.pull-left[
+
+``` r
+pt.mice2 &lt;- mice(poetate, printFlag=T, m=100, maxit=5, 
+                 meth=meth, pred=pm)
+```
+
+
+
+
+``` r
+sense_ai &lt;- sens_impute("AI", poetate, pt.mice2, 
+                        type="cat", delta=.1)
+
+comps2 &lt;- lapply(1:pt.mice2$m, \(i)complete(pt.mice2, i))
+compss &lt;- lapply(1:sense_ai$m, \(i)complete(sense_ai, i))
+
+omod &lt;- lapply(comps2, \(d)lm(as.numeric(AI) ~ scale(POLRT) + 
+    scale(LPOP) + scale(loggnp) + LEFT + MIL2 + BRIT + 
+    CWARCOW + IWARCOW2, data=d))
+smod &lt;- lapply(compss, \(d)lm(as.numeric(AI) ~ scale(POLRT) + 
+    scale(LPOP) + scale(loggnp) + LEFT + MIL2 + BRIT + 
+    CWARCOW + IWARCOW2, data=d))
+
+omod_sum &lt;- MIcombine(omod)
+smod_sum &lt;- MIcombine(smod)
+
+plot.dat &lt;- as_tibble(summary(omod_sum), rownames="param") %&gt;% 
+  setNames(c("param", "estimate", "se", "lwr", "upr", "mi")) %&gt;%
+  mutate(model = "Original")
+plot.dat &lt;- plot.dat %&gt;% 
+  bind_rows(as_tibble(summary(smod_sum), rownames="param") %&gt;% 
+    setNames(c("param", "estimate", "se", "lwr", "upr", "mi")) %&gt;%
+    mutate(model = "Sensitivity"))
+```
+]
+.pull-right-shift[
+&lt;img src="lecture10_files/figure-html/unnamed-chunk-33-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+
+
+## Review
+
+1. Why are missing data problematic?
+2. What methods can we use to deal with missing data and what are their implications? 
+3. How do we know if our imputation "worked"?
+4. Example
+
+---
+
+## Exercise - Good APSR Replication
+
+``` r
+load("data/good_df.rda")
+
+
+
+form1 &lt;- GeWom ~ FemDel_P, data = df_original
+form2 &lt;- GeWom ~ FemDel_P + UNSCR + ImUN + ImOth + NAP
+form3 &lt;- GeWom ~ FemDel_P + GDI + SEP_Fem + TeenPreg
+form4 &lt;- GeWom ~ FemDel_P + PolInt_Cmb + WomParl
+form5 &lt;- GeWom ~ FemDel_P + state_prev_avg + female_combatants_exs
+form6 &lt;- GeWom ~ FemDel_P + GDI + WomParl + SEP_Fem + TeenPreg + NYT_p + UNSCR + 
+  Press_UNSC + ImUN + ImOth + NAP + PolInt_Cmb + JobEql_Cmb + LeadPol_Cmb + 
+  state_prev_avg + female_combatants_exs
+```
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

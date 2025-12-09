@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9592</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9592
+]
+.subtitle[
+## Lecture 11: Measurement
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+
+.tiny {
+  font-size: 1rem;
+}
+&lt;/style&gt;
+
+  
+## Goals for This Session
+
+1. What are measurement models about?
+2. Summated Ratings Scales
+3. Exploratory Factor Analysis
+
+---
+
+## What Exactly Are We Doing?
+
+- Statistically: Trying to use existing measures of the same underlying concept to generate "better" measures.
+
+- Theoretically: Trying to obtain more precise, often more nuanced, and generally less error-laden measures of concepts of interest.
+
+---
+
+## Why do this?
+
+
+- "Better" measure of some underlying concept, where
+"better" means:
+
+- Less polluted by measurement error.
+- Higher level of measurement.
+- Better able to distinguish between observations.
+
+- Dimension Reduction.
+
+- Reduce the effects of Multi-collinearity.
+
+
+---
+
+## Motivation
+
+&lt;img src="images/motivate.png" width="600" height="85%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Simple
+
+&lt;img src="images/simple.png" width="600" height="85%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Complex
+
+&lt;img src="images/complicated.png" width="600" height="85%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Complex (2)
+
+&lt;img src="images/complicated2.png" width="600" height="85%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+
+## Something in Between
+
+&lt;img src="images/middle.png" width="600" height="85%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## What we need
+
+
+- **Theoretical Model** A theoretical understanding and/or hypothesis and/or assumption about how observed and unobserved variables are related. 
+
+- **Operational Model** A method of getting estimates of the parameters in the theoretical model.
+
+
+---
+
+## Glossary
+
+
+- **Measurement Error** Whatever makes an observation's value on a variable different
+from the "true" value.
+- **Parameter** Anything that requires estimation to obtain a numerical value.
+- **Latent Variable** (a.k.a. Unobserved Variable, Underlying
+Variable/Concept) Some variable that is unobserved and/or inherently unobservable.
+- **Vector** A series of numbers in a particular order.  (e.g., a
+vector of coefficients, a variable vector).  Can be a row or column vector.
+- **Matrix** A concatenation of a set of vectors with the same
+length, Indexed by [r,c].
+
+
+---
+
+
+## Simple model
+
+&lt;img src="images/srmtheory.png" width="600" height="85%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Simple model: Equation form
+
+`$$\begin{aligned}
+y_{i1} &amp;= \beta_{1}z_{i} + \varepsilon_{i1}\\
+y_{i2} &amp;= \beta_{2}z_{i} + \varepsilon_{i2}\\
+y_{i3} &amp;= \beta_{3}z_{i} + \varepsilon_{i3}\\
+\vdots &amp;= \hspace{.25in}\vdots \\
+y_{ij} &amp;= \beta_{j}z_{i} + \varepsilon_{ij}\\
+\end{aligned}$$`
+
+
+
+- How many data points do we have?
+- How many parameters are there in this model?
+- Note, from here on out, we are assuming that the observed variables
+have been standardized to have 0 mean and variance=1.
+
+
+
+---
+
+## Simplifying Assumptions
+
+
+- `\(\beta_{1} = \beta_{2} = \beta_{3} = \ldots = \beta_{j} = 1\)`,
+which gives us the following:
+
+`$$\begin{aligned}
+y_{i1} &amp;= z_{i} + \varepsilon_{i1}\\
+y_{i2} &amp;= z_{i} + \varepsilon_{i2}\\
+y_{i3} &amp;= z_{i} + \varepsilon_{i3}\\
+\vdots &amp;= \hspace{.15in}\vdots \\
+y_{ij} &amp;= z_{i} + \varepsilon_{ij}
+\end{aligned}$$`
+
+- There is some error that keeps the observed variable from being a perfect reflection of the "true" score on `\(z\)`.
+
+
+---
+
+## One Observation
+
+- Now, let's look what happens to one observation `\(i\)`.  For
+simplicity of notation here, we remove the `\(i\)` subscripts:
+
+`$$\begin{aligned}
+Y &amp;= z + U \\
+E(Y) &amp;= E(z + U)\\ 
+&amp;= z + E(U)\\
+\end{aligned}$$`
+
+
+- Remember, `\(E(U) = \bar{\varepsilon}\)`.  If we can assume that the errors cancel out, that is that the sum of the errors is 0 (making the mean of the errors also 0), then we have the following result:
+
+`$$E(Y) = z$$`
+
+
+
+---
+
+## Is this model appropriate?
+
+
+- Have to assume that the "signal" is the same across all of the variables in this model.
+- Have to assume that there is no systematic measurement error. If every observation is off in the same direction, the estimate of the "true" dimension will also be biased, even in the limit.
+- Also have to make a couple of other assumptions, but we'll get into those later.
+
+---
+
+## Reliability
+
+
+- Let's look at one observed variable: `\(Y_{j} = z + U_{j}\)`.   One thing that we're often interested in is how can we account for the variance in a variable:
+
+`$$\begin{aligned}
+var(Y_{j}) &amp;= var(z + U_{j})\\
+&amp;= var(z) + var(U_{j}) + 2cov(z,U_{j})
+\end{aligned}$$`
+
+- If we now assume that `\(cov(z,U_{j}) = 0\)`, that is, the errors are independent of `\(z\)` and we'll also assume `\(cov(e_{i}e_{j}) = 0 \quad \forall \quad i \neq j\)` ( `\(\forall\)` just means "for every" ).
+
+`$$var(Y_{j}) = var(z) + var(U_{j})$$`
+
+---
+
+## Reliability II
+
+
+- Now, let's do a bit of rearranging:
+
+`$$1 = \frac{var(z)}{var(Y_{j})} + \frac{var(U_{j})}{var(Y_{j})}$$`
+
+- The first piece of the first equation on this page, is then like an `\(R^{2}\)` between the unobserved "true" score and the observed variable `\(Y_{j}\)`. We call this "reliability" - the proportion of variance in the observed variable that is due to the true, but unobservable dimension.
+
+- In general, reliability refers to the repeatability and consistency of the measurement instrument.  Thus, a measure is reliable if, when repeated, it produces similar results.
+
+
+
+---
+
+## What does Reliability mean?
+
+
+- The higher a variable's reliability, the better a measure it is of the estimated underlying dimension.
+
+- If a variable has very low reliability, it is unlikely that it is measuring the same thing as the other variables **(no matter how much it's name or operationalization would suggest that it is)**.
+
+
+---
+
+## Assumptions thus far (and one new one)
+
+
+- `\(e_{ij} \sim iid\)` (i.e., no systematic measurement error).
+- `\(z_{i}\)` is the same for all `\(y_{ij}\)` (uni-dimensionality).
+
+
+Now, I'm going to introduce one more assumption now: Monotone
+Homogeneity.
+
+- Monotone Homogeneity means that the relationship between the observed variables and the true underlying dimension is monotonically increasing.
+- By monotonically increasing, I mean that as the true dimension increases, the observed variable cannot decrease (though it could stay the same).
+- This suggests that the input variables don't need to be interval-level, they only need to be ordinal.
+
+---
+
+
+## Theoretical Conclusions
+
+What does all of this mean?
+
+- It means, that if the assumptions of this model are reasonable, then you can get an estimate of the underlying dimension by adding up, or taking the mean, of the observed variables for each observation.
+- Remember, we found that:
+
+`$$E(Y) = z + \underbrace{E(U)}_{0}$$`
+
+- Now, we have to estimate reliability.
+
+---
+
+## Estimating Reliability
+
+
+- We can never know a variable's true reliability since it depends, in part, on the variance of the true score.
+- We can get an estimate of a scale's reliability.  In R, we do this with Cronbach's `\(\alpha\)` [`alpha()` in the `psych` package].
+- The formula for `\(\alpha\)` is as follows:
+
+`$$\alpha = \frac{k\bar{r}}{1+\bar{r}(k-1)}$$`
+
+where `\(\bar{r}\)` is the average of the elements below the diagnoal of the correlation matrix for the observed variables and `\(k\)` is the number of observed variables.
+
+
+---
+
+
+
+
+
+
+## More definitions.
+
+Assume that we have observed variables `\(y_{i1}, y_{i2}, \ldots, y_{ik}\)`
+
+- The "test score" is simply `\(\sum_{j=1}^{k} y_{ij}\)`.
+- The "rest score" for variable `\(y_{i1}\)` is simply `\(\sum_{j=2}^{k} y_{ij}\)`.  This is sum of the *rest* of the variables.  The rest score for `\(y_{i5}\)` would be `\(\sum_{j=1}^{4} y_{ij} + \sum_{j=6}^{k} y_{ij}\)`.
+
+
+---
+
+
+## Reliability the easy way
+
+.pull-left[
+
+``` r
+library(psych)
+dat &lt;- rio::import('data/srm.dta')
+alpha(dat)
+```
+
+```
+## 
+## Reliability analysis   
+## Call: alpha(x = dat)
+## 
+##   raw_alpha std.alpha G6(smc) average_r S/N   ase  mean   sd median_r
+##       0.94      0.94    0.93       0.8  16 0.003 0.023 0.94      0.8
+## 
+##     95% confidence boundaries 
+##          lower alpha upper
+## Feldt     0.94  0.94  0.95
+## Duhachek  0.94  0.94  0.95
+## 
+##  Reliability if an item is dropped:
+##    raw_alpha std.alpha G6(smc) average_r S/N alpha se   var.r med.r
+## X1      0.93      0.93    0.89      0.81  13   0.0040 2.4e-04  0.81
+## X2      0.93      0.93    0.90      0.81  13   0.0039 1.4e-04  0.81
+## X3      0.92      0.92    0.89      0.80  12   0.0042 7.0e-05  0.80
+## X4      0.92      0.92    0.89      0.80  12   0.0043 7.1e-05  0.79
+## 
+##  Item statistics 
+##       n raw.r std.r r.cor r.drop   mean sd
+## X1 1000  0.92  0.92  0.88   0.86 0.0293  1
+## X2 1000  0.92  0.92  0.88   0.85 0.0302  1
+## X3 1000  0.93  0.93  0.90   0.87 0.0071  1
+## X4 1000  0.93  0.93  0.90   0.87 0.0254  1
+```
+]
+.pull-right[
+We know that `\(0 \leq\)` Reliability `\(\leq 1\)` and the closer to 1, the more reliable the scale is.  This scale is quite reliable.
+]
+---
+
+
+## Reading the R Output
+
+
+- The `r.cor` column is the correlation between the individual variable and the test score (the scale created by all of the variables).
+
+
+- This may not be the best measure because the test score contains the variable of interest, so those two things are related by definition.
+
+
+- The `r.drop` column is the correlation between the individual variable and that variable's rest score (the scale made from summing all of the rest of the variables).
+
+- The `raw_alpha` column shows what Cronbach's `\(\alpha\)` would be if we omitted that variable from the scale.  Ideally, you want the overall `\(\alpha\)` to be bigger than it would be if you deleted any of the individual items.
+
+---
+
+
+## Evaluating Assumptions
+
+
+- Uni-dimensionality:  To evaluate this assumption, it is probably best to look at the correlation matrix.  What you want to see is relatively similar (hopefully high-ish) correlations across the matrix.  To the extent the blocks of high and low correlations exist, that is a problem.
+
+- Monotone homogeneity can be evaluated by plotting each variable against its rest score.  I've written an R program that will do this called "restplot".  The program just takes a variable list and then plots each variable against the row-mean of the remaining variables.
+
+---
+
+
+## Restplot in R
+.pull-left[
+
+``` r
+library(uwo9592)
+restplot(dat, 
+         span =	.7, 
+         family = "symmetric", 
+         degree = 2)
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture11_files/figure-html/unnamed-chunk-8-1.png" width="504" /&gt;
+]
+---
+
+
+## Caveats and Cautions
+
+
+- Cronbach's `\(\alpha\)` is not a good *test* of dimensionality.  It is likely to give an underestimate of the dimensionality of your data.  Testing dimensionality is a task better suited to factor analysis, which we will talk about later.
+
+- As you include more variables, it is possible to see a relatively high `\(\alpha\)` value without very high inter-correlations.
+
+
+---
+
+## `\(\alpha\)` as a function of `\(k\)` and `\(\bar{r}\)`
+
+&lt;img src="images/alpha.png" width="600" height="85%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+## SRM Conclusion
+
+
+- At the end, you have a new variable (the sum of the observed variables for each observation) that is an estimate of the latent dimension.
+
+- If the assumptions of this model hold, the estimate is "better" than any of the individual variables because the idiosyncrasies and measurement error have canceled each other out.
+
+- The resulting variable is (roughly) an interval level variable after starting with ordinal level input data.
+
+
+---
+
+
+## Graphical Representation of Common Factor Model
+
+&lt;img src="images/efa.png" width="600" height="85%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+## Common Factor Model in Equation Form
+
+
+`$$\begin{aligned}
+x_{i1} &amp;= a_{11}F_{i1} + a_{12}F_{i2} + \cdots + a_{1m}F_{im} + U_{i1}\\
+x_{i2} &amp;= a_{21}F_{i1} + a_{22}F_{i2} + \cdots + a_{2m}F_{im} + U_{i2}\\
+ &amp;\vdots\\
+x_{ik} &amp;= a_{k1}F_{i1} + a_{k2}F_{i2} + \cdots + a_{km}F_{im} + U_{ik}
+\end{aligned}$$`
+
+
+
+For each observation `\(i=1,2,\ldots,n\)` on each observed variable in `\(1,2,\ldots,k\)` and each factor `\(1,2,\ldots,m\)`, where always `\(m\leq k\)` and usually `\(m \ll k\)`.
+
+---
+
+## Factor Analysis Glossary (1)
+
+
+- **Factor Loading** Coefficient relating the unobserved variable to the observed variable `\(a_{km}\)`.
+- **Factor Pattern Matrix** Matrix of factor loadings, usually referred to as `\(\mathbf{A}\)`
+
+`$$\left[\begin{array}{cccc}
+a_{1,1} &amp; a_{1,2} &amp; \cdots &amp; a_{1,m}\\
+a_{2,1} &amp; a_{2,2} &amp; \cdots &amp; a_{2,m}\\
+\vdots &amp; \vdots &amp; \vdots &amp; \vdots \\
+a_{k,1} &amp; a_{k,2} &amp; \cdots &amp; a_{k,m}
+\end{array}\right]$$`
+- **Communality** Amount of an observed variable's variance shared with the other variables; usually denoted as `\(h_{k}^{2} = \sum_{j=1}^{m}a_{kj}\)`.
+- **Uniqueness** Amount of an observed variable's variance *not* shared with the other variables; usually denoted `\(U_{k}\)`.
+
+---
+
+## Factor Analysis Glossary (2)
+
+- **Eigenvalue** In an un-rotated factor solution, the amount of variance explained by each factor.
+- **Rotation** Factor solutions are only identified up to a rotation, meaning there are infinitely many solutions
+that are equally "good" in terms of variance explained (ability to reproduce the correlation
+matrix).  Rotating means moving the factors around in space often so they explain the same amount
+of variance, but so they also have other desirable properties. 
+- **Factor Structure Matrix** Asymmetric matrix of correlations between the observed variables and the factors.  This is the same
+as the Factor Pattern Matrix for orthogonal factors, but these are not the same when we allow the
+factors to be correlated.
+
+
+---
+
+## Factor Pattern Matrix
+
+
+|                            |                       |                   |          |                   | `\(\sum_{j=1}^{k} a_{jm}^{2}\)` |
+|----------------------------|-----------------------|-------------------|----------|-------------------|-----------------------------|
+|                            | `\(a_{1,1}\)`             | `\(a_{1,2}\)`         | `\(\cdots\)` | `\(a_{1,m}\)`         | `\(h_{1}^{2}\)`                 |
+|                            | `\(a_{2,1}\)`             | `\(a_{2,2}\)`         | `\(\cdots\)` | `\(a_{2,m}\)`         | `\(h_{2}^{2}\)`                 |
+|                            | `\(\vdots\)`              | `\(\vdots\)`          | `\(\vdots\)` | `\(\vdots\)`          | `\(\vdots\)`                    |
+|                            | `\(a_{k,1}\)`             | `\(a_{k,2}\)`         | `\(\cdots\)` | `\(a_{k,m}\)`         | `\(h_{k}^{2}\)`                 |
+| `\(\sum_{l=1}^{m}a_{kl}^{2}\)` | `\(\lambda_{1}^{2}\)`     | `\(\lambda_{2}^{2}\)` | `\(\cdots\)` | `\(\lambda_{m}^{2}\)` |                             |
+
+
+---
+
+## Things to note
+
+
+- This model proposes that there is potentially less variance than the total combined variance to explain.  In math, we would say: `\(\sum_{l=1}^{m} h_{l}^{2} &lt; k\)`. 
+
+- This will be a source of uncertainty for us as we will have to get an estimate of the communality for each variable.
+
+- This is a model of *linear* structure.  Factor Analysis models the underlying linear association among the variables with a smaller set of factors.
+
+
+---
+
+
+
+## What we Want
+
+
+- `\(\mathbf{A}\)` (Factor Pattern Matrix), the coefficients relating the unobserved factors to the observed variables.
+- `\(h_{j}^{2}\)` (Communality), we need to supply initial estimates and then we can either iteratively improve them or not.
+- `\(\lambda_{m}^{2}\)` (Eigenvalue), we will also want to know the amount of total variance explained by each of the factors.
+- `\(\hat{F}_{im}\)`, estimates of the unobserved variables for each observation.
+
+
+---
+
+## The Fundamental Theorem of Factor Analysis
+
+`$$\begin{aligned}
+\mathbf{X} &amp;=  \mathbf{AF + U}\\
+\mathbf{XX^{\prime}} &amp;=  (\mathbf{AF + U})(\mathbf{AF + U})^{\prime}\\
+&amp;=  (\mathbf{AF + U})(\mathbf{F^{\prime}A^{\prime} + U^{\prime}})\\
+&amp;=  \mathbf{AFF^{\prime}A^{\prime} + AFU^{\prime} + UF^{\prime}A^{\prime} + UU^{\prime}}\\
+E(\mathbf{XX^{\prime}}) &amp;=  \mathbf{A}E(\mathbf{FF^{\prime}})
+\mathbf{A^{\prime}} + \mathbf{A}E(\mathbf{FU^{\prime}}) +
+E(\mathbf{UF^{\prime}})\mathbf{A^{\prime}} + E(\mathbf{UU^{\prime}})\\
+\mathbf{R}_{XX} &amp;=  \mathbf{AR}_{FF}\mathbf{A^{\prime}} + \mathbf{A}\underbrace{\mathbf{R}_{FU}}_{0} + \underbrace{\mathbf{R}_{UF}}_{0}\mathbf{A^{\prime}} + \mathbf{R}_{UU}\\
+&amp;=  \mathbf{AR}_{FF}\mathbf{A^{\prime}} + \mathbf{R}_{UU}
+\end{aligned}$$`
+
+Here, `\(\mathbf{R}_{FF}\)` is the correlation between the factors, which we'll assume for the moment is `\(\mathbf{I}\)`, a matrix with 1 on the diagonal and 0 elsewhere and `\(\mathbf{R}_{UU}\)` we'll call the variance-covariance matrix of the uniquenesses, with unique variance on the diagonal and 0 elsewhere.
+
+---
+
+## The Fundamental Theorem of Factor Analysis (2)
+
+`$$\begin{aligned}
+\mathbf{R}_{XX} &amp;=  \mathbf{AIA^{\prime}} + \mathbf{R}_{UU}\\
+\mathbf{R}_{XX} - \mathbf{R}_{UU}&amp;=  \mathbf{AIA^{\prime}} \\
+\mathbf{\tilde R}_{XX} &amp;=  \mathbf{AA^{\prime}}
+\end{aligned}$$`
+
+What we're saying here is that we can break the adjusted correlation matrix `\(\mathbf{\tilde R}_{XX}\)` into the product of something `\(\mathbf{A}\)` and itself.  This is where we get the term *Factor* analysis, because we're essentially *factoring* a matrix.
+- We can "decompose" a  correlation matrix into the product of a matrix `\((\mathbf{A})\)` and its transpose. 
+
+How do we figure out `\(\mathbf{R}_{UU}\)`?
+
+---
+
+## Communality
+
+
+- Communality is the amount (proportion) of a variable's variance that it shares with the other variables.  The common variance we are trying to explain.
+
+- Let's think of a very simple factor model:
+
+`$$y = b_{1}x_{1} + \varepsilon$$`
+
+
+- Here, we are not saying that all of the variance in `\(y\)` can be explained by `\(x\)`.  Rather, we're saying that there is some part of `\(y\)` that varies systematically with `\(x\)` and some part that is unique to `\(y\)` and unrelated to `\(x\)`.
+
+- Now, transform the above equation into the notation for our factor model:
+
+`$$x_{1} = a_{11}F_{1} + U_{1}$$`
+
+Here, we're saying the same thing - that part of the variance of `\(x_{1}\)` is unique to `\(x_{1}\)` and has nothing to do with `\(F_{1}\)`.
+
+---
+
+## Communality Options
+
+
+- `\(h_{j}^{2} =1\)`: This is called the "principal components factor model".  This is almost certainly an *overestimate* of a variable's communality.
+- `\(h_{j}^{2} = R_{-j}^{2}\)` : This is the "squared multiple correlation" - the `\(R^{2}\)` of a regression with `\(x_{j}\)` as the dependent variable and all of the rest of the observed variables as the independent variables. The SMC is (in a properly specified factor model) the lower bound of the true, but unknown communality.
+- `\(h_{j}^{2} = \text{Reliability}\)`: If we know a variable's reliability, we could use this as the communality.  This is theoretically the upper bound of the true, but unknown communality, but we usually don't know it. .
+
+---
+
+## Improving Communality Estimates
+
+
+- Once we decide on a strategy, we can then decide if we want to iteratively make our estimates better or not, this applies to the `\(h_{j}^{2} = R_{-j}^{2}\)` strategy.
+
+- The "Uniqueness" just equals `\(1-h_{j}^{2}\)`.  Remember, the Uniqueness and Communality sum to 1.  All of a variable's variance is a function of 1) the part we can explain, plus 2) the part we can't explain.
+
+---
+
+## Singular Value Decomposition
+
+- We employ a mathematical tool called the Singular Value Decomposition.
+- This uncovers the "basic structure" of a matrix.
+- It has three components: `\(\underbrace{\mathbf{U}}_{n\times k}\)`, `\(\underbrace{\mathbf{D}}_{k \times k}\)` and `\(\underbrace{\mathbf{V}^{\prime}}_{k \times k}\)` where:
+- `\(n\)` is the number of rows in the original data, and
+- `\(k\)` is the number of columns in the original data
+- `\(\mathbf{U}\)` gives information about the rows of the original matrix, 
+- `\(\mathbf{V}\)` gives information about the columns of the original matrix, and 
+- `\(\mathbf{D}\)` gives the variance accounted for by the rows of `\(\mathbf{U}\)` and `\(\mathbf{V}\)`.
+
+The `\(\mathbf{d}\)`'s are what we call the "eigenvalues" when the original matrix is square and symmetric.
+- Here, `\(\mathbf{X} = \mathbf{UDV^{\prime}}\)`
+---
+
+## A Small Digression about SVD
+
+
+- Sometimes, when you're unsure about what a particular "thing" does, it might make sense to see what it does on made-up data, data where you know the properties.   So, if SVD *actually* uncovers the basic structure of a matrix, let's see what kind of results we get in different situations. 
+
+- I've got two different situations below - one where there is one underlying trait and one where there are two, mostly uncorrelated underlying traits.
+
+
+---
+
+## One Underlying Trait: Graphical Correlation Matrix
+
+
+.pull-left[
+&lt;img src="images/onething.png" width="100%" /&gt;
+]
+.pull-right[
+&lt;img src="images/legend.png" width="400" height="80%" style="display: block; margin: auto auto auto 0;" /&gt;
+
+]
+
+---
+
+## One Underlying Trait: SVD
+
+```
+Eigenvalues
+4.12 0.43 0.31 0.17 0.04
+
+Eigenvectors
+-0.45  0.21 -0.33 -0.72 -0.33
+-0.43  0.61 -0.03  0.59 -0.26
+-0.43 -0.70  0.18  0.20 -0.48
+-0.44  0.12  0.75 -0.22  0.40
+-0.46 -0.24 -0.52  0.17  0.64
+```
+---
+
+
+
+## Two Underlying Traits: Graphical Correlation Matrix
+
+
+.pull-left[
+&lt;img src="images/twothing.png" width="100%" /&gt;
+]
+.pull-right[
+&lt;img src="images/legend.png" width="400" height="80%" style="display: block; margin: auto auto auto 0;" /&gt;
+
+]
+
+---
+
+## Two Underlying Traits: SVD
+
+```
+Eigenvalues
+
+4.11 2.84 0.61 0.55 0.47 0.34 0.20 0.12 0.01
+
+Eigenvectors
+-0.16  0.43  0.07 -0.80 -0.15 -0.01  0.22  0.26 -0.02
+-0.18  0.45 -0.55  0.17 -0.37  0.40  0.02 -0.37  0.01
+-0.19  0.50 -0.06  0.46  0.33 -0.07  0.09  0.60  0.13
+-0.20  0.48  0.52  0.08  0.13 -0.27 -0.29 -0.50 -0.17
+-0.41 -0.15 -0.25  0.01 -0.31 -0.70 -0.06 -0.04  0.40
+-0.40 -0.16 -0.30 -0.13  0.63 -0.06  0.42 -0.29 -0.23
+-0.42 -0.18  0.26  0.25 -0.45  0.03  0.29  0.19 -0.58
+-0.43 -0.16  0.41  0.02  0.03  0.47  0.15 -0.09  0.61
+-0.43 -0.17 -0.17 -0.17  0.13  0.23 -0.76  0.22 -0.18
+```
+---
+
+
+
+## Factor Analysis and SVD
+
+Let's go back to our old friend SVD, we know that we can decompose a data matrix into constituent parts:
+
+`$$\mathbf{X} = \mathbf{UDV^{\prime}}$$`
+
+We also know that a correlation matrix is the product of two matrices scaled by `\(\frac{1}{n-1}\)`:
+
+`$$\mathbf{R}_{XX} = \mathbf{X^{\prime}X}(n-1)^{-1}$$`
+
+So, now we can substitute the first piece of information into the second:
+
+`$$\mathbf{R}_{XX} =
+(\mathbf{UDV^{\prime}})^{\prime}(\mathbf{UDV^{\prime}})(n-1)^{-1}$$`
+
+---
+
+## Solving the Factor Model with SVD
+
+`$$\begin{aligned}
+\mathbf{R}_{XX} &amp;=  \mathbf{(UDV^{\prime})^{\prime}(UDV^{\prime})}(n-1)^{-1}\\
+&amp;=  (\mathbf{VD^{\prime}U^{\prime}UDV^{\prime}})(n-1)^{-1}\\
+&amp;=  (\mathbf{VD^{\prime}IDV^{\prime}})(n-1)^{-1}\\
+&amp;=  \mathbf{VD^{\prime}}(n-1)^{-1}\mathbf{DV^{\prime}}\\
+&amp;=  \left(\mathbf{VD^{\prime}}(n-1)^{-\frac{1}{2}}\right)\left((n-1)^{-\frac{1}{2}}\mathbf{DV^{\prime}}\right)
+\end{aligned}$$`
+
+Now, if we rename `\(\mathbf{D^{\prime}}(n-1)^{-\frac{1}{2}} = \mathbf{\Lambda}\)`, then we have:
+
+`$$\mathbf{R}_{XX} =
+\underbrace{\mathbf{V}
+\mathbf{\Lambda}}_{\mathbf{A}}\underbrace{
+\mathbf{\Lambda}\mathbf{V^{\prime}}}_{\mathbf{A}^{\prime}}$$`
+Here, `\(\mathbf{\Lambda}^{2}\)` is the diagonal matrix of eigenvalues, so if we want to create `\(\mathbf{\Lambda}\)`, we need to create a diagonal matrix of the square root of the eigenvalues.
+
+---
+
+## Extraction Methods
+
+When we estimate a factor analysis, we have to choose an "extraction method" which basically relates to what we want to do with the communalities and how we want to estimate the the factor pattern matrix. The possibilities of note are:
+1. Iterated Principal Factor ("pa"), starts the same as "pf", but iteratively improves communality estimates. Remember, if the model is appropriate/properly specified, then SMC's are the lower bound (and as such, almost certainly an underestimate) of the true communality.
+2. Minimum Residual ("minres") minimizes the sum of squared residuals in an OLS fashion.
+3. Maximum Likelihood ("ml") does not employ the SVD, rather it maximizes `\(\Pr(\mathbf{\tilde R}_{XX} | \mathbf{A})\)`.
+
+---
+
+## Data: Democracy and Repression
+
+.pull-left[
+
+``` r
+library(rio)
+library(psych)
+dat &lt;- import("data/dem_rep.dta")
+X &lt;- na.omit(dat[,-c(1:3)])
+R &lt;- cor(X)
+scree(R, pc=FALSE)
+```
+
+]
+.pull-right-shift2[
+&lt;img src="lecture11_files/figure-html/unnamed-chunk-15-1.png" width="504" /&gt;
+]
+
+
+---
+
+## Democracy and Repression: 2 Factors
+
+
+``` r
+fn &lt;- fa(X, nfactors=2, rotate="none", fm="pa", SMC=TRUE)
+fn
+```
+
+```
+## Factor Analysis using method =  pa
+## Call: fa(r = X, nfactors = 2, rotate = "none", SMC = TRUE, fm = "pa")
+## Standardized loadings (pattern matrix) based upon correlation matrix
+##             PA1   PA2   h2   u2 com
+## xconst     0.88 -0.23 0.82 0.18 1.1
+## polconiii  0.83 -0.30 0.78 0.22 1.3
+## lgates     0.88 -0.28 0.85 0.15 1.2
+## log_checks 0.81 -0.30 0.76 0.24 1.3
+## polpris    0.66  0.30 0.52 0.48 1.4
+## disap      0.36  0.56 0.44 0.56 1.7
+## tort       0.46  0.48 0.43 0.57 2.0
+## kill       0.45  0.72 0.72 0.28 1.7
+## 
+##                        PA1  PA2
+## SS loadings           3.87 1.45
+## Proportion Var        0.48 0.18
+## Cumulative Var        0.48 0.67
+## Proportion Explained  0.73 0.27
+## Cumulative Proportion 0.73 1.00
+## 
+## Mean item complexity =  1.5
+## Test of the hypothesis that 2 factors are sufficient.
+## 
+## df null model =  28  with the objective function =  5.21 with Chi Square =  13214.16
+## df of  the model are 13  and the objective function was  0.07 
+## 
+## The root mean square of the residuals (RMSR) is  0.02 
+## The df corrected root mean square of the residuals is  0.03 
+## 
+## The harmonic n.obs is  2541 with the empirical chi square  44.36  with prob &lt;  2.7e-05 
+## The total n.obs was  2541  with Likelihood Chi Square =  185.15  with prob &lt;  1.5e-32 
+## 
+## Tucker Lewis Index of factoring reliability =  0.972
+## RMSEA index =  0.072  and the 90 % confidence intervals are  0.063 0.082
+## BIC =  83.23
+## Fit based upon off diagonal values = 1
+## Measures of factor score adequacy             
+##                                                    PA1  PA2
+## Correlation of (regression) scores with factors   0.97 0.90
+## Multiple R square of scores with factors          0.94 0.81
+## Minimum correlation of possible factor scores     0.88 0.62
+```
+
+---
+
+## Visualizing the Solution
+
+
+&lt;img src="images/dem_rep_fa_unrotated.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## What is Rotation 
+
+
+- Factor analysis is only *identified* up to a rotation. This means that any orientation of the factors in `\(m\)` dimensional space that preserves the lengths of and angles between all of the variable vectors will give an equally good reproduction of the correlation matrix.
+
+- If we have a factor pattern matrix `\(\mathbf{\Lambda}\)`, then we can pick some matrix `\(\mathbf{T}\)` such that `\(\mathbf{\Lambda}^{*} = \mathbf{\Lambda}\mathbf{T}\)`.  Where, in the two-factor solution:
+
+`$$\mathbf{T} = \left[\begin{array}{cc} \cos \alpha &amp; - \sin \alpha
+\\ \sin \alpha &amp; \cos \alpha\end{array}\right]$$`
+
+where `\(\alpha\)` is the number of degrees you want to rotate the solution.
+
+
+---
+
+## Rotation (2)
+
+If every solution is equally "good" how do we choose discriminate between the solutions? We are looking for something called "simple structure".
+This mean that :
+
+1. As few factors as possible influence any one variable, and
+2. Each factor influences as few variables as possible.
+
+This means we want factor pattern coefficients to be as close to zero or one as possible.
+
+- Note, in R, the trigonometric functions require input and produce output in radians.  
+
+$$ 1^{\circ} = \frac{\pi}{180} \text{ radians}$$
+
+---
+
+## Simple Structure Solution
+
+&lt;img src="images/ss.png" width="600" height="85%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Finding Simple Structure
+
+- A Varimax rotation finds the matrix `\(\mathbf{T}\)` which maximizes the variance within the column.  Why do this?
+
+|              | `\(\mathbf{A_{1}}\)` | `\(\mathbf{A_{2}}\)` | `\(\mathbf{A_{3}}\)` |
+|--------------|------------------|------------------|------------------|
+| `\(a_{11}\)`     | .5               | .7               | 1                |
+| `\(a_{21}\)`     | .5               | .7               | 1                |
+| `\(a_{31}\)`     | .5               | .3               | 0                |
+| `\(a_{41}\)`     | .5               | .3               | 0                |
+| `\(\sigma_{A}\)` | 0                | 0.23             | 0.58             |
+
+---
+
+## Visualizing Varimax Rotation
+
+&lt;img src="images/dem_rep_fa_varimax.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## More on Rotation
+
+Both the original solution and the varimax rotation were orthogonal solutions, ones that maintain the zero correlation between all of the factors.
+- We might want to relax this assumption.  
+- It is not the case in the real world that everything we would want to model with latent variables are uncorrelated.
+- This idea is operationalized in the *promax* rotation.
+
+---
+
+## Visualizing Promax Rotation
+
+&lt;img src="images/dem_rep_fa_promax.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+## Communality in Obliquely Rotated Factor Solutions
+
+
+One difference that an oblique rotation induces is that the communality is no longer the sum of the squared factor pattern coefficients.  Instead, it is the following:
+
+`$$h_{j}^{2} = \sum_{l=1}^{m} a_{jl}^{2} +
+\sum_{l=1}^{m-1}\sum_{k=l+1}^{m} 2a_{jl}a_{jk}r_{F_{l}F_{k}}$$`
+
+- For example, if we have the following model: `\(Z_{1} = a_{11}F_{1} + a_{12}F_{2} + U_{1}\)`, then
+
+`$$h_{1}^{2} = a_{11}^{2} + a_{12}^{2} + 2a_{11}a_{12}r_{F_{1}F_{2}}$$`
+
+---
+
+## Factor Scores
+
+
+Generally, we are doing this not only to understand the structure of the data, but also to get estimates of the `\(m\)`-dimensional representation of our `\(k\)`-dimensional data matrix.
+
+`$$X_{j} = a_{j1}F_{1} + a_{j2}F_{2} + \cdots + a_{jm}F_{m}$$`
+
+It's nice that we know `\(\mathbf{A}\)`, but what we really want is a matrix `\(B\)` with elements `\(b_{jm}\)` such that:
+
+`$$\hat{F}_{m} = X_{1}b_{1m} + X_{2}b_{2m} + \cdots + X_{k}b_{km}$$`
+
+We need this because the `\(X\)` variables are the only information we have to identify the `\(\hat{F}\)`'s.
+
+---
+
+## Factor Scores (2)
+
+
+This is a pretty complicated problem and I won't bore you with the details, but we can obtain the matrix of scoring coefficients as follows:
+
+`$$\mathbf{B} = \mathbf{R}_{XX}^{-1}\mathbf{A}\mathbf{R}_{FF}$$`
+
+where `\(\mathbf{R}_{XX}\)` is the correlation matrix of the observed variables, `\(\mathbf{A}\)` is the factor pattern matrix and `\(\mathbf{R}_{FF}\)` is the correlation matrix between the factors.
+
+
+---
+
+## Factor Scores
+
+.pull-left[
+
+``` r
+demfa2 &lt;- fa(X, 2, fm="pa", rotate="promax", scores=T)
+fa.scores &lt;- scale(demfa2$scores)
+srm.scores &lt;- scale(cbind(rowMeans(X[,1:4]), 
+   rowMeans(X[,5:8])))
+colnames(fa.scores) &lt;- c("dem", "rep")
+colnames(srm.scores) &lt;- c("dem", "rep")
+srm.scores &lt;- as.data.frame(srm.scores)
+fa.scores &lt;- as.data.frame(fa.scores)
+m1 &lt;- lm(rep ~ dem, data=fa.scores)
+m2 &lt;- lm(rep ~ dem, data=srm.scores)
+```
+]
+.pull-right-shift2[
+
+```
+## 
+## ============================================================
+##                                     Dependent variable:     
+##                                 ----------------------------
+##                                             rep             
+##                                      (1)            (2)     
+## ------------------------------------------------------------
+## dem                                0.440***      0.400***   
+##                                    (0.018)        (0.018)   
+##                                                             
+## Constant                            0.000         -0.000    
+##                                    (0.018)        (0.018)   
+##                                                             
+## ------------------------------------------------------------
+## Observations                        2,541          2,541    
+## R2                                  0.193          0.160    
+## Adjusted R2                         0.193          0.160    
+## Residual Std. Error (df = 2539)     0.898          0.917    
+## F Statistic (df = 1; 2539)        608.786***    484.175***  
+## ============================================================
+## Note:                            *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01
+```
+
+]
+
+---
+
+
+
+## Review
+
+1. What are measurement models about?
+2. Summated Ratings Scales
+3. Exploratory Factor Analysis
+
+---
+
+## Exercise
+
+These data come from the 2019 CES - they relate to different attitudes about women (chauvenism) framed in both positive (benevolent) and negative (hostile) ways: 
+
+- `pes19_hostile1`: Most women fail to appreciate all that men do for them.
+- `pes19_hostile2`: Women seek to gain power by getting control over men.
+- `pes19_hostile3`: Most women interpret innocent remarks or acts as being sexist.
+- `pes19_benevolent1`: Women should be cherished and protected by men.
+- `pes19_benevolent2`: Many women have a quality of purity that few men possess.
+- `pes19_benevolent3`: A good woman ought to be set on a pedestal by her man.
+
+Each is scored on a five-point Likert scale from Strongly disagree to Strongly agree, with a value of 6 corresponding to Don't Know/NA. What is the structure of these data?  What do you think is the best way to reduce the dimensionality of these data? 
+
+---
+
+## Questions
+
+
+1. What is Cronbach's Alpha for these data?  Do the assumptions we make from the summated rating model make sense? 
+
+
+``` r
+library(rio)
+wom &lt;- import("data/women_dat.dta")
+```
+
+2. What does the EFA look like for these data?  How many dimensions does the model suggest? 
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"navigation": {
+"scroll": false
+},
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

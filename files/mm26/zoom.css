@@ -1,0 +1,10 @@
+img.zoomable {
+  cursor: zoom-in;
+  transition: transform 0.2s ease;
+  position: relative;
+  z-index: 1;
+}
+
+img.zoomable.zoomed {
+  z-index: 9999;
+}

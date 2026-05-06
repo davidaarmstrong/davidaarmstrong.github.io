@@ -36,12 +36,12 @@ GEM
       ffi (>= 1.15.0)
     eventmachine (1.2.7)
     execjs (2.9.1)
-    faraday (2.12.0)
-      faraday-net_http (>= 2.0, < 3.4)
+    faraday (2.14.1)
+      faraday-net_http (>= 2.0, < 3.5)
       json
       logger
-    faraday-net_http (3.3.0)
-      net-http
+    faraday-net_http (3.4.2)
+      net-http (~> 0.5)
     ffi (1.17.0-aarch64-linux-gnu)
     ffi (1.17.0-aarch64-linux-musl)
     ffi (1.17.0-arm-linux-gnu)
@@ -222,7 +222,7 @@ GEM
       gemoji (>= 3, < 5)
       html-pipeline (~> 2.2)
       jekyll (>= 3.0, < 5.0)
-    json (2.7.2)
+    json (2.18.1)
     kramdown (2.4.0)
       rexml
     kramdown-parser-gfm (1.1.0)

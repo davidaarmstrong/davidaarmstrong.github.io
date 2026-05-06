@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Misperceiving Party Positions: Consequences for Spatial Voting and Democratic Satisfaction</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Chris Alcantara, Laura Stepenson and Dave Armstrong" />
+    <meta name="date" content="2026-05-06" />
+    <script src="armstrong_maplemeth_2026_files/header-attrs/header-attrs.js"></script>
+    <link href="armstrong_maplemeth_2026_files/remark-css/default.css" rel="stylesheet" />
+    <link href="armstrong_maplemeth_2026_files/htmltools-fill/fill.css" rel="stylesheet" />
+    <script src="armstrong_maplemeth_2026_files/htmlwidgets/htmlwidgets.js"></script>
+    <script src="armstrong_maplemeth_2026_files/plotly-binding/plotly.js"></script>
+    <script src="armstrong_maplemeth_2026_files/typedarray/typedarray.min.js"></script>
+    <script src="armstrong_maplemeth_2026_files/jquery/jquery.min.js"></script>
+    <link href="armstrong_maplemeth_2026_files/crosstalk/css/crosstalk.min.css" rel="stylesheet" />
+    <script src="armstrong_maplemeth_2026_files/crosstalk/js/crosstalk.min.js"></script>
+    <link href="armstrong_maplemeth_2026_files/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+    <script src="armstrong_maplemeth_2026_files/plotly-main/plotly-latest.min.js"></script>
+    <script src="zoom.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="zoom.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Misperceiving Party Positions:<br>Consequences for Spatial Voting and Democratic Satisfaction
+]
+.author[
+### Chris Alcantara, Laura Stepenson and Dave Armstrong
+]
+.date[
+### 2026-05-06
+]
+
+---
+
+class: slide-vcenter
+
+
+
+
+
+&lt;style type="text/css"&gt;
+.slide-vcenter {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.slide-vcenter .content {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;   /* center horizontally */
+}
+
+.slide-vcenter .content &gt; * {
+  width: 100%;              /* ← key line */
+}
+
+.remark-slide-content {
+  font-size: 32px;
+}
+
+.remark-slide-content .small{
+  font-size: 16px;
+}
+
+&lt;/style&gt;
+
+## Motivation
+
+
+.content[
+&lt;img src="images/spat_voting.svg" width="100%" /&gt;
+]
+
+
+???
+
+In a spatial voting model, how do we think about where parties are? 
+- Where people truly think parties are is likely idiosyncratic. 
+- Idiosyncratic placements in surveys are potentially endogenous to vote choice. 
+- Expert placements are fixed across individuals. 
+- Is there something better?
+
+
+---
+
+## Previous Work in Canada 
+
+&lt;img src="images/expert_citizen_bbt_lr.png" width="75%" style="display: block; margin: auto;" /&gt;
+
+.small[
+Christopher Alcantara, David A. Armstrong II and Laura Stephenson (2025) 'Do Experts and Citizens Perceive Party Competition Similarly?' _Party Politics_ 31(1): 15-28.
+]
+
+???
+
+Voters have, on average, coherent ideas about where parties are that are not _so_ different from the experts. 
+
+---
+## Previous Work in Canada
+
+&lt;center&gt;
+&lt;img src="images/group_bbt_lr.png" class="zoomable" data-scale="2.5" style="width:50%;"&gt;
+&lt;/center&gt;
+
+???
+
+These differences are systematic 
+- Men are closer to experts than women with more distinction between parties
+- Older voters are closer to experts than younger ones. 
+- Higher educated voters are closer to experts than less educated ones.
+- Those in the centre are closer to the experts than those on the left or right. 
+
+---
+
+## Research Questions
+
+1. Are the things we found in Canada similar in other contexts?
+2. Does this have implications for how we think about spatial voting models?
+3. Are voters who are more out of step with the experts less satisfied with democracy?
+
+---
+
+## Expectations
+
+1. Differences in perceptions of party placements are structured
+
+  - Individual factors: Age, Edcuation, Income, Gender, Knowledge, Ideology
+  - System-level factors: Type of Electoral System, Number of Parties, Economic Inequality, Regime age
+
+--
+
+2. That structure helps predict vote choice in a spatial voting model. 
+
+--
+
+3. People who see politics as different from the experts are less satisfied with democracy. 
+
+
+
+---
+
+## Data: CSES Integrated Module Dataset
+
+_Demographcis_
+- Age: 18-44, 45-64, 65+
+- Gender: Male, Female
+- Education: Secondary or Less, Some post-secondary, University Degree
+- Income: Low (bottom `\(20\%\)`), Middle (mid `\(60\%\)`), High (highest `\(20\%\)`)
+- Political Knowledge: Low, High
+- Ideology: Left (0-2), Centre (3-7), Right (8-10)
+
+---
+
+## Data: CSES Integrated Module Dataset
+
+_Party Placements_
+- CSES expert party placement
+- Individual left-right placement
+- Individual left-right placement of each party
+
+_System_
+- Effective Number of Electoral Parties
+- Type of Electoral System (PR, Majoritarian, Mixed)
+- Regime Age
+- GINI Coefficient (Gapminder)
+
+---
+
+## Procrustes Mapping 
+
+`$$\text{Expert}_{j} = a_i + b_i \text{Individual}_{ij} + e_{ij}$$`
+`\(b_i\)` is the _scale_ parameter 
+- If `\(b_i &lt; 1\)`, individual's placements are wider than experts
+- if `\(b_i &gt; 1\)`, individual's placements are narrower than experts
+
+`\(a_i\)` is the shift parameter
+- If `\(a_i &lt; 0\)`, individuals place parties to the right of experts, on average. 
+- If `\(a_i &gt; 0\)`, individuals place parties to the left or experts, on average. 
+
+
+???
+
+Even though experts and respondents are nominally on the same scale, they may use the scale differently. 
+
+When evaluating their similarities, we want to remove as much of that scale-use difference as possible. 
+
+---
+
+## Scale and Shift Parameters
+
+&lt;center&gt;
+<div class="plotly html-widget html-fill-item" id="htmlwidget-82ac77cbf2ebd4728b23" style="width:65%;height:252px;"></div>
+<script type="application/json" data-for="htmlwidget-82ac77cbf2ebd4728b23">{"x":{"visdat":{"15b4e5b273633":["function () ","plotlyVisDat"]},"cur_data":"15b4e5b273633","attrs":{"15b4e5b273633":{"x":{},"y":{},"mode":"markers","text":{},"hoverinfo":"text","marker":{"color":"black"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"width":500,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"Shift (a)","showline":false,"zeroline":false,"showgrid":false,"ticks":"","showticklabels":true},"yaxis":{"domain":[0,1],"automargin":true,"title":"Scale (b)","showline":false,"zeroline":false,"showgrid":false,"ticks":"","showticklabels":true},"plot_bgcolor":"white","paper_bgcolor":"white","shapes":[{"type":"line","x0":-0.017343276965022407,"x1":6.0856044151139681,"y0":1,"y1":1,"line":{"dash":"dash","color":"gray80"}},{"type":"line","x0":0,"x1":0,"y0":-0.18931814885589762,"y1":1.0076165160135073,"line":{"dash":"dash","color":"gray80"}}],"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[4.2157305392611004,2.0459521385979813,1.1462216002533352,2.185442747183072,5.4624049763266278,2.4290745618835907,1.9501222772794298,0.69777213156154494,1.7939813528447635,3.0624244913738057,1.8244153754296681,1.5768273599150928,2.679624093547937,1.9270405478838084,0.46282974536547977,0.37361308568346074,2.7890455253224573,3.2020836872242691,1.7855103117504394,1.0415224548985234,2.2902891558704774,1.1278305839374527,-0.017343276965022407,0.91482775641545766,4.2307910547032392,3.6849372796207756,2.818844172374483,2.7228075398544305,1.0540975269232207,2.556973939972127,4.4669628394448768,2.0535101321971081,1.6272566521278078,3.7001175133161612,2.3696498742944132,3.2027103538890098,3.4279698676827799,1.6733762497325966,4.9898649313560623,2.4165465055872013,4.4260010134891434,0.73517446964877298,6.0856044151139681],"y":[0.15892354419708213,0.48391722938360393,0.86918128930025473,0.52159315467939438,0.096167819389296555,0.43561839345434444,0.66789346391031346,0.79015758917606393,0.63289137715920185,0.47968132919853435,0.69189787923286084,0.59296983094212496,0.42768734439668926,0.61981294446011026,0.81923294678198499,0.82117948638989058,0.52251814157261756,0.4549569298755769,0.58956097156852116,0.72165962725649024,0.61581724037563557,0.75171239745689011,1.0076165160135073,0.79595550443044916,0.25704787557671904,0.35133388254682213,0.28309933140796362,0.52501618065677158,0.73772650470430556,0.54814423762068509,0.24812745250201043,0.53863121566363903,0.67307264068175887,0.27469839152041103,0.45488642770908083,0.47260701722379206,0.45266180656466365,0.68519856273660329,0.0046315440917823227,0.64381983879945504,0.14986138143194094,0.72446952242945417,-0.18931814885589762],"mode":"markers","text":["Albania<br />Years: 2005","Australia<br />Years: 1996,2007","Austria<br />Years: 2008,2017","Belgium<br />Years: 1999,2019","Brazil<br />Years: 2006,2018","Canada<br />Years: 1997,2008,2011,2015,2019","Switzerland<br />Years: 2003,2011,2019","Chile<br />Years: 2005,2017","Czechia<br />Years: 1996,2002,2017,2021","Germany<br />Years: 1998","Denmark<br />Years: 1998,2007,2019","Spain<br />Years: 2008","Estonia<br />Years: 2011","Finland<br />Years: 2003,2011,2015,2019","France<br />Years: 2002,2012","Greece<br />Years: 2015,2009,2012","Croatia<br />Years: 2007","Hungary<br />Years: 2002","Ireland<br />Years: 2002,2007","Iceland<br />Years: 1999,2003,2007,2009,2013","Israel<br />Years: 1996,2003,2006,2020","Italy<br />Years: 2006,2018","Japan<br />Years: 2007,2013","South Korea<br />Years: 2000,2008,2016","Lithuania<br />Years: 2016","Latvia<br />Years: 2010,2011,2014","Mexico<br />Years: 2000,2006,2009,2012,2018","Netherlands<br />Years: 2002,2006,2010,2017,2021","Norway<br />Years: 2005,2009,2013,2017","New Zealand<br />Years: 1996,2002,2008,2014,2017,2020","Peru<br />Years: 2006,2011,2021","Poland<br />Years: 1997,2005,2007","Portugal<br />Years: 2009","Romania<br />Years: 2012","Russia<br />Years: 1999","Slovakia<br />Years: 2010","Slovenia<br />Years: 2004,2008,2011","Sweden<br />Years: 1998,2014,2018","Tunisia<br />Years: 2019","Turkey<br />Years: 2015,2018","Taiwan<br />Years: 2001,2004","Uruguay<br />Years: 2009","South Africa<br />Years: 2009,2014"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"marker":{"color":"black","line":{"color":"rgba(31,119,180,1)"}},"type":"scatter","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+&lt;/center&gt;
+
+???
+
+On average, people are - shifted to the left of experts and have wider spread than the experts. 
+
+---
+
+## Squared Correlation with the Experts
+
+&lt;img src="armstrong_maplemeth_2026_files/figure-html/unnamed-chunk-5-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Is Correspondence with Experts Systematic? 
+
+For each Country-Year: 
+
+`$$\text{sinh}^{-1}(\text{RMSE}_i) = \mathbf{bx}_{i} + e_i$$`
+
+where `\(\mathbf{x}_i\)` has the individual characteristics mentioned above. 
+
+--
+
+Calculated differecnce in average predictions between the two polar groups (e.g., youngest vs oldest)
+
+
+---
+
+## Age 
+
+&lt;center&gt;
+<div class="plotly html-widget html-fill-item" id="htmlwidget-d200c5f0d854fa8fc237" style="width:100%;height:252px;"></div>
+<script type="application/json" data-for="htmlwidget-d200c5f0d854fa8fc237">{"x":{"visdat":{"15b4e6dfb3762":["function () ","plotlyVisDat"]},"cur_data":"15b4e6dfb3762","attrs":{"15b4e6dfb3762":{"x":{},"y":{},"text":{},"hoverinfo":"text","color":{},"colors":["#B2182B","#EF8A62","#67A9CF","#2166AC"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"width":1000,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"","tickangle":-45,"showticklabels":false,"type":"category","categoryorder":"array","categoryarray":["JPN_3","AUS_3","PRT_3","NZL_2","JPN_4","GRC_4","NLD_2","TUR_4","IRL_3","CAN_3","FIN_3","SVK_3","POL_1","BRA_3","POL_3","CZE_1","HRV_3","MEX_1","NZL_4","ISR_3","CHL_2","IRL_2","DEU_1","CAN_4","FRA_4","PER_2","PER_3","FIN_4","NOR_3","NLD_3","ALB_2","LVA_4","ISR_2","HUN_2","MEX_3","NZL_3","ZAF_4","MEX_4","FRA_2","ROU_4","CZE_2","AUS_1","TWN_2","EST_3","GRC_3","NOR_4","CAN_1","FIN_2","SVN_2","CHE_2","NZL_1","ISR_1","SVN_4","ISL_4","ITA_2","SWE_4","AUT_3","SWE_1","DNK_3","ESP_3","BEL_1","ISL_3","CHE_4"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Estimate"},"plot_bgcolor":"white","paper_bgcolor":"white","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["JPN_3","AUS_3","PRT_3","NZL_2","JPN_4","GRC_4","NLD_2","CAN_3","FIN_3","SVK_3","POL_1","POL_3"],"y":[-0.14113765406300932,-0.071397670437438818,-0.07088001341483173,-0.064045671148454802,-0.061442762801459293,-0.059428354625677512,-0.057732201022511719,-0.042548379817008986,-0.040211452703677555,-0.040198290326992063,-0.036570379489090372,-0.034440250726913348],"text":["Japan<br />Wave: 3<br />Estimate: -0.141","Australia<br />Wave: 3<br />Estimate: -0.071","Portugal<br />Wave: 3<br />Estimate: -0.071","New Zealand<br />Wave: 2<br />Estimate: -0.064","Japan<br />Wave: 4<br />Estimate: -0.061","Greece<br />Wave: 4<br />Estimate: -0.059","Netherlands<br />Wave: 2<br />Estimate: -0.058","Canada<br />Wave: 3<br />Estimate: -0.043","Finland<br />Wave: 3<br />Estimate: -0.04","Slovakia<br />Wave: 3<br />Estimate: -0.04","Poland<br />Wave: 1<br />Estimate: -0.037","Poland<br />Wave: 3<br />Estimate: -0.034"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text"],"type":"bar","name":"Sig -","marker":{"color":"rgba(178,24,43,1)","line":{"color":"rgba(178,24,43,1)"}},"textfont":{"color":"rgba(178,24,43,1)"},"error_y":{"color":"rgba(178,24,43,1)"},"error_x":{"color":"rgba(178,24,43,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["TUR_4","IRL_3","BRA_3","CZE_1","HRV_3","MEX_1","NZL_4","ISR_3","CHL_2","IRL_2","DEU_1","CAN_4","FRA_4","PER_2","PER_3","FIN_4","NOR_3","NLD_3","ALB_2","LVA_4","ISR_2"],"y":[-0.052862809618003152,-0.046263885521819613,-0.036085022366258837,-0.0297726559385274,-0.026627859875605338,-0.025542080981830542,-0.024891295779212588,-0.023796873427753936,-0.022951368746620043,-0.021258425404321008,-0.018937257801067323,-0.013120971895315083,-0.012822563846530523,-0.012171259232412444,-0.010335227976449757,-0.0098256369241497016,-0.0088003297304424938,-0.0083720736315069221,-0.0038437906012300511,-0.0032097537070127254,-0.00095306493020120187],"text":["Turkey<br />Wave: 4<br />Estimate: -0.053","Ireland<br />Wave: 3<br />Estimate: -0.046","Brazil<br />Wave: 3<br />Estimate: -0.036","Czechia<br />Wave: 1<br />Estimate: -0.03","Croatia<br />Wave: 3<br />Estimate: -0.027","Mexico<br />Wave: 1<br />Estimate: -0.026","New Zealand<br />Wave: 4<br />Estimate: -0.025","Israel<br />Wave: 3<br />Estimate: -0.024","Chile<br />Wave: 2<br />Estimate: -0.023","Ireland<br />Wave: 2<br />Estimate: -0.021","Germany<br />Wave: 1<br />Estimate: -0.019","Canada<br />Wave: 4<br />Estimate: -0.013","France<br />Wave: 4<br />Estimate: -0.013","Peru<br />Wave: 2<br />Estimate: -0.012","Peru<br />Wave: 3<br />Estimate: -0.01","Finland<br />Wave: 4<br />Estimate: -0.01","Norway<br />Wave: 3<br />Estimate: -0.009","Netherlands<br />Wave: 3<br />Estimate: -0.008","Albania<br />Wave: 2<br />Estimate: -0.004","Latvia<br />Wave: 4<br />Estimate: -0.003","Israel<br />Wave: 2<br />Estimate: -0.001"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"bar","name":"Insig - ","marker":{"color":"rgba(239,138,98,1)","line":{"color":"rgba(239,138,98,1)"}},"textfont":{"color":"rgba(239,138,98,1)"},"error_y":{"color":"rgba(239,138,98,1)"},"error_x":{"color":"rgba(239,138,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["HUN_2","MEX_3","NZL_3","ZAF_4","MEX_4","FRA_2","ROU_4","CZE_2","AUS_1","TWN_2","EST_3","GRC_3","NOR_4","CAN_1","FIN_2","SVN_2","CHE_2","ISR_1","SVN_4","ITA_2","ESP_3"],"y":[0.0018723363049153313,0.0032471797541559432,0.0056849128536538927,0.0066099631705065021,0.0072286709914987689,0.0077986497761666305,0.0089025534611585581,0.011389744733055381,0.011785033913759393,0.013120250112011076,0.015694139785532059,0.017262008575047432,0.02063551864386861,0.022129831805203039,0.025230267562463514,0.025262172503179858,0.025817618628352225,0.026704892801786093,0.035053408516429574,0.048047344920533891,0.062471344889945844],"text":["Hungary<br />Wave: 2<br />Estimate: 0.002","Mexico<br />Wave: 3<br />Estimate: 0.003","New Zealand<br />Wave: 3<br />Estimate: 0.006","South Africa<br />Wave: 4<br />Estimate: 0.007","Mexico<br />Wave: 4<br />Estimate: 0.007","France<br />Wave: 2<br />Estimate: 0.008","Romania<br />Wave: 4<br />Estimate: 0.009","Czechia<br />Wave: 2<br />Estimate: 0.011","Australia<br />Wave: 1<br />Estimate: 0.012","Taiwan<br />Wave: 2<br />Estimate: 0.013","Estonia<br />Wave: 3<br />Estimate: 0.016","Greece<br />Wave: 3<br />Estimate: 0.017","Norway<br />Wave: 4<br />Estimate: 0.021","Canada<br />Wave: 1<br />Estimate: 0.022","Finland<br />Wave: 2<br />Estimate: 0.025","Slovenia<br />Wave: 2<br />Estimate: 0.025","Switzerland<br />Wave: 2<br />Estimate: 0.026","Israel<br />Wave: 1<br />Estimate: 0.027","Slovenia<br />Wave: 4<br />Estimate: 0.035","Italy<br />Wave: 2<br />Estimate: 0.048","Spain<br />Wave: 3<br />Estimate: 0.062"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"bar","name":"Insig +","marker":{"color":"rgba(103,169,207,1)","line":{"color":"rgba(103,169,207,1)"}},"textfont":{"color":"rgba(103,169,207,1)"},"error_y":{"color":"rgba(103,169,207,1)"},"error_x":{"color":"rgba(103,169,207,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["NZL_1","ISL_4","SWE_4","AUT_3","SWE_1","DNK_3","BEL_1","ISL_3","CHE_4"],"y":[0.026696532908482937,0.042255019965488888,0.054287911669123202,0.057107309221412259,0.061083927281220529,0.061912442397347091,0.065188143080620958,0.076086471691322377,0.078708289414660362],"text":["New Zealand<br />Wave: 1<br />Estimate: 0.027","Iceland<br />Wave: 4<br />Estimate: 0.042","Sweden<br />Wave: 4<br />Estimate: 0.054","Austria<br />Wave: 3<br />Estimate: 0.057","Sweden<br />Wave: 1<br />Estimate: 0.061","Denmark<br />Wave: 3<br />Estimate: 0.062","Belgium<br />Wave: 1<br />Estimate: 0.065","Iceland<br />Wave: 3<br />Estimate: 0.076","Switzerland<br />Wave: 4<br />Estimate: 0.079"],"hoverinfo":["text","text","text","text","text","text","text","text","text"],"type":"bar","name":"Sig +","marker":{"color":"rgba(33,102,172,1)","line":{"color":"rgba(33,102,172,1)"}},"textfont":{"color":"rgba(33,102,172,1)"},"error_y":{"color":"rgba(33,102,172,1)"},"error_x":{"color":"rgba(33,102,172,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+&lt;/center&gt;
+
+???
+
+Positive values indicate older people have greater RMSE than younger people
+
+---
+
+## Gender 
+
+&lt;center&gt;
+<div class="plotly html-widget html-fill-item" id="htmlwidget-4f59a89b6ed013743b83" style="width:100%;height:252px;"></div>
+<script type="application/json" data-for="htmlwidget-4f59a89b6ed013743b83">{"x":{"visdat":{"15b4e2d500549":["function () ","plotlyVisDat"]},"cur_data":"15b4e2d500549","attrs":{"15b4e2d500549":{"x":{},"y":{},"text":{},"hoverinfo":"text","color":{},"colors":["#B2182B","#EF8A62","#67A9CF","#2166AC"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"width":1000,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"","tickangle":-45,"showticklabels":false,"type":"category","categoryorder":"array","categoryarray":["POL_3","GRC_3","ITA_2","TUR_4","ROU_4","ISL_3","TWN_2","ESP_3","SWE_1","AUS_1","HUN_2","HRV_3","BRA_3","PER_3","ISR_3","DNK_3","FIN_2","NZL_3","SWE_4","MEX_3","ZAF_4","POL_1","CHL_2","ISR_1","PER_2","GRC_4","MEX_1","CHE_4","MEX_4","PRT_3","FIN_3","NLD_3","LVA_4","SVN_4","FIN_4","NZL_2","ISL_4","IRL_2","NOR_3","NOR_4","AUT_3","SVK_3","FRA_4","SVN_2","BEL_1","CZE_2","ALB_2","JPN_4","ISR_2","JPN_3","CHE_2","CAN_3","NZL_1","NLD_2","CZE_1","EST_3","CAN_1","CAN_4","IRL_3","DEU_1","NZL_4","AUS_3","FRA_2"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Estimate"},"plot_bgcolor":"white","paper_bgcolor":"white","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["POL_3"],"y":[-0.03270062988650501],"text":"Poland<br />Wave: 3<br />Estimate: -0.033","hoverinfo":"text","type":"bar","name":"Sig -","marker":{"color":"rgba(178,24,43,1)","line":{"color":"rgba(178,24,43,1)"}},"textfont":{"color":"rgba(178,24,43,1)"},"error_y":{"color":"rgba(178,24,43,1)"},"error_x":{"color":"rgba(178,24,43,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["GRC_3","ITA_2","TUR_4","ROU_4","ISL_3","TWN_2","ESP_3","SWE_1","AUS_1","HUN_2","HRV_3","BRA_3","PER_3","ISR_3"],"y":[-0.021643375423827334,-0.018748646742418822,-0.015135209137653396,-0.014305837182145897,-0.013768471270818337,-0.012269223176108745,-0.0097731897587059573,-0.0086897727311781806,-0.0081353528134477174,-0.0066798530112210115,-0.0053529160059151036,-0.0023405721682981397,-0.0018660215044857566,-0.0016203140265054247],"text":["Greece<br />Wave: 3<br />Estimate: -0.022","Italy<br />Wave: 2<br />Estimate: -0.019","Turkey<br />Wave: 4<br />Estimate: -0.015","Romania<br />Wave: 4<br />Estimate: -0.014","Iceland<br />Wave: 3<br />Estimate: -0.014","Taiwan<br />Wave: 2<br />Estimate: -0.012","Spain<br />Wave: 3<br />Estimate: -0.01","Sweden<br />Wave: 1<br />Estimate: -0.009","Australia<br />Wave: 1<br />Estimate: -0.008","Hungary<br />Wave: 2<br />Estimate: -0.007","Croatia<br />Wave: 3<br />Estimate: -0.005","Brazil<br />Wave: 3<br />Estimate: -0.002","Peru<br />Wave: 3<br />Estimate: -0.002","Israel<br />Wave: 3<br />Estimate: -0.002"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"bar","name":"Insig - ","marker":{"color":"rgba(239,138,98,1)","line":{"color":"rgba(239,138,98,1)"}},"textfont":{"color":"rgba(239,138,98,1)"},"error_y":{"color":"rgba(239,138,98,1)"},"error_x":{"color":"rgba(239,138,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["DNK_3","FIN_2","NZL_3","SWE_4","MEX_3","ZAF_4","POL_1","CHL_2","ISR_1","PER_2","GRC_4","MEX_1","MEX_4","PRT_3","FIN_3","LVA_4","SVN_4","FIN_4","NZL_2","ISL_4","IRL_2","AUT_3","SVK_3","SVN_2","CZE_2","ISR_2","JPN_3"],"y":[0.00025181712344378367,0.00048229728549297986,0.0029241909432870306,0.0040645326632497859,0.0043703617790124593,0.004613988430310815,0.0061798206056363049,0.006967094336353832,0.0071602433490369618,0.0081738798761772542,0.0092228353313048364,0.01017236306384107,0.013912080378189959,0.014134693641956613,0.014625454565534556,0.017002885960291054,0.017042104933771542,0.017352893821087595,0.017480899915346446,0.017549166129507049,0.018133656673945234,0.019006449173031105,0.019237702421717819,0.022936945227761761,0.024247843871061627,0.025994365946919347,0.027605004422341716],"text":["Denmark<br />Wave: 3<br />Estimate: 0","Finland<br />Wave: 2<br />Estimate: 0","New Zealand<br />Wave: 3<br />Estimate: 0.003","Sweden<br />Wave: 4<br />Estimate: 0.004","Mexico<br />Wave: 3<br />Estimate: 0.004","South Africa<br />Wave: 4<br />Estimate: 0.005","Poland<br />Wave: 1<br />Estimate: 0.006","Chile<br />Wave: 2<br />Estimate: 0.007","Israel<br />Wave: 1<br />Estimate: 0.007","Peru<br />Wave: 2<br />Estimate: 0.008","Greece<br />Wave: 4<br />Estimate: 0.009","Mexico<br />Wave: 1<br />Estimate: 0.01","Mexico<br />Wave: 4<br />Estimate: 0.014","Portugal<br />Wave: 3<br />Estimate: 0.014","Finland<br />Wave: 3<br />Estimate: 0.015","Latvia<br />Wave: 4<br />Estimate: 0.017","Slovenia<br />Wave: 4<br />Estimate: 0.017","Finland<br />Wave: 4<br />Estimate: 0.017","New Zealand<br />Wave: 2<br />Estimate: 0.017","Iceland<br />Wave: 4<br />Estimate: 0.018","Ireland<br />Wave: 2<br />Estimate: 0.018","Austria<br />Wave: 3<br />Estimate: 0.019","Slovakia<br />Wave: 3<br />Estimate: 0.019","Slovenia<br />Wave: 2<br />Estimate: 0.023","Czechia<br />Wave: 2<br />Estimate: 0.024","Israel<br />Wave: 2<br />Estimate: 0.026","Japan<br />Wave: 3<br />Estimate: 0.028"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"bar","name":"Insig +","marker":{"color":"rgba(103,169,207,1)","line":{"color":"rgba(103,169,207,1)"}},"textfont":{"color":"rgba(103,169,207,1)"},"error_y":{"color":"rgba(103,169,207,1)"},"error_x":{"color":"rgba(103,169,207,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["CHE_4","NLD_3","NOR_3","NOR_4","FRA_4","BEL_1","ALB_2","JPN_4","CHE_2","CAN_3","NZL_1","NLD_2","CZE_1","EST_3","CAN_1","CAN_4","IRL_3","DEU_1","NZL_4","AUS_3","FRA_2"],"y":[0.013703199075794601,0.014935149735054739,0.018588318322598881,0.018863026871599436,0.022533906299564935,0.023075145202770337,0.02476869350309234,0.025977213444828867,0.0279572960600184,0.02839448705414287,0.029744893796392499,0.032787000576695507,0.033583535464519004,0.034345443539700114,0.035175677897007616,0.038799585672928266,0.03997499742340014,0.042494076435378982,0.045551993833335865,0.054261763712418525,0.065071018342855183],"text":["Switzerland<br />Wave: 4<br />Estimate: 0.014","Netherlands<br />Wave: 3<br />Estimate: 0.015","Norway<br />Wave: 3<br />Estimate: 0.019","Norway<br />Wave: 4<br />Estimate: 0.019","France<br />Wave: 4<br />Estimate: 0.023","Belgium<br />Wave: 1<br />Estimate: 0.023","Albania<br />Wave: 2<br />Estimate: 0.025","Japan<br />Wave: 4<br />Estimate: 0.026","Switzerland<br />Wave: 2<br />Estimate: 0.028","Canada<br />Wave: 3<br />Estimate: 0.028","New Zealand<br />Wave: 1<br />Estimate: 0.03","Netherlands<br />Wave: 2<br />Estimate: 0.033","Czechia<br />Wave: 1<br />Estimate: 0.034","Estonia<br />Wave: 3<br />Estimate: 0.034","Canada<br />Wave: 1<br />Estimate: 0.035","Canada<br />Wave: 4<br />Estimate: 0.039","Ireland<br />Wave: 3<br />Estimate: 0.04","Germany<br />Wave: 1<br />Estimate: 0.042","New Zealand<br />Wave: 4<br />Estimate: 0.046","Australia<br />Wave: 3<br />Estimate: 0.054","France<br />Wave: 2<br />Estimate: 0.065"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"bar","name":"Sig +","marker":{"color":"rgba(33,102,172,1)","line":{"color":"rgba(33,102,172,1)"}},"textfont":{"color":"rgba(33,102,172,1)"},"error_y":{"color":"rgba(33,102,172,1)"},"error_x":{"color":"rgba(33,102,172,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+&lt;/center&gt;
+
+???
+
+Positive values indicate women have greater RMSE than men
+---
+
+## Education and Correspondence with Experts
+
+&lt;center&gt;
+<div class="plotly html-widget html-fill-item" id="htmlwidget-5e490677b13c2ba48179" style="width:100%;height:252px;"></div>
+<script type="application/json" data-for="htmlwidget-5e490677b13c2ba48179">{"x":{"visdat":{"15b4e75cd906f":["function () ","plotlyVisDat"]},"cur_data":"15b4e75cd906f","attrs":{"15b4e75cd906f":{"x":{},"y":{},"text":{},"hoverinfo":"text","color":{},"colors":["#B2182B","#EF8A62","#67A9CF","#2166AC"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"width":1000,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"","tickangle":-45,"showticklabels":false,"type":"category","categoryorder":"array","categoryarray":["AUT_3","FIN_2","CHE_4","NOR_4","NZL_2","PRT_3","NLD_2","AUS_3","NLD_3","DEU_1","CAN_1","FRA_4","AUS_1","JPN_4","JPN_3","FRA_2","POL_1","FIN_3","ISR_3","NZL_1","BEL_1","FIN_4","CHE_2","NZL_3","NOR_3","SWE_4","ESP_3","CAN_3","SVN_2","CZE_2","ISR_1","HUN_2","POL_3","SWE_1","CHL_2","ISL_4","ISR_2","IRL_2","ROU_4","LVA_4","GRC_3","HRV_3","CAN_4","MEX_4","PER_2","IRL_3","SVN_4","TWN_2","EST_3","ISL_3","GRC_4","ALB_2","TUR_4","PER_3","SVK_3","CZE_1","MEX_3","NZL_4","ITA_2","MEX_1","BRA_3","ZAF_4","DNK_3"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Estimate"},"plot_bgcolor":"white","paper_bgcolor":"white","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["AUT_3","FIN_2","CHE_4","NOR_4","NZL_2","PRT_3","NLD_2","AUS_3","NLD_3","DEU_1","CAN_1","FRA_4","AUS_1","JPN_4","JPN_3","FRA_2","POL_1","FIN_3","ISR_3","NZL_1","BEL_1","FIN_4","CHE_2","NZL_3","NOR_3","SWE_4","CAN_3","CZE_2","ISR_1","HUN_2","POL_3","SWE_1","ISL_4","IRL_2","ROU_4","LVA_4","CAN_4"],"y":[-0.14531876974369784,-0.13355963423529729,-0.13280795380357716,-0.096701807539518944,-0.0916073209865403,-0.090133240754280683,-0.089614174602860044,-0.089516455909543671,-0.080826709191260573,-0.077620163221640545,-0.075313799528650291,-0.074823034942077926,-0.07387997469532348,-0.0696590531436245,-0.067652750081742291,-0.064679046378851607,-0.063699008508708618,-0.062846440268451306,-0.061494990156761957,-0.061208927692688542,-0.060271770798382286,-0.060178114007440546,-0.059602764185151619,-0.056436331835427754,-0.05570770325677863,-0.050020807947074135,-0.047253757885639951,-0.045772415231201694,-0.043823962218590348,-0.041435585903675527,-0.038885126091315655,-0.038365458717349435,-0.033361390637484833,-0.031252938330711154,-0.031162478039549579,-0.030859427363961748,-0.028020296012837901],"text":["Austria<br />Wave: 3<br />Estimate: -0.145","Finland<br />Wave: 2<br />Estimate: -0.134","Switzerland<br />Wave: 4<br />Estimate: -0.133","Norway<br />Wave: 4<br />Estimate: -0.097","New Zealand<br />Wave: 2<br />Estimate: -0.092","Portugal<br />Wave: 3<br />Estimate: -0.09","Netherlands<br />Wave: 2<br />Estimate: -0.09","Australia<br />Wave: 3<br />Estimate: -0.09","Netherlands<br />Wave: 3<br />Estimate: -0.081","Germany<br />Wave: 1<br />Estimate: -0.078","Canada<br />Wave: 1<br />Estimate: -0.075","France<br />Wave: 4<br />Estimate: -0.075","Australia<br />Wave: 1<br />Estimate: -0.074","Japan<br />Wave: 4<br />Estimate: -0.07","Japan<br />Wave: 3<br />Estimate: -0.068","France<br />Wave: 2<br />Estimate: -0.065","Poland<br />Wave: 1<br />Estimate: -0.064","Finland<br />Wave: 3<br />Estimate: -0.063","Israel<br />Wave: 3<br />Estimate: -0.061","New Zealand<br />Wave: 1<br />Estimate: -0.061","Belgium<br />Wave: 1<br />Estimate: -0.06","Finland<br />Wave: 4<br />Estimate: -0.06","Switzerland<br />Wave: 2<br />Estimate: -0.06","New Zealand<br />Wave: 3<br />Estimate: -0.056","Norway<br />Wave: 3<br />Estimate: -0.056","Sweden<br />Wave: 4<br />Estimate: -0.05","Canada<br />Wave: 3<br />Estimate: -0.047","Czechia<br />Wave: 2<br />Estimate: -0.046","Israel<br />Wave: 1<br />Estimate: -0.044","Hungary<br />Wave: 2<br />Estimate: -0.041","Poland<br />Wave: 3<br />Estimate: -0.039","Sweden<br />Wave: 1<br />Estimate: -0.038","Iceland<br />Wave: 4<br />Estimate: -0.033","Ireland<br />Wave: 2<br />Estimate: -0.031","Romania<br />Wave: 4<br />Estimate: -0.031","Latvia<br />Wave: 4<br />Estimate: -0.031","Canada<br />Wave: 4<br />Estimate: -0.028"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"bar","name":"Sig -","marker":{"color":"rgba(178,24,43,1)","line":{"color":"rgba(178,24,43,1)"}},"textfont":{"color":"rgba(178,24,43,1)"},"error_y":{"color":"rgba(178,24,43,1)"},"error_x":{"color":"rgba(178,24,43,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["ESP_3","SVN_2","CHL_2","ISR_2","GRC_3","HRV_3","MEX_4","PER_2","IRL_3","SVN_4","TWN_2","EST_3","ISL_3","GRC_4","ALB_2","TUR_4","PER_3","SVK_3","CZE_1","MEX_3","NZL_4"],"y":[-0.04828167033353499,-0.046868996216048252,-0.033615888728530073,-0.032986704961826638,-0.030492899815965115,-0.028814570329714892,-0.026060542073866242,-0.025546660922044474,-0.025527784628182369,-0.025016201096233755,-0.020037290939904112,-0.019330699378275206,-0.017837294214586765,-0.017612222738021838,-0.011896592842616825,-0.0097679894838691699,-0.0092360390584932169,-0.0066104524473354145,-0.0052219365906141964,-0.0047693358428977321,-2.8951903438371275e-05],"text":["Spain<br />Wave: 3<br />Estimate: -0.048","Slovenia<br />Wave: 2<br />Estimate: -0.047","Chile<br />Wave: 2<br />Estimate: -0.034","Israel<br />Wave: 2<br />Estimate: -0.033","Greece<br />Wave: 3<br />Estimate: -0.03","Croatia<br />Wave: 3<br />Estimate: -0.029","Mexico<br />Wave: 4<br />Estimate: -0.026","Peru<br />Wave: 2<br />Estimate: -0.026","Ireland<br />Wave: 3<br />Estimate: -0.026","Slovenia<br />Wave: 4<br />Estimate: -0.025","Taiwan<br />Wave: 2<br />Estimate: -0.02","Estonia<br />Wave: 3<br />Estimate: -0.019","Iceland<br />Wave: 3<br />Estimate: -0.018","Greece<br />Wave: 4<br />Estimate: -0.018","Albania<br />Wave: 2<br />Estimate: -0.012","Turkey<br />Wave: 4<br />Estimate: -0.01","Peru<br />Wave: 3<br />Estimate: -0.009","Slovakia<br />Wave: 3<br />Estimate: -0.007","Czechia<br />Wave: 1<br />Estimate: -0.005","Mexico<br />Wave: 3<br />Estimate: -0.005","New Zealand<br />Wave: 4<br />Estimate: 0"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"bar","name":"Insig - ","marker":{"color":"rgba(239,138,98,1)","line":{"color":"rgba(239,138,98,1)"}},"textfont":{"color":"rgba(239,138,98,1)"},"error_y":{"color":"rgba(239,138,98,1)"},"error_x":{"color":"rgba(239,138,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["ITA_2","MEX_1","BRA_3","ZAF_4","DNK_3"],"y":[0.00089522670608826289,0.0097336292507303294,0.011273141002461783,0.011910247332970372,0.015038603141216446],"text":["Italy<br />Wave: 2<br />Estimate: 0.001","Mexico<br />Wave: 1<br />Estimate: 0.01","Brazil<br />Wave: 3<br />Estimate: 0.011","South Africa<br />Wave: 4<br />Estimate: 0.012","Denmark<br />Wave: 3<br />Estimate: 0.015"],"hoverinfo":["text","text","text","text","text"],"type":"bar","name":"Insig +","marker":{"color":"rgba(103,169,207,1)","line":{"color":"rgba(103,169,207,1)"}},"textfont":{"color":"rgba(103,169,207,1)"},"error_y":{"color":"rgba(103,169,207,1)"},"error_x":{"color":"rgba(103,169,207,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+&lt;/center&gt;
+
+???
+
+Positive values indicate more educated people have greater RMSE than less educated people
+---
+
+## Income and Correspondence with Experts
+
+&lt;center&gt;
+<div class="plotly html-widget html-fill-item" id="htmlwidget-fc4f27b18c12ac7e689e" style="width:100%;height:252px;"></div>
+<script type="application/json" data-for="htmlwidget-fc4f27b18c12ac7e689e">{"x":{"visdat":{"15b4e30a63963":["function () ","plotlyVisDat"]},"cur_data":"15b4e30a63963","attrs":{"15b4e30a63963":{"x":{},"y":{},"text":{},"hoverinfo":"text","color":{},"colors":["#B2182B","#EF8A62","#67A9CF","#2166AC"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"width":1000,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"","tickangle":-45,"showticklabels":false,"type":"category","categoryorder":"array","categoryarray":["FRA_2","CHL_2","GRC_4","ISR_3","AUS_1","NZL_3","NLD_2","CHE_2","DNK_3","PRT_3","NZL_4","SWE_4","TUR_4","AUT_3","MEX_4","DEU_1","AUS_3","FIN_4","HRV_3","EST_3","CZE_2","CHE_4","BEL_1","FIN_2","NOR_3","ROU_4","ISR_1","FRA_4","JPN_3","ITA_2","CAN_4","SVN_4","POL_1","MEX_3","IRL_2","PER_2","CAN_1","NZL_1","FIN_3","NOR_4","NLD_3","ISL_4","CAN_3","LVA_4","IRL_3","CZE_1","POL_3","TWN_2","HUN_2","SVK_3","JPN_4","NZL_2","ISL_3","ESP_3","ISR_2","BRA_3","PER_3","ALB_2","SVN_2","ZAF_4","MEX_1","SWE_1","GRC_3"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Estimate"},"plot_bgcolor":"white","paper_bgcolor":"white","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["FRA_2","CHL_2","GRC_4","ISR_3","AUS_1","NZL_3","NLD_2","CHE_2","DNK_3","NZL_4","SWE_4","TUR_4","AUT_3","MEX_4","DEU_1","AUS_3","FIN_4","CHE_4","BEL_1","NOR_3","ROU_4","FRA_4","POL_1","MEX_3","PER_2","NZL_1","NLD_3"],"y":[-0.11992300280726949,-0.10579676594929766,-0.086517164038579675,-0.085164856067707864,-0.079374836535167026,-0.078822160569379157,-0.073334796928658172,-0.073215626727904534,-0.073157085374418743,-0.069037613956937222,-0.06813818797450906,-0.061603461331614422,-0.060551709674300194,-0.058056229009988226,-0.056253116546195865,-0.055629474071896265,-0.055153615603306998,-0.043909173312499314,-0.042738456401017456,-0.041095166621072543,-0.039254777131918862,-0.035898895892527156,-0.03300666874790098,-0.03216280133554595,-0.031439527425214137,-0.030355096407064231,-0.019496547816650524],"text":["France<br />Wave: 2<br />Estimate: -0.12","Chile<br />Wave: 2<br />Estimate: -0.106","Greece<br />Wave: 4<br />Estimate: -0.087","Israel<br />Wave: 3<br />Estimate: -0.085","Australia<br />Wave: 1<br />Estimate: -0.079","New Zealand<br />Wave: 3<br />Estimate: -0.079","Netherlands<br />Wave: 2<br />Estimate: -0.073","Switzerland<br />Wave: 2<br />Estimate: -0.073","Denmark<br />Wave: 3<br />Estimate: -0.073","New Zealand<br />Wave: 4<br />Estimate: -0.069","Sweden<br />Wave: 4<br />Estimate: -0.068","Turkey<br />Wave: 4<br />Estimate: -0.062","Austria<br />Wave: 3<br />Estimate: -0.061","Mexico<br />Wave: 4<br />Estimate: -0.058","Germany<br />Wave: 1<br />Estimate: -0.056","Australia<br />Wave: 3<br />Estimate: -0.056","Finland<br />Wave: 4<br />Estimate: -0.055","Switzerland<br />Wave: 4<br />Estimate: -0.044","Belgium<br />Wave: 1<br />Estimate: -0.043","Norway<br />Wave: 3<br />Estimate: -0.041","Romania<br />Wave: 4<br />Estimate: -0.039","France<br />Wave: 4<br />Estimate: -0.036","Poland<br />Wave: 1<br />Estimate: -0.033","Mexico<br />Wave: 3<br />Estimate: -0.032","Peru<br />Wave: 2<br />Estimate: -0.031","New Zealand<br />Wave: 1<br />Estimate: -0.03","Netherlands<br />Wave: 3<br />Estimate: -0.019"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"bar","name":"Sig -","marker":{"color":"rgba(178,24,43,1)","line":{"color":"rgba(178,24,43,1)"}},"textfont":{"color":"rgba(178,24,43,1)"},"error_y":{"color":"rgba(178,24,43,1)"},"error_x":{"color":"rgba(178,24,43,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["PRT_3","HRV_3","EST_3","CZE_2","FIN_2","ISR_1","JPN_3","ITA_2","CAN_4","SVN_4","IRL_2","CAN_1","FIN_3","NOR_4","ISL_4","CAN_3","LVA_4","IRL_3","CZE_1","POL_3","TWN_2","HUN_2","SVK_3","JPN_4","NZL_2","ISL_3"],"y":[-0.070421501141290796,-0.051295242976135649,-0.049452889354558431,-0.04609874027124404,-0.041899790102581956,-0.0376371687007045,-0.034499175793026082,-0.0338010529945834,-0.033432143924477652,-0.033190030127839713,-0.032061098139818528,-0.030567860410420446,-0.026646189336264059,-0.019965553547246322,-0.017964948577351165,-0.017775153194764817,-0.017742902679482506,-0.017511738681228389,-0.012853400858680751,-0.010438117323367841,-0.0087600303607640283,-0.0083464421555428069,-0.0065187563457197667,-0.005593626980698119,-0.0052273388258516837,-0.001344545930349803],"text":["Portugal<br />Wave: 3<br />Estimate: -0.07","Croatia<br />Wave: 3<br />Estimate: -0.051","Estonia<br />Wave: 3<br />Estimate: -0.049","Czechia<br />Wave: 2<br />Estimate: -0.046","Finland<br />Wave: 2<br />Estimate: -0.042","Israel<br />Wave: 1<br />Estimate: -0.038","Japan<br />Wave: 3<br />Estimate: -0.034","Italy<br />Wave: 2<br />Estimate: -0.034","Canada<br />Wave: 4<br />Estimate: -0.033","Slovenia<br />Wave: 4<br />Estimate: -0.033","Ireland<br />Wave: 2<br />Estimate: -0.032","Canada<br />Wave: 1<br />Estimate: -0.031","Finland<br />Wave: 3<br />Estimate: -0.027","Norway<br />Wave: 4<br />Estimate: -0.02","Iceland<br />Wave: 4<br />Estimate: -0.018","Canada<br />Wave: 3<br />Estimate: -0.018","Latvia<br />Wave: 4<br />Estimate: -0.018","Ireland<br />Wave: 3<br />Estimate: -0.018","Czechia<br />Wave: 1<br />Estimate: -0.013","Poland<br />Wave: 3<br />Estimate: -0.01","Taiwan<br />Wave: 2<br />Estimate: -0.009","Hungary<br />Wave: 2<br />Estimate: -0.008","Slovakia<br />Wave: 3<br />Estimate: -0.007","Japan<br />Wave: 4<br />Estimate: -0.006","New Zealand<br />Wave: 2<br />Estimate: -0.005","Iceland<br />Wave: 3<br />Estimate: -0.001"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"bar","name":"Insig - ","marker":{"color":"rgba(239,138,98,1)","line":{"color":"rgba(239,138,98,1)"}},"textfont":{"color":"rgba(239,138,98,1)"},"error_y":{"color":"rgba(239,138,98,1)"},"error_x":{"color":"rgba(239,138,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["ESP_3","ISR_2","BRA_3","PER_3","ALB_2","SVN_2","ZAF_4","MEX_1","SWE_1","GRC_3"],"y":[0.00037200617673526057,0.001585592764672126,0.0019139890827429467,0.010484802205820928,0.013841065185886049,0.014500316587944154,0.015260613630071657,0.018822703561553022,0.019193169434546013,0.029025676089514847],"text":["Spain<br />Wave: 3<br />Estimate: 0","Israel<br />Wave: 2<br />Estimate: 0.002","Brazil<br />Wave: 3<br />Estimate: 0.002","Peru<br />Wave: 3<br />Estimate: 0.01","Albania<br />Wave: 2<br />Estimate: 0.014","Slovenia<br />Wave: 2<br />Estimate: 0.015","South Africa<br />Wave: 4<br />Estimate: 0.015","Mexico<br />Wave: 1<br />Estimate: 0.019","Sweden<br />Wave: 1<br />Estimate: 0.019","Greece<br />Wave: 3<br />Estimate: 0.029"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text"],"type":"bar","name":"Insig +","marker":{"color":"rgba(103,169,207,1)","line":{"color":"rgba(103,169,207,1)"}},"textfont":{"color":"rgba(103,169,207,1)"},"error_y":{"color":"rgba(103,169,207,1)"},"error_x":{"color":"rgba(103,169,207,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+&lt;/center&gt;
+
+???
+
+Positive values indicate higher income people have greater RMSE than lower income people
+---
+
+## Knowledge and Correspondence with Experts
+
+&lt;center&gt;
+<div class="plotly html-widget html-fill-item" id="htmlwidget-1c1b58c1055ed389e538" style="width:100%;height:252px;"></div>
+<script type="application/json" data-for="htmlwidget-1c1b58c1055ed389e538">{"x":{"visdat":{"15b4e35fca34d":["function () ","plotlyVisDat"]},"cur_data":"15b4e35fca34d","attrs":{"15b4e35fca34d":{"x":{},"y":{},"text":{},"hoverinfo":"text","color":{},"colors":["#B2182B","#EF8A62","#67A9CF","#2166AC"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"width":1000,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"","tickangle":-45,"showticklabels":false,"type":"category","categoryorder":"array","categoryarray":["POL_3","ISR_2","AUS_1","NOR_4","NLD_3","SWE_4","NZL_4","CHE_4","GRC_3","FRA_2","DNK_3","PRT_3","NZL_3","HUN_2","BEL_1","CAN_1","CHE_2","FIN_2","FIN_3","NZL_1","ISR_3","MEX_4","JPN_4","SWE_1","NOR_3","SVN_2","ISL_3","DEU_1","FRA_4","FIN_4","JPN_3","ISR_1","IRL_3","NLD_2","CZE_1","IRL_2","POL_1","GRC_4","CAN_3","AUS_3","NZL_2","CHL_2","SVN_4","CAN_4","ESP_3","PER_2","PER_3","ALB_2","MEX_3","TUR_4","ROU_4","CZE_2","HRV_3","ISL_4","EST_3","LVA_4","MEX_1","ZAF_4","BRA_3","SVK_3","ITA_2","AUT_3","TWN_2"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Estimate"},"plot_bgcolor":"white","paper_bgcolor":"white","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["POL_3","ISR_2","AUS_1","NOR_4","NLD_3","SWE_4","NZL_4","CHE_4","GRC_3","FRA_2","DNK_3","PRT_3","NZL_3","HUN_2","BEL_1","CAN_1","CHE_2","FIN_2","FIN_3","NZL_1","ISR_3","JPN_4","SWE_1","NOR_3","SVN_2","ISL_3","DEU_1","FRA_4","FIN_4","JPN_3","ISR_1","IRL_3","NLD_2","CZE_1","IRL_2","POL_1","GRC_4","CAN_3","AUS_3","NZL_2","CHL_2","SVN_4","CAN_4","PER_2","PER_3","ALB_2","MEX_3"],"y":[-0.12388924586566605,-0.1160549253578842,-0.10606508361187575,-0.10513866325411159,-0.10403509820565586,-0.10289661623463943,-0.10226538971084619,-0.1009410743703532,-0.092879561563508059,-0.08770369614364916,-0.079876043933655397,-0.078867128744186568,-0.077422986798261623,-0.077297942499995623,-0.073309597004133406,-0.071049568579446248,-0.070395011012908654,-0.070060463506864304,-0.069831368413365374,-0.069587118191505731,-0.064392087260988939,-0.060903362655019014,-0.059971084815728722,-0.058965274625213664,-0.058318966853821444,-0.058032103219803045,-0.057836038137038762,-0.057499085822916789,-0.055489598636601731,-0.048779999649508354,-0.048421754748847856,-0.047833731925757149,-0.04661226364502738,-0.042904114224739366,-0.041957015342148192,-0.040847777940806164,-0.040820750302970436,-0.039760719370526512,-0.038225107818627563,-0.037596659575045953,-0.037318017093060478,-0.035524826627808134,-0.034074017280797321,-0.027400127834480554,-0.026066214208845681,-0.024719637298276111,-0.02453595819984123],"text":["Poland<br />Wave: 3<br />Estimate: -0.124","Israel<br />Wave: 2<br />Estimate: -0.116","Australia<br />Wave: 1<br />Estimate: -0.106","Norway<br />Wave: 4<br />Estimate: -0.105","Netherlands<br />Wave: 3<br />Estimate: -0.104","Sweden<br />Wave: 4<br />Estimate: -0.103","New Zealand<br />Wave: 4<br />Estimate: -0.102","Switzerland<br />Wave: 4<br />Estimate: -0.101","Greece<br />Wave: 3<br />Estimate: -0.093","France<br />Wave: 2<br />Estimate: -0.088","Denmark<br />Wave: 3<br />Estimate: -0.08","Portugal<br />Wave: 3<br />Estimate: -0.079","New Zealand<br />Wave: 3<br />Estimate: -0.077","Hungary<br />Wave: 2<br />Estimate: -0.077","Belgium<br />Wave: 1<br />Estimate: -0.073","Canada<br />Wave: 1<br />Estimate: -0.071","Switzerland<br />Wave: 2<br />Estimate: -0.07","Finland<br />Wave: 2<br />Estimate: -0.07","Finland<br />Wave: 3<br />Estimate: -0.07","New Zealand<br />Wave: 1<br />Estimate: -0.07","Israel<br />Wave: 3<br />Estimate: -0.064","Japan<br />Wave: 4<br />Estimate: -0.061","Sweden<br />Wave: 1<br />Estimate: -0.06","Norway<br />Wave: 3<br />Estimate: -0.059","Slovenia<br />Wave: 2<br />Estimate: -0.058","Iceland<br />Wave: 3<br />Estimate: -0.058","Germany<br />Wave: 1<br />Estimate: -0.058","France<br />Wave: 4<br />Estimate: -0.057","Finland<br />Wave: 4<br />Estimate: -0.055","Japan<br />Wave: 3<br />Estimate: -0.049","Israel<br />Wave: 1<br />Estimate: -0.048","Ireland<br />Wave: 3<br />Estimate: -0.048","Netherlands<br />Wave: 2<br />Estimate: -0.047","Czechia<br />Wave: 1<br />Estimate: -0.043","Ireland<br />Wave: 2<br />Estimate: -0.042","Poland<br />Wave: 1<br />Estimate: -0.041","Greece<br />Wave: 4<br />Estimate: -0.041","Canada<br />Wave: 3<br />Estimate: -0.04","Australia<br />Wave: 3<br />Estimate: -0.038","New Zealand<br />Wave: 2<br />Estimate: -0.038","Chile<br />Wave: 2<br />Estimate: -0.037","Slovenia<br />Wave: 4<br />Estimate: -0.036","Canada<br />Wave: 4<br />Estimate: -0.034","Peru<br />Wave: 2<br />Estimate: -0.027","Peru<br />Wave: 3<br />Estimate: -0.026","Albania<br />Wave: 2<br />Estimate: -0.025","Mexico<br />Wave: 3<br />Estimate: -0.025"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"bar","name":"Sig -","marker":{"color":"rgba(178,24,43,1)","line":{"color":"rgba(178,24,43,1)"}},"textfont":{"color":"rgba(178,24,43,1)"},"error_y":{"color":"rgba(178,24,43,1)"},"error_x":{"color":"rgba(178,24,43,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["MEX_4","ESP_3","TUR_4","ROU_4","CZE_2","HRV_3","ISL_4","EST_3","LVA_4"],"y":[-0.063143292156291678,-0.032955041883880105,-0.022483239709122412,-0.013417778456893913,-0.01327331400312709,-0.012944980459974241,-0.012863523350593655,-0.008879470783764068,-0.0026656999339556837],"text":["Mexico<br />Wave: 4<br />Estimate: -0.063","Spain<br />Wave: 3<br />Estimate: -0.033","Turkey<br />Wave: 4<br />Estimate: -0.022","Romania<br />Wave: 4<br />Estimate: -0.013","Czechia<br />Wave: 2<br />Estimate: -0.013","Croatia<br />Wave: 3<br />Estimate: -0.013","Iceland<br />Wave: 4<br />Estimate: -0.013","Estonia<br />Wave: 3<br />Estimate: -0.009","Latvia<br />Wave: 4<br />Estimate: -0.003"],"hoverinfo":["text","text","text","text","text","text","text","text","text"],"type":"bar","name":"Insig - ","marker":{"color":"rgba(239,138,98,1)","line":{"color":"rgba(239,138,98,1)"}},"textfont":{"color":"rgba(239,138,98,1)"},"error_y":{"color":"rgba(239,138,98,1)"},"error_x":{"color":"rgba(239,138,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["MEX_1","ZAF_4","BRA_3","ITA_2"],"y":[6.7631971062676331e-05,0.0049722661065831524,0.023603821563969282,0.0473219688226496],"text":["Mexico<br />Wave: 1<br />Estimate: 0","South Africa<br />Wave: 4<br />Estimate: 0.005","Brazil<br />Wave: 3<br />Estimate: 0.024","Italy<br />Wave: 2<br />Estimate: 0.047"],"hoverinfo":["text","text","text","text"],"type":"bar","name":"Insig +","marker":{"color":"rgba(103,169,207,1)","line":{"color":"rgba(103,169,207,1)"}},"textfont":{"color":"rgba(103,169,207,1)"},"error_y":{"color":"rgba(103,169,207,1)"},"error_x":{"color":"rgba(103,169,207,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["SVK_3","AUT_3","TWN_2"],"y":[0.025001583857186743,0.058073493731913971,0.076458319978237044],"text":["Slovakia<br />Wave: 3<br />Estimate: 0.025","Austria<br />Wave: 3<br />Estimate: 0.058","Taiwan<br />Wave: 2<br />Estimate: 0.076"],"hoverinfo":["text","text","text"],"type":"bar","name":"Sig +","marker":{"color":"rgba(33,102,172,1)","line":{"color":"rgba(33,102,172,1)"}},"textfont":{"color":"rgba(33,102,172,1)"},"error_y":{"color":"rgba(33,102,172,1)"},"error_x":{"color":"rgba(33,102,172,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+&lt;/center&gt;
+
+???
+Positive values indicate more knowledgeable people have greater RMSE than less knowledgeable people
+---
+
+## Ideology and Correspondence with Experts
+
+&lt;center&gt;
+<div class="plotly html-widget html-fill-item" id="htmlwidget-05b6ec847eee19108c3b" style="width:100%;height:252px;"></div>
+<script type="application/json" data-for="htmlwidget-05b6ec847eee19108c3b">{"x":{"visdat":{"15b4e45b41ad7":["function () ","plotlyVisDat"]},"cur_data":"15b4e45b41ad7","attrs":{"15b4e45b41ad7":{"x":{},"y":{},"text":{},"hoverinfo":"text","color":{},"colors":["#B2182B","#EF8A62","#67A9CF","#2166AC"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"width":1000,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"","tickangle":-45,"showticklabels":false,"type":"category","categoryorder":"array","categoryarray":["GRC_4","JPN_3","ISR_3","CAN_4","CAN_3","JPN_4","ALB_2","CHL_2","MEX_1","POL_1","POL_3","FIN_4","SVK_3","PER_3","ZAF_4","TUR_4","NOR_3","ROU_4","ISR_1","GRC_3","BRA_3","AUS_1","ISL_4","CZE_2","IRL_2","PER_2","ISL_3","CAN_1","TWN_2","SWE_1","NZL_2","SVN_2","ITA_2","SWE_4","FIN_3","ISR_2","MEX_3","CZE_1","SVN_4","NOR_4","DEU_1","NZL_3","NZL_1","FRA_4","LVA_4","PRT_3","AUT_3","BEL_1","DNK_3","FIN_2","MEX_4","HRV_3","CHE_4","NLD_3","ESP_3","EST_3","FRA_2","CHE_2","NLD_2","NZL_4","HUN_2","IRL_3","AUS_3"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Estimate"},"plot_bgcolor":"white","paper_bgcolor":"white","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["GRC_4"],"y":[-0.072701086827839004],"text":"Greece<br />Wave: 4<br />Estimate: -0.073","hoverinfo":"text","type":"bar","name":"Sig -","marker":{"color":"rgba(178,24,43,1)","line":{"color":"rgba(178,24,43,1)"}},"textfont":{"color":"rgba(178,24,43,1)"},"error_y":{"color":"rgba(178,24,43,1)"},"error_x":{"color":"rgba(178,24,43,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["JPN_3","ISR_3","CAN_4","CAN_3","JPN_4","ALB_2","CHL_2","MEX_1","POL_1","POL_3"],"y":[-0.052697929911932492,-0.041540525006797537,-0.027176271502912124,-0.023404277240271165,-0.021764101589628496,-0.016598399630271012,-0.01636357689109957,-0.0084640359555155035,-0.0001707228526972446,-6.3634615749522545e-05],"text":["Japan<br />Wave: 3<br />Estimate: -0.053","Israel<br />Wave: 3<br />Estimate: -0.042","Canada<br />Wave: 4<br />Estimate: -0.027","Canada<br />Wave: 3<br />Estimate: -0.023","Japan<br />Wave: 4<br />Estimate: -0.022","Albania<br />Wave: 2<br />Estimate: -0.017","Chile<br />Wave: 2<br />Estimate: -0.016","Mexico<br />Wave: 1<br />Estimate: -0.008","Poland<br />Wave: 1<br />Estimate: 0","Poland<br />Wave: 3<br />Estimate: 0"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text"],"type":"bar","name":"Insig - ","marker":{"color":"rgba(239,138,98,1)","line":{"color":"rgba(239,138,98,1)"}},"textfont":{"color":"rgba(239,138,98,1)"},"error_y":{"color":"rgba(239,138,98,1)"},"error_x":{"color":"rgba(239,138,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["FIN_4","SVK_3","PER_3","ZAF_4","TUR_4","NOR_3","ROU_4","ISR_1","GRC_3","BRA_3","AUS_1","ISL_4","CZE_2","IRL_2","PER_2","ISL_3","CAN_1","TWN_2","SWE_1","NZL_2","SVN_2","ITA_2","SWE_4","ISR_2","CZE_1","SVN_4","DEU_1","NZL_3","PRT_3","AUT_3"],"y":[0.0066556053034234888,0.0076286125084707281,0.0080943447805644914,0.0083871132847803415,0.0088318021980540347,0.013298631390580512,0.013347670399566001,0.014486493553792862,0.014821669815605639,0.015309999893197451,0.016167576856306487,0.016271686865243239,0.019289057883906936,0.022553709809212667,0.024305595781806525,0.025092304279472694,0.02514683328875977,0.025362742077468598,0.025543332840734945,0.026874064645213191,0.029854724073578313,0.029909920962531384,0.03095211214721514,0.03190189878704023,0.033307559366382113,0.034210687407047032,0.039682348798859221,0.040701922698549227,0.042606479601611957,0.045368504215062791],"text":["Finland<br />Wave: 4<br />Estimate: 0.007","Slovakia<br />Wave: 3<br />Estimate: 0.008","Peru<br />Wave: 3<br />Estimate: 0.008","South Africa<br />Wave: 4<br />Estimate: 0.008","Turkey<br />Wave: 4<br />Estimate: 0.009","Norway<br />Wave: 3<br />Estimate: 0.013","Romania<br />Wave: 4<br />Estimate: 0.013","Israel<br />Wave: 1<br />Estimate: 0.014","Greece<br />Wave: 3<br />Estimate: 0.015","Brazil<br />Wave: 3<br />Estimate: 0.015","Australia<br />Wave: 1<br />Estimate: 0.016","Iceland<br />Wave: 4<br />Estimate: 0.016","Czechia<br />Wave: 2<br />Estimate: 0.019","Ireland<br />Wave: 2<br />Estimate: 0.023","Peru<br />Wave: 2<br />Estimate: 0.024","Iceland<br />Wave: 3<br />Estimate: 0.025","Canada<br />Wave: 1<br />Estimate: 0.025","Taiwan<br />Wave: 2<br />Estimate: 0.025","Sweden<br />Wave: 1<br />Estimate: 0.026","New Zealand<br />Wave: 2<br />Estimate: 0.027","Slovenia<br />Wave: 2<br />Estimate: 0.03","Italy<br />Wave: 2<br />Estimate: 0.03","Sweden<br />Wave: 4<br />Estimate: 0.031","Israel<br />Wave: 2<br />Estimate: 0.032","Czechia<br />Wave: 1<br />Estimate: 0.033","Slovenia<br />Wave: 4<br />Estimate: 0.034","Germany<br />Wave: 1<br />Estimate: 0.04","New Zealand<br />Wave: 3<br />Estimate: 0.041","Portugal<br />Wave: 3<br />Estimate: 0.043","Austria<br />Wave: 3<br />Estimate: 0.045"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"bar","name":"Insig +","marker":{"color":"rgba(103,169,207,1)","line":{"color":"rgba(103,169,207,1)"}},"textfont":{"color":"rgba(103,169,207,1)"},"error_y":{"color":"rgba(103,169,207,1)"},"error_x":{"color":"rgba(103,169,207,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["FIN_3","MEX_3","NOR_4","NZL_1","FRA_4","LVA_4","BEL_1","DNK_3","FIN_2","MEX_4","HRV_3","CHE_4","NLD_3","ESP_3","EST_3","FRA_2","CHE_2","NLD_2","NZL_4","HUN_2","IRL_3","AUS_3"],"y":[0.03119246072856412,0.03250372126941295,0.038147518815106286,0.041133762321529349,0.042214151107921247,0.04234604644361048,0.052115356434650852,0.053426445875204995,0.053635030599625717,0.063245629998453179,0.06992822072246363,0.071132807607421036,0.075348928670102552,0.076039468662585527,0.07703604971123984,0.077137924714495015,0.081245741676514924,0.090252670475693048,0.091200997536002346,0.09277066944573871,0.10004686391942617,0.13875028794613267],"text":["Finland<br />Wave: 3<br />Estimate: 0.031","Mexico<br />Wave: 3<br />Estimate: 0.033","Norway<br />Wave: 4<br />Estimate: 0.038","New Zealand<br />Wave: 1<br />Estimate: 0.041","France<br />Wave: 4<br />Estimate: 0.042","Latvia<br />Wave: 4<br />Estimate: 0.042","Belgium<br />Wave: 1<br />Estimate: 0.052","Denmark<br />Wave: 3<br />Estimate: 0.053","Finland<br />Wave: 2<br />Estimate: 0.054","Mexico<br />Wave: 4<br />Estimate: 0.063","Croatia<br />Wave: 3<br />Estimate: 0.07","Switzerland<br />Wave: 4<br />Estimate: 0.071","Netherlands<br />Wave: 3<br />Estimate: 0.075","Spain<br />Wave: 3<br />Estimate: 0.076","Estonia<br />Wave: 3<br />Estimate: 0.077","France<br />Wave: 2<br />Estimate: 0.077","Switzerland<br />Wave: 2<br />Estimate: 0.081","Netherlands<br />Wave: 2<br />Estimate: 0.09","New Zealand<br />Wave: 4<br />Estimate: 0.091","Hungary<br />Wave: 2<br />Estimate: 0.093","Ireland<br />Wave: 3<br />Estimate: 0.1","Australia<br />Wave: 3<br />Estimate: 0.139"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"bar","name":"Sig +","marker":{"color":"rgba(33,102,172,1)","line":{"color":"rgba(33,102,172,1)"}},"textfont":{"color":"rgba(33,102,172,1)"},"error_y":{"color":"rgba(33,102,172,1)"},"error_x":{"color":"rgba(33,102,172,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+&lt;/center&gt;
+
+???
+Positive values indicate people on the right have greater RMSE than people on the left
+
+---
+
+## Does Correspondence Relate to Structural Factors?
+
+Not Really: 
+- ENEP, regime age, system type and gini - all insignificant in individual level HLM. 
+- Regime age is negative and significant in a model of averages. 
+
+---
+
+## Spatial Voting Model
+
+1D Spatial Voting Model (Left-Right) estimated with conditional logit. 
+- Model 1: jack-knife party placements using mean of other respondents with same age group, gender, knowledge, income and education. 
+    - Must have all parties placed. 
+    - Must have non-self donors for placements. 
+    
+- Model 2: CSES expert party placements
+
+
+
+---
+
+## Does Party Placement Matter?
+
+
+.pull-left[
+&lt;img src="armstrong_maplemeth_2026_files/figure-html/unnamed-chunk-12-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="armstrong_maplemeth_2026_files/figure-html/unnamed-chunk-13-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+## Consequences for Democratic Satisfaction. 
+
+
+&lt;img src="armstrong_maplemeth_2026_files/figure-html/unnamed-chunk-14-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+.small[See Armstrong and Poirier (2025) [doi:10.1017/pan.2024.24](https://doi.org/10.1017/pan.2024.24) for more information on inferential CIs]
+
+???
+
+Ran a model of satisfied/not with democracy on: 
+- age, income, education, left-right, knowledge, rmse quintile
+- enep, system type, gini, gdp_growth, inflation, unemployment, democracy score
+
+---
+
+## Conclusion
+
+1. Voters often have systematically different perceptions of the political landscape than experts. 
+2. Those differences are structured by individual-level factors. 
+3. On average, those differences translate into how people cast votes based on their perceptions of the political landscape. 
+4. The farther people are from the experts, the less satisfied they are with democracy. 
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

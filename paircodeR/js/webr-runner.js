@@ -81,7 +81,7 @@ export async function run(code, plotCanvas = null) {
   if (plotCanvas) {
     const w = (plotCanvas.width  / 96).toFixed(2);
     const h = (plotCanvas.height / 96).toFixed(2);
-    codeToRun = `svg('${PLOT_FILE}', width=${w}, height=${h})\n${code}\nif (dev.cur() > 1) dev.off()`;
+    codeToRun = `svg('${PLOT_FILE}', width=${w}, height=${h})\n${code}\nif (dev.cur() > 1) invisible(dev.off())`;
   }
 
   let capture;

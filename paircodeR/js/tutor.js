@@ -123,7 +123,7 @@ async function callOpenAICompat({ userMessage, context, history, apiKey, provide
     },
     gemini: {
       url:   'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
-      model: 'gemini-2.0-flash',
+      model: 'gemini-1.5-flash',
     },
   }[provider];
 
@@ -149,7 +149,8 @@ async function callOpenAICompat({ userMessage, context, history, apiKey, provide
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.error?.message ?? `${provider} API error ${res.status}`);
+    const msg = err.error?.message ?? err.message ?? JSON.stringify(err);
+    throw new Error(`${provider} ${res.status}: ${msg}`);
   }
 
   const data  = await res.json();

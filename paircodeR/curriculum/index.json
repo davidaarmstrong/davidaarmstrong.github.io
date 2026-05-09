@@ -1,0 +1,10 @@
+{
+  "modules": [
+    {
+      "id": "intro-tidyverse",
+      "title": "Introduction to the Tidyverse",
+      "description": "Learn dplyr and ggplot2 fundamentals through hands-on practice with a Socratic AI pair partner.",
+      "file": "curriculum/intro-tidyverse.json"
+    }
+  ]
+}

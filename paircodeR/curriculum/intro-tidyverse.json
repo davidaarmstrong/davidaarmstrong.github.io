@@ -1,0 +1,110 @@
+{
+  "id": "intro-tidyverse",
+  "title": "Introduction to the Tidyverse",
+  "description": "Learn dplyr and ggplot2 fundamentals through hands-on practice with a Socratic AI pair partner.",
+  "packages": ["dplyr", "ggplot2", "tibble"],
+  "tasks": [
+    {
+      "id": "task-01",
+      "title": "Your first tibble",
+      "instructions": "A **tibble** is the tidyverse's modern take on a data frame. It prints cleanly and behaves predictably.\n\nCreate a tibble called `students` with three columns:\n- `name`: character — `\"Alice\"`, `\"Bob\"`, `\"Carol\"`, `\"David\"`\n- `age`: numeric — `22`, `19`, `24`, `21`\n- `score`: numeric — `88`, `74`, `95`, `61`\n\nHint: use `tibble()` from the `tibble` package (already loaded).",
+      "starter_code": "# Create your tibble here\nstudents <- tibble(\n  \n)\n\n# Print it\nstudents",
+      "solution_code": "students <- tibble(\n  name  = c(\"Alice\", \"Bob\", \"Carol\", \"David\"),\n  age   = c(22, 19, 24, 21),\n  score = c(88, 74, 95, 61)\n)\nstudents",
+      "test_expression": "is.data.frame(students) && ncol(students) == 3 && nrow(students) == 4 && all(c('name','age','score') %in% names(students)) && isTRUE(students$score[students$name == 'Alice'] == 88) && isTRUE(students$score[students$name == 'Carol'] == 95) && isTRUE(students$age[students$name == 'Bob'] == 19) && isTRUE(students$age[students$name == 'David'] == 21)",
+      "hints": [
+        "Inside tibble(), each column is name = vector.",
+        "Use c() to create a vector of values: c(\"Alice\", \"Bob\", ...).",
+        "The column names should be exactly: name, age, score."
+      ],
+      "ai_context": "Task is about creating a tibble with tibble(). Student should use name=, age=, score= columns. Encourage them to notice how tibble printing differs from base data.frame."
+    },
+    {
+      "id": "task-02",
+      "title": "Filtering rows with filter()",
+      "instructions": "`filter()` keeps only rows that match a condition.\n\nUsing the `students` tibble from the previous task, use `filter()` to create a new tibble called `high_scorers` containing only students with a `score` above 80.\n\nThen print `high_scorers`.",
+      "starter_code": "# You should have students from the previous task.\n# If not, re-run task 1 first.\n\nhigh_scorers <- filter(students, )\n\nhigh_scorers",
+      "solution_code": "high_scorers <- filter(students, score > 80)\nhigh_scorers",
+      "test_expression": "exists('high_scorers') && nrow(high_scorers) == 2 && all(high_scorers$score > 80)",
+      "hints": [
+        "filter(data, condition) — the condition uses column names directly, no $.",
+        "The comparison operator for 'greater than' is >.",
+        "You want rows where score > 80, which should give you 2 students."
+      ],
+      "ai_context": "Task is about filter(). Student should write filter(students, score > 80). Common mistake: using students$score inside filter — not needed with dplyr. Encourage them to try other conditions too."
+    },
+    {
+      "id": "task-03",
+      "title": "Selecting columns with select()",
+      "instructions": "`select()` picks (or drops) columns by name.\n\nFrom the `students` tibble, create a new tibble called `name_score` that contains **only** the `name` and `score` columns.\n\nPrint the result.",
+      "starter_code": "name_score <- select(students, )\n\nname_score",
+      "solution_code": "name_score <- select(students, name, score)\nname_score",
+      "test_expression": "exists('name_score') && ncol(name_score) == 2 && all(c('name','score') %in% names(name_score)) && !('age' %in% names(name_score))",
+      "hints": [
+        "select(data, col1, col2, ...) — just list the column names you want.",
+        "You want two columns: name and score. That's all.",
+        "You can also drop columns with a minus sign: select(data, -age)."
+      ],
+      "ai_context": "Task is about select(). Expected answer: select(students, name, score). Encourage exploration of the - (drop) syntax as a bonus."
+    },
+    {
+      "id": "task-04",
+      "title": "Adding columns with mutate()",
+      "instructions": "`mutate()` adds new columns (or transforms existing ones), keeping all existing columns too.\n\nAdd a new column called `grade` to the `students` tibble. The grade rules are:\n- score ≥ 90 → `\"A\"`\n- score ≥ 80 → `\"B\"`\n- score ≥ 70 → `\"C\"`\n- otherwise → `\"D\"`\n\nSave the result as `students_graded` and print it.\n\n*Tip: `case_when()` pairs beautifully with `mutate()` for multi-condition logic.*",
+      "starter_code": "students_graded <- mutate(\n  students,\n  grade = case_when(\n    \n  )\n)\n\nstudents_graded",
+      "solution_code": "students_graded <- mutate(\n  students,\n  grade = case_when(\n    score >= 90 ~ \"A\",\n    score >= 80 ~ \"B\",\n    score >= 70 ~ \"C\",\n    TRUE        ~ \"D\"\n  )\n)\nstudents_graded",
+      "test_expression": "exists('students_graded') && 'grade' %in% names(students_graded) && nrow(students_graded) == 4 && isTRUE(students_graded$grade[students_graded$name == 'Alice'] == 'B') && isTRUE(students_graded$grade[students_graded$name == 'Carol'] == 'A') && isTRUE(students_graded$grade[students_graded$name == 'Bob'] == 'C') && isTRUE(students_graded$grade[students_graded$name == 'David'] == 'D')",
+      "hints": [
+        "case_when() syntax: condition ~ value, next_condition ~ next_value, ...",
+        "Conditions are checked in order, top to bottom — put the strictest first.",
+        "Use TRUE ~ \"D\" as the final 'catch-all' case (like an else).",
+        "score >= 90 ~ \"A\", score >= 80 ~ \"B\", score >= 70 ~ \"C\", TRUE ~ \"D\""
+      ],
+      "ai_context": "Task is about mutate() and case_when(). Key insight: case_when conditions are evaluated in order, so >= 90 before >= 80 works correctly. TRUE ~ 'D' is the catch-all. Alice has 88 so should get B. Carol has 95 so should get A."
+    },
+    {
+      "id": "task-05",
+      "title": "Chaining steps with the pipe |>",
+      "instructions": "The native pipe `|>` (R 4.1+) lets you chain operations left-to-right, so you can read transformations in the order they happen.\n\nRewrite the following two-step operation **as a single pipe chain** — no intermediate variables:\n\n```r\nstep1 <- filter(students, age >= 21)\nstep2 <- select(step1, name, score)\n```\n\nSave the result as `result` and print it.",
+      "starter_code": "result <- students |>\n  \n\nresult",
+      "solution_code": "result <- students |>\n  filter(age >= 21) |>\n  select(name, score)\nresult",
+      "test_expression": "exists('result') && nrow(result) == 3 && ncol(result) == 2 && all(c('name','score') %in% names(result)) && all(c('Alice','Carol','David') %in% result$name) && !('Bob' %in% result$name)",
+      "hints": [
+        "The pipe passes the left-hand side as the first argument to the right-hand function.",
+        "students |> filter(...) is the same as filter(students, ...).",
+        "Chain two steps: filter() then select().",
+        "result <- students |> filter(age >= 21) |> select(name, score)"
+      ],
+      "ai_context": "Task introduces the native pipe |>. The equivalent of: filter(students, age >= 21) then select(name, score). There are 3 students aged 21+: Alice(22), Carol(24), David(21). Result should have 3 rows and 2 columns."
+    },
+    {
+      "id": "task-06",
+      "title": "Summarising with group_by() and summarise()",
+      "instructions": "`group_by()` + `summarise()` is dplyr's split-apply-combine — it groups your data, applies a summary function to each group, and collapses the result.\n\nUsing `students_graded` (from task 4), calculate the **mean score** for each grade group.\n\nThe result should have two columns: `grade` and `mean_score`. Save it as `grade_summary` and print it.",
+      "starter_code": "# Make sure students_graded exists (re-run task 4 if needed)\n\ngrade_summary <- students_graded |>\n  group_by() |>\n  summarise(\n    \n  )\n\ngrade_summary",
+      "solution_code": "grade_summary <- students_graded |>\n  group_by(grade) |>\n  summarise(mean_score = mean(score))\ngrade_summary",
+      "test_expression": "exists('grade_summary') && 'grade' %in% names(grade_summary) && 'mean_score' %in% names(grade_summary) && nrow(grade_summary) == 4 && isTRUE(grade_summary$mean_score[grade_summary$grade == 'A'] == 95) && isTRUE(grade_summary$mean_score[grade_summary$grade == 'B'] == 88) && isTRUE(grade_summary$mean_score[grade_summary$grade == 'C'] == 74) && isTRUE(grade_summary$mean_score[grade_summary$grade == 'D'] == 61)",
+      "hints": [
+        "group_by(column_name) splits the data into groups.",
+        "summarise(new_col = aggregation_function(col)) collapses each group to one row.",
+        "mean(score) computes the average of the score column within each group.",
+        "group_by(grade) |> summarise(mean_score = mean(score))"
+      ],
+      "ai_context": "Task is group_by() + summarise(). Students should write group_by(grade) |> summarise(mean_score = mean(score)). students_graded has grades A(Carol=95), B(Alice=88), D(David=61, Bob=74 -> actually Bob=74 is C, David=61 is D). Let the student figure out the exact groups."
+    },
+    {
+      "id": "task-07",
+      "title": "Your first ggplot",
+      "instructions": "`ggplot2` builds plots in layers. The recipe is:\n1. `ggplot(data, aes(x = ..., y = ...))` — set up the canvas and aesthetics\n2. `+ geom_*()` — add a geometry layer (points, bars, lines…)\n\nCreate a **scatter plot** of the built-in `mtcars` dataset:\n- x-axis: `wt` (car weight)\n- y-axis: `mpg` (miles per gallon)\n- Add a title: `\"Weight vs Fuel Efficiency\"`\n\nColour the points by `cyl` (number of cylinders) — make `cyl` a factor so ggplot treats it as discrete.",
+      "starter_code": "ggplot(mtcars, aes(x = , y = , colour = factor( ))) +\n  geom_point() +\n  labs(title = \" \")",
+      "solution_code": "ggplot(mtcars, aes(x = wt, y = mpg, colour = factor(cyl))) +\n  geom_point(size = 2) +\n  labs(\n    title  = \"Weight vs Fuel Efficiency\",\n    x      = \"Weight (1000 lbs)\",\n    y      = \"Miles per Gallon\",\n    colour = \"Cylinders\"\n  )",
+      "test_expression": "TRUE",
+      "hints": [
+        "aes() maps data columns to visual properties: x, y, colour, size, shape, etc.",
+        "geom_point() draws points — no extra arguments needed to start.",
+        "factor(cyl) converts the numeric cylinder count to a categorical variable, giving distinct colours.",
+        "labs(title = \"...\") adds a title. x = and y = add axis labels."
+      ],
+      "ai_context": "Task is a first ggplot scatter plot. Minimum viable answer: ggplot(mtcars, aes(x=wt, y=mpg, colour=factor(cyl))) + geom_point() + labs(title='Weight vs Fuel Efficiency'). Encourage the learner to explore adding labs() for axis labels and experimenting with size, alpha in geom_point()."
+    }
+  ]
+}

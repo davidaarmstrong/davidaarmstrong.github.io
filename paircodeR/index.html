@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>paircodeR — AI Pair Coding for R</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/dracula.css">
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header id="app-header">
+    <div class="header-left">
+      <span class="app-logo">paircodeR</span>
+      <select id="module-select" class="module-select" disabled>
+        <option value="">Loading…</option>
+      </select>
+    </div>
+    <div class="header-right">
+      <span id="webr-status" class="status-badge status-loading">⏳ Loading R…</span>
+      <button id="settings-btn" class="icon-btn" title="Settings">⚙</button>
+    </div>
+  </header>
+
+  <!-- ── Import URL modal ──────────────────────────────────────────────── -->
+  <div id="import-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Import module from URL">
+    <div class="modal-content">
+      <h2>Import Module from URL</h2>
+
+      <label class="field-label">
+        Curriculum JSON URL
+        <input type="url" id="import-url-input"
+               placeholder="https://example.com/my-curriculum.json"
+               autocomplete="off" spellcheck="false">
+      </label>
+
+      <p class="settings-note">
+        Paste a direct link to a curriculum JSON file. The file must be
+        publicly accessible and CORS-enabled (GitHub raw URLs and Gists work well).
+      </p>
+
+      <p id="import-error" class="import-error hidden"></p>
+
+      <div class="modal-actions">
+        <button id="import-load-btn" class="primary-btn">Load</button>
+        <button id="import-cancel-btn" class="secondary-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Settings modal ─────────────────────────────────────────────────── -->
+  <div id="settings-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Settings">
+    <div class="modal-content">
+      <h2>Settings</h2>
+
+      <label class="field-label">
+        AI Provider
+        <select id="ai-provider">
+          <option value="claude">Claude (Anthropic)</option>
+          <option value="openai">ChatGPT (OpenAI)</option>
+          <option value="gemini">Gemini (Google)</option>
+        </select>
+      </label>
+
+      <label class="field-label">
+        API Key
+        <input type="password" id="api-key-input"
+               placeholder="Paste your key here — stored locally only"
+               autocomplete="off" spellcheck="false">
+      </label>
+
+      <p class="settings-note">
+        Your key is stored only in your browser's localStorage and is never sent to any server
+        other than the AI provider you choose.
+      </p>
+
+      <div class="modal-actions">
+        <button id="settings-save" class="primary-btn">Save</button>
+        <button id="settings-cancel" class="secondary-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Main split panel ───────────────────────────────────────────────── -->
+  <main id="app-main">
+
+    <!-- Left: Task panel -->
+    <section id="task-panel">
+
+      <div id="task-header">
+        <span id="task-progress" class="task-progress"></span>
+        <h2 id="task-title"></h2>
+      </div>
+
+      <div id="task-instructions" class="task-instructions"></div>
+
+      <div id="editor-container">
+        <div id="code-editor"></div>
+        <div id="editor-toolbar">
+          <button id="run-btn" class="primary-btn">▶ Run</button>
+          <button id="reset-btn" class="secondary-btn">↺ Reset</button>
+          <button id="check-btn" class="accent-btn">✓ Check</button>
+          <button id="editor-collapse-btn" class="collapse-btn" title="Collapse editor">▼ Editor</button>
+        </div>
+      </div>
+
+      <div id="output-panel">
+        <div id="output-tabs">
+          <button class="tab-btn active" data-tab="console">Console</button>
+          <button class="tab-btn" data-tab="plot">Plot</button>
+          <button id="output-collapse-btn" class="collapse-btn" title="Collapse output">▲ Output</button>
+        </div>
+        <div id="console-output" class="tab-content"></div>
+        <div id="plot-output" class="tab-content hidden">
+          <canvas id="plot-canvas" width="560" height="380"></canvas>
+          <p id="no-plot-msg" class="no-plot-msg">No plot yet — run code that calls plot() or ggplot()</p>
+        </div>
+      </div>
+
+      <div id="task-nav">
+        <button id="prev-btn" class="nav-btn" disabled>← Previous</button>
+        <span id="task-status-icon"></span>
+        <button id="next-btn" class="nav-btn" disabled>Next →</button>
+      </div>
+
+    </section>
+
+    <!-- Drag divider -->
+    <div id="panel-divider" title="Drag to resize"></div>
+
+    <!-- Right: AI Tutor panel -->
+    <section id="tutor-panel">
+
+      <div id="tutor-header">
+        <span class="tutor-title">🤖 AI Pair Partner</span>
+        <button id="clear-chat-btn" class="icon-btn" title="Clear chat">🗑</button>
+      </div>
+
+      <div id="chat-messages" role="log" aria-live="polite"></div>
+
+      <div id="chat-input-area">
+        <div id="quick-actions">
+          <button class="quick-btn" data-msg="Can you give me a small hint without spoiling it?">💡 Hint</button>
+          <button class="quick-btn" data-msg="I'm stuck. Can you help me think through this step by step?">🤔 Stuck</button>
+          <button class="quick-btn" data-msg="Can you explain the concept behind this task?">📚 Explain</button>
+        </div>
+        <div id="input-row">
+          <textarea id="chat-input" placeholder="Ask your pair partner…" rows="2"></textarea>
+          <button id="send-btn" class="primary-btn">Send</button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ── Loading overlay ────────────────────────────────────────────────── -->
+  <div id="loading-overlay" role="status">
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <p id="loading-message">Initializing R environment…</p>
+      <div id="progress-track">
+        <div id="progress-fill"></div>
+      </div>
+      <p id="loading-sub-message" class="loading-sub">First load downloads WASM packages — cached after that</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/r/r.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

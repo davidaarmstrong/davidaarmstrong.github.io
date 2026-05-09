@@ -22,11 +22,12 @@ export function openBuilder(currentModule) {
     ? JSON.parse(JSON.stringify(currentModule))
     : emptyModule();
 
+  $b('builder-overlay').classList.remove('hidden');
   renderModuleMeta();
   renderTaskList();
   selectTask(bModule.tasks.length > 0 ? 0 : -1);
-
-  $b('builder-overlay').classList.remove('hidden');
+  // Refresh CM instances after layout is visible
+  setTimeout(() => { starterCM?.refresh?.(); solutionCM?.refresh?.(); }, 50);
 }
 
 export function closeBuilder() {

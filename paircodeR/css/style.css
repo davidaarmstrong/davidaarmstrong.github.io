@@ -615,6 +615,40 @@ html, body {
   padding: 8px 10px;
 }
 
+.import-file-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid var(--clr-border);
+  border-radius: 6px;
+  background: #f8fafc;
+}
+.import-file-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--clr-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.import-file-name.chosen { color: var(--clr-text); }
+
+.import-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--clr-muted);
+  font-size: 12px;
+}
+.import-divider::before,
+.import-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--clr-border);
+}
+
 /* ── Loading overlay ─────────────────────────────────────────────────────── */
 #loading-overlay {
   position: fixed;

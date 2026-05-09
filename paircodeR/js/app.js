@@ -138,45 +138,66 @@ async function loadModule(url) {
 // ── Import-from-URL modal ─────────────────────────────────────────────────────
 let _cachedManifest = { modules: [] };
 
+let _importFileData = null;   // parsed JSON from local file pick
+
 function showImportModal() {
   $('import-url-input').value = '';
   $('import-error').textContent = '';
   $('import-error').classList.add('hidden');
+  $('import-file-name').textContent = 'No file chosen';
+  $('import-file-name').classList.remove('chosen');
+  _importFileData = null;
   $('import-modal').classList.remove('hidden');
-  $('import-url-input').focus();
 }
 
 function hideImportModal() {
   $('import-modal').classList.add('hidden');
+  _importFileData = null;
 }
 
 async function handleImportLoad() {
-  const url = $('import-url-input').value.trim();
   const errEl = $('import-error');
   errEl.classList.add('hidden');
 
-  if (!url) { errEl.textContent = 'Please enter a URL.'; errEl.classList.remove('hidden'); return; }
-
-  $('import-load-btn').disabled = true;
+  $('import-load-btn').disabled    = true;
   $('import-load-btn').textContent = 'Loading…';
 
   try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    let data;
+
+    if (_importFileData) {
+      // File was already read by the picker
+      data = _importFileData;
+    } else {
+      const url = $('import-url-input').value.trim();
+      if (!url) throw new Error('Choose a file or enter a URL.');
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      data = await res.json();
+      saveCustomModule(data.title ?? 'Imported module', url);
+    }
+
     if (!data.tasks || !Array.isArray(data.tasks)) throw new Error('Not a valid paircodeR curriculum file.');
 
-    saveCustomModule(data.title ?? 'Imported module', url);
     module    = data;
     taskIndex = 0;
-    rebuildModuleSelect(_cachedManifest, url);
+
+    // Add to selector using a blob URL so file-loaded modules appear in the list
+    const blob    = new Blob([JSON.stringify(data)], { type: 'application/json' });
+    const blobUrl = URL.createObjectURL(blob);
+    const opt     = new Option(`↗ ${data.title ?? 'Local module'}`, blobUrl);
+    // Insert before the __import__ sentinel
+    const sel = $('module-select');
+    sel.insertBefore(opt, sel.querySelector('option[value="__import__"]'));
+    sel.value = blobUrl;
+
     hideImportModal();
     renderTask();
   } catch (e) {
     errEl.textContent = `Failed to load: ${e.message}`;
     errEl.classList.remove('hidden');
   } finally {
-    $('import-load-btn').disabled = false;
+    $('import-load-btn').disabled    = false;
     $('import-load-btn').textContent = 'Load';
   }
 }
@@ -520,6 +541,27 @@ function wireEvents() {
   $('import-url-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') handleImportLoad();
     if (e.key === 'Escape') hideImportModal();
+  });
+
+  // Local file picker for student-view import
+  $('import-pick-btn').addEventListener('click', () => $('import-file-input').click());
+  $('import-file-input').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        _importFileData = JSON.parse(ev.target.result);
+        $('import-file-name').textContent = file.name;
+        $('import-file-name').classList.add('chosen');
+        $('import-url-input').value = '';   // clear URL if file chosen
+      } catch {
+        $('import-error').textContent = 'Could not parse JSON file.';
+        $('import-error').classList.remove('hidden');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
   });
 
   // Settings

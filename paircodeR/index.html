@@ -31,6 +31,16 @@
       <h2>Import Module from URL</h2>
 
       <label class="field-label">
+        Local file
+        <div class="import-file-row">
+          <span id="import-file-name" class="import-file-name">No file chosen</span>
+          <button id="import-pick-btn" class="secondary-btn">Choose file…</button>
+        </div>
+      </label>
+
+      <div class="import-divider"><span>or load from URL</span></div>
+
+      <label class="field-label">
         Curriculum JSON URL
         <input type="url" id="import-url-input"
                placeholder="https://example.com/my-curriculum.json"
@@ -38,8 +48,8 @@
       </label>
 
       <p class="settings-note">
-        Paste a direct link to a curriculum JSON file. The file must be
-        publicly accessible and CORS-enabled (GitHub raw URLs and Gists work well).
+        URL must be publicly accessible and CORS-enabled
+        (GitHub raw URLs and Gists work well).
       </p>
 
       <p id="import-error" class="import-error hidden"></p>
@@ -48,6 +58,7 @@
         <button id="import-load-btn" class="primary-btn">Load</button>
         <button id="import-cancel-btn" class="secondary-btn">Cancel</button>
       </div>
+      <input type="file" id="import-file-input" accept=".json" class="hidden">
     </div>
   </div>
 
@@ -259,7 +270,7 @@
       </div>
     </div>
 
-    <!-- Hidden file input for JSON import -->
+    <!-- Hidden file input for JSON import (builder) -->
     <input type="file" id="b-file-input" accept=".json" class="hidden">
   </div>
 

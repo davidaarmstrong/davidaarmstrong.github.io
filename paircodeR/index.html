@@ -20,6 +20,7 @@
     </div>
     <div class="header-right">
       <span id="webr-status" class="status-badge status-loading">⏳ Loading R…</span>
+      <button id="builder-btn" class="builder-btn" title="Open Curriculum Builder">Build</button>
       <button id="settings-btn" class="icon-btn" title="Settings">⚙</button>
     </div>
   </header>
@@ -155,6 +156,112 @@
     </section>
 
   </main>
+
+  <!-- ── Curriculum Builder overlay ───────────────────────────────────── -->
+  <div id="builder-overlay" class="hidden">
+
+    <div id="builder-header">
+      <span class="builder-title">Curriculum Builder</span>
+      <div class="builder-header-actions">
+        <button id="b-new-btn"    class="secondary-btn">New Module</button>
+        <button id="b-import-btn" class="secondary-btn">Import JSON</button>
+        <button id="b-export-btn" class="accent-btn">Export JSON</button>
+        <button id="b-close-btn"  class="secondary-btn">← Back to Student View</button>
+      </div>
+    </div>
+
+    <div id="builder-body">
+
+      <!-- Sidebar: module meta + task list -->
+      <div id="builder-sidebar">
+
+        <div class="b-section">
+          <div class="b-section-title">Module</div>
+          <label class="b-field">
+            Title
+            <input type="text" id="b-mod-title" placeholder="Module title">
+          </label>
+          <label class="b-field">
+            Description
+            <textarea id="b-mod-desc" rows="2" placeholder="Short description"></textarea>
+          </label>
+          <label class="b-field">
+            Packages <span class="b-hint">(comma-separated)</span>
+            <input type="text" id="b-mod-packages" placeholder="dplyr, ggplot2, tibble">
+          </label>
+          <label class="b-field">
+            Module ID <span class="b-hint">(URL-safe slug)</span>
+            <input type="text" id="b-mod-id" placeholder="my-module">
+          </label>
+        </div>
+
+        <div class="b-section">
+          <div class="b-section-title">Tasks</div>
+          <ul id="b-task-list"></ul>
+          <button id="b-add-task-btn" class="primary-btn b-add-task">+ Add Task</button>
+        </div>
+
+      </div>
+
+      <!-- Main: task editor -->
+      <div id="builder-main">
+
+        <div id="b-empty-state" class="b-empty-state">
+          Select a task from the sidebar, or click "+ Add Task" to begin.
+        </div>
+
+        <div id="b-task-editor" class="hidden">
+
+          <div class="b-row">
+            <label class="b-field b-grow">
+              Task Title
+              <input type="text" id="b-task-title" placeholder="e.g. Filtering rows with filter()">
+            </label>
+            <label class="b-field b-narrow">
+              Task ID
+              <input type="text" id="b-task-id" placeholder="task-01">
+            </label>
+          </div>
+
+          <label class="b-field">
+            Instructions <span class="b-hint">(Markdown supported)</span>
+            <textarea id="b-task-instructions" rows="6" placeholder="Describe what the student should do…"></textarea>
+          </label>
+
+          <div class="b-code-row">
+            <label class="b-field b-grow">
+              Starter Code
+              <div id="b-starter-editor" class="b-code-editor"></div>
+            </label>
+            <label class="b-field b-grow">
+              Solution Code
+              <div id="b-solution-editor" class="b-code-editor"></div>
+            </label>
+          </div>
+
+          <label class="b-field">
+            Test Expression <span class="b-hint">(R expression that returns TRUE/FALSE — use TRUE to skip)</span>
+            <input type="text" id="b-task-test" placeholder="exists('x') && x == 42">
+          </label>
+
+          <div class="b-field">
+            <div class="b-field-label">Hints <span class="b-hint">(shown to students one at a time)</span></div>
+            <div id="b-hints-list"></div>
+            <button id="b-add-hint-btn" class="secondary-btn b-sm-btn">+ Add Hint</button>
+          </div>
+
+          <label class="b-field">
+            AI Context <span class="b-hint">(private note for the AI tutor — not shown to students)</span>
+            <textarea id="b-task-ai-context" rows="3" placeholder="What should the AI know about this task?"></textarea>
+          </label>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden file input for JSON import -->
+    <input type="file" id="b-file-input" accept=".json" class="hidden">
+  </div>
 
   <!-- ── Loading overlay ────────────────────────────────────────────────── -->
   <div id="loading-overlay" role="status">

@@ -7,6 +7,7 @@
 
 import { init as initWebR, run as runCode, check as checkCode, isReady } from './webr-runner.js';
 import { sendMessage } from './tutor.js';
+import { openBuilder, initBuilder } from './builder.js';
 
 // CodeMirror 5 is loaded via <script> tags in index.html (global `CodeMirror`)
 
@@ -554,6 +555,10 @@ function wireEvents() {
       }
     }
   });
+
+  // Builder
+  $('builder-btn').addEventListener('click', () => openBuilder(module));
+  initBuilder();
 
   initDividerDrag();
 }

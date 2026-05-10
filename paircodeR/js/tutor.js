@@ -55,6 +55,94 @@ function buildContext(task, code, lastOutput) {
  * @param {string}   opts.apiKey       - user's API key
  * @returns {Promise<{ reply: string, updatedHistory: Array }>}
  */
+/**
+ * Generate a context-aware congratulatory message after a task pass.
+ *
+ * @param {object} opts
+ * @param {object} opts.task          - the task that was just passed
+ * @param {number} opts.hintCount     - number of hint/stuck requests made
+ * @param {number} opts.checkAttempts - number of check attempts before passing
+ * @param {string} opts.provider
+ * @param {string} opts.model
+ * @param {string} opts.apiKey
+ * @returns {Promise<string>} the congratulatory message
+ */
+export async function congratulate({ task, hintCount, checkAttempts, provider, model, apiKey }) {
+  if (!apiKey?.trim()) throw new Error('No API key');
+
+  const struggled = hintCount >= 2 || checkAttempts >= 3;
+  const fluent    = hintCount === 0 && checkAttempts === 1;
+
+  const prompt = `A learner just passed the automated check for the R task: "${task.title}".
+
+Performance:
+- Hints or "stuck" requests: ${hintCount}
+- Attempts before passing: ${checkAttempts}
+
+Write a warm, genuine congratulatory message of 2–3 sentences that:
+${struggled
+  ? '- Acknowledges their persistence — they worked hard to get there\n- Gently offers a similar task to reinforce the concept if they want it'
+  : fluent
+  ? '- Notes that they handled this fluently\n- Offers a tougher variation if they want a challenge'
+  : '- Acknowledges solid work\n- Offers either a similar task or a tougher challenge, their choice'}
+- Ends with a natural "just let me know" or "just ask" so they know the option is there
+- Does NOT offer to show solutions or give away answers
+- Does NOT start with "Great job!" or "Excellent!" — vary the opening
+
+Reply with only the message text, no preamble.`;
+
+  const messages = [{ role: 'user', content: prompt }];
+
+  if (provider === 'claude') {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model:      model || 'claude-sonnet-4-6',
+        max_tokens: 160,
+        system:     'You are a warm, encouraging R programming tutor. Be concise and genuine.',
+        messages,
+      }),
+    });
+    if (!res.ok) throw new Error(`Anthropic ${res.status}`);
+    const data = await res.json();
+    return data.content[0].text.trim();
+  }
+
+  // OpenAI-compatible providers
+  const config = {
+    openai: { url: 'https://api.openai.com/v1/chat/completions',                                       defaultModel: 'gpt-4o-mini' },
+    gemini: { url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',         defaultModel: 'gemini-1.5-flash' },
+    github: { url: 'https://models.inference.ai.azure.com/chat/completions',                           defaultModel: 'gpt-4o-mini' },
+  }[provider];
+
+  if (!config) throw new Error(`Unknown provider: ${provider}`);
+
+  const res = await fetch(config.url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model:      model || config.defaultModel,
+      max_tokens: 160,
+      messages:   [
+        { role: 'system', content: 'You are a warm, encouraging R programming tutor. Be concise and genuine.' },
+        ...messages,
+      ],
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(`${provider} ${res.status}: ${err.error?.message ?? ''}`);
+  }
+  const data = await res.json();
+  return data.choices[0].message.content.trim();
+}
+
 export async function sendMessage({ userMessage, task, code, lastOutput, history, provider, model, apiKey }) {
   if (!apiKey?.trim()) {
     throw new Error('No API key set. Click ⚙ in the top-right to add one.');

@@ -6,7 +6,7 @@
  */
 
 import { init as initWebR, run as runCode, check as checkCode, isReady } from './webr-runner.js';
-import { sendMessage } from './tutor.js';
+import { sendMessage, congratulate } from './tutor.js';
 import { openBuilder, initBuilder } from './builder.js';
 
 // CodeMirror 5 is loaded via <script> tags in index.html (global `CodeMirror`)
@@ -18,6 +18,8 @@ let editor        = null;   // CodeMirror EditorView instance
 let chatHistory   = [];     // conversation history (provider-specific format)
 let lastOutput    = '';     // plain-text of last console run (for AI context)
 let isSending     = false;  // guard against double-sends
+let hintCount     = 0;      // hint/stuck requests for current task
+let checkAttempts = 0;      // check attempts for current task
 
 // ── Persistent settings (localStorage) ───────────────────────────────────────
 const PROVIDER_MODELS = {
@@ -261,8 +263,10 @@ function renderTask() {
   el['next-btn'].disabled = taskIndex === module.tasks.length - 1;
   el['task-status-icon'].textContent = '';
 
-  // Reset chat history when task changes
-  chatHistory = [];
+  // Reset chat history and performance counters when task changes
+  chatHistory   = [];
+  hintCount     = 0;
+  checkAttempts = 0;
   el['chat-messages'].innerHTML = '';
   addChatBubble('assistant',
     `Let's work on **${task.title}**. Read the instructions, give it a try, and I'm here if you need a nudge. 🙂`);
@@ -367,6 +371,8 @@ async function handleCheck() {
     return;
   }
 
+  checkAttempts++;
+
   // First run the user's code, then evaluate the test
   const code = getEditorCode();
   await runCode(code, el['plot-canvas']);
@@ -376,8 +382,19 @@ async function handleCheck() {
   if (passed) {
     el['task-status-icon'].textContent = '✅';
     appendConsole([{ kind: 'ok', text: '✓ Check passed! Great work.' }]);
-    addChatBubble('assistant',
-      `🎉 You passed the check for **${task.title}**! Nice work. Feel free to experiment further, or move on to the next task.`);
+
+    // Show a placeholder immediately, then replace with AI-generated message
+    const bubble = addChatBubble('assistant', '🎉 …');
+    const { provider, model, apiKey } = loadSettings();
+    try {
+      const msg = await congratulate({ task, hintCount, checkAttempts, provider, model, apiKey });
+      bubble.innerHTML = renderMarkdown(msg);
+    } catch {
+      bubble.innerHTML = renderMarkdown(
+        `🎉 You passed **${task.title}**! Nice work. If you'd like a tougher variation to cement the idea, just ask — otherwise the next task is waiting.`
+      );
+    }
+    el['chat-messages'].scrollTop = el['chat-messages'].scrollHeight;
   } else {
     el['task-status-icon'].textContent = '❌';
     appendConsole([{ kind: 'fail', text: '✗ Not quite — check your output and try again.' }]);
@@ -535,9 +552,15 @@ function wireEvents() {
     }
   });
 
-  // Quick action buttons
+  // Quick action buttons — track hint-seeking behaviour
   document.querySelectorAll('.quick-btn').forEach(btn => {
-    btn.addEventListener('click', () => handleSend(btn.dataset.msg));
+    btn.addEventListener('click', () => {
+      const msg = btn.dataset.msg;
+      if (msg.toLowerCase().includes('hint') || msg.toLowerCase().includes('stuck')) {
+        hintCount++;
+      }
+      handleSend(msg);
+    });
   });
 
   // Clear chat

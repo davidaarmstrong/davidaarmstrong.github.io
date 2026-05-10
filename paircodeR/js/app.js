@@ -75,7 +75,7 @@ const el = {};
 function cacheElements() {
   [
     'module-select', 'webr-status', 'settings-btn', 'settings-modal',
-    'api-key-input', 'ai-provider', 'settings-save', 'settings-cancel',
+    'api-key-input', 'ai-provider', 'ai-model', 'settings-save', 'settings-cancel',
     'task-progress', 'task-title', 'task-instructions', 'code-editor',
     'run-btn', 'reset-btn', 'check-btn',
     'console-output', 'plot-output', 'plot-canvas', 'no-plot-msg',

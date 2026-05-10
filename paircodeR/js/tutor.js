@@ -65,7 +65,7 @@ export async function sendMessage({ userMessage, task, code, lastOutput, history
   if (provider === 'claude') {
     return callClaude({ userMessage, context, history, apiKey });
   }
-  if (provider === 'openai' || provider === 'gemini') {
+  if (provider === 'openai' || provider === 'gemini' || provider === 'github') {
     return callOpenAICompat({ userMessage, context, history, apiKey, provider });
   }
   throw new Error(`Unknown AI provider: ${provider}`);
@@ -124,6 +124,10 @@ async function callOpenAICompat({ userMessage, context, history, apiKey, provide
     gemini: {
       url:   'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
       model: 'gemini-1.5-flash',
+    },
+    github: {
+      url:   'https://models.inference.ai.azure.com/chat/completions',
+      model: 'gpt-4o-mini',
     },
   }[provider];
 

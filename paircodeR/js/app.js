@@ -20,15 +20,52 @@ let lastOutput    = '';     // plain-text of last console run (for AI context)
 let isSending     = false;  // guard against double-sends
 
 // ── Persistent settings (localStorage) ───────────────────────────────────────
+const PROVIDER_MODELS = {
+  claude: [
+    { value: 'claude-sonnet-4-6',   label: 'Claude Sonnet 4.6 (default)' },
+    { value: 'claude-opus-4-5',     label: 'Claude Opus 4.5' },
+    { value: 'claude-haiku-4-5',    label: 'Claude Haiku 4.5 (fast)' },
+  ],
+  openai: [
+    { value: 'gpt-4o-mini',  label: 'GPT-4o mini (default)' },
+    { value: 'gpt-4o',       label: 'GPT-4o' },
+  ],
+  gemini: [
+    { value: 'gemini-1.5-flash',  label: 'Gemini 1.5 Flash (default)' },
+    { value: 'gemini-1.5-pro',    label: 'Gemini 1.5 Pro' },
+    { value: 'gemini-2.0-flash',  label: 'Gemini 2.0 Flash' },
+  ],
+  github: [
+    { value: 'gpt-4o-mini',  label: 'GPT-4o mini (default)' },
+    { value: 'gpt-4o',       label: 'GPT-4o' },
+    { value: 'Meta-Llama-3.1-70B-Instruct',  label: 'Llama 3.1 70B' },
+    { value: 'Mistral-large-2407',           label: 'Mistral Large' },
+  ],
+};
+
 function loadSettings() {
   return {
     provider: localStorage.getItem('pcr_provider') ?? 'claude',
+    model:    localStorage.getItem('pcr_model')    ?? '',
     apiKey:   localStorage.getItem('pcr_apikey')   ?? '',
   };
 }
-function saveSettings(provider, apiKey) {
+function saveSettings(provider, model, apiKey) {
   localStorage.setItem('pcr_provider', provider);
+  localStorage.setItem('pcr_model',    model);
   localStorage.setItem('pcr_apikey',   apiKey);
+}
+
+function populateModelSelect(provider, currentModel) {
+  const sel = el['ai-model'];
+  const models = PROVIDER_MODELS[provider] ?? [];
+  sel.innerHTML = models.map(m =>
+    `<option value="${m.value}">${m.label}</option>`
+  ).join('');
+  // Select saved model if it exists in the list, otherwise first option
+  if (currentModel && models.find(m => m.value === currentModel)) {
+    sel.value = currentModel;
+  }
 }
 
 // ── DOM helpers ───────────────────────────────────────────────────────────────
@@ -384,6 +421,7 @@ async function handleSend(message) {
       lastOutput,
       history:     chatHistory,
       provider,
+      model,
       apiKey,
     });
 
@@ -566,14 +604,24 @@ function wireEvents() {
 
   // Settings
   el['settings-btn'].addEventListener('click', () => {
-    const { provider, apiKey } = loadSettings();
-    el['ai-provider'].value  = provider;
+    const { provider, model, apiKey } = loadSettings();
+    el['ai-provider'].value   = provider;
     el['api-key-input'].value = apiKey;
+    populateModelSelect(provider, model);
     el['settings-modal'].classList.remove('hidden');
   });
 
+  // Repopulate model list when provider changes
+  el['ai-provider'].addEventListener('change', () => {
+    populateModelSelect(el['ai-provider'].value, '');
+  });
+
   el['settings-save'].addEventListener('click', () => {
-    saveSettings(el['ai-provider'].value, el['api-key-input'].value.trim());
+    saveSettings(
+      el['ai-provider'].value,
+      el['ai-model'].value,
+      el['api-key-input'].value.trim(),
+    );
     el['settings-modal'].classList.add('hidden');
   });
 

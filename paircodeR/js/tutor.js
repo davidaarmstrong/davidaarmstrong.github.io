@@ -55,7 +55,7 @@ function buildContext(task, code, lastOutput) {
  * @param {string}   opts.apiKey       - user's API key
  * @returns {Promise<{ reply: string, updatedHistory: Array }>}
  */
-export async function sendMessage({ userMessage, task, code, lastOutput, history, provider, apiKey }) {
+export async function sendMessage({ userMessage, task, code, lastOutput, history, provider, model, apiKey }) {
   if (!apiKey?.trim()) {
     throw new Error('No API key set. Click ⚙ in the top-right to add one.');
   }
@@ -63,17 +63,17 @@ export async function sendMessage({ userMessage, task, code, lastOutput, history
   const context = buildContext(task, code, lastOutput);
 
   if (provider === 'claude') {
-    return callClaude({ userMessage, context, history, apiKey });
+    return callClaude({ userMessage, context, history, apiKey, model });
   }
   if (provider === 'openai' || provider === 'gemini' || provider === 'github') {
-    return callOpenAICompat({ userMessage, context, history, apiKey, provider });
+    return callOpenAICompat({ userMessage, context, history, apiKey, provider, model });
   }
   throw new Error(`Unknown AI provider: ${provider}`);
 }
 
 // ── Claude (Anthropic) ────────────────────────────────────────────────────────
 
-async function callClaude({ userMessage, context, history, apiKey }) {
+async function callClaude({ userMessage, context, history, apiKey, model }) {
   // Prepend context to the first user turn, or add a context-refresh line
   // to subsequent turns so the AI always knows the current code/output state.
   const messages = history.length === 0
@@ -90,7 +90,7 @@ async function callClaude({ userMessage, context, history, apiKey }) {
       'anthropic-dangerous-direct-browser-access': 'true',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
+      model: model || 'claude-sonnet-4-6',
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
       messages,
@@ -115,21 +115,22 @@ async function callClaude({ userMessage, context, history, apiKey }) {
 
 // ── OpenAI-compatible (OpenAI + Gemini) ───────────────────────────────────────
 
-async function callOpenAICompat({ userMessage, context, history, apiKey, provider }) {
+async function callOpenAICompat({ userMessage, context, history, apiKey, provider, model }) {
   const config = {
     openai: {
-      url:   'https://api.openai.com/v1/chat/completions',
-      model: 'gpt-4o',
+      url:          'https://api.openai.com/v1/chat/completions',
+      defaultModel: 'gpt-4o-mini',
     },
     gemini: {
-      url:   'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
-      model: 'gemini-1.5-flash',
+      url:          'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
+      defaultModel: 'gemini-1.5-flash',
     },
     github: {
-      url:   'https://models.inference.ai.azure.com/chat/completions',
-      model: 'gpt-4o-mini',
+      url:          'https://models.inference.ai.azure.com/chat/completions',
+      defaultModel: 'gpt-4o-mini',
     },
   }[provider];
+  config.model = model || config.defaultModel;
 
   // OpenAI-style message format includes the system message as first element
   const baseHistory = history.length === 0

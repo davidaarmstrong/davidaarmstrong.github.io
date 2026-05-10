@@ -37,7 +37,7 @@ function buildContext(task, code, lastOutput) {
     parts.push(`**Last console output:**\n\`\`\`\n${truncated}\n\`\`\``);
   }
   if (task.hints?.length) {
-    parts.push(`**Hints available for this task (reveal progressively, never all at once):**\n${task.hints.map((h, i) => `${i + 1}. ${h}`).join('\n')}`);
+    parts.push(`**Hints for this task:** Use these as a guide. First diagnose which specific part of the task the learner is struggling with by reading their code and output. Then give the single most relevant hint for *that* failure point — do not reveal hints for parts they have not reached yet, and never reveal all hints at once.\n${task.hints.map((h, i) => `${i + 1}. ${h}`).join('\n')}`);
   }
   return parts.join('\n\n');
 }

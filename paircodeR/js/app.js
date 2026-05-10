@@ -418,7 +418,7 @@ function addThinkingBubble() {
 // ── Send chat message ─────────────────────────────────────────────────────────
 async function handleSend(message) {
   if (isSending || !message?.trim()) return;
-  const { provider, apiKey } = loadSettings();
+  const { provider, model, apiKey } = loadSettings();
 
   isSending = true;
   el['send-btn'].disabled = true;

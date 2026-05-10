@@ -144,6 +144,7 @@
         <button id="prev-btn" class="nav-btn" disabled>← Previous</button>
         <span id="task-status-icon"></span>
         <button id="next-btn" class="nav-btn" disabled>Next →</button>
+        <button id="download-btn" class="download-btn hidden" title="Download your solutions">↓ Solutions</button>
       </div>
 
     </section>
@@ -281,6 +282,34 @@
 
     <!-- Hidden file input for JSON import (builder) -->
     <input type="file" id="b-file-input" accept=".json" class="hidden">
+  </div>
+
+  <!-- ── Download modal ───────────────────────────────────────────────── -->
+  <div id="download-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Download solutions">
+    <div class="modal-content">
+      <h2>Download Solutions</h2>
+      <p class="settings-note" id="download-summary"></p>
+      <div class="download-format-grid">
+        <button class="download-format-btn" data-format="r">
+          <span class="format-ext">.R</span>
+          <span class="format-label">R Script</span>
+          <span class="format-desc">Plain script with comment headers — opens in any editor</span>
+        </button>
+        <button class="download-format-btn" data-format="rmd">
+          <span class="format-ext">.Rmd</span>
+          <span class="format-label">R Markdown</span>
+          <span class="format-desc">Instructions as prose, code as chunks — knit in RStudio</span>
+        </button>
+        <button class="download-format-btn" data-format="qmd">
+          <span class="format-ext">.qmd</span>
+          <span class="format-label">Quarto</span>
+          <span class="format-desc">Same as Rmd but for Quarto — render with VS Code or RStudio</span>
+        </button>
+      </div>
+      <div class="modal-actions">
+        <button id="download-cancel-btn" class="secondary-btn">Cancel</button>
+      </div>
+    </div>
   </div>
 
   <!-- ── Loading overlay ────────────────────────────────────────────────── -->

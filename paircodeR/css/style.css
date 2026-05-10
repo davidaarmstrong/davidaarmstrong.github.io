@@ -973,3 +973,59 @@ html, body {
   border-color: var(--clr-primary);
   background: #fff;
 }
+
+/* ── Download button ─────────────────────────────────────────────────────── */
+.download-btn {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--clr-border);
+  background: var(--clr-surface);
+  color: var(--clr-accent);
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  white-space: nowrap;
+}
+.download-btn:hover { background: #f0fdf4; border-color: var(--clr-accent); }
+
+/* ── Download format grid ────────────────────────────────────────────────── */
+.download-format-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 4px 0 8px;
+}
+.download-format-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 10px;
+  border: 2px solid var(--clr-border);
+  border-radius: var(--radius);
+  background: #f8fafc;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  text-align: center;
+}
+.download-format-btn:hover {
+  border-color: var(--clr-primary);
+  background: #eff6ff;
+}
+.format-ext {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--clr-primary);
+}
+.format-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--clr-text);
+}
+.format-desc {
+  font-size: 11px;
+  color: var(--clr-muted);
+  line-height: 1.4;
+}

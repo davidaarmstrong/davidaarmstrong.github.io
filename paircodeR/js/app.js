@@ -18,8 +18,9 @@ let editor        = null;   // CodeMirror EditorView instance
 let chatHistory   = [];     // conversation history (provider-specific format)
 let lastOutput    = '';     // plain-text of last console run (for AI context)
 let isSending     = false;  // guard against double-sends
-let hintCount     = 0;      // hint/stuck requests for current task
-let checkAttempts = 0;      // check attempts for current task
+let hintCount      = 0;      // hint/stuck requests for current task
+let checkAttempts  = 0;      // check attempts for current task
+let completedTasks = {};     // taskIndex → { title, code, completedAt }
 
 // ── Persistent settings (localStorage) ───────────────────────────────────────
 const PROVIDER_MODELS = {
@@ -82,7 +83,7 @@ function cacheElements() {
     'run-btn', 'reset-btn', 'check-btn',
     'console-output', 'plot-output', 'plot-canvas', 'no-plot-msg',
     'output-tabs',
-    'prev-btn', 'next-btn', 'task-status-icon',
+    'prev-btn', 'next-btn', 'task-status-icon', 'download-btn',
     'chat-messages', 'chat-input', 'send-btn', 'clear-chat-btn',
     'loading-overlay', 'loading-message',
   ].forEach(id => { el[id] = $(id); });
@@ -170,8 +171,10 @@ function rebuildModuleSelect(manifest, currentUrl) {
 async function loadModule(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Could not load module: ${url}`);
-  module    = await res.json();
-  taskIndex = 0;
+  module         = await res.json();
+  taskIndex      = 0;
+  completedTasks = {};
+  if (el['download-btn']) el['download-btn'].classList.add('hidden');
 }
 
 // ── Import-from-URL modal ─────────────────────────────────────────────────────
@@ -383,6 +386,14 @@ async function handleCheck() {
     el['task-status-icon'].textContent = '✅';
     appendConsole([{ kind: 'ok', text: '✓ Check passed! Great work.' }]);
 
+    // Record completed task
+    completedTasks[taskIndex] = {
+      title:       task.title,
+      code:        getEditorCode(),
+      completedAt: new Date().toISOString(),
+    };
+    el['download-btn'].classList.remove('hidden');
+
     // Show a placeholder immediately, then replace with AI-generated message
     const bubble = addChatBubble('assistant', '🎉 …');
     const { provider, model, apiKey } = loadSettings();
@@ -458,6 +469,67 @@ async function handleSend(message) {
     el['chat-input'].disabled = false;
     el['chat-input'].focus();
   }
+}
+
+// ── Solution download ─────────────────────────────────────────────────────────
+function buildDownloadContent(format) {
+  const date    = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
+  const title   = module?.title ?? 'R Solutions';
+  const entries = Object.entries(completedTasks)
+    .sort(([a], [b]) => Number(a) - Number(b))
+    .map(([idx, { title: taskTitle, code }]) => ({ idx: Number(idx), taskTitle, code }));
+
+  if (format === 'r') {
+    const header = [
+      `# ${title}`,
+      `# Downloaded: ${date}`,
+      `# Completed tasks: ${entries.length} of ${module?.tasks.length ?? '?'}`,
+      '',
+    ].join('\n');
+    const body = entries.map(({ idx, taskTitle, code }) => [
+      `# ${'─'.repeat(60)}`,
+      `# Task ${idx + 1}: ${taskTitle}`,
+      `# ${'─'.repeat(60)}`,
+      '',
+      code.trim(),
+      '',
+    ].join('\n')).join('\n');
+    return { content: header + body, ext: 'R', mime: 'text/plain' };
+  }
+
+  const isQmd  = format === 'qmd';
+  const yaml   = isQmd
+    ? `---\ntitle: "${title}"\ndate: "${date}"\nformat: html\n---\n`
+    : `---\ntitle: "${title}"\ndate: "${date}"\noutput: html_document\n---\n`;
+
+  const body = entries.map(({ idx, taskTitle, code }) => {
+    const instructions = module.tasks[idx]?.instructions ?? '';
+    return [
+      `## Task ${idx + 1}: ${taskTitle}`,
+      '',
+      instructions.trim(),
+      '',
+      '```{r}',
+      code.trim(),
+      '```',
+      '',
+    ].join('\n');
+  }).join('\n');
+
+  const ext = isQmd ? 'qmd' : 'Rmd';
+  return { content: yaml + '\n' + body, ext, mime: 'text/plain' };
+}
+
+function triggerDownload(format) {
+  const slug    = (module?.id ?? 'solutions').replace(/[^a-z0-9]/gi, '-').toLowerCase();
+  const { content, ext, mime } = buildDownloadContent(format);
+  const blob    = new Blob([content], { type: mime });
+  const url     = URL.createObjectURL(blob);
+  const a       = document.createElement('a');
+  a.href        = url;
+  a.download    = `${slug}-solutions.${ext}`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ── Panel drag-resize ─────────────────────────────────────────────────────────
@@ -667,6 +739,29 @@ function wireEvents() {
         handleRun();
       }
     }
+  });
+
+  // Download solutions
+  el['download-btn'].addEventListener('click', () => {
+    const completed = Object.keys(completedTasks).length;
+    const total     = module?.tasks.length ?? 0;
+    $('download-summary').textContent =
+      `${completed} of ${total} tasks completed. Choose a format to download your solutions.`;
+    $('download-modal').classList.remove('hidden');
+  });
+
+  document.querySelectorAll('.download-format-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      triggerDownload(btn.dataset.format);
+      $('download-modal').classList.add('hidden');
+    });
+  });
+
+  $('download-cancel-btn').addEventListener('click', () =>
+    $('download-modal').classList.add('hidden'));
+
+  $('download-modal').addEventListener('click', e => {
+    if (e.target === $('download-modal')) $('download-modal').classList.add('hidden');
   });
 
   // Builder

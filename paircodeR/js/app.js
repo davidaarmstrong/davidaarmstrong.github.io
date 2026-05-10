@@ -22,6 +22,23 @@ let hintCount      = 0;      // hint/stuck requests for current task
 let checkAttempts  = 0;      // check attempts for current task
 let completedTasks = {};     // taskIndex → { title, code, completedAt }
 
+// ── Student identifier ────────────────────────────────────────────────────────
+// A random UUID generated once per browser and persisted in localStorage.
+// Used as an anonymous, stable identifier across modules and sessions.
+// Not linked to any account or personal information.
+function getStudentId() {
+  let id = localStorage.getItem('pcr_student_id');
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem('pcr_student_id', id);
+  }
+  return id;
+}
+
+// Expose on window so analytics code can access it later without
+// having to re-derive it.
+window._pcrStudentId = getStudentId();
+
 // ── Persistent settings (localStorage) ───────────────────────────────────────
 const PROVIDER_MODELS = {
   claude: [

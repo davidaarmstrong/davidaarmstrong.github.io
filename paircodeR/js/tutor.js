@@ -86,7 +86,7 @@ ${struggled
   ? '- Notes that they handled this fluently\n- Offers a tougher variation if they want a challenge'
   : '- Acknowledges solid work\n- Offers either a similar task or a tougher challenge, their choice'}
 - Makes clear it is completely fine to move on to the next task if they prefer
-- Mentions that if they do want a follow-up task, they can paste their code and/or output here and get feedback on it
+- Mentions that if they do want a follow-up task, they should write their answer in the existing code panel and paste it here for feedback — there is no separate code window for follow-up tasks
 - Ends with a natural "just let me know" or "just ask" so they know the option is there
 - Does NOT offer to show solutions or give away answers
 - Does NOT start with "Great job!" or "Excellent!" — vary the opening

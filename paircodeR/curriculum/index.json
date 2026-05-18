@@ -11,6 +11,12 @@
       "title": "Recoding Variables with mutate()",
       "description": "Master case_when() and recode() for range-based and value-replacement recoding, using the midwest, msleep, and diamonds datasets.",
       "file": "curriculum/mutate-recoding.json"
+    },
+    {
+      "id": "summarise",
+      "title": "Summarising Data with summarise()",
+      "description": "Compute summary statistics globally and by group using summarise() and .by, across the msleep, diamonds, and midwest datasets.",
+      "file": "curriculum/summarise.json"
     }
   ]
 }

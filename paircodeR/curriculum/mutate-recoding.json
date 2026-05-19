@@ -1,7 +1,7 @@
 {
   "id": "mutate-recoding",
   "title": "Recoding Variables with mutate()",
-  "description": "Learn to recode and transform variables using mutate() with case_when() for range-based conditions and recode() for value replacement, across three real ggplot2 datasets.",
+  "description": "Learn to recode and transform variables using mutate() with case_when() for range-based conditions and recode_values() for value replacement, across three real ggplot2 datasets.",
   "packages": ["dplyr", "ggplot2"],
   "tasks": [
     {
@@ -21,17 +21,17 @@
     },
     {
       "id": "task-02",
-      "title": "recode(): replacing values one-to-one",
-      "instructions": "`recode()` is the tidyverse tool for straightforward value substitution — replacing specific values with new ones without needing to write conditions.\n\nThe `midwest` dataset records demographic data for counties across five US states. The `state` column contains abbreviations: `\"IL\"`, `\"IN\"`, `\"MI\"`, `\"OH\"`, `\"WI\"`.\n\nUsing `mutate()` and `recode()`, add a column `state_name` that replaces each abbreviation with the full state name. Save as `midwest2`.\n\n*Syntax:* `recode(column, \"old\" = \"new\", ...)`",
-      "starter_code": "library(ggplot2)\nlibrary(dplyr)\n\nmidwest2 <- mutate(midwest,\n  state_name = recode(state,\n    \"IL\" = \"Illinois\",\n    \"IN\" = ________,\n    \"MI\" = ________,\n    \"OH\" = ________,\n    \"WI\" = ________\n  )\n)\n\ncount(midwest2, state, state_name)",
-      "solution_code": "library(ggplot2)\nlibrary(dplyr)\n\nmidwest2 <- mutate(midwest,\n  state_name = recode(state,\n    \"IL\" = \"Illinois\",\n    \"IN\" = \"Indiana\",\n    \"MI\" = \"Michigan\",\n    \"OH\" = \"Ohio\",\n    \"WI\" = \"Wisconsin\"\n  )\n)\n\ncount(midwest2, state, state_name)",
+      "title": "recode_values(): replacing values one-to-one",
+      "instructions": "`recode_values()` is the tidyverse tool for straightforward value substitution — replacing specific values with new ones without needing to write conditions.\n\nThe `midwest` dataset records demographic data for counties across five US states. The `state` column contains abbreviations: `\"IL\"`, `\"IN\"`, `\"MI\"`, `\"OH\"`, `\"WI\"`.\n\nUsing `mutate()` and `recode_values()`, add a column `state_name` that replaces each abbreviation with the full state name. Save as `midwest2`.\n\n*Syntax:* `recode_values(column, \"old\" ~ \"new\", ...)`",
+      "starter_code": "library(ggplot2)\nlibrary(dplyr)\n\nmidwest2 <- mutate(midwest,\n  state_name = recode_values(state,\n    \"IL\" ~ \"Illinois\",\n    \"IN\" ~ ________,\n    \"MI\" ~ ________,\n    \"OH\" ~ ________,\n    \"WI\" ~ ________\n  )\n)\n\ncount(midwest2, state, state_name)",
+      "solution_code": "library(ggplot2)\nlibrary(dplyr)\n\nmidwest2 <- mutate(midwest,\n  state_name = recode_values(state,\n    \"IL\" ~ \"Illinois\",\n    \"IN\" ~ \"Indiana\",\n    \"MI\" ~ \"Michigan\",\n    \"OH\" ~ \"Ohio\",\n    \"WI\" ~ \"Wisconsin\"\n  )\n)\n\ncount(midwest2, state, state_name)",
       "test_expression": "exists('midwest2') && 'state_name' %in% names(midwest2) && all(c('Illinois','Indiana','Michigan','Ohio','Wisconsin') %in% midwest2$state_name) && isTRUE(midwest2$state_name[midwest2$state == 'MI'][1] == 'Michigan') && isTRUE(midwest2$state_name[midwest2$state == 'WI'][1] == 'Wisconsin')",
       "hints": [
-        "recode() takes the column as its first argument, then named pairs of old = \"new\" values.",
+        "recode_values() takes the column as its first argument, then matching pairs using the ~ syntax: \"old\" ~ \"new\".",
         "The five states are Illinois, Indiana, Michigan, Ohio, and Wisconsin.",
-        "Each pair looks like: \"IN\" = \"Indiana\""
+        "Each pair looks like: \"IN\" ~ \"Indiana\""
       ],
-      "ai_context": "Task introduces recode() for one-to-one value replacement. The five states are IL=Illinois, IN=Indiana, MI=Michigan, OH=Ohio, WI=Wisconsin. The count(midwest2, state, state_name) at the end is a nice way to verify every abbreviation mapped correctly."
+      "ai_context": "Task introduces recode_values() for one-to-one value replacement. Note the ~ syntax (like case_when), not = like the older recode(). The five states are IL=Illinois, IN=Indiana, MI=Michigan, OH=Ohio, WI=Wisconsin. The count(midwest2, state, state_name) is a nice verification step."
     },
     {
       "id": "task-03",
@@ -50,18 +50,17 @@
     },
     {
       "id": "task-04",
-      "title": "recode(): many-to-one colour grouping",
-      "instructions": "Diamonds are graded for colour on a scale from D (colourless) to J (faint yellow). The `color` column in `diamonds` uses these GIA grades.\n\nUse `recode()` to collapse the seven grades into three broader groups in a new column `color_group`:\n- `\"colorless\"` — grades D, E, F\n- `\"near-colorless\"` — grades G, H\n- `\"faint\"` — grades I, J\n\nThis is a **many-to-one** recode: multiple input values map to the same output. Save as `diamonds3`.\n\nThe starter code is intentionally sparse this time.",
-      "starter_code": "library(ggplot2)\nlibrary(dplyr)\n\ndiamonds3 <- mutate(diamonds,\n  color_group = recode(as.character(color),\n\n  )\n)\n\ncount(diamonds3, color, color_group)",
-      "solution_code": "library(ggplot2)\nlibrary(dplyr)\n\ndiamonds3 <- mutate(diamonds,\n  color_group = recode(as.character(color),\n    \"D\" = \"colorless\",\n    \"E\" = \"colorless\",\n    \"F\" = \"colorless\",\n    \"G\" = \"near-colorless\",\n    \"H\" = \"near-colorless\",\n    \"I\" = \"faint\",\n    \"J\" = \"faint\"\n  )\n)\n\ncount(diamonds3, color, color_group)",
+      "title": "recode_values(): many-to-one colour grouping",
+      "instructions": "Diamonds are graded for colour on a scale from D (colourless) to J (faint yellow). The `color` column in `diamonds` uses these GIA grades.\n\nUse `recode_values()` to collapse the seven grades into three broader groups in a new column `color_group`:\n- `\"colorless\"` — grades D, E, F\n- `\"near-colorless\"` — grades G, H\n- `\"faint\"` — grades I, J\n\nThis is a **many-to-one** recode. With `recode_values()` you can group multiple input values on the left side of `~` using `c()`:\n\n```r\nrecode_values(col, c(\"a\", \"b\") ~ \"group1\", ...)\n```\n\nSave as `diamonds3`. The starter code shows the first line — complete the rest.",
+      "starter_code": "library(ggplot2)\nlibrary(dplyr)\n\ndiamonds3 <- mutate(diamonds,\n  color_group = recode_values(as.character(color),\n    c(\"D\", \"E\", \"F\") ~ \"colorless\",\n    ________         ~ ________,\n    ________         ~ ________\n  )\n)\n\ncount(diamonds3, color, color_group)",
+      "solution_code": "library(ggplot2)\nlibrary(dplyr)\n\ndiamonds3 <- mutate(diamonds,\n  color_group = recode_values(as.character(color),\n    c(\"D\", \"E\", \"F\") ~ \"colorless\",\n    c(\"G\", \"H\")      ~ \"near-colorless\",\n    c(\"I\", \"J\")      ~ \"faint\"\n  )\n)\n\ncount(diamonds3, color, color_group)",
       "test_expression": "exists('diamonds3') && 'color_group' %in% names(diamonds3) && all(c('colorless','near-colorless','faint') %in% diamonds3$color_group) && all(diamonds3$color_group[as.character(diamonds3$color) %in% c('D','E','F')] == 'colorless') && all(diamonds3$color_group[as.character(diamonds3$color) %in% c('I','J')] == 'faint')",
       "hints": [
-        "recode() maps each old value to a new one. You can map multiple old values to the same new value.",
-        "color is a factor in diamonds — as.character(color) converts it to a plain character vector that recode() handles more predictably.",
-        "You need seven entries in recode(), one per grade: D, E, F, G, H, I, J.",
-        "\"D\" = \"colorless\", \"E\" = \"colorless\", \"F\" = \"colorless\", \"G\" = \"near-colorless\", ..."
+        "Group multiple input values using c() on the left side of ~: c(\"G\", \"H\") ~ \"near-colorless\".",
+        "You need three lines total — one per output group.",
+        "c(\"G\", \"H\") ~ \"near-colorless\", c(\"I\", \"J\") ~ \"faint\""
       ],
-      "ai_context": "Key teaching point: recode() handles many-to-one by simply repeating the same output value. The as.character() wrapper is needed because color is an ordered factor and recode() behaves more predictably with plain character input. The count(diamonds3, color, color_group) output is a good sanity check — students can see all 7 grades mapped to 3 groups."
+      "ai_context": "Key teaching point: recode_values() allows grouping multiple input values with c() on the left side of ~, making many-to-one recodes much cleaner than repeating the output value. Compare to the old recode() approach where D, E, F each needed a separate line. The as.character() wrapper is needed because color is an ordered factor."
     },
     {
       "id": "task-05",
@@ -80,18 +79,18 @@
     },
     {
       "id": "task-06",
-      "title": "Combining recode() and case_when() in one mutate()",
-      "instructions": "You can create multiple columns in a single `mutate()` call — and a later column can use an earlier one computed in the same call.\n\nUsing `diamonds`, create two new columns inside one `mutate()`:\n\n**Step 1 — `cut_score`** (use `recode()`):\nConvert `cut` to a numeric quality score:\n- `\"Fair\"` → `1`, `\"Good\"` → `2`, `\"Very Good\"` → `3`, `\"Premium\"` → `4`, `\"Ideal\"` → `5`\n\n**Step 2 — `value_assessment`** (use `case_when()` on `cut_score` and `price`):\n- `cut_score >= 4` and `price < 2000` → `\"excellent value\"`\n- `cut_score >= 4` and `price >= 2000` → `\"quality piece\"`\n- `cut_score <= 2` and `price >= 3000` → `\"overpriced\"`\n- Everything else → `\"standard\"`\n\nSave as `diamonds4` and count the value assessments.",
+      "title": "Combining recode_values() and case_when() in one mutate()",
+      "instructions": "You can create multiple columns in a single `mutate()` call — and a later column can use an earlier one computed in the same call.\n\nUsing `diamonds`, create two new columns inside one `mutate()`:\n\n**Step 1 — `cut_score`** (use `recode_values()`):\nConvert `cut` to a numeric quality score:\n- `\"Fair\"` → `1`, `\"Good\"` → `2`, `\"Very Good\"` → `3`, `\"Premium\"` → `4`, `\"Ideal\"` → `5`\n\n**Step 2 — `value_assessment`** (use `case_when()` on `cut_score` and `price`):\n- `cut_score >= 4` and `price < 2000` → `\"excellent value\"`\n- `cut_score >= 4` and `price >= 2000` → `\"quality piece\"`\n- `cut_score <= 2` and `price >= 3000` → `\"overpriced\"`\n- Everything else → `\"standard\"`\n\nSave as `diamonds4` and count the value assessments.",
       "starter_code": "library(ggplot2)\nlibrary(dplyr)\n\ndiamonds4 <- mutate(diamonds,\n\n)\n\ncount(diamonds4, value_assessment)",
-      "solution_code": "library(ggplot2)\nlibrary(dplyr)\n\ndiamonds4 <- mutate(diamonds,\n  cut_score = recode(as.character(cut),\n    \"Fair\"      = 1L,\n    \"Good\"      = 2L,\n    \"Very Good\" = 3L,\n    \"Premium\"   = 4L,\n    \"Ideal\"     = 5L\n  ),\n  value_assessment = case_when(\n    cut_score >= 4 & price < 2000  ~ \"excellent value\",\n    cut_score >= 4 & price >= 2000 ~ \"quality piece\",\n    cut_score <= 2 & price >= 3000 ~ \"overpriced\",\n    TRUE                            ~ \"standard\"\n  )\n)\n\ncount(diamonds4, value_assessment)",
+      "solution_code": "library(ggplot2)\nlibrary(dplyr)\n\ndiamonds4 <- mutate(diamonds,\n  cut_score = recode_values(as.character(cut),\n    \"Fair\"      ~ 1L,\n    \"Good\"      ~ 2L,\n    \"Very Good\" ~ 3L,\n    \"Premium\"   ~ 4L,\n    \"Ideal\"     ~ 5L\n  ),\n  value_assessment = case_when(\n    cut_score >= 4 & price < 2000  ~ \"excellent value\",\n    cut_score >= 4 & price >= 2000 ~ \"quality piece\",\n    cut_score <= 2 & price >= 3000 ~ \"overpriced\",\n    TRUE                            ~ \"standard\"\n  )\n)\n\ncount(diamonds4, value_assessment)",
       "test_expression": "exists('diamonds4') && all(c('cut_score','value_assessment') %in% names(diamonds4)) && all(c('excellent value','quality piece','overpriced','standard') %in% diamonds4$value_assessment) && all(diamonds4$value_assessment[diamonds4$cut_score >= 4 & diamonds4$price < 2000] == 'excellent value') && all(diamonds4$value_assessment[diamonds4$cut_score <= 2 & diamonds4$price >= 3000] == 'overpriced')",
       "hints": [
         "You can create multiple columns in one mutate() call, separated by commas. A column created earlier in the same mutate() can be used in a later one.",
-        "For cut_score, use recode(as.character(cut), ...) with integer values: \"Fair\" = 1L, \"Good\" = 2L, ...",
+        "For cut_score, use recode_values(as.character(cut), ...) with the ~ syntax: \"Fair\" ~ 1L, \"Good\" ~ 2L, ...",
         "For value_assessment, use case_when() with & to combine cut_score and price conditions. Don't forget TRUE ~ \"standard\" as the catch-all.",
         "The five cut levels are: Fair, Good, Very Good, Premium, Ideal — note the space in \"Very Good\"."
       ],
-      "ai_context": "Key teaching points: (1) mutate() can create multiple columns at once, and later columns can reference earlier ones from the same mutate() call. (2) recode() can return numeric/integer values, not just character. (3) as.character(cut) is needed because cut is an ordered factor. Common mistake: forgetting the space in 'Very Good', or using == instead of >= for cut_score comparisons. The TRUE ~ 'standard' catch-all is important here since not all combinations are covered by the explicit conditions."
+      "ai_context": "Key teaching points: (1) mutate() can create multiple columns at once, and later columns can reference earlier ones from the same mutate() call. (2) recode_values() uses ~ syntax throughout, consistent with case_when(). (3) as.character(cut) is needed because cut is an ordered factor. Common mistake: forgetting the space in 'Very Good', or using == instead of >= for cut_score comparisons."
     }
   ]
 }

@@ -1,4 +1,6 @@
-<script src="https://kit.fontawesome.com/3b340a2892.js" crossorigin="anonymous"></script>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+      
 <link rel="stylesheet" type="text/css" href="assets/icons.css"/>
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', function() {

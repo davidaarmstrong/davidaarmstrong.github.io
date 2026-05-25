@@ -1,0 +1,95 @@
+{
+  "id": "summarise",
+  "title": "Summarising Data with summarise()",
+  "description": "Learn to compute summary statistics with summarise(), from simple global summaries through grouped summaries using .by, across the msleep, diamonds, and midwest datasets.",
+  "packages": ["dplyr", "ggplot2"],
+  "tasks": [
+    {
+      "id": "task-01",
+      "title": "summarise(): global summary statistics",
+      "instructions": "`summarise()` collapses a data frame down to a single row of summary statistics.\n\nUsing the `msleep` dataset, calculate five summary statistics for `sleep_total`:\n- `mean_sleep` — mean\n- `median_sleep` — median\n- `sd_sleep` — standard deviation\n- `min_sleep` — minimum\n- `max_sleep` — maximum\n\nNote that some animals have missing sleep data — use `na.rm = TRUE` inside each function to ignore `NA` values.\n\nSave the result as `sleep_summary` and print it.",
+      "starter_code": "library(ggplot2)\nlibrary(dplyr)\n\nsleep_summary <- summarise(msleep,\n  mean_sleep   = mean(sleep_total,   na.rm = TRUE),\n  median_sleep = median(sleep_total, na.rm = TRUE),\n  sd_sleep     = ________,\n  min_sleep    = ________,\n  max_sleep    = ________\n)\n\nsleep_summary",
+      "solution_code": "library(ggplot2)\nlibrary(dplyr)\n\nsleep_summary <- summarise(msleep,\n  mean_sleep   = mean(sleep_total,   na.rm = TRUE),\n  median_sleep = median(sleep_total, na.rm = TRUE),\n  sd_sleep     = sd(sleep_total,     na.rm = TRUE),\n  min_sleep    = min(sleep_total,    na.rm = TRUE),\n  max_sleep    = max(sleep_total,    na.rm = TRUE)\n)\n\nsleep_summary",
+      "test_expression": "exists('sleep_summary') && all(c('mean_sleep','median_sleep','sd_sleep','min_sleep','max_sleep') %in% names(sleep_summary)) && nrow(sleep_summary) == 1 && isTRUE(sleep_summary$mean_sleep > 10 & sleep_summary$mean_sleep < 11) && isTRUE(sleep_summary$min_sleep < 2) && isTRUE(sleep_summary$max_sleep > 19)",
+      "hints": [
+        "Each summary statistic follows the same pattern: new_name = function(column, na.rm = TRUE).",
+        "The functions are mean(), median(), sd(), min(), and max() — all take na.rm = TRUE.",
+        "sd_sleep = sd(sleep_total, na.rm = TRUE)"
+      ],
+      "ai_context": "Task introduces summarise() producing a single-row result. Key teaching point: na.rm = TRUE is needed because msleep has 4 missing values in sleep_total. Without it, mean() etc. return NA. Encourage students to try without na.rm first to see what happens."
+    },
+    {
+      "id": "task-02",
+      "title": "summarise() with .by: grouped means",
+      "instructions": "The `.by` argument inside `summarise()` splits the data into groups before summarising — one row of results per group.\n\nUsing `msleep`, calculate the mean sleep time and count of animals for each diet type (`vore`). Name the new columns `mean_sleep` and `n`.\n\nUse `n()` (no arguments) to count rows within each group.\n\nSave as `sleep_by_diet` and print it.\n\n*Note:* some animals have no recorded diet — they will appear as their own group.",
+      "starter_code": "library(ggplot2)\nlibrary(dplyr)\n\nsleep_by_diet <- summarise(msleep,\n  mean_sleep = mean(sleep_total, na.rm = TRUE),\n  n          = n(),\n  .by        = ________\n)\n\nsleep_by_diet",
+      "solution_code": "library(ggplot2)\nlibrary(dplyr)\n\nsleep_by_diet <- summarise(msleep,\n  mean_sleep = mean(sleep_total, na.rm = TRUE),\n  n          = n(),\n  .by        = vore\n)\n\nsleep_by_diet",
+      "test_expression": "exists('sleep_by_diet') && all(c('vore','mean_sleep','n') %in% names(sleep_by_diet)) && nrow(sleep_by_diet) == 5 && isTRUE(sum(sleep_by_diet$n) == nrow(msleep))",
+      "hints": [
+        ".by takes the name of the grouping column — no quotes needed.",
+        "vore is the diet type column in msleep.",
+        "n() counts the number of rows in each group — it takes no arguments.",
+        ".by = vore"
+      ],
+      "ai_context": "Task introduces .by for grouped summaries. msleep has 5 diet groups: carni, herbi, insecti, omni, and NA (7 animals with no diet recorded). Unlike group_by(), .by includes NA as its own group, so the result has 5 rows. n() with no arguments counts rows per group. The ns should sum to 83 (nrow of msleep)."
+    },
+    {
+      "id": "task-03",
+      "title": "summarise() with .by: multiple statistics",
+      "instructions": "You can compute as many summary columns as you need in a single `summarise()` call.\n\nUsing `diamonds`, calculate three statistics for each `cut` grade:\n- `mean_price` — mean price\n- `median_price` — median price\n- `n` — number of diamonds\n\nSave as `price_by_cut` and print it.\n\nThe starter code is more sparse this time — you write the summary statistics.",
+      "starter_code": "library(ggplot2)\nlibrary(dplyr)\n\nprice_by_cut <- summarise(diamonds,\n\n  .by = cut\n)\n\nprice_by_cut",
+      "solution_code": "library(ggplot2)\nlibrary(dplyr)\n\nprice_by_cut <- summarise(diamonds,\n  mean_price   = mean(price),\n  median_price = median(price),\n  n            = n(),\n  .by          = cut\n)\n\nprice_by_cut",
+      "test_expression": "exists('price_by_cut') && all(c('cut','mean_price','median_price','n') %in% names(price_by_cut)) && nrow(price_by_cut) == 5 && isTRUE(sum(price_by_cut$n) == nrow(diamonds)) && isTRUE(all(price_by_cut$mean_price > 3000 & price_by_cut$mean_price < 5000))",
+      "hints": [
+        "Each statistic goes on its own line inside summarise(), before the .by argument.",
+        "price has no missing values in diamonds so na.rm = TRUE is not needed here.",
+        "mean_price = mean(price), median_price = median(price), n = n()"
+      ],
+      "ai_context": "Task builds on .by with multiple summary statistics. diamonds has 5 cut levels: Fair, Good, Very Good, Premium, Ideal. No NAs in price so na.rm is not needed. Interesting observation for students: Ideal cut has the lowest mean price — worth discussing why (smaller carat weight tends to come with better cut)."
+    },
+    {
+      "id": "task-04",
+      "title": "summarise() with .by: state-level poverty summary",
+      "instructions": "Using the `midwest` dataset, summarise county-level data up to the state level.\n\nFor each `state`, calculate:\n- `mean_poverty` — mean of `percbelowpoverty`\n- `mean_college` — mean of `percollege`\n- `sd_poverty` — standard deviation of `percbelowpoverty`\n- `n_counties` — number of counties\n\nSave as `poverty_by_state` and print it.\n\nThe starter code gives you only the shell.",
+      "starter_code": "library(ggplot2)\nlibrary(dplyr)\n\npoverty_by_state <- summarise(midwest,\n\n)\n\npoverty_by_state",
+      "solution_code": "library(ggplot2)\nlibrary(dplyr)\n\npoverty_by_state <- summarise(midwest,\n  mean_poverty = mean(percbelowpoverty),\n  mean_college = mean(percollege),\n  sd_poverty   = sd(percbelowpoverty),\n  n_counties   = n(),\n  .by          = state\n)\n\npoverty_by_state",
+      "test_expression": "exists('poverty_by_state') && all(c('state','mean_poverty','mean_college','sd_poverty','n_counties') %in% names(poverty_by_state)) && nrow(poverty_by_state) == 5 && isTRUE(sum(poverty_by_state$n_counties) == nrow(midwest))",
+      "hints": [
+        "You need four summary columns and a .by argument.",
+        "percbelowpoverty and percollege are the columns for poverty and college rates.",
+        "n_counties = n() counts the number of counties per state.",
+        "Don't forget .by = state at the end of the summarise() call."
+      ],
+      "ai_context": "Task consolidates grouped summarise with multiple statistics. midwest has 5 states (IL, IN, MI, OH, WI) with varying numbers of counties — n_counties should sum to 437 (nrow of midwest). No NAs in percbelowpoverty or percollege so na.rm is not needed. Good discussion point: which state has the highest poverty variation (sd_poverty)?"
+    },
+    {
+      "id": "task-05",
+      "title": "summarise() with .by: grouping by two variables",
+      "instructions": "`.by` can take a vector of column names to group by multiple variables simultaneously — `c(var1, var2)`.\n\nUsing `diamonds`, calculate the mean price and count for each combination of `cut` and `color`.\n\nName the columns `mean_price` and `n`. Save as `price_by_cut_color`.\n\nHow many rows do you expect in the result?",
+      "starter_code": "library(ggplot2)\nlibrary(dplyr)\n\nprice_by_cut_color <- summarise(diamonds,\n\n)\n\nprice_by_cut_color",
+      "solution_code": "library(ggplot2)\nlibrary(dplyr)\n\nprice_by_cut_color <- summarise(diamonds,\n  mean_price = mean(price),\n  n          = n(),\n  .by        = c(cut, color)\n)\n\nprice_by_cut_color",
+      "test_expression": "exists('price_by_cut_color') && all(c('cut','color','mean_price','n') %in% names(price_by_cut_color)) && nrow(price_by_cut_color) == 35 && isTRUE(sum(price_by_cut_color$n) == nrow(diamonds))",
+      "hints": [
+        "To group by multiple variables, wrap them in c(): .by = c(var1, var2).",
+        "diamonds has 5 cut levels and 7 color grades — how many combinations is that?",
+        ".by = c(cut, color)"
+      ],
+      "ai_context": "Key teaching point: .by = c(cut, color) groups by all combinations of the two variables. 5 cuts × 7 colors = 35 rows. The result is not sorted in any particular order since .by doesn't preserve factor order the way group_by() does — a good observation to raise. ns should sum to 53940 (nrow of diamonds)."
+    },
+    {
+      "id": "task-06",
+      "title": "summarise() then arrange(): a complete summary pipeline",
+      "instructions": "Combine everything: group by two variables, compute multiple statistics, then sort the result.\n\nUsing `midwest`, summarise counties by both `state` and `inmetro` (1 = metro area, 0 = non-metro):\n- `mean_poverty` — mean of `percbelowpoverty`\n- `sd_poverty` — standard deviation of `percbelowpoverty`\n- `mean_college` — mean of `percollege`\n- `n_counties` — count\n\nSave as `state_metro_summary`.\n\nThen use `arrange()` to sort the result by `state` (ascending) and `mean_poverty` (descending within each state). Save the sorted result back to `state_metro_summary`.\n\n*Hint for arrange():* `arrange(data, var1, desc(var2))`",
+      "starter_code": "library(ggplot2)\nlibrary(dplyr)\n\nstate_metro_summary <- summarise(midwest,\n\n)\n\nstate_metro_summary <- arrange(state_metro_summary, ________)\n\nstate_metro_summary",
+      "solution_code": "library(ggplot2)\nlibrary(dplyr)\n\nstate_metro_summary <- summarise(midwest,\n  mean_poverty = mean(percbelowpoverty),\n  sd_poverty   = sd(percbelowpoverty),\n  mean_college = mean(percollege),\n  n_counties   = n(),\n  .by          = c(state, inmetro)\n)\n\nstate_metro_summary <- arrange(state_metro_summary, state, desc(mean_poverty))\n\nstate_metro_summary",
+      "test_expression": "exists('state_metro_summary') && all(c('state','inmetro','mean_poverty','sd_poverty','mean_college','n_counties') %in% names(state_metro_summary)) && nrow(state_metro_summary) == 10 && isTRUE(sum(state_metro_summary$n_counties) == nrow(midwest)) && isTRUE(state_metro_summary$state[1] == 'IL') && isTRUE(state_metro_summary$mean_poverty[1] > state_metro_summary$mean_poverty[2])",
+      "hints": [
+        "The summarise() part is the same as task 5 but with state and inmetro as the grouping variables.",
+        "5 states × 2 metro values = 10 rows in the result.",
+        "arrange(data, state, desc(mean_poverty)) sorts by state first, then by mean_poverty descending within each state.",
+        "Save the arrange() result back to state_metro_summary: state_metro_summary <- arrange(state_metro_summary, state, desc(mean_poverty))"
+      ],
+      "ai_context": "Final task combines grouped summarise with two grouping variables and arrange(). 5 states × 2 inmetro values = 10 rows. The arrange() sorts by state alphabetically, then within each state the metro or non-metro row with higher mean_poverty comes first. Common mistake: forgetting desc() for mean_poverty, which would sort ascending. The pattern of saving arrange() result back to the same object name is idiomatic without pipes."
+    }
+  ]
+}

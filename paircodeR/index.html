@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>paircodeR — AI Pair Coding for R</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/dracula.css">
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header id="app-header">
+    <div class="header-left">
+      <span class="app-logo">paircodeR</span>
+      <select id="module-select" class="module-select" disabled>
+        <option value="">Loading…</option>
+      </select>
+    </div>
+    <div class="header-right">
+      <span id="webr-status" class="status-badge status-loading">⏳ Loading R…</span>
+      <button id="builder-btn" class="builder-btn" title="Open Curriculum Builder">Build</button>
+      <button id="settings-btn" class="icon-btn" title="Settings">⚙</button>
+    </div>
+  </header>
+
+  <!-- ── Import URL modal ──────────────────────────────────────────────── -->
+  <div id="import-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Import module from URL">
+    <div class="modal-content">
+      <h2>Import Module from URL</h2>
+
+      <label class="field-label">
+        Local file
+        <div class="import-file-row">
+          <span id="import-file-name" class="import-file-name">No file chosen</span>
+          <button id="import-pick-btn" class="secondary-btn">Choose file…</button>
+        </div>
+      </label>
+
+      <div class="import-divider"><span>or load from URL</span></div>
+
+      <label class="field-label">
+        Curriculum JSON URL
+        <input type="url" id="import-url-input"
+               placeholder="https://example.com/my-curriculum.json"
+               autocomplete="off" spellcheck="false">
+      </label>
+
+      <p class="settings-note">
+        URL must be publicly accessible and CORS-enabled
+        (GitHub raw URLs and Gists work well).
+      </p>
+
+      <p id="import-error" class="import-error hidden"></p>
+
+      <div class="modal-actions">
+        <button id="import-load-btn" class="primary-btn">Load</button>
+        <button id="import-cancel-btn" class="secondary-btn">Cancel</button>
+      </div>
+      <input type="file" id="import-file-input" accept=".json" class="hidden">
+    </div>
+  </div>
+
+  <!-- ── Settings modal ─────────────────────────────────────────────────── -->
+  <div id="settings-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Settings">
+    <div class="modal-content">
+      <h2>Settings</h2>
+
+      <label class="field-label">
+        AI Provider
+        <select id="ai-provider">
+          <option value="claude">Claude (Anthropic)</option>
+          <option value="openai">ChatGPT (OpenAI)</option>
+          <option value="gemini">Gemini (Google)</option>
+          <option value="github">GitHub Models (Copilot)</option>
+        </select>
+      </label>
+
+      <label class="field-label">
+        Model
+        <select id="ai-model"></select>
+      </label>
+
+      <label class="field-label">
+        API Key
+        <input type="password" id="api-key-input"
+               placeholder="Paste your key here — stored locally only"
+               autocomplete="off" spellcheck="false">
+      </label>
+
+      <p class="settings-note">
+        Your key is stored only in your browser's localStorage and is never sent to any server
+        other than the AI provider you choose.<br><br>
+        <strong>GitHub Models:</strong> generate a classic PAT at
+        github.com/settings/tokens with the <code>models:read</code> scope.
+        Your Copilot educator plan gives higher rate limits automatically.
+      </p>
+
+      <div class="modal-actions">
+        <button id="settings-save" class="primary-btn">Save</button>
+        <button id="settings-cancel" class="secondary-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Main split panel ───────────────────────────────────────────────── -->
+  <main id="app-main">
+
+    <!-- Left: Task panel -->
+    <section id="task-panel">
+
+      <div id="task-header">
+        <span id="task-progress" class="task-progress"></span>
+        <h2 id="task-title"></h2>
+      </div>
+
+      <div id="task-instructions" class="task-instructions"></div>
+
+      <div id="editor-container">
+        <div id="code-editor"></div>
+        <div id="editor-toolbar">
+          <button id="run-btn" class="primary-btn">▶ Run</button>
+          <button id="reset-btn" class="secondary-btn">↺ Reset</button>
+          <button id="check-btn" class="accent-btn">✓ Check</button>
+          <button id="editor-collapse-btn" class="collapse-btn" title="Collapse editor">▼ Editor</button>
+        </div>
+      </div>
+
+      <div id="output-panel">
+        <div id="output-tabs">
+          <button class="tab-btn active" data-tab="console">Console</button>
+          <button class="tab-btn" data-tab="plot">Plot</button>
+          <button id="output-collapse-btn" class="collapse-btn" title="Collapse output">▲ Output</button>
+        </div>
+        <div id="console-output" class="tab-content"></div>
+        <div id="plot-output" class="tab-content hidden">
+          <canvas id="plot-canvas" width="560" height="380"></canvas>
+          <p id="no-plot-msg" class="no-plot-msg">No plot yet — run code that calls plot() or ggplot()</p>
+        </div>
+      </div>
+
+      <div id="task-nav">
+        <button id="prev-btn" class="nav-btn" disabled>← Previous</button>
+        <span id="task-status-icon"></span>
+        <button id="next-btn" class="nav-btn" disabled>Next →</button>
+        <button id="download-btn" class="download-btn hidden" title="Download your solutions">↓ Solutions</button>
+      </div>
+
+    </section>
+
+    <!-- Drag divider -->
+    <div id="panel-divider" title="Drag to resize"></div>
+
+    <!-- Right: AI Tutor panel -->
+    <section id="tutor-panel">
+
+      <div id="tutor-header">
+        <span class="tutor-title">🤖 AI Pair Partner</span>
+        <button id="clear-chat-btn" class="icon-btn" title="Clear chat">🗑</button>
+      </div>
+
+      <div id="chat-messages" role="log" aria-live="polite"></div>
+
+      <div id="chat-input-area">
+        <div id="quick-actions">
+          <button class="quick-btn" data-msg="Can you give me a small hint without spoiling it?">💡 Hint</button>
+          <button class="quick-btn" data-msg="I'm stuck. Can you help me think through this step by step?">🤔 Stuck</button>
+          <button class="quick-btn" data-msg="Can you explain the concept behind this task?">📚 Explain</button>
+        </div>
+        <div id="input-row">
+          <textarea id="chat-input" placeholder="Ask your pair partner…" rows="2"></textarea>
+          <button id="send-btn" class="primary-btn">Send</button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ── Curriculum Builder overlay ───────────────────────────────────── -->
+  <div id="builder-overlay" class="hidden">
+
+    <div id="builder-header">
+      <span class="builder-title">Curriculum Builder</span>
+      <div class="builder-header-actions">
+        <button id="b-new-btn"    class="secondary-btn">New Module</button>
+        <button id="b-import-btn" class="secondary-btn">Import JSON</button>
+        <button id="b-export-btn" class="accent-btn">Export JSON</button>
+        <button id="b-close-btn"  class="secondary-btn">← Back to Student View</button>
+      </div>
+    </div>
+
+    <div id="builder-body">
+
+      <!-- Sidebar: module meta + task list -->
+      <div id="builder-sidebar">
+
+        <div class="b-section">
+          <div class="b-section-title">Module</div>
+          <label class="b-field">
+            Title
+            <input type="text" id="b-mod-title" placeholder="Module title">
+          </label>
+          <label class="b-field">
+            Description
+            <textarea id="b-mod-desc" rows="2" placeholder="Short description"></textarea>
+          </label>
+          <label class="b-field">
+            Packages <span class="b-hint">(comma-separated)</span>
+            <input type="text" id="b-mod-packages" placeholder="dplyr, ggplot2, tibble">
+          </label>
+          <label class="b-field">
+            Module ID <span class="b-hint">(URL-safe slug)</span>
+            <input type="text" id="b-mod-id" placeholder="my-module">
+          </label>
+        </div>
+
+        <div class="b-section">
+          <div class="b-section-title">Tasks</div>
+          <ul id="b-task-list"></ul>
+          <button id="b-add-task-btn" class="primary-btn b-add-task">+ Add Task</button>
+        </div>
+
+      </div>
+
+      <!-- Main: task editor -->
+      <div id="builder-main">
+
+        <div id="b-empty-state" class="b-empty-state">
+          Select a task from the sidebar, or click "+ Add Task" to begin.
+        </div>
+
+        <div id="b-task-editor" class="hidden">
+
+          <div class="b-row">
+            <label class="b-field b-grow">
+              Task Title
+              <input type="text" id="b-task-title" placeholder="e.g. Filtering rows with filter()">
+            </label>
+            <label class="b-field b-narrow">
+              Task ID
+              <input type="text" id="b-task-id" placeholder="task-01">
+            </label>
+          </div>
+
+          <label class="b-field">
+            Instructions <span class="b-hint">(Markdown supported)</span>
+            <textarea id="b-task-instructions" rows="6" placeholder="Describe what the student should do…"></textarea>
+          </label>
+
+          <div class="b-code-row">
+            <label class="b-field b-grow">
+              Starter Code
+              <div id="b-starter-editor" class="b-code-editor"></div>
+            </label>
+            <label class="b-field b-grow">
+              Solution Code
+              <div id="b-solution-editor" class="b-code-editor"></div>
+            </label>
+          </div>
+
+          <label class="b-field">
+            Test Expression <span class="b-hint">(R expression that returns TRUE/FALSE — use TRUE to skip)</span>
+            <input type="text" id="b-task-test" placeholder="exists('x') && x == 42">
+          </label>
+
+          <div class="b-field">
+            <div class="b-field-label">Hints <span class="b-hint">(shown to students one at a time)</span></div>
+            <div id="b-hints-list"></div>
+            <button id="b-add-hint-btn" class="secondary-btn b-sm-btn">+ Add Hint</button>
+          </div>
+
+          <label class="b-field">
+            AI Context <span class="b-hint">(private note for the AI tutor — not shown to students)</span>
+            <textarea id="b-task-ai-context" rows="3" placeholder="What should the AI know about this task?"></textarea>
+          </label>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden file input for JSON import (builder) -->
+    <input type="file" id="b-file-input" accept=".json" class="hidden">
+  </div>
+
+  <!-- ── Download modal ───────────────────────────────────────────────── -->
+  <div id="download-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Download solutions">
+    <div class="modal-content">
+      <h2>Download Solutions</h2>
+      <p class="settings-note" id="download-summary"></p>
+      <div class="download-format-grid">
+        <button class="download-format-btn" data-format="r">
+          <span class="format-ext">.R</span>
+          <span class="format-label">R Script</span>
+          <span class="format-desc">Plain script with comment headers — opens in any editor</span>
+        </button>
+        <button class="download-format-btn" data-format="rmd">
+          <span class="format-ext">.Rmd</span>
+          <span class="format-label">R Markdown</span>
+          <span class="format-desc">Instructions as prose, code as chunks — knit in RStudio</span>
+        </button>
+        <button class="download-format-btn" data-format="qmd">
+          <span class="format-ext">.qmd</span>
+          <span class="format-label">Quarto</span>
+          <span class="format-desc">Same as Rmd but for Quarto — render with VS Code or RStudio</span>
+        </button>
+      </div>
+      <div class="modal-actions">
+        <button id="download-cancel-btn" class="secondary-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Loading overlay ────────────────────────────────────────────────── -->
+  <div id="loading-overlay" role="status">
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <p id="loading-message">Initializing R environment…</p>
+      <div id="progress-track">
+        <div id="progress-fill"></div>
+      </div>
+      <p id="loading-sub-message" class="loading-sub">First load downloads WASM packages — cached after that</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/r/r.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

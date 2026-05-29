@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+  <head>
+    <title>Lecture</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="lecture1_2026_files/header-attrs/header-attrs.js"></script>
+    <link href="lecture1_2026_files/remark-css/default.css" rel="stylesheet" />
+    <script src="lecture1_2026_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture1_2026_files/fabric/fabric.min.js"></script>
+    <link href="lecture1_2026_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture1_2026_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture1_2026_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture1_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture1_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture1_2026_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture1_2026_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <script>
+    function releaseMath(el) {
+      const codes = el.getElementsByTagName('code');
+
+      for (let i = 0; i < codes.length;) {
+        const code = codes[i];
+
+        if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+          const text = code.textContent.trim();
+
+          const isMath =
+            /^\$\$(.|\s)+\$\$$/.test(text) ||
+            /^\$(?!\$)(.|\s)+\$$/.test(text) ||
+            /^\\\((.|\s)+\\\)$/.test(text) ||
+            /^\\\[(.|\s)+\\\]$/.test(text) ||
+            /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text);
+
+          if (isMath) {
+            code.outerHTML = code.innerHTML;
+            continue;
+          }
+        }
+
+        i++;
+      }
+    }
+    </script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-svg.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      function rerenderMath() {
+        releaseMath(document);
+
+        if (window.MathJax && MathJax.typesetPromise) {
+          MathJax.typesetPromise().catch(function (err) {
+            console.error("MathJax typeset failed:", err);
+          });
+        }
+      }
+
+      if (window.slideshow && typeof slideshow.on === "function") {
+        slideshow.on("afterShowSlide", rerenderMath);
+      }
+
+      rerenderMath();
+    });
+    </script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="www/layout.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+
+
+
+
+
+
+## Introductions
+
+- Instructor: Dave Armstrong
+  - Office hours: 12:30 - 1:30 every day we have class or by appointment. 
+
+- TA: Harry Murtram (Political Science, UC Riverside)
+  - Office hours: TBD
+
+- Syllabus
+  - Software
+  - Content
+  - Assignments
+
+---
+class: center middle inverse
+
+.large-text[What are Models?]
+
+---
+
+## What are Models?
+
+- Necessarily simplified representations reality.
+
+---
+class: center middle inverse
+
+.large-text[Can Models be True?]
+
+---
+
+## Can models be true? 
+
+- .highlight[No] - "all models are wrong, some are useful" (Box)
+
+--
+
+- .highlight[No] - models can be useful or not (they are _purpose-relative_), but to think of them as true or false is not interesting (Clarke and Primo)
+
+--
+
+- .highlight[No] - could never actually make all the right choices and wouldn't know if you did (Neumayer and Plümper)
+
+--
+
+- .highlight[No] - models are simple, parametric representations of a complex, nonparametric reality (Burnham and Anderson)
+
+--
+
+- .highlight[No] - Models are fragile, theory-laden simplifications whose inferential credibility depends on how conclusions behave under plausible specification perturbations (Leamer)
+
+--
+
+- .highlight[No] - [Models are] only as credible as the substantive plausibility of the stochastic model generating it. (Freedman)
+
+&lt;!-- --- --&gt;
+&lt;!-- class: center middle inverse --&gt;
+
+&lt;!-- .large-text[Can Models be Tested?] --&gt;
+
+&lt;!-- --- --&gt;
+
+&lt;!-- ## Can models be tested?  --&gt;
+
+
+&lt;!-- .highlight[No] - Clarke and Primo argue two reaosns why models cannot be tested.  --&gt;
+&lt;!--   1. The hypothetico-deductive model doesn't really permit it.  --&gt;
+&lt;!--       - _Modus Tollens_: `\(T \rightarrow H, \neg H  \vdash  \neg T\)` --&gt;
+&lt;!--       - _Affirming the Consequent_: `\(T \rightarrow H, H \vdash T\)` --&gt;
+&lt;!--       - Probabilistic _modus tollens_ doesn't work (Gill 1999) --&gt;
+&lt;!--           - `\(T \rightarrow \text{High }\Pr(H) , \neg H \vdash \text{Low }\Pr(T)\)` --&gt;
+&lt;!--   2. Don't confront theoretical models with data, but with models of data.  --&gt;
+
+&lt;!-- -- --&gt;
+
+&lt;!-- .highlight[Yes] - the EITM crowd --&gt;
+
+---
+class: center middle inverse
+
+
+.large-text[What do Models Tell Us?]
+
+---
+
+## What Do Models Tell Us? 
+
+
+.highlight[Statistical models help us assess whether theories and hypotheses derived from unsystematic or anecdotal observation are broadly consistent with systematically collected data under explicit assumptions and simplifying abstractions ]
+
+--
+
+Models are: 
+- Useful simplified abstractions of complex reality
+- Empirically useful tools for summarizing relationships in large multivariate data
+- Devices for clarifying assumptions and generating testable implications
+- Necessarily incomplete representations whose usefulness depends on purpose and context
+
+---
+class: middle center inverse
+
+.large-text[Why Robustness?]
+
+
+---
+
+## Classical Econometrics
+
+
+If `\(y = \beta_0 + \beta_1 x+ \beta_2 z + \varepsilon\)`, what are the properties of [Estimator Name] and its ability to recover `\(\beta_1\)` with `\(y = b_0 + b_1x + b_2z + e\)`. 
+
+- Bias: does `\(E(b_1|x,z) = \beta_1\)`
+- Variance: How variable is `\(b_1\)` in repeated samples, is it efficient. 
+- Consistency: Does `\(b_1 \overset{p}{\rightarrow} \beta_1\)`  
+
+--
+
+If there is no true `\(\beta_1\)` then what do bias and consistency mean?  
+
+---
+class: middle, center
+background-image: url("robustness.png")
+background-size: cover
+background-position: center
+
+
+---
+class: middle center inverse
+
+.large-text[What does model robustness mean to you?]
+
+---
+
+## What is Robustness?
+
+### Estimator Robustness - Classical Econometrics
+
+- Preservation of estimator properties (unbiasedness, consistency, efficiency) under assumption violations 
+
+--
+
+### Inferential Robustness- "Approximationist"
+
+- The ability of the model to capture important structure despite its imperfections (Box)
+
+- Extent to which substantive conclusions survive plausible alternative specifications (Leamer)
+
+- Credibility under violated stochastic assumptions (Freedman)
+
+- Stability under varied abstractions aimed at the same purpose (Clarke and Primo)
+
+- Predictive acccuracy across approximating models (Burnham and Anderson)
+
+
+???
+
+The dominant uncertainty in applied econometrics is usually not sampling uncertainty, but specification uncertainty. (Leamer)
+
+---
+class: middle center inverse
+
+.large-text[Robustness refers to the stability of substantive conclusions under plausible changes to assumptions, specifications, abstractions, or inferential frameworks, recognizing that all models are simplified representations of complex social processes.]
+
+---
+
+## Robustness Operationalizations
+
+All robustness measures attempt to answer:
+
+&gt; How similar are the inferential conclusions implied by two plausible models?
+
+Different measures emphasize different aspects of similarity:
+
+| Measure                     | Emphasises               |
+|-----------------------------|--------------------------|
+| Neumayer and Pluemper       | Overlap with baseline    |
+| Overlap Coefficient         | Shared probability mass  |
+| Kullbach-Leibler Divergence | Information loss         |
+| Jensen-Shannon Divergence   | Inferential disagreement |
+
+---
+
+## N-P Operationalization of Robustness
+
+.pull-left[
+What proportion of an alternative plausible model effect's sampling distribution overlaps the baseline model effect's 95% confidence interval. 
+
+`$$\rho(\hat{\beta}_r) = \int_{\hat{\beta}_b - C\hat{\sigma}_b}^{\hat{\beta}_b + C\hat{\sigma}_b} f(\hat{\beta}_r|\mathbf{y}, \mathbf{X}, \hat{\theta})d\hat{\beta}_r$$` 
+
+- `\(\rho(\hat{\beta}_r)\)` is an asymmetric measure that natively lies in the interval `\([0,1]\)` and it increases in similarity. 
+
+
+]
+.pull-right[
+
+&lt;img src="lecture1_2026_files/figure-html/unnamed-chunk-1-1.png" alt="Visualization of Neumayer and Pluemper robustness.  It shows a normal distribution representing the robustness test estiamte and dashed vertical lines representing the confidence intervals of the baseline estimate.  Roughly 60% of the distribution is shaded between the vertical lines." width="75%" style="display: block; margin: auto;" /&gt;
+]
+  
+---
+
+## Calculating Robustness in R
+
+
+
+.pull-left[
+
+| Model      | Mean          | Standard Deviation |
+|------------|:---------------:|:----------------:|
+| Baseline   |       2.0     |      0.5       |
+| Robustness |      1.5      |      0.35      |
+
+&lt;img src="lecture1_2026_files/figure-html/unnamed-chunk-3-1.png" alt="Normal distribution for a robustness-test estimate centered below the baseline estimate, with the area inside the baseline model's 95 percent confidence interval shaded.  Roughly 90% of the distribution overlaps the baseline confidence interval" width="100%" /&gt;
+
+
+]
+.pull-right[
+
+### Calculate Robustness
+
+
+``` r
+library(nprobustness)
+robustness(dnorm, dnorm, 
+   target_args = list(mean = 2.0, 
+                      sd = .5), 
+   alt_args = list(mean = 1.5, 
+                   sd = .35))
+```
+
+```
+##       ovl        np        js        kl 
+## 0.5396479 0.9148595 0.2320148 1.1841414
+```
+
+]
+
+---
+
+## Overlap Coefficient
+
+.pull-left[
+
+The "Overlap Coefficient" (OVL) measures the proportion of shared probability mass between two uncertainty distributions.
+
+`$$OVL = \int \min(f_1(\theta),f_2(\theta))d\theta$$` 
+
+- OVL is a symmetric measure that natively lies in the interval `\([0,1]\)` and it increases in similarity
+
+
+]
+.pull-right[
+&lt;img src="lecture1_2026_files/figure-html/unnamed-chunk-5-1.png" alt="Normal probability density functions for the Target (baseline) and Alternative, with their shared probability mass highlighted to illustrate the overlap coefficient.  The overlap coefficient is roughly .53 here." width="100%" /&gt;
+
+
+]
+
+---
+
+## Kullbach-Leibler Divergence 
+
+.pull-left[
+
+How much inferential structure from the target is not captured by the alternative.
+
+- With `\(p(x)\)` as the target and `\(q(x)\)` as the alternative 
+
+$$
+D_{KL}(p\parallel q)=\int p(x)\log\frac{p(x)}{q(x)}dx
+$$
+
+- K-L Divergence is an asymmetric measure that natively lies in the interval `\([0,\infty]\)` and it increases in divergence
+
+
+]
+.pull-right[
+&lt;img src="lecture1_2026_files/figure-html/unnamed-chunk-6-1.png" alt="Target (baseline) and alternative normal probability density functions with a shaded region showing the pointwise contribution to Kullback-Leibler divergence from the target to the alternative." width="100%" /&gt;
+]
+
+---
+
+## Jensen-Shannon Divergence
+
+
+.pull-left[
+JS is the average information discrepancy between each individual distribution and the shared midpoint mixture
+
+
+$$
+\newcommand{\DKL}{D_{\operatorname{KL}}}
+JS(p,q) = \frac{1}{2} \DKL(p,m) + \frac{1}{2} \DKL(q,m)
+$$ 
+
+
+where: `\(m = \frac{1}{2}(p+q)\)`
+
+- JS is a symmetric measure that natively lies in the interval `\([0,\log(2)]\)`, but in the R package is rescaled to be in `\([0,1]\)` and it increases in divergence
+]
+.pull-right[
+
+
+&lt;img src="lecture1_2026_files/figure-html/unnamed-chunk-7-1.png" alt="Target (baseline), alternative, and dashed midpoint-mixture distributions with shaded Jensen-Shannon contribution, illustrating disagreement relative to the shared mixture distribution." width="100%" /&gt;
+
+
+
+
+]
+
+---
+
+## 4 Steps to Robustness Testing
+
+1. Define baseline model (theory + fit)
+2. Identify arbitrary modeling choices
+3. Develop models that change arbitrary choices 
+4. Calculate robustness for alternative models 
+
+---
+class: center middle inverse
+
+.large-text[What are some examples of arbitrary choices we make in modeling?]
+
+
+---
+
+## Robust to what?
+
+- Distribution of the errors
+- Variance-covariance structure of the errors
+- Explanatory variables in the model
+- Measurement strategies for outcome and explanatory variables
+- Functional form of relationships between outcome and explanatory variables
+- Level of causal homogeneity assumed
+- Definition of population and relationship to sample
+- Assumptions about measurement error 
+- Temporal dynamics and dependence
+- Spatial dynamics and dependence
+
+We will discuss what kinds of tests we can do to solve these tomorrow and throughout the course.
+
+---
+
+## Example: Barry and Kleinberg (2015)
+
+Models of US FDI flows as a function of trade dependence and sanctions busting history. 
+
+1. In response to sanctions imposition, sender-state firms increase FDI disproportionately in host states that have a record of sanctions-busting against the sender state.
+    - Variable: _ab\_sum_ yearly count of sanction busing behavior. 
+    - variable: _hse\_sanction_ whether the country has US sanctions in place. 
+2. In response to sanctions imposition, sender-state firms increase FDI disproportionately in host states that are more highly dependent on trade with target states.
+    - variable: _tradeshare_ recipient country's dependence on trade with the countries sanctioned by the US. 
+3. In response to sanctions imposition, sender-state firms increase FDI disproportionately in host states upon whom target states are more highly trade dependent.
+    - variable: _sancmeanshare_ the extent to which sanctioned states are dependent on third party states for foreign trade. 
+
+---
+
+## Barry and Kleinberg Robustness Tests
+
+1. Split sample - developed and developing countries (Table 2)
+2. Within-country estimation (country fixed effects, Table 3)
+3. Remove high leverage points (sanctions-busting: Table A1, trade dependence: Table A2)
+4. Geo-political context and alliances for trade dependence (Table A3)
+5. Lagged DV to account for some temporal dynamics (Table A4)
+
+---
+
+## Split Sample: Run Models
+
+
+
+.pull-left[
+&lt;img src="lecture1_2026_files/figure-html/unnamed-chunk-9-1.png" alt="Solid black line shows the normal probability density of the original coefficient for sanction busting.  Shaded normal probability densities are included for the distributions of the sanction-busting effect in the high- and low-development subsamples, with overlap coefficients reported in the legend.  The low-development effect is substantially higher than the baseline estimate leading to a small overlap coefficient (2.1%).  The high-development effect is substantially similar leading to an overlap coefficient of about 83%." width="100%" /&gt;
+]
+
+.pull-right[
+&lt;img src="lecture1_2026_files/figure-html/unnamed-chunk-10-1.png" alt="Solid black line shows the normal probability density of the original coefficient for US sanctions.  Shaded normal probability densities are included for the distributions of the US sanctions effect in the high- and low-development subsamples, with overlap coefficients reported in the legend.  The low-development effect is somewhat higher than the baseline estimate leading to an overlap coefficient of nearly 50%.  The high-development effect has a similar mean to the baseline estimate, but is more spread out leading to an overlap coefficient of about 54%." width="100%" /&gt;
+]
+
+---
+
+## Numerical Robustness Scores
+
+.pull-left[
+
+**Sanction Busting**
+
+``` r
+# high development
+robustness(dnorm, dnorm, 
+           target_args = list(mean = l2[[1]]$estimate[2], 
+                              sd=l2[[1]]$`std.error`[2]), 
+           alt_args = list(mean = l2[[2]]$estimate[2], 
+                           sd=l2[[2]]$`std.error`[2]))
+```
+
+```
+##       ovl        np        js        kl 
+## 0.8291592 0.8335779 0.0418228 0.1016368
+```
+
+``` r
+#low development
+robustness(dnorm, dnorm, 
+           target_args = list(mean = l2[[1]]$estimate[2], 
+                              sd=l2[[1]]$`std.error`[2]), 
+           alt_args = list(mean = l2[[3]]$estimate[2], 
+                           sd=l2[[3]]$`std.error`[2]))
+```
+
+```
+##         ovl          np          js          kl 
+## 0.021454364 0.007497806 0.953165717 6.130706205
+```
+
+]
+.pull-right[
+
+**US Sanctions**
+
+``` r
+# high development
+robustness(dnorm, dnorm, 
+           target_args = list(mean = l2[[1]]$estimate[3], 
+                              sd=l2[[1]]$`std.error`[3]), 
+           alt_args = list(mean = l2[[2]]$estimate[3], 
+                           sd=l2[[2]]$`std.error`[3]))
+```
+
+```
+##       ovl        np        js        kl 
+## 0.5407256 0.5157000 0.2459570 0.5945084
+```
+
+``` r
+#low development
+robustness(dnorm, dnorm, 
+           target_args = list(mean = l2[[1]]$estimate[3], 
+                              sd=l2[[1]]$`std.error`[3]), 
+           alt_args = list(mean = l2[[3]]$estimate[3], 
+                           sd=l2[[3]]$`std.error`[3]))
+```
+
+```
+##       ovl        np        js        kl 
+## 0.4925689 0.6779493 0.2765159 0.8560409
+```
+
+]
+
+
+---
+
+## Lab Exercise
+
+Your turn - consider robustness in the way we defined above for the other models. 
+
+
+add `as.factor(cowcode)` to `m2`. 
+
+
+What do you conclude about robustness of the effects of sanction busting and US sanctions?
+
+---
+
+## GLMs
+
+GLMs have 4 components:
+
+1. Stochastic component: `\(\mathbf{Y}\)` is a random or stochastic component that we expect to change from sample to sample in the frequentist thought experiment.
+
+1. Systematic component: `\(\mathbf{\theta} = \mathbf{X\beta}\)`
+
+1. Link function: The stochastic and systematic components are linked through a function which "tricks" the model into thinking that it is still acting on normally distributed outcomes.
+
+1. Residuals: The residuals can be computed the same way as in the linear model, but there are other, perhaps more useful options here, too.
+
+---
+
+
+## Estimation
+
+Estimation could be done in a number of ways, easiest is with the generalized linear model. In our normal linear model: 
+
+`$$\begin{aligned}
+    \mathbf{Y} &amp;= \mathbf{X\beta} + \mathbf{\varepsilon}\\
+    E(\mathbf{Y}) &amp;= \mathbf{\theta} = \mathbf{X\beta}
+\end{aligned}$$`
+
+The generalization, is: 
+
+`$$g(\mathbf{\mu}) = \mathbf{\theta} = \mathbf{X\beta}$$`
+
+where `\(g(\cdot)\)` is a "link function" that transforms the unbounded linear predictor into the response space of `\(\mathbf{Y}\)`.  
+
+---
+
+
+## Model of Voting
+
+In our model of voting: 
+
+
+`$$\begin{aligned}
+\mathbf{X}\beta &amp;= b_0 + b_1\text{Age} + b_2\text{Education} + b_3\text{Income}  \\
+  &amp;+ b_4\text{Left-Right Self Placement} + b_5\text{Sex=Female}  \\
+  &amp;+ b_6\text{Race=White} + b_7\text{Race=Black}
+\end{aligned}$$`
+
+`$$\begin{aligned}
+log\left(\frac{Pr(\text{Voted}|\mathbf{X})}{1-Pr(\text{Voted}|\mathbf{X})}\right) &amp;= \mathbf{X}\beta\\
+\widehat{Pr(\text{Voted})} &amp;= \frac{e^{\mathbf{X}\beta}}{1+e^{\mathbf{X}\beta}}
+\end{aligned}$$`
+
+---
+
+## Full Model of Voting in 2008
+
+
+.left-narrow[
+
+Let's consider a more fully specified model of turnout.
+
+
+``` r
+library(car)
+library(rio)
+dat &lt;- import("../data/anes2008_binary.dta")
+
+dat$race &lt;- 1 + dat$white + 2*dat$black
+dat$race &lt;- factor(dat$race, 
+   levels=1:3, 
+   labels=c("Other", "White", "Black"))
+mod &lt;- glm(voted ~ age + educ + income + 
+    poly(leftright, 2, raw=TRUE) + female + 
+    race, data=dat, family=binomial(link="logit"))
+```
+]
+.right-wide[
+
+``` r
+tidy(mod)
+```
+
+```
+## # A tibble: 9 × 5
+##   term                            estimate std.error statistic     p.value
+##   &lt;chr&gt;                              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;
+## 1 (Intercept)                      -4.51     1.17        -3.87 0.000111   
+## 2 age                               0.0357   0.00808      4.42 0.00000982 
+## 3 educ                              0.284    0.0545       5.21 0.000000190
+## 4 income                            0.0820   0.0225       3.64 0.000272   
+## 5 poly(leftright, 2, raw = TRUE)1  -0.635    0.264       -2.40 0.0162     
+## 6 poly(leftright, 2, raw = TRUE)2   0.0539   0.0204       2.64 0.00827    
+## 7 female                            0.396    0.228        1.74 0.0827     
+## 8 raceWhite                         0.635    0.300        2.12 0.0343     
+## 9 raceBlack                         2.04     0.422        4.84 0.00000130
+```
+
+]
+
+---
+
+
+## Interpreting Coefficients
+
+We could interpret coefficients the same as in the linear model, but with a different dependent variable.  
+
+- For every one-unit change in education, the log of the odds of the probability of voting goes up by 0.28.  *How enlightening!*
+
+- This is often not an intuitive metric for your readers (or yourselves).  
+
+- And, it doesn't really tell us anything about the actual probability of voting.  
+
+---
+
+
+## Visual Display of Log-Odds `\(\rightarrow\)` Probabilities
+
+&lt;img src="lecture1_2026_files/figure-html/odds2probs-1.png" alt="Line segments showing how the same one-unit increase in log odds maps to different changes in probability depending on the baseline probability.  Values with baselines in the middle of the probability scale (around 0.5) have larger first differences in probabilities." width="40%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+## Interpretation of Coefficients II
+
+So, the coefficients do not have a great intuitive interpretation on their own.  Then, what do we do?  
+
+- Think back to what the coefficient told us in OLS - the predicted change in `\(y\)` for a unit change in `\(x\)`.  
+
+- In the OLS case, `\(y\)` was the quantity in which we were directly interested.  Here, however, the quantity in which we're interested is `\(Pr(y=1)\)`.  
+
+- Why not calculate how much we would predict `\(Pr(y=1)\)` to increase for every unit increase in `\(x\)`? 
+
+
+
+---
+
+
+## What does a one-unit change mean? 
+
+Here, we're going to move Education by one unit holding everything else constant at the following values: 
+
+
+- Age = 45: .0357 x 45 = 1.6065 
+- Income = 15: 0.082 x 15 = 0.123
+- Left-right = 5: -0.635 x 5 + 0.0539 x 25 = -1.8275
+- Female = 0: 0.3956 x 0 = 0
+- Race = White: 0.6347 x 1 + 2.0413 x 0 = 0.6347
+
+When we add all of that stuff up along with the intercept, we get: 
+
+`$$\begin{aligned}
+\mathbf{X}\beta_{-j} &amp;= -4.5138 + 1.6065 + 0.123 - 1.8275 + 0 + 0.6347 = -3.9771
+\end{aligned}$$`
+
+So, that gives us the following: `\(\mathbf{X}\beta = 0.284\times\text{Education} - 3.9771\)`.  
+
+---
+
+## One unit change in Education
+
+Let's think about what moving from 0 to 1 years of education does for the probability of voting: 
+
+`$$\begin{aligned}
+Pr(\text{Voted} | \text{Education} = 0) &amp;= \frac{e^{.284\times 0 - 3.9771}}{1+ e^{.284\times 0 - 3.9771}}\\
+                                        &amp;= \frac{0.0187}{1.0187} = 0.0184\\
+Pr(\text{Voted} | \text{Education} = 1) &amp;= \frac{e^{.284\times 1 - 3.9771}}{1+ e^{.284\times 1 - 3.9771}}\\
+                                        &amp;= \frac{0.0249}{1.0249} = 0.0243\\
+\Delta Pr(\text{Voted} | \text{Education}: 0\rightarrow 1) &amp;= 0.0243 - 0.0184\\
+                                                           &amp;= 0.0059
+\end{aligned}$$`
+
+---
+
+## A Different One-unit Change
+
+What if we changed education from 15$\rightarrow$16 instead of from 0$\rightarrow$1.  
+
+`$$\begin{aligned}
+Pr(\text{Voted} | \text{Education} = 15) &amp;= \frac{e^{.284\times 15 - 3.9771}}{1+ e^{.284\times 15 - 3.9771}}\\
+                                        &amp;= \frac{1.3270}{2.3270} = 0.5703\\
+Pr(\text{Voted} | \text{Education} = 16) &amp;= \frac{e^{.284\times 16 - 3.9771}}{1+ e^{.284\times 16 - 3.9771}}\\
+                                        &amp;= \frac{1.7628}{2.7628} = 0.6380\\
+\Delta Pr(\text{Voted} | \text{Education}: 15\rightarrow 16) &amp;= 0.6380 - 0.5703\\
+                                                           &amp;= 0.0677
+\end{aligned}$$`
+
+---
+
+
+## All One-unit Changes
+
+&lt;img src="lecture1_2026_files/figure-html/educ1-1.png" alt="Dot plot of first differences in voting probability for each one-unit increase in education, showing that the probability change varies across the education scale.  For this particular observation, the biggest changes in voting probability happen at education changes of 13 to 14 and 14 to 15." width="75%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+
+## All One-unit Changes II
+
+&lt;img src="lecture1_2026_files/figure-html/educ2-1.png" alt="Inverse-logit curve with step segments showing that equal one-unit changes in education create unequal changes in predicted voting probability. The biggest changes in probability are when the linear predictor is around zero." width="40%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Taking Stock
+
+What dowe know so far? 
+
+
+- The coefficients don't have a nice intuitive interpretation like they do in OLS. 
+
+- The coefficients do not necessarily indicate anything in particular about the absolute value of the predicted probability.  
+
+- Different one-unit changes can have different effects.  
+
+
+---
+
+
+## More Complications
+
+Before we get comfortable with our current situation, let's consider a different individual.  Someone the same as the person above, but who is extremely liberal.
+
+
+- Age = 45: .0357 x 45 = 1.6065 
+- Income = 15: 0.082 x 15 = 0.123
+- Left-right = 0: -0.635 x 0 + 0.0539 x 0 = 0
+- Female = 0: 0.3956 x 0 = 0
+- Race = White: 0.6347 x 1 + 2.0413 x 0 = 0.6347
+- `\(\mathbf{X}\beta\)` = -2.1496
+
+
+
+---
+
+## One unit change in Education
+
+Let's think about what moving from 0 to 1 years of education does for the probability of voting:
+
+`$$\begin{aligned}
+Pr(\text{Voted} | \text{Education} = 0) &amp;= \frac{e^{.284\times 0 - 2.1496}}{1+ e^{.284\times 0 - 2.1496}}\\
+                                        &amp;= 0.1046\\
+Pr(\text{Voted} | \text{Education} = 1) &amp;= \frac{e^{.284\times 1 - 2.1496}}{1+ e^{.284\times 1 - 2.1496}}\\
+                                        &amp;= 0.1343\\
+\Delta Pr(\text{Voted} | \text{Education}: 0\rightarrow 1) &amp;= 0.1343-0.1046\\
+                                                           &amp;= 0.0297
+\end{aligned}$$`
+---
+
+## A Different One-unit Change
+
+What if we changed education from 15$\rightarrow$16 instead of from 0$\rightarrow$1.
+
+`$$\begin{aligned}
+Pr(\text{Voted} | \text{Education} = 15) &amp;= \frac{e^{.284\times 15 - 2.1469}}{1+ e^{.284\times 15 - 2.1469}}\\
+                                        &amp;= 0.8282\\
+Pr(\text{Voted} | \text{Education} = 16) &amp;= \frac{e^{.284\times 16 - 2.1469}}{1+ e^{.284\times 16 - 2.1469}}\\
+                                        &amp;= \frac{1.7628}{2.7628} = 0.8607\\
+\Delta Pr(\text{Voted} | \text{Education}: 15\rightarrow 16) &amp;= 0.8607-0.8282\\
+                                                           &amp;= 0.0325
+\end{aligned}$$`
+
+---
+
+
+
+## All One-unit Changes, Both Observations
+
+&lt;img src="lecture1_2026_files/figure-html/educ1a-1.png" alt="Dot and line-range plot comparing education first differences for moderate and liberal profiles, showing that predicted probability changes depend on the covariate profile. The biggest changes in probability for the Moderate profile happen when education changes from 13 to 14 or 14 to 15.  For the liberal profile, the biggest change in probability happens when education changes from 8 to 9." width="75%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+## All One-unit Changes II
+
+&lt;img src="lecture1_2026_files/figure-html/educ2a-1.png" alt="Faceted inverse-logit curves for moderate and liberal profiles, with step segments showing how education changes translate into different probability changes across profiles. This demonstrates that different profiles essentially have different starting points on the inverse-logit curve.  The Liberal profile has a higher baseline probability of voting, so its steps are shifted to the right on the curve relative to the moderate profile." width="85%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+## Taking Stock II
+
+What *else* do we know now? 
+
+- We know that not every change from one value to another (e.g., `\(15\rightarrow16\)`) has the same effect.  
+
+- In addition to knowing that not every change of the same size (e.g., one-unit) has the same effect. 
+
+
+So, how do we characterize the *effect* of a variable in a model? 
+
+---
+
+
+## Approaches to Discrete Changes
+
+
+- Hold all other variables constant at their means and calculate the change in `\(Pr(y=1)\)` for a unit, standard deviation or maximal change in `\(x\)`.  [Marginal Effect at Means]
+
+- Hold all other variables constant at reasonable/representative and calculate the change in `\(Pr(y=1)\)` for a unit, standard deviation or maximal change in `\(x\)`. [Marginal Effects at Reasonable values]
+
+- Calculate the discrete change in `\(Pr(y=1)\)` for all observations and then average the changes in predicted probabilities.  [Average Marginal Effects]
+
+---
+
+## Discrete Changes: MER approach
+
+.pull-left[
+
+``` r
+library(marginaleffects)
+comps &lt;- comparisons(mod, 
+                newdata=datagrid(grid_type="mean_or_mode"),
+                variables=list(
+                  age = "2sd", 
+                  educ = "2sd", 
+                  income = "2sd", 
+                  leftright="2sd",
+                  female = c(0,1), 
+                  race = "minmax"
+                )) 
+```
+]
+.pull-right[
+
+``` r
+comps %&gt;% 
+  select(term, estimate, std.error, conf.low, conf.high)
+```
+
+```
+## 
+##       Term Estimate Std. Error   2.5 % 97.5 %
+##  age         0.1892     0.0435  0.1039  0.274
+##  educ        0.2511     0.0503  0.1525  0.350
+##  female      0.0772     0.0446 -0.0102  0.165
+##  income      0.1687     0.0485  0.0736  0.264
+##  leftright   0.0244     0.0394 -0.0528  0.102
+##  race        0.2919     0.0703  0.1541  0.430
+```
+]
+---
+
+## Discrete Changes: MER approach
+
+.pull-left[
+
+``` r
+acomps &lt;- avg_comparisons(mod, 
+                variables=list(
+                  age = "2sd", 
+                  educ = "2sd", 
+                  income = "2sd", 
+                  leftright="2sd",
+                  female = c(0,1), 
+                  race = "minmax"
+                )) 
+```
+]
+.pull-right[
+
+``` r
+acomps %&gt;% 
+  select(term, estimate, std.error, conf.low, conf.high)
+```
+
+```
+## 
+##       Term Estimate Std. Error    2.5 % 97.5 %
+##  age         0.1468     0.0318  0.08446 0.2091
+##  educ        0.2089     0.0390  0.13250 0.2853
+##  female      0.0545     0.0313 -0.00695 0.1159
+##  income      0.1353     0.0369  0.06295 0.2076
+##  leftright   0.0226     0.0365 -0.04892 0.0941
+##  race        0.2619     0.0533  0.15737 0.3665
+```
+]
+
+---
+
+## OLS Coefficients are "Collapsible"
+
+
+
+
+
+.pull-left[
+Consider the following simple simulation: 
+
+`$$\begin{aligned}
+x &amp;\sim N(0,1)\\
+z &amp;\sim N(0,1)\\
+r_{x,z} &amp;\approx 0\\
+p_y &amp;= \frac{1}{1+e^{-(x + z)}}\\
+y &amp;\sim Bern(p_y)
+\end{aligned}$$`
+
+Imagine we estimate two models: 
+
+`$$\begin{aligned}
+y &amp;= b_0 + b_1 x\\
+y &amp;= g_0 + g_1 x + g_2 z
+\end{aligned}$$`
+]
+.pull-right[
+
+&lt;img src="lecture1_2026_files/figure-html/unnamed-chunk-16-1.png" alt="Scatterplot comparing simple and multiple OLS coefficient estimates across simulations; points cluster close to the 45-degree reference line, illustrating collapsibility.  That is whether including or excluding a variable unrelated to x and y, the coefficient relating x to y remains the same, on average." width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Non-linear GLM Coefficients are "Non-collapsible"
+
+.pull-left[
+Consider the following simple simulation: 
+
+`$$\begin{aligned}
+x &amp;\sim N(0,1)\\
+z &amp;\sim N(0,1)\\
+r_{x,z} &amp;\approx 0\\
+p_y &amp;= \frac{1}{1+e^{-(x + z)}}\\
+y &amp;\sim Bern(p_y)
+\end{aligned}$$`
+
+Imagine we estimate two models: 
+
+`$$\begin{aligned}
+y &amp;= b_0 + b_1 x\\
+y &amp;= g_0 + g_1 x + g_2 z
+\end{aligned}$$`
+]
+.pull-right[
+
+&lt;img src="lecture1_2026_files/figure-html/unnamed-chunk-17-1.png" alt="Scatterplot comparing simple and multiple logit coefficient estimates across simulations; points systematically deviate from the 45-degree reference line, illustrating non-collapsibility.  That is, adding a variable unrelated to x and y into the equation changes the coefficient relating x to y." width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Highlights
+
+1. In non-linear models (with fixed residual varainces), coefficients necessarily rescale when the specification changes (i.e., they are non-collapsible). 
+
+
+---
+
+## Marginal Effects do not Rescale? 
+
+
+
+
+.pull-left[
+
+
+**Simple**
+`$$\begin{aligned}
+y &amp;= b_0 + b_1 x\\
+\frac{\partial Pr(y=1|x)}{\partial x} &amp;= f(b_0 + b_1x)b_1\\
+\end{aligned}$$`
+
+
+
+**Multiple**
+`$$\begin{aligned}
+y &amp;= g_0 + g_1 x + g_2 z\\
+\frac{\partial Pr(y=1|x,z)}{\partial x} &amp;= f(g_0 + g_1x + g_2 z)g_1
+\end{aligned}$$`
+]
+
+.pull-right[
+&lt;img src="lecture1_2026_files/figure-html/unnamed-chunk-19-1.png" alt="Scatterplot comparing simple and multiple logit average partial derivatives across simulations, with a 45-degree reference line for equality. The result here is that partial derivatives, while not technically collapsible, are relatively stable to the addition or removal of a variable not related to x and y. " width="90%" style="display: block; margin: auto;" /&gt;
+
+
+]
+
+---
+
+## Marginal Effects do not Rescale
+
+.pull-left[
+**Average First Differences**
+`$$\begin{aligned}
+X_0 &amp;= X_1 = X \\
+X_0 &amp;: x \rightarrow x - \delta\\
+X_1 &amp;: x \rightarrow x + \delta\\
+p_0 &amp;= F(X_0\theta)\\
+p_1 &amp;= F(X_1\theta)\\
+\text{AFD} &amp;= \frac{1}{n}\sum_{i=1}^{n}(p_{1i}-p_{0i})
+\end{aligned}$$`
+]
+
+.pull-right[
+&lt;img src="lecture1_2026_files/figure-html/unnamed-chunk-20-1.png" alt="Scatterplot comparing simple and multiple logit average first differences across simulations, with points closer to the 45-degree equality line than the raw coefficient comparison.  As with partial derivatives, first differences, though not technically collapsible, are generally stable whether a variable unrelated to x and y is included or not." width="90%" style="display: block; margin: auto;" /&gt;
+
+
+]
+
+---
+
+## Highlights
+
+1. In non-linear models (with fixed residual varainces), coefficients necessarily rescale when the specification changes. 
+2. Average marginal effects and average first differences do not rescale for irrelevant specification changes. 
+
+---
+
+## Partial Robustness
+
+Partial robustness considers robustness at different values of a or some variable(s).  
+
+`$$\rho(\hat{\beta}_r)_j = \int_{\hat{\beta}_b - C\hat{\sigma}_b}^{\hat{\beta}_b + C\hat{\sigma}_b} f(\hat{\beta}_r|\mathbf{y}, \mathbf{X}=\mathbf{x}_j, \hat{\theta})d\hat{\beta}_r$$` 
+where `\(\mathbf{x}_j\)` represents a vector of values at which robustness will be explored. 
+- The result is robustness at a particular set of values which may change for a different set of values. 
+
+---
+
+## Partial Robustness of Gender by Race. 
+.pull-left[
+Run models and generate output to evaluate robustness
+
+
+``` r
+mod &lt;- glm(voted ~ age + educ + income + 
+             poly(leftright, 2, raw=TRUE) + female + 
+             race, data=dat, 
+           family=binomial(link="logit"))
+mod2 &lt;- glm(voted ~ age + educ + income + 
+             poly(leftright, 2, raw=TRUE) + 
+              female*race, data=dat, 
+            family=binomial(link="logit"))
+
+comps1 &lt;- avg_comparisons(mod, 
+                      variables="female", 
+                      by="race")
+comps2 &lt;- avg_comparisons(mod2, 
+                      variables="female", 
+                      by="race")
+```
+
+]
+.pull-right[
+
+Get the simulation draws for each set of comparisons
+
+
+``` r
+draws1 &lt;- comps1 |&gt; 
+  inferences(method="simulation") |&gt; 
+  get_draws()
+
+draws2 &lt;- comps2 |&gt; 
+  inferences(method="simulation") |&gt; 
+  get_draws()
+```
+
+
+Put the draws together in the same object
+
+
+``` r
+all_draws &lt;- bind_cols(draws1 |&gt;
+                         select(draw_add = draw, race), 
+                       draws2 |&gt; 
+                         select(draw_mult = draw))
+```
+]
+
+---
+
+## Calculate Robustness
+
+.pull-left[
+
+``` r
+all_draws |&gt;
+  reframe(mean_add = mean(draw_add), 
+          mean_mult = mean(draw_mult), 
+          res = do.call(data.frame, 
+                        as.list(robustness(draw_add, 
+                                           draw_mult))), 
+          .by=race) |&gt; 
+  unnest_wider(res)
+```
+]
+.pull-right[
+
+```
+## # A tibble: 3 × 7
+##   race  mean_add mean_mult   ovl    np     js     kl
+##   &lt;fct&gt;    &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Other   0.0753    0.102  0.592 0.565 0.197  0.473 
+## 2 White   0.0552    0.0443 0.844 0.882 0.0302 0.0765
+## 3 Black   0.0371    0.0630 0.544 0.534 0.239  0.587
+```
+]
+
+The comparisons for white respondents is pretty robust, but the ones for black and other raced respondents are less robust.  
+
+---
+
+## Visualizing Robustness
+
+.pull-left[
+
+``` r
+library(ggridges)
+ggplot(all_draws, aes(y=race)) + 
+  geom_density_ridges(
+    aes(x=draw_add, 
+        fill= "Additive"), 
+    scale=.9, alpha=.2, color="transparent") + 
+  geom_density_ridges(
+    aes(x=draw_mult, 
+        fill= "Multiplicative"), 
+    scale=.9, alpha=.2, color="transparent") + 
+  theme_minimal() + 
+  scale_x_continuous(limits = c(-.2, .35)) + 
+  scale_fill_okabe_ito() + 
+  theme(legend.position = "top") + 
+  labs(x="First Difference of Gender", 
+       y="Race", fill="") 
+```
+]
+.pull-right-shift[
+&lt;img src="lecture1_2026_files/figure-html/unnamed-chunk-26-1.png" alt="Density ridge plot comparing additive and interaction-model normal densities for the first difference of gender within each race category. While there is considerable overlap, the multiplicative distributions tend to be wider and shifted somewhat with respect to the additive distributions." width="100%" /&gt;
+]
+---
+
+## Lab Exercise
+
+Test how robust the effect of left-right is to alternative parameterizations (try linear and a cubic polynomial). 
+
+
+
+---
+
+## Recap
+
+- What is robustness and how do we operationalize it.
+- 4 steps of robustness testing. 
+- Example of robustness testing using Barry and Kleinberg example
+- How do GLMs work
+- Effects in non-Gaussian GLMs
+- Example of robustness in logit model 
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+  </body>
+</html>

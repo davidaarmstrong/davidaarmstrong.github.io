@@ -1,0 +1,49 @@
+<script>
+function releaseMath(el) {
+  const codes = el.getElementsByTagName('code');
+
+  for (let i = 0; i < codes.length;) {
+    const code = codes[i];
+
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      const text = code.textContent.trim();
+
+      const isMath =
+        /^\$\$(.|\s)+\$\$$/.test(text) ||
+        /^\$(?!\$)(.|\s)+\$$/.test(text) ||
+        /^\\\((.|\s)+\\\)$/.test(text) ||
+        /^\\\[(.|\s)+\\\]$/.test(text) ||
+        /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text);
+
+      if (isMath) {
+        code.outerHTML = code.innerHTML;
+        continue;
+      }
+    }
+
+    i++;
+  }
+}
+</script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-svg.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  function rerenderMath() {
+    releaseMath(document);
+
+    if (window.MathJax && MathJax.typesetPromise) {
+      MathJax.typesetPromise().catch(function (err) {
+        console.error("MathJax typeset failed:", err);
+      });
+    }
+  }
+
+  if (window.slideshow && typeof slideshow.on === "function") {
+    slideshow.on("afterShowSlide", rerenderMath);
+  }
+
+  rerenderMath();
+});
+</script>

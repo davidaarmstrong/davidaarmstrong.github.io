@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+  <head>
+    <title>Lecture 2</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="lecture2_2026_files/header-attrs/header-attrs.js"></script>
+    <link href="lecture2_2026_files/remark-css/default.css" rel="stylesheet" />
+    <script src="lecture2_2026_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture2_2026_files/fabric/fabric.min.js"></script>
+    <link href="lecture2_2026_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture2_2026_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture2_2026_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture2_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture2_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture2_2026_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture2_2026_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <script src="lecture2_2026_files/kePrint/kePrint.js"></script>
+    <link href="lecture2_2026_files/lightable/lightable.css" rel="stylesheet" />
+    <script>
+    function releaseMath(el) {
+      const codes = el.getElementsByTagName('code');
+
+      for (let i = 0; i < codes.length;) {
+        const code = codes[i];
+
+        if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+          const text = code.textContent.trim();
+
+          const isMath =
+            /^\$\$(.|\s)+\$\$$/.test(text) ||
+            /^\$(?!\$)(.|\s)+\$$/.test(text) ||
+            /^\\\((.|\s)+\\\)$/.test(text) ||
+            /^\\\[(.|\s)+\\\]$/.test(text) ||
+            /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text);
+
+          if (isMath) {
+            code.outerHTML = code.innerHTML;
+            continue;
+          }
+        }
+
+        i++;
+      }
+    }
+    </script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-svg.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      function rerenderMath() {
+        releaseMath(document);
+
+        if (window.MathJax && MathJax.typesetPromise) {
+          MathJax.typesetPromise().catch(function (err) {
+            console.error("MathJax typeset failed:", err);
+          });
+        }
+      }
+
+      if (window.slideshow && typeof slideshow.on === "function") {
+        slideshow.on("afterShowSlide", rerenderMath);
+      }
+
+      rerenderMath();
+    });
+    </script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="www/layout.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 2
+]
+.subtitle[
+## Robustness to Measurement Operationalization
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+.full-width table {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+&lt;/style&gt;
+
+
+
+
+
+
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That we have measured the variables correctly. 
+
+Why might this assumption fail?
+- Wrong aggregation mechanism. 
+- Mismatch between conceptualization and measurement. 
+- Wrong level of measurement assumption
+
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That we have measured the variables correctly. 
+
+What kinds of inferential instability can result?
+- Magnitude shifts
+- Functional form mismatch
+- Approximation failure
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That we have measured the variables correctly. 
+
+What tools exist to evaluate robustness?
+- Summated rating scales
+- Continuous data Principal Components Analysis
+- Categorical PCA
+- Latent Class/Profile Analysis
+- Alternative proxies
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That we have measured the variables correctly. 
+
+What are the limits of these tools?
+- True dimensionality is likely unknown.
+- Constructed proxies (continuous or categorical) require substantive interpretation by the researcher.
+- Statistical structure is not equivalent to conceptual validity.
+- Results remain dependent on the indicators selected for analysis.
+- No measurement procedure can demonstrate that an operationalization is “correct.”
+
+---
+
+## Summated Rating Model
+
+The summated rating model (SRM) is based in classical test theory - for a single observation.  
+
+`$$\begin{aligned}
+Y_j &amp;= z + U_j \\
+E(Y_j|z) &amp;= E(z + U_j)\\ 
+&amp;= z + \underbrace{E(U_j)}_{0\text{, by assumption}}\\
+\end{aligned}$$`
+
+- `\(Y\)` represent observed variables and `\(z\)` is the underlying latent variable. 
+- Remember, `\(E(U) = \bar{\varepsilon}\)`.  _If we can assume that the errors cancel out_, that is that the sum of the errors is 0 (making the mean of the errors also 0), then we have the following result:
+
+`$$\begin{aligned}
+E(Y_j|z) &amp;= z\\
+\bar{Y}_j &amp;\approx z
+\end{aligned}$$`
+
+The expected value of `\(Y\)` is the true, but unknown latent concept.  
+
+---
+
+## Model assumptions
+
+- All variables are indicators of the same underlying construct. 
+
+- The latent construct is unidimensional.
+
+- There is no systematic measurement error. If every observation is off in the same direction, the estimate of the "true" dimension will also be biased, even in expectation.
+
+- Variables are equally weighted in the approximation of the latent construct. 
+
+- _Monotone Homogeneity_ - that the relationship between the observed variables and the true underlying dimension is monotonically increasing.
+
+--
+
+If these assumptions hold, we can generate an estimate of the latent construct by adding up (or equivalently averaging) variables in `\(Y\)` for each observations
+
+---
+
+## Assessing Summated Scales
+
+With summated rating scales, we are most interested in their _reliability_ (different from validity)
+
+&gt; The repeatability and consistency of the measurement instrument.  A measure is reliable if, when repeated, it produces similar results.
+
+If 
+
+`$$\text{Observed Score} = \text{True Score} + \text{Measurement Error}$$` 
+
+then, 
+
+`$$\text{Reliability} = \frac{\text{True Score Variance}}{\text{Total Variance}}$$`
+
+---
+
+## Estimating Reliability
+
+
+- We can never know a variable's true reliability since it depends, in part, on the variance of the true score.
+- We can get an estimate of a scale's reliability.  In R, we do this with Cronbach's `\(\alpha\)`, `alpha()` in the `psych` package.
+- The formula for `\(\alpha\)` is as follows:
+
+`$$\alpha = \frac{k\bar{r}}{1+\bar{r}(k-1)}$$`
+
+where `\(\bar{r}\)` is the average of the elements below the diagonal of the correlation matrix for the observed variables and `\(k\)` is the number of observed variables.
+
+---
+
+## Test Scores and Rest Scores
+
+Assume that we have observed variables `\(y_{i1}, y_{i2}, \ldots, y_{ik}\)`
+
+- The "test score" is simply `\(\sum_{j=1}^{k} y_{ij}\)`.
+- The "rest score" for variable `\(y_{i1}\)` is simply `\(\sum_{j=2}^{k} y_{ij}\)`.  This is sum of the *rest* of the variables.  The rest score for `\(y_{i5}\)` would be `\(\sum_{j=1}^{4} y_{ij} + \sum_{j=6}^{k} y_{ij}\)`.
+
+
+---
+
+## Reliability Estimation
+
+.pull-left[
+We know that `\(0 \leq\)` Reliability `\(\leq 1\)` and the closer to 1, the more reliable the scale is.  This scale is quite reliable.
+]
+.right-shift50[
+
+``` r
+library(psych)
+dat &lt;- rio::import('srm.dta')
+alpha(dat)
+```
+
+```
+## 
+## Reliability analysis   
+## Call: alpha(x = dat)
+## 
+##   raw_alpha std.alpha G6(smc) average_r S/N   ase  mean   sd median_r
+##       0.94      0.94    0.93       0.8  16 0.003 0.023 0.94      0.8
+## 
+##     95% confidence boundaries 
+##          lower alpha upper
+## Feldt     0.94  0.94  0.95
+## Duhachek  0.94  0.94  0.95
+## 
+##  Reliability if an item is dropped:
+##    raw_alpha std.alpha G6(smc) average_r S/N alpha se   var.r med.r
+## X1      0.93      0.93    0.89      0.81  13   0.0040 2.4e-04  0.81
+## X2      0.93      0.93    0.90      0.81  13   0.0039 1.4e-04  0.81
+## X3      0.92      0.92    0.89      0.80  12   0.0042 7.0e-05  0.80
+## X4      0.92      0.92    0.89      0.80  12   0.0043 7.1e-05  0.79
+## 
+##  Item statistics 
+##       n raw.r std.r r.cor r.drop   mean sd
+## X1 1000  0.92  0.92  0.88   0.86 0.0293  1
+## X2 1000  0.92  0.92  0.88   0.85 0.0302  1
+## X3 1000  0.93  0.93  0.90   0.87 0.0071  1
+## X4 1000  0.93  0.93  0.90   0.87 0.0254  1
+```
+]
+
+---
+
+## Evaluating Assumptions
+
+- Uni-dimensionality:  To evaluate this assumption, it is probably best to look at the correlation matrix.  What you want to see is relatively similar (hopefully high-ish) correlations across the matrix.  To the extent the blocks of high and low correlations exist, that is a problem.
+
+- Monotone homogeneity can be evaluated by plotting each variable against its rest score.  I've written an R program that will do this called "restplot".  The program just takes a variable list and then plots each variable against the row-mean of the remaining variables.
+
+---
+
+
+## Restplot in R
+.pull-left[
+
+``` r
+source("restplot.r")
+restplot(dat, 
+         span =	.7, 
+         family = "symmetric", 
+         degree = 2)
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture2_2026_files/figure-html/unnamed-chunk-2-1.png" alt="Loess smoothed scatter plots of each scale item against its rest score (row mean of the remaining items). Each panel shows the relationship for one variable; an approximately monotonically increasing curve supports the monotone homogeneity assumption." width="100%" /&gt;
+]
+---
+
+## Caveats and Cautions
+
+
+- Cronbach's `\(\alpha\)` is not a good *test* of dimensionality.  It is likely to give an underestimate of the dimensionality of your data.  Testing dimensionality is a task better suited to factor analysis, which we will talk about later.
+
+- As you include more variables, it is possible to see a relatively high `\(\alpha\)` value without very high inter-correlations.
+
+---
+
+## Example: Measuring the Democracy-Repression Nexus
+
+I wrote a paper in 2009 in a special issue of _Electoral Studies_ that used measurement models to estimate democracy (in two dimensions) and repression. 
+- We'll take repression as fixed and consider different operationalizations of democracy. 
+- Voice: `xrcomp` (m=4), `parcomp` (m=5), `comp` (numeric), `part` (numeric), `bnr` (binary), `aclp` (binary), `lgates` (numeric)
+- Veto: `xconst` (m=7), `j` (binary), `l1` (binary), `l2` (binary), `laworder` (m=6), `polconiii` (numeric), `checks` (count)
+
+---
+
+## Democracy SRM 
+
+We could consider three different variables: 
+
+- Democracy SRM - all variables
+- Voice and Veto separate SRMs 
+
+Assumptions being perturbed: 
+
+&lt;div class="full-width"&gt;
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Analysis &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Aggregation Mechanism &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Dimensionality &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Inputs &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Measurement Level &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Original Article &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Bayesian Mixed Data SEM &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Two (predetermined) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Any &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Interval &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; SRM Analysis &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Equal Weight Average &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; One or Two (predetermined) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Ordinal &amp;lt;= &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Interval &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;/div&gt;
+---
+
+## All Variables SRM
+
+.pull-left[
+
+``` r
+library(psych)
+drn2 &lt;- rio::import("drn_proxies.dta") |&gt; 
+  mutate(voice = c(scale(voice)), 
+         veto = c(scale(veto)))
+
+drn_inds &lt;- drn2 |&gt; 
+  select(xrcomp, xconst, parcomp, j, 
+         l1, l2, laworder, polconiii, 
+         comp, part, checks, bnr, 
+         aclp, lgates) |&gt; 
+  mutate(checks = log(checks)) |&gt; 
+  scale()
+voice_inds &lt;- drn2 |&gt; 
+  select(xrcomp, parcomp, comp, part, 
+         lgates) |&gt;
+  scale()
+veto_inds &lt;- drn2 |&gt; 
+  select(xconst, j, l1, l2, laworder,
+         polconiii, checks) |&gt; 
+  mutate(checks = log(checks)) |&gt; 
+  scale()
+
+drn2 &lt;- drn2 |&gt; 
+  mutate(democ_srm = alpha(drn_inds, 
+                           check.keys=TRUE)$score, 
+         voice_srm = alpha(voice_inds, 
+                           check.keys=TRUE)$score, 
+         veto_srm = alpha(veto_inds, 
+                           check.keys=TRUE)$score)
+```
+]
+.pull-right[
+
+``` r
+summary(alpha(drn_inds, check.keys=TRUE))
+```
+
+```
+## 
+## Reliability analysis   
+##  raw_alpha std.alpha G6(smc) average_r S/N    ase mean   sd median_r
+##       0.94      0.95    0.99      0.55  17 0.0012 0.33 0.96     0.57
+```
+
+``` r
+summary(alpha(voice_inds, check.keys=TRUE))
+```
+
+```
+## 
+## Reliability analysis   
+##  raw_alpha std.alpha G6(smc) average_r S/N    ase  mean  sd median_r
+##       0.94      0.94    0.95      0.75  15 0.0016 0.033 0.9     0.78
+```
+
+``` r
+summary(alpha(veto_inds, check.keys=TRUE))
+```
+
+```
+## 
+## Reliability analysis   
+##  raw_alpha std.alpha G6(smc) average_r S/N   ase    mean   sd median_r
+##       0.87      0.87     0.9       0.5   7 0.003 -0.0066 0.77      0.5
+```
+]
+
+---
+
+## Correlation with Existing Measures
+
+.pull-left[
+We can consider the correlation between the existing voice and veto measures and the new measures we just created. 
+
+
+``` r
+cor(drn2 |&gt; select(ends_with("srm")), 
+    drn2 |&gt; select(voice, veto), 
+    use="pair")
+```
+
+```
+##               voice      veto
+## democ_srm 0.8307339 0.8388909
+## voice_srm 0.9804970 0.8952932
+## veto_srm  0.8687597 0.9556217
+```
+
+]
+.pull-right[
+- The two veto measures are quite highly correlated. 
+- The original voice variable is more correlated with the veto SRM measure than the voice SRM measure, but the voice SRM measure is more highly correlated with the original voice measure than the original veto measure. 
+- The omnibus democracy measure is quite highly correlated with both voice and veto measures. 
+]
+
+---
+
+## Run Models
+
+.pull-left[
+
+Now, we run the models with three different operationalizations: 
+
+
+``` r
+mod_orig &lt;- lm(rep ~ voice + veto + log(rgdpch) + 
+                 log(pop) + iwar + cwar , 
+               data = drn2)
+mod_srm1 &lt;- lm(rep ~ democ_srm + log(rgdpch) + 
+                 log(pop) + iwar + cwar , 
+               data = drn2)
+mod_srm2 &lt;- lm(rep ~ voice_srm + veto_srm +
+                 log(rgdpch) + log(pop) + iwar +
+                 cwar ,
+               data = drn2)
+```
+
+]
+.pull-right[
+
+All are significant in all models.  The voice coefficient is about half of what the veto coefficient is in both cases. 
+
+```
+## # A tibble: 5 × 6
+##   model    term      estimate p.value    r2 adj_r2
+##   &lt;chr&gt;    &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Baseline voice        0.421 0.000   0.398  0.397
+## 2 Baseline veto         0.176 0.002   0.398  0.397
+## 3 SRM 1D   democ_srm    0.714 0.000   0.424  0.423
+## 4 SRM 2D   voice_srm    0.110 0.053   0.409  0.408
+## 5 SRM 2D   veto_srm     0.735 0.000   0.409  0.408
+```
+
+]
+
+---
+
+## Robustness of what? 
+
+.pull-left[
+What is the right metric for evaluating robustness? 
+- Predictions &lt;i class="fas fa-check-circle" style="color:green"&gt;&lt;/i&gt;
+- First Differences &lt;i class="fas fa-check-circle" style="color:green"&gt;&lt;/i&gt;
+- Coefficients &lt;i class="fa-solid fa-triangle-exclamation" style="color:orange"&gt;&lt;/i&gt; 
+    - Not as easy for measurement perturbation, but easy and useful in other settings
+
+Correlations of predictions: 
+
+```
+##          Baseline SRM 1D SRM 2D
+## Baseline   1.0000 0.9633 0.9859
+## SRM 1D     0.9633 1.0000 0.9660
+## SRM 2D     0.9859 0.9660 1.0000
+```
+]
+.pull-right-shift[
+
+&lt;img src="lecture2_2026_files/figure-html/unnamed-chunk-10-1.png" alt="Two-panel scatter plot comparing baseline model predictions (x-axis) to predictions from SRM 1D (top) and SRM 2D (bottom) operationalizations (y-axis). Points are semi-transparent; a dashed red diagonal reference line marks perfect agreement. Both panels show tight clustering around the diagonal, indicating high predictive similarity across operationalizations." width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Robustness Measures
+
+.pull-left[
+Make predictions and put them in the same object.  Note, we call them `b` here, but these
+are predictions, not coefficients. 
+
+
+``` r
+library(parallel)
+library(nprobustness)
+library(marginaleffects)
+preds_orig &lt;- predictions(mod_orig, newdata = drn2) 
+preds_srm1 &lt;- predictions(mod_srm1, newdata = drn2) 
+preds_srm2 &lt;- predictions(mod_srm2, newdata = drn2) 
+b_orig &lt;- coef(preds_orig)
+se_orig &lt;- sqrt(diag(vcov(preds_orig)))
+
+b_srm1 &lt;- coef(preds_srm1)
+se_srm1 &lt;- sqrt(diag(vcov(preds_srm1)))
+
+b_srm2 &lt;- coef(preds_srm2)
+se_srm2 &lt;- sqrt(diag(vcov(preds_srm2)))
+
+bse &lt;- data.frame(b_orig = b_orig, se_orig = se_orig, 
+                  b_srm1 = b_srm1, se_srm1 = se_srm1, 
+                  b_srm2 = b_srm2, se_srm2 = se_srm2) |&gt; 
+  na.omit()
+```
+]
+.pull-right[
+
+We can do the robustness analysis by looping over all predictions.  I use `mclapply` for multi-core execution. 
+
+``` r
+rob_srm1 &lt;- mclapply(1:nrow(bse), \(i){
+  robustness(dnorm, dnorm, 
+             target_args = list(mean = bse$b_orig[i], sd = bse$se_orig[i]), 
+             alt_args = list(mean = bse$b_srm1[i], sd = bse$se_srm1[i]))}, 
+  mc.cores = 8)
+
+rob_srm2 &lt;- mclapply(1:nrow(bse), \(i){
+  robustness(dnorm, dnorm, 
+             target_args = list(mean = bse$b_orig[i], sd = bse$se_orig[i]), 
+             alt_args = list(mean = bse$b_srm2[i], sd = bse$se_srm2[i]))}, 
+  mc.cores = 8)
+```
+
+
+
+]
+
+---
+
+## OVL Stats
+
+
+
+.pull-left[
+&lt;img src="lecture2_2026_files/figure-html/unnamed-chunk-15-1.png" alt="Ridgeline histogram showing the distribution of overlap coefficients (x-axis) for the SRM 1D and SRM 2D models (y-axis). Both distributions are right-skewed with mass concentrated at low overlap values, with the SRM 2D model showing somewhat higher overlap than SRM 1D." width="100%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right-shift[
+&lt;img src="lecture2_2026_files/figure-html/unnamed-chunk-16-1.png" alt="Two-panel scatter plot of baseline predictions (x-axis) versus SRM alternative predictions (y-axis), with points colored by overlap coefficient on a viridis scale. Panels show SRM 1D (top) and SRM 2D (bottom). A dashed diagonal marks perfect agreement. Points near the diagonal tend to have higher overlap (yellow), while deviations are associated with lower overlap (purple)." width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## SRM Robustness Takeaways
+
+Predictions are _substantively robust_ to this measurement perturbation
+* Predictions are very highly correlated.
+* Substantive conclusions survive the alternative operationalization.
+
+Individual prediction distributions often exhibit limited overlap
+* Despite similar point predictions, the distributions of _individual predictions_ frequently overlap only modestly.
+* This may call into question _inferential robustness_.
+
+Preserving dimensionality appears important: `\(\overline{OVL}_{1D} = .14\)`, `\(\overline{OVL}_{2D} = .22\)`. 
+* The two-dimensional operationalization more closely reproduces the original results.
+
+---
+
+## Differential Weights
+
+The SRM imposes two assumptions: 
+1. equal weighting of items
+2. the number of dimensions and their compositions are pre-determined. 
+
+If we wanted to perturb these assumptions, we could with a more flexible aggregation mechanism. 
+
+&lt;div class="full-width"&gt;
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Analysis &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Aggregation Mechanism &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Dimensionality &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Inputs &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Measurement Level &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Original Article &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Bayesian Mixed Data SEM &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Two (predetermined) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Any &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Interval &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; SRM Analysis &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Equal Weight Average &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; One or Two (predetermined) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Ordinal &amp;lt;= &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Interval &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; PCA Analysis &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Differential Weights &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Up to Many (inductive) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Interval &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Interval &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;/div&gt;
+
+---
+
+## PCA
+
+.pull-left[
+Imagine we have two correlated variables and we wanted to transform them into two new variables in the following way: 
+- The new variables are uncorrelated
+- The first variable captures as much of the variation across the two variables as possible. 
+
+PCA does this - it finds the dominant axes of variation in multivariate data. 
+- IMPORTANT: Scaling matters, best practice is to standardize variables. 
+]
+
+.pull-right-shift[
+&lt;img src="lecture2_2026_files/figure-html/unnamed-chunk-18-1.png" alt="Two-panel scatter plot illustrating PCA. The top panel (Raw) shows 250 simulated bivariate normal observations with correlation 0.8, with two red lines indicating the first and second principal component axes. The bottom panel (PCA) shows the same data after rotation, where the axes are now aligned with the coordinate system and the variables are uncorrelated." width="75%" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+## PCA Algorithm
+
+PCA solves the following problem: 
+
+`$$\begin{aligned}
+PC_{i,1} &amp;= w_{1,1}X_{i,1} + w_{2,1}X_{i,2} + \ldots + w_{k,1}X_{i,k}\\
+PC_{i,2} &amp;= w_{1,2}X_{i,1} + w_{2,2}X_{i,2} + \ldots + w_{k,2}X_{i,k}\\
+&amp;\vdots \\
+PC_{i,k} &amp;= w_{1,k}X_{i,1} + w_{2,k}X_{i,2} + \ldots + w_{k,k}X_{i,k}
+\end{aligned}$$`
+
+Subject to the constraints: 
+- Sequentially variance maximizing: `\(\text{Var}(PC_j) &gt; \text{Var}(PC_m) \quad \forall\quad  j &lt; m\)`
+- Scaling: `\(\sum_j w_{j,k}^2=1\)`
+
+This is generally solved by Singular Value Decomposition (SVD) which identifies the dominant directions of variation in the data and uses them to construct the principal components.
+
+---
+
+## Differential Weights
+
+.pull-left[
+We can use PCA to estimate differential weights for the theoretically derived voice and veto indicators. 
+
+The `princomp()` function does PCA in R.  Make sure you `scale()` your data first. 
+
+
+
+``` r
+drn_inds &lt;- drn2 |&gt; 
+  select(ccode, year, xrcomp, xconst, parcomp, 
+         j, l1, l2, laworder, polconiii, 
+         comp, part, checks, lgates) |&gt; 
+  mutate(checks = log(checks)) |&gt; 
+  mutate(across(-c(ccode, year),~c(scale(.x)))) |&gt;
+  drop_na()
+voice_inds &lt;- drn_inds |&gt; 
+  select(xrcomp, parcomp, comp, part, lgates)
+veto_inds &lt;- drn_inds |&gt; 
+  select(xconst, j, l1, l2, laworder, polconiii, checks)
+
+voice_pca &lt;- princomp(voice_inds)
+veto_pca &lt;- princomp(veto_inds)
+```
+]
+.pull-right-shift[
+
+
+Voice weights: 
+
+
+``` r
+voice_loads
+```
+
+```
+## # A tibble: 5 × 2
+##   Indicator Comp.1
+##   &lt;chr&gt;      &lt;dbl&gt;
+## 1 xrcomp     0.447
+## 2 parcomp    0.467
+## 3 comp       0.466
+## 4 part       0.377
+## 5 lgates     0.473
+```
+
+Veto weights: 
+
+
+``` r
+veto_loads
+```
+
+```
+## # A tibble: 7 × 2
+##   Indicator Comp.1
+##   &lt;chr&gt;      &lt;dbl&gt;
+## 1 xconst     0.436
+## 2 j          0.372
+## 3 l1         0.371
+## 4 l2         0.310
+## 5 laworder   0.307
+## 6 polconiii  0.423
+## 7 checks     0.406
+```
+
+
+]
+
+---
+
+## Comparison 
+
+
+``` r
+drn_inds |&gt; 
+  select(ccode, year) |&gt; 
+  mutate(voice_srm = alpha(voice_inds, check.keys = TRUE)$scores, 
+         veto_srm = alpha(veto_inds, check.keys = TRUE)$scores, 
+         voice_pca = voice_pca$scores[,1], 
+         veto_pca = veto_pca$scores[,1]) |&gt; 
+  left_join(drn2 |&gt; select(ccode, year, voice, veto)) |&gt;
+  select(voice, voice_srm, voice_pca, veto, veto_srm, veto_pca) |&gt;
+  cor(use="pair")
+```
+
+```
+##               voice voice_srm voice_pca      veto  veto_srm  veto_pca
+## voice     1.0000000 0.9850681 0.9878199 0.9133559 0.8768826 0.8881409
+## voice_srm 0.9850681 1.0000000 0.9996685 0.9096703 0.8726945 0.8841588
+## voice_pca 0.9878199 0.9996685 1.0000000 0.9137726 0.8762401 0.8878684
+## veto      0.9133559 0.9096703 0.9137726 1.0000000 0.9534126 0.9645770
+## veto_srm  0.8768826 0.8726945 0.8762401 0.9534126 1.0000000 0.9988695
+## veto_pca  0.8881409 0.8841588 0.8878684 0.9645770 0.9988695 1.0000000
+```
+
+
+The SRM and PCA versions of the variables are remarkably similar, `\(r &gt; .998\)`. 
+- With `\(r\approx 1\)`, one variable is roughly a linear transformation of the other. 
+- No new information, N&amp;P `\(\rho\)` will be bounded near 1. 
+- Does not require further investigation. 
+
+
+---
+
+## Principal Components in R
+
+.pull-left[
+
+Next, we push on the assumption that we appropriately captured the underlying structure with the theoretically derived voice and veto measures. 
+
+
+
+``` r
+drn_inds &lt;- drn2 |&gt; 
+  select(ccode, year, xrcomp, xconst, parcomp, 
+         j, l1, l2, laworder, polconiii, 
+         comp, part, checks, bnr, aclp, lgates) |&gt; 
+  mutate(checks = log(checks)) |&gt; 
+  mutate(across(-c(ccode, year),~c(scale(.x)))) |&gt;
+  drop_na()
+
+dem_pca &lt;- princomp(drn_inds |&gt; select(3:16))
+```
+
+Notice that the empirically-derived dimensions do not align neatly with the original Voice/Veto distinction.
+]
+.pull-right[
+
+``` r
+stats:::print.loadings(dem_pca$loadings[,1:5])
+```
+
+```
+## 
+## Loadings:
+##           Comp.1 Comp.2 Comp.3 Comp.4 Comp.5
+## xrcomp                          0.226       
+## xconst                   0.119  0.228       
+## parcomp    0.232                0.395 -0.265
+## j          0.509        -0.433         0.296
+## l1                              0.118  0.125
+## l2        -0.171  0.963               -0.113
+## laworder   0.635  0.122 -0.287        -0.107
+## polconiii  0.135  0.127  0.295 -0.135       
+## comp       0.157         0.336 -0.106       
+## part       0.338         0.412        -0.408
+## checks     0.159         0.253 -0.582  0.468
+## bnr                     -0.274 -0.575 -0.613
+## aclp                    -0.213 -0.131       
+## lgates     0.241         0.392        -0.156
+## 
+##                Comp.1 Comp.2 Comp.3 Comp.4 Comp.5
+## SS loadings     1.000  1.000  1.000  1.000  1.000
+## Proportion Var  0.071  0.071  0.071  0.071  0.071
+## Cumulative Var  0.071  0.143  0.214  0.286  0.357
+```
+]
+
+---
+
+## PCA Robustness
+
+.pull-left[
+1. Re-run the model adding one PC each time
+- Decide which variables to keep re: missingness. 
+
+2. Generate predictions from all models
+
+3. Calculate Correlations
+
+4. Calculate Overlaps
+
+
+
+
+]
+
+.pull-right-shift[
+
+Correlation of baseline predictions  with predictions from models with PCs (`r`) are quite high. 
+- `\(R^2\)` from the model shows the extra signal from increased dimensionality matters. 
+
+
+``` r
+drn_inds |&gt; 
+  summarise(r = cor(baseline, preds, use="pair"), 
+            r2 = cor(rep, preds, use="pair")^2, 
+            .by=model)
+```
+
+```
+## # A tibble: 5 × 3
+##   model     r    r2
+##   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 pca1  0.995 0.377
+## 2 pca2  0.901 0.451
+## 3 pca3  0.894 0.454
+## 4 pca4  0.893 0.455
+## 5 pca5  0.892 0.457
+```
+
+The substantive conclusions (i.e., predictions) survive. 
+
+]
+
+---
+
+## Overlap Coefficients
+
+.pull-left[
+- The overlap coefficients are quite high for one-dimension
+
+- With more than one PC, they get smaller, especially in the middle values. 
+
+- As above, the model is substantively robust, but has lower inferential robustness. 
+]
+
+.pull-right-shift[
+
+
+
+&lt;img src="lecture2_2026_files/figure-html/unnamed-chunk-31-1.png" alt="Scatter plots of baseline model predictions (x-axis) versus PCA-based model predictions (y-axis), colored by overlap coefficient on a viridis scale, faceted by the number of principal components used (pca1 through pca5). A dashed red diagonal marks perfect agreement. Predictions align most closely with one PC; deviations and lower overlap values increase as more PCs are added." width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+
+
+---
+
+## PCA Robustness Takeaways
+
+Predictions are reasonably substantively robust
+
+* Correlations are high
+* Substantively - democracy matters, maybe beyond the original variables. 
+
+Different dimensions imply different measurement models
+
+* PCA allows the data to determine the dimensions
+* The resulting democracy measure differs from the theoretically specified Voice/Veto model
+
+Robustness analysis is itself assumption-dependent
+
+* Results depend on the choice of measurement model
+* Results also depend on the choice of robustness criterion
+
+--
+
+PCA assumes interval-level inputs, this is not the case for many of our variables.  We can relax that assumption...
+
+---
+
+## Robustness Table
+
+&lt;div class="full-width"&gt;
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Analysis &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Aggregation Mechanism &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Dimensionality &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Inputs &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Measurement Level &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Original Article &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Bayesian Mixed Data SEM &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Two (predetermined) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Any &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Interval &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; SRM Analysis &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Equal Weight Average &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; One or Two (predetermined) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Ordinal &amp;lt;= &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Interval &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; PCA Analysis &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Differential Weights &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Up to Many (inductive) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Interval &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Interval &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; CPCA Analysis &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Differential Weights &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Up to Many (inductive) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Any &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Interval &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+---
+
+## Categorical PCA
+
+Often we have categorical variables we want to include. Categorical PCA (CatPCA) allows us to include nominal and ordinal variables in a principal components analysis.
+
+1. Assign initial numerical scores to the categories (often the observed integer values).
+2. Perform PCA on the resulting quantified data.
+3. Update the category scores so that:
+    * they respect the level of measurement (e.g., monotonicity for ordinal variables),
+    * and improve the PCA solution.
+4. Alternate between PCA and category-score updates until the solution converges.
+
+The quality of the PCA solution relates to the ability of a low-dimensional solution being able to reproduce the data. 
+- The resulting quantifications depend on the measurement-level assumptions and the dimensionality of the solution.
+
+---
+
+## CPCA Result
+
+.pull-left[
+
+
+``` r
+library(poLCA)
+drn_inds_cpca &lt;- drn2 |&gt; 
+  select(ccode, year, xrcomp, xconst, parcomp, 
+         j, l1, l2, laworder, polconiii, 
+         comp, part, checks, lgates) |&gt; 
+  mutate(checks = log(checks)) |&gt; 
+  mutate(across(-c(1,2), ~c(scale(.x)))) |&gt;
+  drop_na()
+
+library(Gifi)
+levs &lt;- c(
+  rep("ordinal", 3), # xrcomp-parcomp
+  rep("ordinal", 3), # j-l2
+  "ordinal", # laworder
+  rep("metric", 5)) # polconiii-lgates, 
+
+cpca_res &lt;- princals(drn_inds_cpca |&gt; 
+                       select(-(1:2)), 
+                     levels = levs, 
+                     ndim=5)
+```
+
+]
+.pull-right[
+
+Correlation between linear PCA and categorical PCA by dimension
+- Each CatPCA dimension correlates above .93 with its corresponding PCA dimension.
+
+
+```
+## # A tibble: 5 × 2
+##   Dim       r
+##   &lt;chr&gt; &lt;dbl&gt;
+## 1 1     0.997
+## 2 2     0.932
+## 3 3     0.955
+## 4 4     0.969
+## 5 5     0.935
+```
+
+]
+
+---
+
+## Robustness Analysis
+
+
+
+
+.pull-left[
+
+Correlation between predictions is high
+
+- Predictions are robust to this change. 
+
+``` r
+drn_inds_cpca |&gt; 
+  summarise(r = cor(baseline, preds, use="pair"), 
+            .by=model)
+```
+
+```
+## # A tibble: 5 × 2
+##   model     r
+##   &lt;chr&gt; &lt;dbl&gt;
+## 1 cpca1 0.995
+## 2 cpca2 0.920
+## 3 cpca3 0.921
+## 4 cpca4 0.921
+## 5 cpca5 0.919
+```
+
+Overlap Coefficients show same result as linear PCA `\(\rightarrow\)`. 
+]
+
+
+.pull-right-shift[
+
+
+
+&lt;img src="lecture2_2026_files/figure-html/unnamed-chunk-40-1.png" alt="Scatter plots of baseline model predictions (x-axis) versus Categorical PCA model predictions (y-axis), colored by overlap coefficient on a viridis scale, faceted by the number of CatPCA dimensions used. A dashed red diagonal marks perfect agreement. The pattern closely mirrors the linear PCA results, indicating robustness to measurement-level assumptions." width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## CatPCA Takeaways
+
+Substantively - robustness results are similar to those of linear PCA
+
+The substantive conclusions are not sensitive to the measurement-level assumptions imposed by PCA.
+
+* Whether or not we respect the categorical nature of the inputs, the results are similar. 
+
+--
+
+PCA and SRM produce an interval level output.  What if the underlying variable is not interval, but categorical...
+
+---
+
+
+## Robustness Table
+
+&lt;div class="full-width"&gt;
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Analysis &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Aggregation Mechanism &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Dimensionality &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Inputs &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Measurement Level &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Original Article &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Bayesian Mixed Data SEM &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Two (predetermined) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Any &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Interval &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; SRM Analysis &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Equal Weight Average &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; One or Two (predetermined) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Ordinal &amp;lt;= &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Interval &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; PCA Analysis &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Differential Weights &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Up to Many (inductive) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Interval &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Interval &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; CPCA Analysis &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Differential Weights &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Up to Many (inductive) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Any &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Interval &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Latent Class Analysis &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Differential Weights &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Up to Many Classes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Categorical &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Categorical &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+
+---
+
+## Latent Class/Profile Analysis 
+
+Latent Class (and Profile) Analysis looks for structure in observed variables, but unlike PCA and SRM (which assume the signal is quantitative) these models assume it is qualitative. 
+
+- Important for the democracy debate (e.g., ACLP vs well, almost everyone else).  
+
+_LCA_ - categorical observed variables and categorical latent variable. 
+
+_LPA_ - continuous observed variables and categorical latent. 
+
+---
+
+## LCA/LPA Math
+
+For variables `\(Y_j, j = 1, \ldots, J\)`
+
+`$$P(Y_j=k) = \sum_{c=1}^{C} P(z=c) P(Y_j=k\mid z=c)$$`
+
+where:
+
+* j indexes variables
+* k indexes response categories
+* c indexes latent classes
+
+LCA models the variables jointly, however, rather than individually. 
+- Assumes conditional independence: `\(P(Y_1,\ldots,Y_p \mid z=c) = \prod_{j=1}^{p} P(Y_j\mid z=c)\)`
+
+
+---
+
+## Conditional Independence: A Caveat
+
+The class variable is assumed to be the .highlight[only] source of association among indicators — conditional on \(z=c\), the indicators are independent:
+
+`$$P(Y_1,\ldots,Y_J \mid z=c) = \prod_{j=1}^{J} P(Y_j \mid z=c)$$`
+
+- *Within* a class, indicators carry no leftover association.
+- *Marginally* they are correlated — and that is what identifies the classes.
+
+---
+
+## When Conditional Independence Fails
+
+- indicators that share method or tap a narrower sub-dimension stay correlated within class. The model absorbs that residual association by adding .highlight[spurious extra classes] — contaminating the class-count decision we just made.
+
+--
+
+**For our indicators this is shaky.** Several Polity-family inputs are built from overlapping coding rules or are conceptually nested, so they plausibly covary within class.
+
+--
+
+**Why we proceed anyway.** We are not claiming LCA is the *correct* measurement model — only asking whether conclusions survive a plausibly-better alternative. The caveat sets the *weight* the check deserves: a model needing spurious classes is a weaker candidate, so the reader discounts accordingly. Surviving an imperfect lens is still evidence.
+
+???
+
+The honest framing: this is robustness, not validation. If LCA were proposed as *the* measurement model, a local-independence violation would be damning. As a stress test it's informative even when imperfect — but a violation that inflates the class count can make LCA look more (or less) different from the baseline than warranted, nudging the robustness verdict in either direction. Report it; don't let it hide inside the class-count choice.
+
+
+---
+
+## Posterior Class Probabilities
+
+The model assigns observations to classes based on the following posterior probabilities: 
+
+`$$P(z=c\mid y_i) = \frac{ \pi_c \prod_j P(Y_j=y_{ij}\mid z=c)}
+{\sum_{c'}\pi_{c'}\prod_j P(Y_j=y_{ij}\mid z=c')}$$`
+
+Where
+
+- `\(\pi_c\)` is the probability of being in group `\(c\)`, 
+-  `\(P(Y_j=y_{ij}\mid z=c)\)` is the probability observation `\(i\)` takes on its observed category on variable `\(j\)` given it is in the category `\(c\)`. 
+- Denominator sums numerator across all categories, not just the one observed. 
+
+---
+
+## Estimating LCA
+
+Both LCA and LPA can be estimated in R: 
+- The `poLCA` package estimates LCA. 
+- The `tidyLPA` package estimates the LPA model. 
+- FYI - a mixed-data version could be estimated with `flexmix`. 
+
+For simplicity, we will discretize the quantitative variables and estimate an LCA model using poLCA.
+
+- Our goal is not to identify the "correct" measurement model, but rather to evaluate whether the substantive conclusions survive a plausible categorical operationalization of democracy.
+- Discretizing involves its own arbitrary decisions - number of groups and cutoffs to name two. 
+    - It also reduces the information in the variables. 
+---
+
+## Choosing the Number of Classes
+
+There are several criteria that could be used to choose the number of classes:
+
+* Statistical: AIC, BIC, entropy, likelihood ratio tests.
+* Substantive: Interpretability and distinctiveness of the resulting classes.
+* Visual: Separation of classes on a reference measure.
+
+--
+
+For this robustness exercise, we prioritize substantive and visual criteria.
+
+- Our goal is not to identify the “optimal” latent class model, but rather to construct a plausible categorical operationalization of the latent construct.
+
+---
+
+## Voice and Veto by Democracy Class Memberships
+
+&lt;img src="lecture2_2026_files/figure-html/unnamed-chunk-42-1.png" alt="Binned ridge plots showing the distribution of standardized voice (blue) and veto (orange) scores within each predicted democracy class, faceted by the number of latent classes (2 through 5). Classes are ordered by mean voice score. Four classes appear to provide meaningful separation without excessive granularity." width="100%" style="display: block; margin: auto;" /&gt;
+
+
+Four groups seem distinct enough without being too coarse. 
+
+
+---
+
+## Voice by Voice Class Memberships
+
+
+&lt;img src="lecture2_2026_files/figure-html/unnamed-chunk-43-1.png" alt="Binned ridge plots of standardized voice scores within each predicted voice class, faceted by number of latent classes (2 through 5). Classes are ordered by mean voice score. Three classes appear sufficient — with four, the two lowest classes are nearly indistinguishable." width="100%" style="display: block; margin: auto;" /&gt;
+
+Three classes looks to do the job here.  
+- With four, the lowest two are nearly the same. 
+
+
+---
+
+## Veto by Veto Class Memberships
+
+
+&lt;img src="lecture2_2026_files/figure-html/unnamed-chunk-44-1.png" alt="Binned ridge plots of standardized veto scores within each predicted veto class, faceted by number of latent classes (2 through 5). Classes are ordered by mean veto score. Two or three classes appear adequate — with four, the middle two overlap considerably." width="100%" style="display: block; margin: auto;" /&gt;
+
+Two or three classes looks to do the job here.  
+- With four, the the middle two look pretty close
+- With two they are more distinct, but it's a bit coarse. 
+
+---
+
+## Estimate Models and Compare
+
+.pull-left[
+Next, we can estimate the LCAs, run models and compare
+
+
+
+``` r
+mod_dem_cat &lt;- lm(rep ~ dem_class + 
+                 log(rgdpch) + log(pop) + iwar +
+                 cwar,
+               data = drn_inds_lca)
+mod_vv_cat &lt;- lm(rep ~ voice_class + veto_class + 
+                 log(rgdpch) + log(pop) + iwar +
+                 cwar,
+               data = drn_inds_lca)
+mod_orig_inds &lt;- lm(rep ~ voice + veto + 
+                 log(rgdpch) + log(pop) + iwar +
+                 cwar,
+               data = drn_inds_lca)
+```
+
+] 
+.pull-right[
+
+
+```
+## # A tibble: 2 × 4
+##   model      r adj_r2 baseline_adj_r2
+##   &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;           &lt;dbl&gt;
+## 1 demlca 0.933  0.385           0.373
+## 2 vvlca  0.938  0.390           0.373
+```
+
+The `r` column is the correlation between predictions from the two models (quite high, but smaller than before). 
+- Comparing `\(R_{\text{adj}}^2\)`, we see that the models using the categorical variables are actually better predictors than the baseline model. 
+- Suggests maybe non-linearity in the regression surface. 
+
+]
+
+---
+
+## Alternative Proxies
+
+Sometimes we have not just different aggregation tools, but different measures altogether. 
+- E.g., what if we used V-dem's polyarchy measure instead. 
+- Mechanics are the same - estimate model, compare predictions. 
+- Inferential robustness is a bit different
+    - Rather than "are we using the right aggregation mechanism" it's "are we measuring the right thing to begin with?"  
+
+
+---
+
+## Conclusion
+
+What matters? 
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Assumption &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Result &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Equal Weighting &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Very Robust &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Theoretically Motivated Dimensions &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Some sensitivity &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Interval-level Inputs &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Robust &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Interval-level Latent Variables &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Some Sensitivity &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Structural assumptions about the construct appear more consequential than assumptions about weighting or measurement level.
+
+
+---
+
+## Exercise
+
+Mulligan, Gil and Sala-i-Martin "Do Democracies Have Different Public Policies than Nondemocracies?" _Journal of Economic Perspectives_ 2004, 18(1): 51-74. 
+
+- Average Polity's `DEMOC` variable over 1960-1990 and use it as their measure of democracy, 
+- What if we used our different aggregation mechanisms on polity's variables and then aggregated them? 
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+  </body>
+</html>

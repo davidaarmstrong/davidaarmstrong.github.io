@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCDA Bid Evaluation Simulator</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--surf:#17192a;--surf2:#1e2135;--bdr:rgba(255,255,255,0.08);
+  --txt:#e2e8f0;--muted:#64748b;
+  --h:#60a5fa;--t:#fbbf24;
+  --green:#4ade80;--red:#f87171;
+  --p1:#7c3aed;--p2:#0d9488;--p3:#d97706;--p4:#dc2626;
+  --p1bg:rgba(124,58,237,0.12);--p2bg:rgba(13,148,136,0.12);--p3bg:rgba(217,119,6,0.12);--p4bg:rgba(220,38,38,0.12);
+  --p1lt:rgba(124,58,237,0.25);--p2lt:rgba(13,148,136,0.25);--p3lt:rgba(217,119,6,0.25);--p4lt:rgba(220,38,38,0.25);
+}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding:1.25rem}
+h1{font-size:1.4rem;font-weight:700;letter-spacing:-0.02em}
+.sub{font-size:0.8rem;color:var(--muted);margin-top:2px}
+.top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem;gap:1rem;flex-wrap:wrap}
+.bidders{display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap}
+.bidder{display:flex;align-items:center;gap:6px}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.dot-h{background:var(--h)}
+.dot-t{background:var(--t)}
+.nm{background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);padding:4px 8px;border-radius:6px;font-size:0.85rem;width:130px;outline:none}
+.nm:focus{border-color:var(--h)}
+.vs{color:var(--muted);font-size:0.85rem}
+.ctrl{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:0.75rem 1rem;display:flex;gap:1.25rem;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap}
+.cg{display:flex;align-items:center;gap:6px;font-size:0.8rem}
+.cl{color:var(--muted);white-space:nowrap}
+input[type=range]{accent-color:var(--h);width:100px;cursor:pointer}
+input[type=number]{background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);padding:4px 8px;border-radius:6px;width:85px;font-size:0.8rem;outline:none}
+input[type=number]:focus{border-color:var(--h)}
+.btn{padding:5px 14px;border-radius:7px;border:none;cursor:pointer;font-weight:600;font-size:0.8rem;transition:opacity 0.15s}
+.btn:hover{opacity:0.85}
+.btn:active{opacity:0.7;transform:scale(0.98)}
+.btn-p{background:var(--h);color:#fff}
+.btn-s{background:var(--surf2);color:var(--txt);border:1px solid var(--bdr)}
+.divider{width:1px;height:24px;background:var(--bdr)}
+.tw{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;overflow:auto;margin-bottom:1.25rem;max-height:420px}
+table{width:100%;border-collapse:collapse;font-size:0.75rem}
+th{padding:6px 8px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--bdr);white-space:nowrap;text-align:center;position:sticky;top:0;background:var(--surf);z-index:1}
+th.tl{text-align:left}
+th.th{color:var(--h)}
+th.tt{color:var(--t)}
+td{padding:4px 6px;border-bottom:1px solid rgba(255,255,255,0.04);text-align:center;vertical-align:middle}
+td.tl{text-align:left}
+td input[type=number]{width:56px;padding:2px 4px;font-size:0.75rem;text-align:center;background:transparent;border:1px solid transparent;border-radius:4px}
+td input[type=number]:hover{border-color:var(--bdr)}
+td input[type=number]:focus{border-color:var(--h);background:var(--surf2);outline:none}
+.ph-row td{background:var(--surf2);font-weight:700;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;padding:5px 8px}
+.ph-row.pp td{color:var(--p1)}
+.ph-row.pf td{color:var(--p2)}
+.ph-row.pt td{color:var(--p3)}
+.ph-row.ps td{color:var(--p4)}
+.dr-pp td{background:var(--p1bg)}
+.dr-pf td{background:var(--p2bg)}
+.dr-pt td{background:var(--p3bg)}
+.dr-ps td{background:var(--p4bg)}
+.wc{color:var(--muted);font-size:0.7rem}
+.res{display:grid;grid-template-columns:1fr 260px;gap:1rem}
+.cc{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:1rem;position:relative;height:300px}
+.sp{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:1rem;display:flex;flex-direction:column;gap:10px}
+.sc{background:var(--surf2);border-radius:8px;padding:10px 12px}
+.sl{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px}
+.sv{font-size:1.25rem;font-weight:700}
+.ss{font-size:0.7rem;color:var(--muted);margin-top:2px}
+.ph{display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:0.8rem}
+.winner{font-size:0.75rem;font-weight:700;padding:2px 8px;border-radius:4px;display:inline-block;margin-top:4px}
+.wh{background:rgba(96,165,250,0.15);color:var(--h)}
+.wt{background:rgba(251,191,36,0.15);color:var(--t)}
+.tied{background:rgba(100,116,139,0.15);color:var(--muted)}
+@media(max-width:700px){.res{grid-template-columns:1fr}.cc{height:240px}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div>
+    <h1>MCDA Bid Evaluation Simulator</h1>
+    <p class="sub">Monte Carlo simulation of weighted evaluation criteria</p>
+  </div>
+  <div class="bidders">
+    <div class="bidder"><div class="dot dot-h"></div><input type="text" id="nameH" class="nm" value="Hanwha" oninput="updateNames()"></div>
+    <span class="vs">vs</span>
+    <div class="bidder"><div class="dot dot-t"></div><input type="text" id="nameT" class="nm" value="TKMS" oninput="updateNames()"></div>
+  </div>
+</div>
+
+<div class="ctrl">
+  <div class="cg">
+    <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleCSV(this)">
+    <button class="btn btn-s" onclick="document.getElementById('csvFile').click()">&#8593; Upload CSV</button>
+  </div>
+  <div class="divider"></div>
+  <div class="cg">
+    <span class="cl">Range covers</span>
+    <input type="range" id="sdDiv" min="0" max="4" step="0.25" value="2" oninput="updateSDLabel()">
+    <span id="sdLbl" style="min-width:36px;font-size:0.8rem;color:var(--txt)">2.00&#963;</span>
+  </div>
+  <div class="divider"></div>
+  <div class="cg">
+    <span class="cl">Iterations</span>
+    <input type="number" id="iters" value="10000" min="500" max="100000" step="500">
+  </div>
+  <div class="divider"></div>
+  <div class="cg">
+    <span class="cl">Seed</span>
+    <input type="number" id="seedInput" placeholder="random" style="width:78px" min="0" max="999999" step="1">
+    <button class="btn btn-s" style="padding:5px 8px" onclick="genSeed()" title="Generate random seed">&#8635;</button>
+  </div>
+  <button class="btn btn-p" onclick="runSim()">&#9654; Run Simulation</button>
+</div>
+
+<div class="tw"><table id="dt"></table></div>
+
+<div class="res">
+  <div class="cc">
+    <div id="chph" class="ph">Run the simulation to see the distribution</div>
+    <canvas id="hc" style="display:none"></canvas>
+  </div>
+  <div class="sp" id="sp">
+    <div style="color:var(--muted);font-size:0.8rem;text-align:center;margin:auto">Results will appear here</div>
+  </div>
+</div>
+
+<script>
+const DEFAULT = [
+  {pillar:'platform',category:'Lethality',h_exp:8.5,h_min:7,h_max:10,t_exp:6.5,t_min:5,t_max:8,pillar_wt:0.20,category_wt:0.15},
+  {pillar:'platform',category:'Persistence',h_exp:8,h_min:7,h_max:10,t_exp:7.5,t_min:7,t_max:10,pillar_wt:0.20,category_wt:0.28},
+  {pillar:'platform',category:'Stealth',h_exp:7,h_min:5,h_max:9,t_exp:8,t_min:6,t_max:10,pillar_wt:0.20,category_wt:0.28},
+  {pillar:'platform',category:'Information',h_exp:7.5,h_min:5,h_max:10,t_exp:8,t_min:5,t_max:10,pillar_wt:0.20,category_wt:0.15},
+  {pillar:'platform',category:'Habitability',h_exp:9,h_min:7,h_max:10,t_exp:7.5,t_min:5,t_max:9,pillar_wt:0.20,category_wt:0.05},
+  {pillar:'platform',category:'Strategic Interoperability',h_exp:7,h_min:4,h_max:10,t_exp:10,t_min:9,t_max:10,pillar_wt:0.20,category_wt:0.10},
+  {pillar:'financial',category:'Timeline Credibility',h_exp:9,h_min:6,h_max:10,t_exp:7,t_min:4,t_max:8,pillar_wt:0.15,category_wt:0.60},
+  {pillar:'financial',category:'Cost (if different)',h_exp:8,h_min:6,h_max:9,t_exp:6.5,t_min:6,t_max:9,pillar_wt:0.15,category_wt:0.05},
+  {pillar:'financial',category:'Deal Security',h_exp:6.5,h_min:4,h_max:8,t_exp:9,t_min:7,t_max:10,pillar_wt:0.15,category_wt:0.35},
+  {pillar:'partnerships',category:'Impact on Labour',h_exp:7,h_min:4,h_max:9,t_exp:8,t_min:1,t_max:10,pillar_wt:0.15,category_wt:0.25},
+  {pillar:'partnerships',category:'ITB Value Proposition',h_exp:6,h_min:3,h_max:9,t_exp:6,t_min:3,t_max:9,pillar_wt:0.15,category_wt:0.40},
+  {pillar:'partnerships',category:'GDP Impact',h_exp:8.5,h_min:6,h_max:10,t_exp:7.5,t_min:4,t_max:10,pillar_wt:0.15,category_wt:0.35},
+  {pillar:'sustainment',category:'Supply Chain',h_exp:7,h_min:2,h_max:8,t_exp:9,t_min:2,t_max:8,pillar_wt:0.50,category_wt:0.10},
+  {pillar:'sustainment',category:'Workforce Viability',h_exp:7.5,h_min:2,h_max:8,t_exp:7.5,t_min:2,t_max:8,pillar_wt:0.50,category_wt:0.33},
+  {pillar:'sustainment',category:'Infrastructure',h_exp:8,h_min:7,h_max:9,t_exp:8.25,t_min:7,t_max:9,pillar_wt:0.50,category_wt:0.25},
+  {pillar:'sustainment',category:'Ownership/Operationalization',h_exp:6,h_min:2,h_max:8,t_exp:8,t_min:2,t_max:8,pillar_wt:0.50,category_wt:0.33},
+];
+
+const PILLAR_CLASSES = {platform:'pp',financial:'pf',partnerships:'pt',sustainment:'ps'};
+const PILLAR_LABELS = {platform:'Platform',financial:'Financial',partnerships:'Partnerships',sustainment:'Sustainment'};
+
+let simChart = null;
+
+function updateSDLabel(){
+  const d = parseFloat(document.getElementById('sdDiv').value);
+  document.getElementById('sdLbl').textContent = d.toFixed(2) + 'σ';
+}
+
+function updateNames(){
+  const h = document.getElementById('nameH').value || 'H';
+  const t = document.getElementById('nameT').value || 'T';
+  document.querySelectorAll('.hname').forEach(el => el.textContent = h);
+  document.querySelectorAll('.tname').forEach(el => el.textContent = t);
+}
+
+function buildTable(rows){
+  const tbl = document.getElementById('dt');
+  const pillars = [...new Set(rows.map(r => r.pillar))];
+  let html = '<thead><tr>' +
+    '<th class="tl" style="min-width:90px">Category</th>' +
+    '<th>Pillar Wt</th><th>Cat Wt</th><th>Cumul Wt</th>' +
+    '<th colspan="3" class="th"><span class="hname">Company H</span></th>' +
+    '<th colspan="3" class="tt"><span class="tname">Company T</span></th>' +
+    '</tr><tr>' +
+    '<th></th><th></th><th></th><th></th>' +
+    '<th class="th">Exp</th><th class="th">Min</th><th class="th">Max</th>' +
+    '<th class="tt">Exp</th><th class="tt">Min</th><th class="tt">Max</th>' +
+    '</tr></thead><tbody>';
+  pillars.forEach(p => {
+    const cls = PILLAR_CLASSES[p] || 'pp';
+    const pRows = rows.filter(r => r.pillar === p);
+    const pw = pRows[0].pillar_wt;
+    html += `<tr class="ph-row ${cls}"><td class="tl" colspan="10">${PILLAR_LABELS[p] || p} &mdash; Pillar Weight: <input type="number" id="pw_${p}" value="${pw}" min="0" max="1" step="0.01" style="width:52px;font-size:0.7rem;font-weight:700;color:inherit" oninput="recomputeWeights()"></td></tr>`;
+    pRows.forEach((r, i) => {
+      const cw = (r.pillar_wt * r.category_wt).toFixed(3);
+      html += `<tr class="dr-${cls}" data-pillar="${p}" data-idx="${rows.indexOf(r)}">
+        <td class="tl">${r.category}</td>
+        <td class="wc" id="pw_display_${rows.indexOf(r)}">${r.pillar_wt.toFixed(2)}</td>
+        <td><input type="number" id="cw_${rows.indexOf(r)}" value="${r.category_wt}" min="0" max="1" step="0.01" oninput="recomputeWeights()"></td>
+        <td class="wc" id="cumw_${rows.indexOf(r)}">${cw}</td>
+        <td><input type="number" id="he_${rows.indexOf(r)}" value="${r.h_exp}" min="0" max="10" step="0.1"></td>
+        <td><input type="number" id="hmin_${rows.indexOf(r)}" value="${r.h_min}" min="0" max="10" step="0.1"></td>
+        <td><input type="number" id="hmax_${rows.indexOf(r)}" value="${r.h_max}" min="0" max="10" step="0.1"></td>
+        <td><input type="number" id="te_${rows.indexOf(r)}" value="${r.t_exp}" min="0" max="10" step="0.1"></td>
+        <td><input type="number" id="tmin_${rows.indexOf(r)}" value="${r.t_min}" min="0" max="10" step="0.1"></td>
+        <td><input type="number" id="tmax_${rows.indexOf(r)}" value="${r.t_max}" min="0" max="10" step="0.1"></td>
+      </tr>`;
+    });
+  });
+  html += '</tbody>';
+  tbl.innerHTML = html;
+  updateNames();
+}
+
+function recomputeWeights(){
+  const rows = document.querySelectorAll('tr[data-idx]');
+  rows.forEach(row => {
+    const idx = row.dataset.idx;
+    const p = row.dataset.pillar;
+    const pw = parseFloat(document.getElementById('pw_' + p)?.value || 0);
+    const cw = parseFloat(document.getElementById('cw_' + idx)?.value || 0);
+    const cumEl = document.getElementById('cumw_' + idx);
+    const pwDisp = document.getElementById('pw_display_' + idx);
+    if(cumEl) cumEl.textContent = (pw * cw).toFixed(3);
+    if(pwDisp) pwDisp.textContent = pw.toFixed(2);
+  });
+}
+
+function readTableData(){
+  const rows = document.querySelectorAll('tr[data-idx]');
+  const result = [];
+  rows.forEach(row => {
+    const idx = row.dataset.idx;
+    const p = row.dataset.pillar;
+    const pw = parseFloat(document.getElementById('pw_' + p)?.value || 0);
+    result.push({
+      pillar_wt: pw,
+      category_wt: parseFloat(document.getElementById('cw_' + idx)?.value || 0),
+      h_exp: parseFloat(document.getElementById('he_' + idx)?.value || 0),
+      h_min: parseFloat(document.getElementById('hmin_' + idx)?.value || 0),
+      h_max: parseFloat(document.getElementById('hmax_' + idx)?.value || 0),
+      t_exp: parseFloat(document.getElementById('te_' + idx)?.value || 0),
+      t_min: parseFloat(document.getElementById('tmin_' + idx)?.value || 0),
+      t_max: parseFloat(document.getElementById('tmax_' + idx)?.value || 0),
+    });
+  });
+  return result;
+}
+
+function normalCDF(z) {
+  const x = Math.abs(z) * 0.7071067811865476;
+  const t = 1 / (1 + 0.3275911 * x);
+  const poly = t*(0.254829592+t*(-0.284496736+t*(1.421413741+t*(-1.453152027+t*1.061405429))));
+  const p = 0.5 * poly * Math.exp(-x * x);
+  return z >= 0 ? 1 - p : p;
+}
+
+function normalQuantile(p) {
+  if(p <= 1e-12) return -8;
+  if(p >= 1-1e-12) return 8;
+  const a=[-3.969683028665376e+01, 2.209460984245205e+02,-2.759285104469687e+02, 1.383577518672690e+02,-3.066479806614716e+01, 2.506628277459239e+00];
+  const b=[-5.447609879822406e+01, 1.615858368580409e+02,-1.556989798598866e+02, 6.680131188771972e+01,-1.328068155288572e+01];
+  const c=[-7.784894002430293e-03,-3.223964580411365e-01,-2.400758277161838e+00,-2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00];
+  const d=[ 7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00, 3.754408661907416e+00];
+  const pL = 0.02425;
+  let q, r;
+  if(p < pL) {
+    q = Math.sqrt(-2*Math.log(p));
+    return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+  }
+  if(p > 1-pL) {
+    q = Math.sqrt(-2*Math.log(1-p));
+    return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+  }
+  q = p - 0.5; r = q*q;
+  return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);
+}
+
+function truncNorm(rng, mu, sigma, lo, hi) {
+  if(sigma <= 0 || lo >= hi) return Math.max(lo, Math.min(hi, mu));
+  const pLo = normalCDF((lo - mu) / sigma);
+  const pHi = normalCDF((hi - mu) / sigma);
+  const span = pHi - pLo;
+  if(span < 1e-10) return (lo + hi) / 2;
+  const u = Math.max(1e-12, Math.min(1-1e-12, rng() * span + pLo));
+  return Math.max(lo, Math.min(hi, mu + sigma * normalQuantile(u)));
+}
+
+function makePRNG(seed) {
+  let s = seed >>> 0;
+  return () => {
+    s = (s + 0x6D2B79F5) >>> 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t ^= t + Math.imul(t ^ (t >>> 7), 61 | t);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function genSeed() {
+  document.getElementById('seedInput').value = Math.floor(Math.random() * 1000000);
+}
+
+function runSim() {
+  const n = Math.max(1, parseInt(document.getElementById('iters').value) || 10000);
+  const sigVal = parseFloat(document.getElementById('sdDiv').value);
+  const seedStr = document.getElementById('seedInput').value.trim();
+  const seedNum = seedStr === '' ? null : parseInt(seedStr);
+  const rng = (seedNum !== null && !isNaN(seedNum)) ? makePRNG(seedNum) : () => Math.random();
+  const rows = readTableData();
+  const totalW = rows.reduce((s,r) => s + r.pillar_wt * r.category_wt, 0);
+  if(totalW === 0) return;
+
+  const diffs = new Float64Array(n), hScores = new Float64Array(n), tScores = new Float64Array(n);
+  for(let i = 0; i < n; i++) {
+    let h = 0, t = 0;
+    for(const r of rows) {
+      const w = (r.pillar_wt * r.category_wt) / totalW;
+      if(sigVal === 0) {
+        h += w * r.h_exp;
+        t += w * r.t_exp;
+      } else {
+        const hSd = (r.h_max - r.h_min) / (2 * sigVal);
+        const tSd = (r.t_max - r.t_min) / (2 * sigVal);
+        h += w * truncNorm(rng, r.h_exp, hSd, r.h_min, r.h_max);
+        t += w * truncNorm(rng, r.t_exp, tSd, r.t_min, r.t_max);
+      }
+    }
+    hScores[i] = h; tScores[i] = t; diffs[i] = h - t;
+  }
+  plotHist(diffs, hScores, tScores, n, seedNum, sigVal);
+}
+
+function pct(arr, p){
+  const s = Array.from(arr).sort((a,b)=>a-b);
+  return s[Math.floor(p/100*(s.length-1))];
+}
+
+function mean(arr){ let s=0; for(const v of arr) s+=v; return s/arr.length; }
+
+function plotHist(diffs, hScores, tScores, n, seedUsed, sigVal){
+  const mn = Math.min(...diffs), mx = Math.max(...diffs);
+  const nBins = 60;
+  const binW = (mx - mn) / nBins;
+  const counts = new Array(nBins).fill(0);
+  const labels = [];
+  for(let i=0;i<nBins;i++) labels.push(mn + (i+0.5)*binW);
+  for(const d of diffs){ let b = Math.floor((d-mn)/binW); if(b>=nBins) b=nBins-1; counts[b]++; }
+
+  const colors = labels.map(l => l > 0 ? 'rgba(96,165,250,0.65)' : l < 0 ? 'rgba(251,191,36,0.65)' : 'rgba(100,116,139,0.65)');
+
+  document.getElementById('chph').style.display = 'none';
+  const canvas = document.getElementById('hc');
+  canvas.style.display = 'block';
+
+  if(simChart) simChart.destroy();
+
+  const nameH = document.getElementById('nameH').value || 'Company H';
+  const nameT = document.getElementById('nameT').value || 'Company T';
+
+  simChart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: labels.map(l => l.toFixed(2)),
+      datasets: [{
+        data: counts.map(c => c/n*100),
+        backgroundColor: colors,
+        borderWidth: 0,
+        barPercentage: 1.0,
+        categoryPercentage: 1.0,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: items => 'Score diff: ' + parseFloat(items[0].label).toFixed(2),
+            label: items => (items.raw).toFixed(1) + '% of simulations',
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: nameH + ' score − ' + nameT + ' score', color: '#64748b', font: { size: 11 } },
+          ticks: {
+            maxTicksLimit: 9, color: '#64748b', font: { size: 10 },
+            callback: (val, idx) => parseFloat(labels[idx]).toFixed(1)
+          },
+          grid: { color: 'rgba(255,255,255,0.05)' },
+        },
+        y: {
+          title: { display: true, text: '% of simulations', color: '#64748b', font: { size: 11 } },
+          ticks: { color: '#64748b', font: { size: 10 }, callback: v => v.toFixed(1) + '%' },
+          grid: { color: 'rgba(255,255,255,0.05)' },
+        }
+      }
+    }
+  });
+
+  const md = mean(diffs);
+  const mh = mean(hScores);
+  const mt = mean(tScores);
+  const p5 = pct(diffs, 5), p95 = pct(diffs, 95);
+  const pHWins = Array.from(diffs).filter(d=>d>0).length / n * 100;
+  const pTWins = 100 - pHWins;
+
+  let winnerHTML = '';
+  if(Math.abs(md) < 0.05) winnerHTML = '<span class="winner tied">Too close to call</span>';
+  else if(md > 0) winnerHTML = `<span class="winner wh">${nameH} likely leads</span>`;
+  else winnerHTML = `<span class="winner wt">${nameT} likely leads</span>`;
+
+  document.getElementById('sp').innerHTML = `
+    <div class="sc">
+      <div class="sl">Mean score difference</div>
+      <div class="sv" style="color:${md>0?'var(--h)':md<0?'var(--t)':'var(--muted)'}">${md>=0?'+':''}${md.toFixed(3)}</div>
+      <div class="ss">90% CI: [${p5.toFixed(2)}, ${p95.toFixed(2)}]</div>
+      ${winnerHTML}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="sc">
+        <div class="sl" style="color:var(--h)">${nameH} wins</div>
+        <div class="sv" style="color:var(--h)">${pHWins.toFixed(1)}%</div>
+        <div class="ss">Mean: ${mh.toFixed(2)}</div>
+      </div>
+      <div class="sc">
+        <div class="sl" style="color:var(--t)">${nameT} wins</div>
+        <div class="sv" style="color:var(--t)">${pTWins.toFixed(1)}%</div>
+        <div class="ss">Mean: ${mt.toFixed(2)}</div>
+      </div>
+    </div>
+    <div class="sc">
+      <div class="sl">Simulations</div>
+      <div class="sv">${n.toLocaleString()}</div>
+      <div class="ss">${seedUsed !== null ? 'Seed: ' + seedUsed : 'Unseeded (random)'}</div>
+    </div>
+    <div class="sc" style="font-size:0.7rem;color:var(--muted);line-height:1.5">
+      Blue = ${nameH} leads &bull; Amber = ${nameT} leads.<br>
+      ${sigVal === 0 ? 'Point estimate (σ = 0).' : 'Truncated normal on [min, max].<br>Range covers ±' + sigVal.toFixed(2) + 'σ; SD = (max−min)÷' + (2*sigVal).toFixed(2) + '.'}
+    </div>
+  `;
+}
+
+function handleCSV(input){
+  if(!input.files[0]) return;
+  Papa.parse(input.files[0], {
+    header: true, skipEmptyLines: true, dynamicTyping: true,
+    complete: function(res){
+      const rows = res.data.map(r => ({
+        pillar: (r.pillar||'').trim().toLowerCase(),
+        category: (r.category||'').trim(),
+        h_exp: parseFloat(r.h_exp)||0,
+        h_min: parseFloat(r.h_min)||0,
+        h_max: parseFloat(r.h_max)||0,
+        t_exp: parseFloat(r.t_exp)||0,
+        t_min: parseFloat(r.t_min)||0,
+        t_max: parseFloat(r.t_max)||0,
+        pillar_wt: parseFloat(r.pillar_wt)||0,
+        category_wt: parseFloat(r.category_wt)||0,
+      })).filter(r => r.pillar && r.category);
+      if(rows.length) buildTable(rows);
+      input.value = '';
+    }
+  });
+}
+
+buildTable(DEFAULT);
+</script>
+</body>
+</html>

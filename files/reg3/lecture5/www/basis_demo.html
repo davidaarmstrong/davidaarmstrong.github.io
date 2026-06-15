@@ -1,0 +1,181 @@
+<div style="max-width:730px; margin:0 auto; padding:0.25rem 0; font-family:'Atkinson Hyperlegible',sans-serif;">
+
+  <div style="display:flex; gap:10px; align-items:flex-start;">
+    <div style="flex:1; text-align:center;">
+      <p style="font-size:13px; font-weight:500; color:#333; margin:0 0 4px;">Weighted basis functions</p>
+      <canvas id="bfd-c1" width="345" height="245" style="display:block; width:100%; border-radius:4px;"></canvas>
+    </div>
+    <div style="flex:1; text-align:center;">
+      <p style="font-size:13px; font-weight:500; color:#333; margin:0 0 4px;">Combined: <span id="bfd-eq" style="font-weight:400; font-size:12px; color:#666;"></span></p>
+      <canvas id="bfd-c2" width="345" height="245" style="display:block; width:100%; border-radius:4px;"></canvas>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:12px; justify-content:center; font-size:11px; color:#666; margin-top:6px; flex-wrap:wrap; align-items:center;">
+    <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:18px;height:2.5px;background:#0072B2;border-radius:2px;"></span>&#946;&#8321;&middot;x</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:18px;height:2.5px;background:#E69F00;border-radius:2px;"></span>&#946;&#8322;&middot;x&#178;</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:18px;height:1.5px;background:#0072B2;opacity:0.35;border-radius:2px;"></span>b&#8321;(x)=x (ref)</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:18px;height:1.5px;background:#E69F00;opacity:0.35;border-radius:2px;"></span>b&#8322;(x)=x&#178; (ref)</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:18px;height:3px;background:#222;border-radius:2px;"></span>f(x)</span>
+  </div>
+
+  <div style="display:flex; justify-content:center; gap:28px; margin-top:12px; align-items:center; flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:7px;font-size:13px;">
+      <span style="min-width:18px; color:#555;">&#946;&#8320;</span>
+      <input type="range" id="bfd-s0" min="-2" max="2" step="0.1" value="0" style="width:95px;">
+      <span id="bfd-v0" style="min-width:30px;text-align:right;font-size:12px;color:#555;">0.0</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:7px;font-size:13px;">
+      <span style="min-width:18px; color:#0072B2; font-weight:500;">&#946;&#8321;</span>
+      <input type="range" id="bfd-s1" min="-3" max="3" step="0.1" value="1" style="width:95px;">
+      <span id="bfd-v1" style="min-width:30px;text-align:right;font-size:12px;color:#0072B2;">1.0</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:7px;font-size:13px;">
+      <span style="min-width:18px; color:#E69F00; font-weight:500;">&#946;&#8322;</span>
+      <input type="range" id="bfd-s2" min="-3" max="3" step="0.1" value="1" style="width:95px;">
+      <span id="bfd-v2" style="min-width:30px;text-align:right;font-size:12px;color:#E69F00;">1.0</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var C1 = '#0072B2', C2 = '#E69F00', CF = '#222';
+  var beta = [0, 1, 1];
+
+  function b1(x) { return x; }
+  function b2(x) { return x * x; }
+  function fsum(x) { return beta[0] + beta[1] * b1(x) + beta[2] * b2(x); }
+
+  function niceStep(lo, hi, n) {
+    var r = Math.abs(hi - lo) / n;
+    if (r < 1e-10) return 0.5;
+    var e = Math.floor(Math.log(r) / Math.LN10);
+    var f = r / Math.pow(10, e);
+    return (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * Math.pow(10, e);
+  }
+
+  function yRange(fns) {
+    var lo = Infinity, hi = -Infinity;
+    for (var i = 0; i <= 200; i++) {
+      var x = -1 + 2 * i / 200;
+      fns.forEach(function(fn) {
+        var y = fn(x);
+        if (isFinite(y)) { lo = Math.min(lo, y); hi = Math.max(hi, y); }
+      });
+    }
+    if (!isFinite(lo)) { lo = -1; hi = 1; }
+    var pad = Math.max(0.2, (hi - lo) * 0.15);
+    return [Math.min(lo - pad, -0.1), Math.max(hi + pad, 0.1)];
+  }
+
+  function drawPlot(id, curves, ylo, yhi) {
+    var cv = document.getElementById(id);
+    if (!cv) return;
+    var ctx = cv.getContext('2d');
+    var W = cv.width, H = cv.height;
+    var mg = { t: 8, r: 8, b: 28, l: 40 };
+    var pw = W - mg.l - mg.r, ph = H - mg.t - mg.b;
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#f8f8f8';
+    ctx.fillRect(mg.l, mg.t, pw, ph);
+
+    function xp(x) { return mg.l + (x + 1) / 2 * pw; }
+    function yp(y) { return mg.t + (1 - (y - ylo) / (yhi - ylo)) * ph; }
+
+    var step = niceStep(ylo, yhi, 5);
+    ctx.strokeStyle = '#e0e0e0';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([2, 3]);
+    var yg = Math.ceil(ylo / step - 1e-9) * step;
+    while (yg <= yhi + 1e-9) {
+      ctx.beginPath(); ctx.moveTo(mg.l, yp(yg)); ctx.lineTo(mg.l + pw, yp(yg)); ctx.stroke();
+      yg += step;
+    }
+    [-1, -0.5, 0, 0.5, 1].forEach(function(xv) {
+      ctx.beginPath(); ctx.moveTo(xp(xv), mg.t); ctx.lineTo(xp(xv), mg.t + ph); ctx.stroke();
+    });
+    ctx.setLineDash([]);
+
+    if (ylo < 0 && yhi > 0) {
+      ctx.strokeStyle = '#bbb'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(mg.l, yp(0)); ctx.lineTo(mg.l + pw, yp(0)); ctx.stroke();
+    }
+
+    ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1;
+    ctx.strokeRect(mg.l, mg.t, pw, ph);
+
+    ctx.fillStyle = '#888'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+    [-1, -0.5, 0, 0.5, 1].forEach(function(xv) {
+      ctx.fillText(xv === 0 ? '0' : xv.toFixed(1), xp(xv), mg.t + ph + 12);
+    });
+    ctx.fillText('x', mg.l + pw / 2, H - 1);
+    ctx.textAlign = 'right';
+    yg = Math.ceil(ylo / step - 1e-9) * step;
+    while (yg <= yhi + 1e-9) {
+      ctx.fillText(Math.abs(yg) < 1e-9 ? '0' : yg.toFixed(1), mg.l - 4, yp(yg) + 4);
+      yg += step;
+    }
+
+    curves.forEach(function(c) {
+      ctx.strokeStyle = c.color;
+      ctx.lineWidth = c.lw || 2;
+      ctx.setLineDash(c.dash || []);
+      ctx.globalAlpha = c.alpha !== undefined ? c.alpha : 1;
+      ctx.beginPath();
+      var first = true;
+      for (var i = 0; i <= 300; i++) {
+        var x = -1 + 2 * i / 300;
+        var y = c.fn(x);
+        if (!isFinite(y)) { first = true; continue; }
+        var px = xp(x), py = yp(Math.max(ylo - 0.5, Math.min(yhi + 0.5, y)));
+        first ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+        first = false;
+      }
+      ctx.stroke();
+      ctx.setLineDash([]); ctx.globalAlpha = 1;
+    });
+  }
+
+  function update() {
+    var wb1 = function(x) { return beta[1] * b1(x); };
+    var wb2 = function(x) { return beta[2] * b2(x); };
+
+    var yr1 = yRange([b1, b2, wb1, wb2]);
+    drawPlot('bfd-c1', [
+      { fn: b1,  color: C1, lw: 1.5, dash: [5, 3], alpha: 0.2 },
+      { fn: b2,  color: C2, lw: 1.5, dash: [5, 3], alpha: 0.2 },
+      { fn: wb1, color: C1, lw: 2.5 },
+      { fn: wb2, color: C2, lw: 2.5 }
+    ], yr1[0], yr1[1]);
+
+    var yr2 = yRange([fsum, wb1, wb2]);
+    drawPlot('bfd-c2', [
+      { fn: wb1,  color: C1, lw: 1.5, dash: [5, 3], alpha: 0.35 },
+      { fn: wb2,  color: C2, lw: 1.5, dash: [5, 3], alpha: 0.35 },
+      { fn: fsum, color: CF, lw: 3 }
+    ], yr2[0], yr2[1]);
+
+    var sgn = function(v) { return v >= 0 ? '+' : ''; };
+    document.getElementById('bfd-eq').innerHTML =
+      'f(x) = ' + beta[0].toFixed(1) +
+      ' <span style="color:' + C1 + '">' + sgn(beta[1]) + beta[1].toFixed(1) + 'x</span>' +
+      ' <span style="color:' + C2 + '">' + sgn(beta[2]) + beta[2].toFixed(1) + 'x²</span>';
+  }
+
+  ['bfd-s0', 'bfd-s1', 'bfd-s2'].forEach(function(id, i) {
+    var sl = document.getElementById(id);
+    var vd = document.getElementById('bfd-v' + i);
+    if (!sl) return;
+    sl.addEventListener('input', function() {
+      beta[i] = parseFloat(sl.value);
+      vd.textContent = beta[i].toFixed(1);
+      update();
+    });
+  });
+
+  update();
+}());
+</script>

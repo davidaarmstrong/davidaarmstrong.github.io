@@ -4,19 +4,19 @@
     <title>Lecture 4</title>
     <meta charset="utf-8" />
     <meta name="author" content="Dave Armstrong" />
-    <script src="lecture3_2026_files/header-attrs/header-attrs.js"></script>
-    <link href="lecture3_2026_files/remark-css/default.css" rel="stylesheet" />
-    <script src="lecture3_2026_files/xaringanExtra_fit-screen/fit-screen.js"></script>
-    <script src="lecture3_2026_files/fabric/fabric.min.js"></script>
-    <link href="lecture3_2026_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
-    <script src="lecture3_2026_files/xaringanExtra-scribble/scribble.js"></script>
+    <script src="lecture4_2026_files/header-attrs/header-attrs.js"></script>
+    <link href="lecture4_2026_files/remark-css/default.css" rel="stylesheet" />
+    <script src="lecture4_2026_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture4_2026_files/fabric/fabric.min.js"></script>
+    <link href="lecture4_2026_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture4_2026_files/xaringanExtra-scribble/scribble.js"></script>
     <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
-    <script src="lecture3_2026_files/clipboard/clipboard.min.js"></script>
-    <link href="lecture3_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
-    <script src="lecture3_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script src="lecture4_2026_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture4_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture4_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
     <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
-    <link href="lecture3_2026_files/font-awesome/css/all.min.css" rel="stylesheet" />
-    <link href="lecture3_2026_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <link href="lecture4_2026_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture4_2026_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
     <script>
     function releaseMath(el) {
       const codes = el.getElementsByTagName('code');
@@ -77,7 +77,7 @@ class: center, middle, inverse, title-slide
 # Lecture 4
 ]
 .subtitle[
-## Robustness to Functional Form Assumptions
+## Robustness to Functional Form Assumptions II
 ]
 .author[
 ### Dave Armstrong
@@ -180,850 +180,823 @@ The precise choice of `\(f(x)\)` is usually guided by theory.
 
 ---
 
-## Functional Form Perturbations
+## Plausible Alternatives
 
-We often want to identify how robust our functional form choices are to plausible alternatives. We can think of these from least to most complex. 
+These slides are largely focused on identifying _parametric_ plausible alternatives to linearity (or any baseline functional form).  
 
-- Linear and flat: `\(f(x) = 0x\)`
-- Linear and not flat: `\(f(x) = b_1 x\)`
-- Non-linear, monotonic: `\(f(x) = b_1 \log(x)\)` or `\(f(x) = b_1 x^2\)`
-- Non-linear, non-monotonic: `\(f(x) = b_1x + b_2x^2\)`
-- Non-linear, flexible: `\(f(x)\)` estimate flexibly with minimal functional form assumptions. 
+- We will use residual diagnostics to identify plausible departures from the baseline functional form.
+
+- Some departures suggest non-linear transformations, while others suggest adding additional terms (e.g., polynomials) or moving to more flexible specifications.
 
 --
 
-Robust conclusions are those that are not sensitive to choices of more complex models. 
-- They may be sensitive to choosing simpler models, but if those simpler models fit worse the lack of robust is expected and unproblematic. 
+Remember - robustness is about how conclusions fare in the face of _plausible_ perturbations of assumptions we make, not necessarily every possible perturbation. 
 
 ---
 
-## Robustness of Functional Forms
+## Non-linearity
 
-Not all robustness failures are equally important 
+The assumption that the average error `\(E(\varepsilon)\)` is everywhere zero implies that the regression surface accurately reflects the dependency of `\(Y\)` on the `\(X\)`'s
 
-- If you hypothesize and fit a quadratic relationship, you expect it to be sensitive to choosing a linear or flat relationship instead. 
-    - These _impose additional restrictions_ on the estimated relationship. 
+- That is - we assume we've chosen the right functional form. 
+    - Violating this assumption implies that the model fails to account for a systematic pattern between `\(Y\)` and the `\(X\)`'s
 
-- Conversely, if you hypothesize and fit a linear relationship and find that this choice is sensitive to fitting a quadratic relationship instead. 
-    - This _relaxes a restriction_ - the quadratic model _could have found_ a linear relationship if that happened to best describe the relationships in the data. 
+It is impossible to directly view the regression surface when more than two predictors are specified
 
---
-
-As a general principle, sensitivity to relaxing model restrictions combined with precise evidence for the alternative is often more concerning than sensitivity to imposing additional restrictions.
+- We can employ *partial residual plots* to assess non-linearity.
 
 ---
 
-## Outline
+## Partial-Residual Plots (C+R plots)
 
-We are going to proceed in a couple of different directions. 
+For any linear model of `\(y\)` on `\(x\)` and `\(\mathbf{Z}\)`, `\(y_i = f(x_i) + g(\mathbf{z}_i) + e_i\)` the partial residual is: 
 
-1. Robustness testing for ordinal independent variables. 
-    
-    - Linear effect
-    - Monotonic effect (relax equal spacing assumption)
-    - Unrestricted categorical effect (relax ordinality assumption)
---
+`$$r_i^{(x)} = \hat{f}(x_i) + \hat{e}_i$$`
+- In a model linear in `\(x\)`, it would be `\(r_i^{(x)} = \hat{b}_x x_i + \hat{e}_i\)`
+- For a model quadratic in `\(x\)`, it would be `\(r_i^{(x)} = \hat{b}_1 x_i + \hat{b}_2 x_i^2 + \hat{e}_i\)`
 
-2. Robustness testing for continuous independent variables. 
-    - Linear effect
-    - Parametric non-linear effect (relax linearity assumption)
-    - shape-constrained non-linear effect (relax parametric form assumption while retaining monotonicity)
-    - Unrestricted non-linear effect (relax monotonicity assumption)
-
---
-
-At each stage, we evaluate whether our conclusions survive the subsequent assumption relaxation. 
-
----
-  
-## Linearity and Multi-Category Variables
-
-Nominal Variables `\(\rightarrow\)` Dummy Regressors `\(\rightarrow\)` 😄
---
-
-The waters are a bit murkier for ordinal variables (e.g., state repression or political ideology).
-
-- These variables are often operationalized with relatively few categories.
-- However, we often have a strong suspicion that the relationship between these variables and the response is "roughly linear".
-
-- If the relationship is *not* linear and we represent it with a line, then we are getting a *biased* estimate of the relationship.
-- If the relationship could be represented linearly, and we represent it with a series of dummy regressors, we are getting estimates that are *inefficient*
-
----
-
-## Robustness of the Linearity Assumption
-
-Consider the model:
-
-`$$	y = f(x) + g(\mathbf{Z}) + \varepsilon$$`
-
-Often, we want to evaluate whether a linear approximation is sufficient.
-
-`$$\begin{aligned}
-\text{Target}:&amp; \quad f(x) = \beta_{0} + \beta_{1} x\\
-\text{Alternative}:&amp; \quad f(x) \neq \beta_{0} + \beta_{1} x\quad \text{(i.e., the function is more complicated)}
-\end{aligned}$$`
-  
-- We don't have to have know or specify the functional form of the alternative hypothesis, rather just that it is more complicated than linear.
-
----
-
-## Target and Alternative Models
-
-Switching from treating the variable as numeric to categorical allows us to estimate the linear, monotone (retaining monotonicity while relaxing the equal-spacing assumption) and unrestricted (relaxing the monotonicity assumption) categorical models. 
-
-`$$\begin{aligned}
-	\text{Target}:&amp; \quad f(x) = \beta_{0} + \beta_{1}x\\
-	\text{Monotone}:&amp; \quad f(x) = \beta_{0} + \beta_{1}^{*}I(x = 2) + \beta_{2}^{*}I(x = 3) + \beta_{3}^{*}I(x = 4) + \beta_{4}^{*}I(x = 5)\\
-	&amp;\quad \text{subject to:   }\quad 0\leq \beta_1^* \leq \beta_2^*\leq \beta_3^* \leq \beta_4^*\\
-	\text{Unrestricted}:&amp; \quad f(x) = \beta_{0} + \beta_{1}^{*}I(x = 2) + \beta_{2}^{*}I(x = 3) + \beta_{3}^{*}I(x = 4) + \beta_{4}^{*}I(x = 5)
-\end{aligned}$$`
-
-where `\(I()\)` is an indicator function such that `\(I(\cdot)\)` is 1 if the expression inside is true and 0 otherwise. 
-
----
-
-
-## An Example
-
-I generated data such that `\(x_{i} \in \{1,2,3,4,5\}\)` and
-
-`$$y_{i} = 2 + x + \varepsilon_{i}$$`
-
-where `\(\varepsilon_{i} \sim N(0,2)\)`.
-
---
-
-Since the effect in the alternative model is a function of multiple coefficients, we can evaluate the robustness of an effect plot. 
-
-
----
-
-## Operationalizing Monotonicity. 
-
-We take a "pooling adjacent violators" approach to imposing monotonicity.  It takes the following steps: 
-
-1. Estimate the unconstrained model.  
-2. Adjacent categories that violate the monotonicity constraint are pooled until a monotone relationship is obtained.
-3. Repeat until all values have been evaluated. 
-
-The resulting variable will be monotonically related to the outcome. 
-
---
-
-The `make_mono_var()` function in the `nprobustness` package will do this for you.   
-
----
-
-## Example Data
-
-.pull-left[
-
-``` r
-# Generate data to be used in the example
-set.seed(519)
-x &lt;- rep(1:5, 100)
-x &lt;- x[order(x)]
-x_fac = as.factor(x)
-
-y &lt;- 2 + .5*x + rnorm(500,0,5)
-
-ex_df &lt;- data.frame(
-  x = x, 
-  x_fac = x_fac, 
-  y= y
-)
-
-# run linear model
-lmod &lt;- lm(y ~ x, data=ex_df)
-
-# run unrestricted categorical model
-umod &lt;- lm(y ~ x_fac, data=ex_df)
-
-# make monotone x_fac variable: x_fac_ord
-ex_df &lt;- make_mono_var(umod, ex_df,
-  "x_fac", direction="up")
-
-# run monotone model
-mmod &lt;- lm(y ~ x_fac_ord, data=ex_df)
-```
-
-
-]
-.pull-right[
-
-``` r
-library(marginaleffects)
-library(nprobustness)
-# make prediction data frame
-pred_df &lt;- ex_df |&gt; 
-  summarise(n = n(), 
-            .by = c(x, x_fac, x_fac_ord)) |&gt; 
-  mutate(x_fac = as.factor(x), 
-         x_fac_ord = as.factor(x_fac_ord))
-
-# calculate predictions for each model
-# note - use the name of the original numeric variable
-leff &lt;- predictions(lmod, 
-    by="x", 
-    newdata = pred_df)
-meff &lt;- predictions(mmod, 
-    by="x", 
-    newdata = pred_df)
-ueff &lt;- predictions(umod, 
-    by = "x", 
-    newdata = pred_df)
-
-# save standard errors for each model's predictions
-sd_leff &lt;- sqrt(diag(vcov(leff)))
-sd_meff &lt;- sqrt(diag(vcov(meff)))
-sd_ueff &lt;- sqrt(diag(vcov(ueff)))
-```
-]
----
-
-## Calculating Robustness for Predictions
-
-.pull-left[
-
-``` r
-# robustness of linear vs monotonic predictions
-rob_lm &lt;- sapply(1:5, \(i)
-  robustness(dnorm, dnorm, 
-    target_args = list(mean = coef(leff)[i], 
-                       sd = sd_leff[i]), 
-    alt_args = list(mean = coef(meff)[i], 
-                    sd = sd_meff[i])))
-
-# robustness of linear vs unrestricted predictions
-rob_lu &lt;- sapply(1:5, \(i)
-  robustness(dnorm, dnorm, 
-    target_args = list(mean = coef(leff)[i], 
-                       sd = sd_leff[i]), 
-    alt_args = list(mean = coef(ueff)[i], 
-                    sd = sd_ueff[i])))
-
-# robustness of monotone vs unrestricted predictions
-rob_mu &lt;- sapply(1:5, \(i)
-  robustness(dnorm, dnorm, 
-    target_args = list(mean = coef(meff)[i], 
-                       sd = sd_meff[i]), 
-    alt_args = list(mean = coef(ueff)[i], 
-                    sd = sd_ueff[i])))
-```
-]
-.pull-right[
-The average OVL and NP statistics are reasonably high indicating considerable overlap in the effects. 
-
-
-
-
-``` r
-rob_res
-```
-
-```
-##       base          alt       ovl        np         js         kl
-## 1   Linear     Monotone 0.7094441 0.7437994 0.12961241 0.32850329
-## 2   Linear Unrestricted 0.6829746 0.6937582 0.14533502 0.35763505
-## 3 Monotone Unrestricted 0.9277159 0.9009327 0.01842198 0.04465472
-```
-]
-
----
-
-## Calibrating Robustness Measures 
-
-.pull-left[
-
-Even though some of these values are bounded, we may not know what exactly to expect in any particular situation regarding the level of robustness.  
-
-**What level of robustness would we expect?**
-
-- A simulation can help.  
-
-]
-.pull-right[
-**Simulation Steps**
-1. Estimate baseline model. 
-2. Use the original data, coefficients and error variance estimate to simulate `\(\tilde{y}\)`. 
-3. Regress `\(\tilde{y}\)` on the linear `\(x\)` and the categorical `\(x^{(c)}\)`.  
-4. Calculate robustness for the two models. 
-5. Repeate `\(R\)` times and compare to the original robustness statistic. 
-
-]
-
+The "partial residuals" `\(r_i^{(x)}\)` are plotted versus `\(x\)`. 
+- A non-parametric smooth (e.g., LOESS curve) helps identify the shape of the partial relationship between `\(x\)` and `\(y\)` with minimal functional form assumptions. 
+- If the relationship is appropriately captured, the LOESS curve should follow `\(\hat{f}(x)\)` reasonably closely. 
+- Systematic departures from `\(\hat{f}(x)\)` indicate potential unmodeled signal. 
 
 ???
 
-The simulation conditions on the estimated baseline model and the chosen perturbation. A more comprehensive simulation could repeatedly re-estimate the perturbation itself, thereby incorporating additional uncertainty arising from the model-building process.
-
+If the C+R plot does not reveal systematic departures from the fitted relationship, then there is little empirical evidence motivating more flexible functional forms. In that case, nonlinear alternatives would typically need to be justified primarily by theory rather than by the data.
+    
 ---
 
-
-## Simulation in practice. 
+## Example: The Canadian Prestige Data
 
 .pull-left[
 
 ``` r
-library(parallel)
-# function to simulate resposne
-sim_resp &lt;- function(obj, ...){
-  n &lt;- nobs(obj)
-  sim_e &lt;- rnorm(n, 0, summary(obj)$sigma)
-  X &lt;- model.matrix(obj)
-  sim_y &lt;- X %*% coef(obj) + sim_e
-  sim_y
-}
+data(Prestige, package="carData")
+Prestige$income &lt;- Prestige$income/1000
 
-# weights to gen average predictions
-wts &lt;- pred_df$n/sum(pred_df$n)
+Prestige &lt;- Prestige |&gt;
+  drop_na(prestige, income, education, women)
 
-# initialize new data
-newdat &lt;- ex_df
-# set seed
-set.seed(48104)
-```
+pmod&lt;-lm(prestige ~ education +
+	women + income, data=Prestige)
 
-]
-.pull-right[
+cr_dat &lt;- get_cr_data(pmod, data = Prestige, term="income")
 
-The next two blocks show one iteration, you'll have to wrap this in a loop or `lapply` to repeat. 
-
-]
-
----
-
-## Simulation Code
-
-.pull-left[
-
-``` r
-# simulate response
-newdat$sim_y &lt;- sim_resp(lmod)
-
-# update models
-lmod_up &lt;- update(lmod, sim_y ~ ., data=newdat)
-umod_up &lt;- update(umod, sim_y ~ ., data=newdat)
-mmod_up &lt;- update(mmod, sim_y ~ ., data=newdat)
-
-# Calculate predictions
-leff_up &lt;- predictions(lmod_up, by = "x", newdata = pred_df)
-meff_up &lt;- predictions(mmod_up, by = "x", newdata = pred_df)
-ueff_up &lt;- predictions(umod_up, by = "x", newdata = pred_df)
-
-# Recover standard errors
-sd_leff_up &lt;- sqrt(diag(vcov(leff_up)))
-sd_meff_up &lt;- sqrt(diag(vcov(meff_up)))
-sd_ueff_up &lt;- sqrt(diag(vcov(ueff_up)))
+ggplot(cr_dat, aes(x=x)) + 
+  geom_point(aes(y = cr), size=.75) + 
+  geom_ribbon(aes(ymin = lwr, ymax=upr, 
+                  fill = "Parametric"), 
+              alpha=.15, color="transparent") + 
+  geom_line(aes(y = f_hat, color="Parametric")) + 
+  geom_smooth(aes(y=cr, color="LOESS", 
+                  fill="LOESS"), 
+              method="loess", 
+              se=FALSE, span=.75) + 
+  scale_color_okabe_ito() + 
+  scale_fill_okabe_ito() + 
+  labs(x="Income", y="Component + Residual", 
+       fill="", color = "") + 
+  theme_minimal() + 
+  theme(legend.position = "top")
 ```
 ]
 .pull-right[
-
-``` r
-# Calculate Robustness
-rob_lm &lt;- sapply(1:5, \(i)
-  robustness(dnorm, dnorm, 
-    target_args = list(mean = coef(leff_up)[i], 
-                       sd = sd_leff_up[i]), 
-    alt_args = list(mean = coef(meff_up)[i], 
-                    sd = sd_meff_up[i])))
-
-rob_mu &lt;- sapply(1:5, \(i)
-  robustness(dnorm, dnorm, 
-    target_args = list(mean = coef(meff_up)[i], 
-                       sd = sd_meff_up[i]), 
-    alt_args = list(mean = coef(ueff_up)[i], 
-                    sd = sd_ueff_up[i])))
-
-
-# Make weighted average
-c(c(rob_lm %*% wts), c(rob_lu %*% wts), c(rob_mu %*% wts))
-```
-
+&lt;img src="lecture4_2026_files/figure-html/unnamed-chunk-2-1.png" alt="Component-plus-residual plot for income in the Canadian Prestige model. Scatter points show the component-plus-residual values; a parametric line with shaded confidence ribbon shows the linear fit; a LOESS smooth suggests the relationship curves upward at low incomes and flattens at higher incomes, indicating that the linear specification may be too restrictive." width="90%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
 
-## Compare to Observed
+## LOESS 
 
+LOESS (Local Regression) works in the following way: 
 
+1. Pick a value of `\(x\)` at the lower edge of the distribution (e.g., the minimum) and call this `\(x_0\)`.  
+2. Identify the _span_ percent of points closes to `\(x_0\)` on `\(x\)`. 
+3. Estimate a weighted linear or polynomial regression of `\(y\)` on `\(x\)`, weighting points closer to `\(x_0\)` higher than points farther from `\(x_0\)`. 
+4. Generate a prediction and from that model at `\(x_0\)` and mark that as `\(\hat{y}_0\)`.  
+5. Move `\(x_0\)` to the right a little bit and repeat until you reach `\(max(x)\)`.  
+6. Connect the predictions. 
 
+The _span_ (0,1] controls the tradeoff between smoothness and flexibility.
 
-
-&lt;img src="lecture3_2026_files/figure-html/unnamed-chunk-10-1.png" alt="Faceted histogram grid with rows for three model comparisons (Lin vs. Mon, Lin vs. Cat, Mon vs. Cat) and columns for four robustness statistics (OVL, NP, JS, KL). Gray bars show the simulated null distribution of each statistic; red dashed vertical lines mark the observed values from the actual data. The observed values fall in the middle of their respective distributions, indicating that departures from linearity are not unusually large." width="65%" style="display: block; margin: auto;" /&gt;
-
----
-
-## Percentile Values
-
-The numbers below are the percentile of the distribution in which the number falls.
-
-- for OVL and NP, it is the proportion below (less overlapping).  
-- for JS and KL, it is the proportion above (more divergent). 
- 
-
-```
-## # A tibble: 4 × 4
-##   stat  `Lin vs. Mon` `Lin vs. Cat` `Mon vs. Cat`
-##   &lt;fct&gt;         &lt;dbl&gt;         &lt;dbl&gt;         &lt;dbl&gt;
-## 1 OVL           0.805         0.722         0.824
-## 2 NP            0.662         0.68          0.823
-## 3 JS            0.696         0.684         0.823
-## 4 KL            0.712         0.683         0.823
-```
-
-The observed robustness statistics are not unusually low relative to what would be expected if the linear model were correct, suggesting that any departures from linearity are modest.
-- Any differences appear to arise from the equal-spacing rather than the monotonicity assumption. 
----
-
-## Linear, Monoton and Unrestricted Effects 
-
-.pull-left[
-&lt;img src="lecture3_2026_files/figure-html/unnamed-chunk-12-1.png" alt="Line plot with confidence ribbons showing predicted Y (holding all else constant) across X for three functional forms: Linear, Monotonic, and Unrestricted. The three curves overlap considerably across the range of X, with the linear curve somewhat narrower in uncertainty than the alternatives." width="90%" style="display: block; margin: auto;" /&gt;
-]
-.pull-right[
-
-Functions overlap considerably. 
-- Increased efficiency with the linear function. 
-- Linear model is somewhat sensitive to relaxing equal spacing, but highly robust to relaxing monotonicity.
-- None of the alternative effects indicates a substantively different story. 
-]
+- Larger spans `\(\rightarrow\)` smoother curves
+- Smaller spans `\(\rightarrow\)` more flexible ("wigglier") curves
 
 
 ---
 
-## Exercise
 
-We are going to replicate Ang et.al. (2019) from the _American Journal of Political Science_. 
-- They recode party ID (Strong D = 2, (D, Lean D) = 1, I=0, (R, Lean R) = -1, Strong R = -2)
-    - `partyid7.may16` is the seven point variable that separates lean D and D as well as lean R and R. 
-- They estimate the effect of national economic evaluations on party ID among other vars. 
+## Two Dimensions of Nonlinearity
 
-
-``` r
-load("ang_replication/tapsEcon.rData") 
-
-tapsData_T2 = tapsData %&gt;% drop_na(male,income,white,black,hispanic,education,age2016,
-                                   natecon.nov16.fd,natecon.jan17.fd,hhecon.nov16.fd,
-                                   hhecon.jan17.fd,natcurr.nov16.fd,natcurr.jan17.fd,
-                                   hhcurr.nov16.fd,hhcurr.jan17.fd)
-
-base_mod &lt;- lm((natcurr.jan17.fd) ~ partyid.may16.gh  + male + income + white +
-                          black + hispanic + education + age2016,data=tapsData_T2)
-```
-
-Evaluate how robust the effect of party ID is to relevant assumptions. 
-
----
-
-## Monotonicity in GLMs
-
-.pull-left[
-For single equation models (binary, poisson, gamma, ordered), do the following: 
-
-1. Create the unrestricted model with the appropriate GLM family. 
-2. Save the model predictions on the link scale back into the data as `yhat_link`. 
-3. Estimate a linear model of `yhat_link` on the unrestricted model formula. 
-4. Do `make_mono_var()` on the model from 3 to create the variable of interest with monotonicity constraints. 
-]
-
-.pull-right[
-
-``` r
-library(foreign)
-anes &lt;- rio::import("../data/anes1992.dta")
-anesu &lt;- anes %&gt;% mutate(pid_fac = as.factor(pid)) |&gt; 
-  drop_na(votedem, retnat, pid, age, male, 
-          educ, black, south)
-linmod &lt;- glm(votedem ~ retnat + pid + age + male + educ +
-	black + south, data=anesu, family=binomial)
-
-catmod &lt;- glm(votedem ~ retnat + pid_fac + age + male +
-	 educ + black + south, data=anesu, family=binomial)
-
-anesu$yhat_link &lt;- predict(catmod, type="link")
-auxmod &lt;- lm(yhat_link ~ retnat + pid_fac + age + male +
-	 educ + black + south, data=anesu)
-anesu &lt;- make_mono_var(auxmod, anesu, mono_var = "pid_fac", direction="down")
-pid_map &lt;- anesu |&gt; select(pid, pid_fac_ord) |&gt; distinct() |&gt; arrange(pid)
-monmod &lt;- glm(votedem ~ retnat + age + male + educ + black + south + 
-            recode_values(pid, from=pid_map$pid, to=pid_map$pid_fac_ord, ptype="factor"), 
-            data=anesu, family=binomial)
-```
-]
-
----
-
-## Robustness with GLMs 
-
-The main differences with non-Gaussian GLMs are two-fold. 
-
-1. The object of robustness analysis should generally be predicted probabilities, expected values, or first differences - quantities expressed on the observed outcome scale and thus comparable across specifications. 
-
-2. The sampling distributions of these quantities are often not available in closed form or are poorly approximated by normal distributions. Consequently, robustness calculations are typically based on simulation, asymptotic approximations, or quasi-posterior draws rather than analytic probability distributions.
+To identify plausible alternatives, we need to know _what kind_ of unmodeled non-linearity exists.  There are two relevant evaluation criteria:
 
 --
 
-The steps are the same as before, but use `avg_predictions()` or `avg_comparisons()` instead of `predictions()` as above. 
+**Simple vs. Complex**
+- Simple means the curvature of the function relating `\(x\)` to `\(y\)` does not change direction (i.e., there is no inflection point).
+- Complex means that there is an inflection point.
+	
+
+**Monotone vs Non-monotone**
+  - Monotone means that as `\(x\)` increases the function relating `\(x\)` to `\(y\)` never decreases or  `\(x\)` increases the function relating `\(x\)` to `\(y\)` never increases, depending on the nature of the function.
+
+---
+
+## Handling Non-linearity: Common Strategies
+
+**Simple, monotone**
+
+- Transformations of `\(Y\)` and/or `\(X\)`
+
+**Complex Non-linearity**
+
+- Polynomial Regression
+- If pattern has too many turns, polynomials tend to oversmooth peaks
+- Regression Splines
+- More complicated non-parametric models.
+
+
+
 
 
 ---
 
-## Predictions or First Differences?
 
-Predictions:
-
-* Bounded in (0,1)
-* Near 0 or 1, uncertainty is often asymmetric and poorly approximated by a normal distribution.
-* Predicted probabilities can frequently approach these boundaries (e.g., rare events).
-* Robustness calculations are often best based on quasi-posterior draws.
-
-Exception: When predictions are well away from the boundaries and uncertainty is small, normal approximations may be adequate for rapid evaluation.
-
---
-
-First Differences:
-
-* Bounded in (-1,1)
-* Often lie well away from their boundaries, even when the underlying predictions do not.
-* Uncertainty is frequently better approximated by a normal distribution.
-* Delta-method standard errors are often adequate for robustness calculations, simulations can always be used for greater accuracy.
-
---
-
-Exception: Simulation-based approaches remain preferable when first differences are large, highly nonlinear, or derived from extreme predicted probabilities.
-
-
----
-
-## Robustness of Predictions
+## Identifying Monotone Alternatives
 
 .pull-left[
-
-
-
-``` r
-# predictions from linear model
-linpreds &lt;- avg_predictions(
-  linmod, 
-  variables = list(pid=1:7), 
-  by="pid") |&gt; 
-  inferences(method="simulation", R=5000)
-lin_post &lt;- get_draws(linpreds)
-
-# predictions from monotonic model
-monpreds &lt;- avg_predictions(
-  monmod, 
-  variables = list(pid=1:7), 
-  by="pid") |&gt; 
-  inferences(method="simulation", R=5000)
-mon_post &lt;- get_draws(monpreds)
-
-# predictions from unrestricted model
-catpreds &lt;- avg_predictions(
-  catmod, 
-  variables = "pid_fac", 
-  by="pid_fac") |&gt; 
-  inferences(method="simulation", R=5000)
-cat_post &lt;- get_draws(catpreds)
-```
-
+- The direction of the bulge indicates the appropriate type of power transformation for `\(Y\)` and/or `\(X\)`
+- A bulge to the top left of the scatterplot suggests transforming `\(Y\)` up the ladder of powers and/or `\(X\)` down the ladder of powers will straighten the relationship
 ]
 .pull-right[
-
-``` r
-lp_mat &lt;- lin_post |&gt; select(drawid, pid, draw) |&gt; 
-  pivot_wider(names_from = "pid", names_prefix="pid_", 
-              values_from = "draw")
-mp_mat &lt;- mon_post |&gt; select(drawid, pid, draw) |&gt; 
-  pivot_wider(names_from = "pid", names_prefix="pid_", 
-              values_from = "draw")
-cp_mat &lt;- cat_post |&gt; select(drawid, pid_fac, draw) |&gt; 
-  pivot_wider(names_from = "pid_fac", names_prefix="pid_", 
-              values_from = "draw")
-rob_lm &lt;- sapply(paste0("pid_", 1:7), \(x){
-  robustness(lp_mat[[x]], mp_mat[[x]])
-})
-rob_lu &lt;- sapply(paste0("pid_", 1:7), \(x){
-  robustness(lp_mat[[x]], cp_mat[[x]])
-})
-rob_mu &lt;- sapply(paste0("pid_", 1:7), \(x){
-  robustness(mp_mat[[x]], cp_mat[[x]])
-})
-```
-
+&lt;img src="fox46.png" alt="The bulge diagram from Fox (Figure 4.6) showing four quadrants of scatter-plot curvature and the corresponding ladder-of-powers transformations. Each quadrant pairs a direction of bulge with arrows indicating whether to move X or Y up or down the ladder of powers to straighten the relationship." width="75%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
 
-## Robustness Values
+## Ad hoc Transformations
+
+Common transformations such as `\(\log(x)\)`, `\(\sqrt{x}\)`, or `\(x^2\)` are often useful starting points when investigating potential non-linearity.
+
+- They correspond to familiar relationship shapes (e.g., diminishing returns, accelerating effects, or curvature).
+- Many substantive theories imply one of these forms, either explicitly or implicitly.
+- Because these transformations are widely used, their implications are generally easy to interpret and communicate.
+- They provide a simple benchmark before moving to more flexible alternatives.
+
+Some transformations (like `\(\log(x)\)`) will require `\(x\)` to be either non-negative or strictly positive.
+---
+
+## Inverse Hyperbolic Sine Transformation
 
 .pull-left[
+Sometimes, the log transform is not the most useful because a variable has lots of zeros and you don't want to add an arbitrary constant to all counts.  The IHS transformation is a good alternative.
 
-``` r
-# relax equal-spacing assumption
-as_tibble(rob_lm)
-```
-
-```
-## # A tibble: 4 × 7
-##   pid_1  pid_2  pid_3 pid_4  pid_5 pid_6 pid_7
-##   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 0.459 0.0711 0.0452 0.567 0.0724 0.456 0.601
-## 2 0.496 0.0455 0.0196 0.535 0.0441 0.599 0.597
-## 3 0.312 0.864  0.909  0.224 0.858  0.315 0.191
-## 4 0.807 8.50   8.81   0.539 5.48   0.948 0.462
-```
-
-``` r
-# relax monotonicity assumption
-as_tibble(rob_mu)
-```
-
-```
-## # A tibble: 4 × 7
-##     pid_1 pid_2 pid_3    pid_4 pid_5 pid_6   pid_7
-##     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
-## 1 0.966   0.697 0.692 0.984    0.605 0.662 0.981  
-## 2 0.942   0.765 0.751 0.947    0.669 0.764 0.928  
-## 3 0.00139 0.108 0.114 0.000616 0.177 0.135 0.00215
-## 4 0.00397 0.269 0.279 0.00247  0.445 0.349 0.00501
-```
+`$$\begin{aligned}
+\text{IHS}(x) &amp;= \frac{\text{sinh}^{-1}(\theta x)}{\theta}\\ 
+&amp;= \frac{log\left(\theta x + log(\theta x^2+1)^{\left(\frac{1}{2}\right)}\right)}{\theta}
+\end{aligned}$$`
 ]
+
 
 .pull-right[
-
-
-``` r
-# overall difference 
-as_tibble(rob_lu)
-```
-
-```
-## # A tibble: 4 × 7
-##   pid_1  pid_2  pid_3 pid_4  pid_5 pid_6 pid_7
-##   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 0.466 0.0641 0.0387 0.561 0.0587 0.253 0.603
-## 2 0.496 0.0388 0.0172 0.528 0.0336 0.283 0.597
-## 3 0.305 0.875  0.919  0.228 0.879  0.570 0.191
-## 4 0.776 5.02   5.32   0.549 4.38   1.93  0.460
-```
-
-- Linear is not particularly robust to monotone, especially in the middle
-- Monotone is quite robust to non-monotone 
-- The overall difference comes largely from lack of robustness to the equal spacing assumption. 
-
-
+&lt;img src="lecture4_2026_files/figure-html/ihs1-1.png" alt="Line plot of the inverse hyperbolic sine (IHS) transformation applied to X for three values of theta (0.25, 0.50, 1.00), shown as different line types. All three curves are symmetric around zero and log-like in shape; larger theta values produce a more pronounced compression of the tails relative to the center." width="90%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
 
-## Simulation Length
+## Income Transformation
 
-When using simulated values, people may wonder - _How many simulations do I need?_ 
+.pull-left[
+The `income` variable appears to require a transfomation down the ladder - we'll try the `log`. 
 
-Defaults: 
-- Quick comparison - 2000 draws
-- Reported in paper - 10000 + draws
 
---
+``` r
+logmod &lt;- lm(prestige ~ education +
+	women + log(income), data=Prestige)
+log_cr_dat &lt;- get_cr_data(logmod, data = Prestige, 
+                          term="log(income)")
+ggplot(log_cr_dat, aes(x=x)) + 
+  geom_point(aes(y = cr), size=.75) + 
+  geom_ribbon(aes(ymin = lwr, ymax=upr, 
+                  fill = "Parametric"), 
+              alpha=.15, color="transparent") + 
+  geom_line(aes(y = f_hat, color="Parametric")) + 
+  geom_smooth(aes(y=cr, color="LOESS", 
+                  fill="LOESS"), 
+              method="loess", 
+              se=FALSE, span=.75) + 
+  scale_color_okabe_ito() + 
+  scale_fill_okabe_ito() + 
+  labs(x="Income", y="Component + Residual", 
+       fill="", color = "") + 
+  theme_minimal() + 
+  theme(legend.position = "top")
+```
 
-More simulations are needed when trying to characterize quantities in the tail of a distribution. 
-- Further out in the tail `\(\rightarrow\)` more draws. 
-- Quantities based on extreme percentiles generally require more draws than quantities based on means or medians.
+]
+.pull-right-shift[
+&lt;img src="lecture4_2026_files/figure-html/unnamed-chunk-4-1.png" alt="Component-plus-residual plot for log(income) in the Canadian Prestige model. Scatter points show the component-plus-residual values; the parametric line with confidence ribbon shows the log fit; the LOESS smooth tracks the parametric curve closely, indicating that the log transformation captures the income relationship well." width="90%" style="display: block; margin: auto;" /&gt;
 
---
-
-Speeding up `inferences(method="simulation")`
-- Use "average" respondent rather than average effects/predictions. 
+The LOESS curve follows the log relationship really closely, we've identified a plausible alternative. 
+]
 
 ---
 
-## Robustness of First Differences. 
+## Robustness to the Log
+
 
 .pull-left[
 
 ``` r
-lin_fd &lt;- avg_predictions(
-  linmod, 
-  variables = list(pid=c(1,3,4,6,7)), 
-  hypothesis = ~sequential)
+library(marginaleffects)
+linpred &lt;- predictions(pmod, variables = 
+  list(income = quantile(Prestige$income, 
+                         probs=seq(0,1,by=.1))), 
+  by = "income")
+monpred &lt;- predictions(logmod, variables = 
+  list(income = quantile(Prestige$income, 
+                         probs=seq(0,1,by=.1))), 
+  by="income")
+se_linpred &lt;- sqrt(diag(vcov(linpred)))
+se_monpred &lt;- sqrt(diag(vcov(monpred)))
 
-mon_fd &lt;- avg_predictions(
-  monmod, 
-  variables = list(pid=c(1,3,4,6,7)), 
-  hypothesis = ~sequential)
-cat_fd &lt;- avg_predictions(
-  catmod, 
-  variables = list(pid_fac=c("1", "3", "4", "6", "7")), 
-  hypothesis = ~sequential) 
-
-se_linfd &lt;- sqrt(diag(vcov(lin_fd)))
-se_monfd &lt;- sqrt(diag(vcov(mon_fd)))
-se_catfd &lt;- sqrt(diag(vcov(cat_fd)))
-```
-
-Contrasts are chosen to avoid transitions entirely within pooled monotone categories.
-]
-
-.pull-right[
-
-``` r
-robfd_lm &lt;- sapply(1:4, \(i)
+rob_log &lt;- sapply(1:nrow(linpred), \(i)
   robustness(dnorm, dnorm, 
-     target_args = list(mean = coef(lin_fd)[i], 
-                        sd = se_linfd[i]), 
-     alt_args = list(mean = coef(mon_fd)[i],
-                     sd = se_monfd[i])))
-
-robfd_mu &lt;- sapply(1:4, \(i)
-  robustness(dnorm, dnorm, 
-     target_args = list(mean = coef(mon_fd)[i], 
-                        sd = se_monfd[i]), 
-     alt_args = list(mean = coef(cat_fd)[i],
-                     sd = se_catfd[i])))
-
-robfd_lu &lt;- sapply(1:4, \(i)
-  robustness(dnorm, dnorm, 
-     target_args = list(mean = coef(lin_fd)[i], 
-                        sd = se_linfd[i]), 
-     alt_args = list(mean = coef(cat_fd)[i],
-                     sd = se_catfd[i])))
-
-colnames(robfd_lm) &lt;- colnames(robfd_mu) &lt;- 
-  colnames(robfd_lu) &lt;- c("1 -&gt; 3", "3 -&gt; 4", 
-                          "4 -&gt; 6", "6 -&gt; 7")
-```
-
-]
-
----
-
-## FD Robustness Values
-
-.pull-left[
-
-``` r
-# equal-spacing
-as_tibble(robfd_lm, rownames="stat")
-```
-
-```
-## # A tibble: 4 × 5
-##   stat  `1 -&gt; 3` `3 -&gt; 4` `4 -&gt; 6` `6 -&gt; 7`
-##   &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-## 1 ovl      0.134    0.148    0.384    0.145
-## 2 np       0.108    0.112    0.339    0.108
-## 3 js       0.734    0.704    0.403    0.708
-## 4 kl       2.51     2.20     1.03     2.21
-```
-
-``` r
-# monotonicity
-as_tibble(robfd_mu, rownames="stat")
-```
-
-```
-## # A tibble: 4 × 5
-##   stat  `1 -&gt; 3` `3 -&gt; 4` `4 -&gt; 6` `6 -&gt; 7`
-##   &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-## 1 ovl     0.761    0.857    0.850    0.714 
-## 2 np      0.839    0.914    0.917    0.815 
-## 3 js      0.0691   0.0240   0.0259   0.0950
-## 4 kl      0.173    0.0631   0.0693   0.241
+    target_args = list(mean = coef(linpred)[i], 
+                       sd = se_linpred[i]), 
+    alt_args = list(mean = coef(monpred)[i], 
+                    sd = se_monpred[i])))
+colnames(rob_log) &lt;- paste0("p", seq(0,1,by=.1)*100)
 ```
 ]
 .pull-right[
 
-``` r
-# overall difference
-as_tibble(robfd_lu, rownames="stat")
+```
+## # A tibble: 11 × 5
+##    percentile   ovl    np    js    kl
+##    &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 p0         0     0     0.032 0    
+##  2 p10        0.172 0.206 0.698 3.43 
+##  3 p20        0.434 0.681 0.341 1.31 
+##  4 p30        0.831 0.968 0.036 0.123
+##  5 p40        0.698 0.941 0.105 0.396
+##  6 p50        0.319 0.549 0.482 2.31 
+##  7 p60        0.155 0.19  0.725 4.09 
+##  8 p70        0.115 0.109 0.791 4.50 
+##  9 p80        0.13  0.132 0.766 4.11 
+## 10 p90        0.267 0.393 0.556 2.44 
+## 11 p100       0.51  0.971 0.266 1.92
 ```
 
-```
-## # A tibble: 4 × 5
-##   stat  `1 -&gt; 3` `3 -&gt; 4` `4 -&gt; 6` `6 -&gt; 7`
-##   &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-## 1 ovl     0.0894   0.103     0.317   0.0745
-## 2 np      0.0631   0.0729    0.270   0.0496
-## 3 js      0.808    0.777     0.479   0.827 
-## 4 kl      2.97     2.63      1.26    3.00
-```
-
-Same conclusion as above 
-- Not robust to equal spacing assumption
-- Quite robust to monotonicity assumption. 
+Robustness is quite low at small values of income  and again from the `\(60^{th}\)` to `\(80^{th}\)` percentiles.   This is due to where the linear and non-linear curves intersect (see next slide for effects plot). 
 
 ]
 
 ---
 
 ## Effects
+.pull-left[
+
+``` r
+seq_range &lt;- function(x, n=100){
+  seq(min(x, na.rm=TRUE), 
+      max(x, na.rm=TRUE),
+      length=n)
+}
+inc_seq &lt;- seq_range(Prestige$income)
+lp &lt;- predictions(pmod, by="income",
+  newdata = datagrid(income = inc_seq)) 
+mp &lt;- predictions(logmod, by="income", 
+  newdata = datagrid(income = inc_seq)) 
+lp |&gt; as_tibble() |&gt; 
+  mutate(form = "linear") |&gt; 
+  bind_rows(mp |&gt; as_tibble() |&gt; 
+      mutate(form = "log")) |&gt; 
+  ggplot(aes(x=income, y=estimate, 
+             ymin = conf.low, ymax=conf.high, 
+             fill=form, color=form)) + 
+  geom_ribbon(alpha=.15, color="transparent") + 
+  geom_line() + 
+  theme_minimal() + 
+  scale_fill_okabe_ito() + 
+  scale_color_okabe_ito() + 
+  labs(x="Income", y="Predicted Prestige", 
+       fill = "", color="") + 
+  theme(legend.position = "top")
+```
+]
+.pull-right-shift[
+&lt;img src="lecture4_2026_files/figure-html/unnamed-chunk-7-1.png" alt="Line plot with confidence ribbons showing predicted prestige versus income for the linear and log specifications. The log curve rises steeply at low incomes and flattens at higher incomes, while the linear curve increases at a constant rate. The two specifications diverge most at the low and high ends of the income distribution, consistent with the pattern of low robustness at those quantiles." width="100%" /&gt;
+]
+
+---
+
+## Box-Tidwell transformation Example: Prestige Data
+
+Sometimes, an ad hoc search may not produce a sufficiently plausible alternative.  In that case, the Box-Tidwell model may work.  It estimates the transformation parameters on the indicated variables.
+  
+
+``` r
+library(car)
+boxTidwell(prestige ~ income ,
+           ~ education + women, data=Prestige)
+```
+
+```
+##  MLE of lambda Score Statistic (t)  Pr(&gt;|t|)    
+##        0.08073             -4.8338 5.021e-06 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## iterations =  10
+```
+
+- The statistically significant test suggests that the linear specification may be overly restrictive and that a transformed version of income is a plausible robustness alternative.
+- The MLE of Power suggests that income should be transformed by a power of 0.08 (suggesting the log might work well) 
+
+---
+
+## Comparing Candidate Transformations
+  
+The estimated power is approximately 0.08. The log transformation provides a very similar shape and is considerably easier to interpret.
+
+- If the candidate transformation (e.g., the log instead of 0.08) is good enough, then the transformation powers on the new data should be insignificant.
+
+
+``` r
+boxTidwell(prestige ~ I(log(income) + 1),
+           ~ education + women, data=Prestige)
+```
+
+```
+##  MLE of lambda Score Statistic (t) Pr(&gt;|t|)
+##         1.2727              0.9093   0.3655
+## 
+## iterations =  5
+```
+
+Notice that the p-value is `\(&gt;0.05\)` 
+- The theoretically familiar log transformation approximates the estimated power transformation very well.
+  
+---
+
+## Polynomial Regression
+
+For non-linearity that is not simple and monotone, polynomials are a parametric alternative that may work. 
+
+Two or more regressors of ascending power (i.e., linear, quadratic and cubic terms) are used to capture the effects of a single variable
+- For every bend in the curve, we add another term to the model, going up in power each time. A polynomial of order `\(k\)` can have at most `\(k-1\)` turning points.
+- Polynomial models are linear in the parameters even though they are non-linear in the variables
+
+|Order | Equation |
+|:---:|:---|
+|First | `\(Y= \alpha + \beta_{1}X\)` |
+|Second | `\(Y = \alpha + \beta_{1}X + \beta_{2}X^{2}\)` |
+|Third  | `\(Y = \alpha + \beta_{1}X + \beta_{2}X^{2} + \beta_{3}X^{3}\)` |
+
+---
+
+## CR Plot for Women 
 
 .pull-left[
-&lt;img src="lecture3_2026_files/figure-html/unnamed-chunk-24-1.png" alt="Line plot with confidence ribbons showing predicted probability of voting Democrat by Party ID (Strong Democrat through Strong Republican) for Linear, Monotone, and Unrestricted functional forms. All three curves decline monotonically from left to right and overlap substantially, though the linear and monotone curves diverge somewhat between partisans and leaners." width="90%" style="display: block; margin: auto;" /&gt;
+
+``` r
+cr_dat &lt;- get_cr_data(logmod, data = Prestige, 
+                      term="women")
+
+ggplot(cr_dat, aes(x=x)) + 
+  geom_point(aes(y = cr), size=.75) + 
+  geom_ribbon(aes(ymin = lwr, ymax=upr, 
+                  fill = "Parametric"), 
+              alpha=.15, color="transparent") + 
+  geom_line(aes(y = f_hat, color="Parametric")) + 
+  geom_smooth(aes(y=cr, color="LOESS", 
+                  fill="LOESS"), 
+              method="loess", 
+              se=FALSE, span=.75) + 
+  scale_color_okabe_ito() + 
+  scale_fill_okabe_ito() + 
+  labs(x="% Women Incumbents", y="Component + Residual", 
+       fill="", color = "") + 
+  theme_minimal() + 
+  theme(legend.position = "top")
+```
+] 
+.pull-right-shift[
+&lt;img src="lecture4_2026_files/figure-html/unnamed-chunk-8-1.png" alt="Component-plus-residual plot for percent women incumbents in the log(income) Prestige model. Scatter points show component-plus-residual values; the parametric line with confidence ribbon shows the linear fit; the LOESS smooth dips below the linear fit at middle values and rises at the extremes, suggesting a possible U-shaped or nonlinear relationship." width="100%" /&gt;
+]
+
+---
+
+## Polynomial Model
+
+.pull-left[
+
+``` r
+polymod &lt;- lm(prestige ~ education + log(income) +
+	poly(women, 2, raw=TRUE) , data=Prestige)
+
+poly_cr_dat &lt;- get_cr_data(polymod, data = Prestige, 
+                  term="poly(women, 2, raw = TRUE)")
+ggplot(poly_cr_dat, aes(x=x)) + 
+  geom_point(aes(y = cr), size=.75) + 
+  geom_ribbon(aes(ymin = lwr, ymax=upr, 
+                  fill = "Parametric"), 
+              alpha=.15, color="transparent") + 
+  geom_line(aes(y = f_hat, color="Parametric")) + 
+  geom_smooth(aes(y=cr, color="LOESS", 
+                  fill="LOESS"), 
+              method="loess", 
+              se=FALSE, span=.75) + 
+  scale_color_okabe_ito() + 
+  scale_fill_okabe_ito() + 
+  labs(x="% Women Incumbents", y="Component + Residual", 
+       fill="", color = "") + 
+  theme_minimal() + 
+  theme(legend.position = "top")
+```
+
+The LOESS curve follows the quadratic polynomial closely, we found a plausible alternative. 
+]
+.pull-right-shift[
+&lt;img src="lecture4_2026_files/figure-html/unnamed-chunk-9-1.png" alt="Component-plus-residual plot for the quadratic polynomial in percent women incumbents. Scatter points show component-plus-residual values; the parametric curve with confidence ribbon shows the quadratic fit; the LOESS smooth tracks the quadratic curve closely, confirming that the polynomial specification adequately captures the nonlinear relationship." width="100%" /&gt;
+
+]
+
+---
+
+## Robustness
+
+.pull-left[
+
+``` r
+linpred &lt;- predictions(pmod, variables = 
+  list(women = quantile(Prestige$women, 
+                         probs=seq(0,1,by=.1))), 
+  by = "women")
+polypred &lt;- predictions(polymod, variables = 
+  list(women = quantile(Prestige$women, 
+                         probs=seq(0,1,by=.1))), 
+  by="women")
+se_linpred &lt;- sqrt(diag(vcov(linpred)))
+se_polypred &lt;- sqrt(diag(vcov(polypred)))
+
+rob_poly &lt;- sapply(1:nrow(linpred), \(i)
+  robustness(dnorm, dnorm, 
+    target_args = list(mean = coef(linpred)[i], 
+                       sd = se_linpred[i]), 
+    alt_args = list(mean = coef(polypred)[i], 
+                    sd = se_polypred[i])))
+colnames(rob_poly) &lt;- paste0("p", seq(0,1,by=.1)*100)
+```
 ]
 .pull-right[
 
-**Robustness Conclusions**
+```
+## # A tibble: 11 × 5
+##    percentile   ovl    np    js    kl
+##    &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 p0         0.936 0.929 0.005 0.014
+##  2 p10        0.906 0.931 0.01  0.028
+##  3 p20        0.837 0.928 0.03  0.084
+##  4 p30        0.744 0.911 0.073 0.222
+##  5 p40        0.577 0.834 0.195 0.681
+##  6 p50        0.386 0.604 0.398 1.56 
+##  7 p60        0.26  0.312 0.562 1.98 
+##  8 p70        0.353 0.402 0.432 1.23 
+##  9 p80        0.795 0.908 0.047 0.131
+## 10 p90        0.303 0.475 0.505 2.21 
+## 11 p100       0.123 0.116 0.777 4.01
+```
 
-- Inferential robustness is low to relaxing the equal spacing assumption. 
-- Main problem is what happens between partisans and leaners
-- Substantive story - moving from Strong Democratic to Independent and Independent to Strong Republican tells a very similar story.  Substantive conclusions are generally robust. 
-- Predictions and first differences tell the same story.  
+Robustness is reasonably high throughout - it is worse at middle values where the quadratic curve swoops down. 
+
 ]
 
+---
+
+## Effects
+.pull-left[
+
+``` r
+wom_seq &lt;- seq_range(Prestige$women)
+lp &lt;- predictions(pmod, by="women",
+  newdata = datagrid(women = wom_seq)) 
+pp &lt;- predictions(polymod, by="women", 
+  newdata = datagrid(women = wom_seq)) 
+lp |&gt; as_tibble() |&gt; 
+  mutate(form = "linear") |&gt; 
+  bind_rows(pp |&gt; as_tibble() |&gt; 
+      mutate(form = "polynomial")) |&gt; 
+  ggplot(aes(x=women, y=estimate, 
+             ymin = conf.low, ymax=conf.high, 
+             fill=form, color=form)) + 
+  geom_ribbon(alpha=.15, color="transparent") + 
+  geom_line() + 
+  theme_minimal() + 
+  scale_fill_okabe_ito() + 
+  scale_color_okabe_ito() + 
+  labs(x="Income", y="Predicted Prestige", 
+       fill = "", color="") + 
+  theme(legend.position = "top")
+```
+]
+.pull-right-shift[
+&lt;img src="lecture4_2026_files/figure-html/unnamed-chunk-12-1.png" alt="Line plot with confidence ribbons comparing predicted prestige versus percent women for the linear and quadratic polynomial specifications. The polynomial curve is non-monotone, dipping in the middle of the distribution, while the linear curve declines steadily. The two specifications diverge most in the mid-range of the women variable." width="100%" /&gt;
+]
+
+
+---
+
+## Conclusion: Women Incumbents
+
+**Linear in Women**
+
+```
+## # A tibble: 1 × 5
+##   term  estimate std.error statistic p.value
+##   &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 women -0.00891    0.0304    -0.293   0.770
+```
+
+**Quadratic in Women**
+
+
+```
+## # A tibble: 2 × 5
+##   term                        estimate std.error statistic p.value
+##   &lt;chr&gt;                          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 poly(women, 2, raw = TRUE)1 -0.139    0.0868       -1.60  0.112 
+## 2 poly(women, 2, raw = TRUE)2  0.00215  0.000944      2.28  0.0250
+```
+
+The substantive conclusion is somewhat sensitive to the functional-form assumption. While the predicted values remain fairly similar across specifications, the inference about whether the effect is distinguishable from zero changes.
+
+---
+
+## N&amp;P Alternative
+
+.pull-left[
+
+Neumayer and Plümper suggest a semi-parametric functional form test continuous variables - break them into categories and treat them as categorical.  
+
+
+``` r
+Prestige &lt;- Prestige |&gt; 
+  mutate(educ_fac = ntile(education, 5), 
+         educ_fac = factor(educ_fac)) 
+  
+if_mod &lt;- lm(prestige ~ educ_fac +
+	poly(women, 2, raw=TRUE) + log(income), data=Prestige)
+tidy(if_mod) |&gt; 
+  filter(str_detect(term, "educ"))
+```
+
+```
+## # A tibble: 4 × 5
+##   term      estimate std.error statistic  p.value
+##   &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 educ_fac2     3.52      2.30      1.53 1.29e- 1
+## 2 educ_fac3     7.73      2.40      3.23 1.73e- 3
+## 3 educ_fac4    16.9       2.74      6.18 1.66e- 8
+## 4 educ_fac5    27.1       2.89      9.35 4.49e-15
+```
+]
+
+
+
+.pull-right-shift[
+The unrestricted model is perfectly consistent with monotonicity already, so the monotonic and unconstrained models will be identical.  
+- The only potential violation worth considering is the equal-spacing violation. 
+
+
+``` r
+ep_preds &lt;- predictions(pmod, 
+  newdata = datagrid(education = Prestige$education, 
+                     grid_type = "mean_or_mode"), 
+            by="education")
+ef_preds &lt;- predictions(if_mod, variables = "educ_fac", 
+            by="educ_fac")
+ef_map &lt;- Prestige |&gt; 
+  select(education, educ_fac) |&gt;
+  distinct() |&gt; as_tibble()
+
+e_preds &lt;- ep_preds |&gt; as_tibble() |&gt; 
+  full_join(ef_map) |&gt; 
+  select(education, educ_fac, base = estimate, 
+         base_se = std.error) |&gt; 
+  left_join(ef_preds |&gt; 
+              select(alt = estimate, 
+                     alt_se = std.error, 
+                     educ_fac))
+```
+
+]
+
+---
+
+## Robustness Summary
+
+.pull-left[
+
+
+``` r
+rob_ed &lt;- t(sapply(1:nrow(e_preds), \(i){
+  robustness(dnorm, dnorm, 
+     target_args = list(mean = e_preds$base[i], 
+                        sd = e_preds$base_se[i]), 
+    alt_args = list(mean = e_preds$alt[i], 
+                     sd = e_preds$alt_se[i]))
+}))
+
+e_preds &lt;- bind_cols(e_preds, rob_ed)
+
+e_preds |&gt; 
+  summarise(across(ovl:kl, ~median(.x)), 
+            .by=educ_fac)
+```
+
+```
+## # A tibble: 5 × 5
+##   educ_fac   ovl    np    js    kl
+##   &lt;fct&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 1        0.355 0.482 0.435 1.47 
+## 2 2        0.461 0.544 0.309 0.830
+## 3 3        0.289 0.284 0.511 1.44 
+## 4 4        0.323 0.322 0.467 1.28 
+## 5 5        0.585 0.743 0.189 0.535
+```
+]
+.pull-right[
+
+&lt;img src="lecture4_2026_files/figure-html/unnamed-chunk-18-1.png" alt="Ridgeline binned histogram showing the distribution of overlap coefficients across education values within each of the five education quintile groups. Points mark the median overlap coefficient per group. Overlap is generally high for groups 1, 2, and 5, but lower and more variable for groups 3 and 4." width="90%" style="display: block; margin: auto;" /&gt;
+
+]
+
+
+---
+
+## Effects
+
+.pull-left[
+
+&lt;img src="lecture4_2026_files/figure-html/unnamed-chunk-19-1.png" alt="Line plot with confidence ribbons comparing predicted prestige versus education for the linear and quintile-grouped specifications. The linear curve increases steadily; the grouped curve is a step function that approximates the linear trend but deviates within bins, most noticeably in the third and fourth quintiles." width="90%" style="display: block; margin: auto;" /&gt;
+
+]
+.pull-right-shift[
+The third and fourth categories have lower robustness for different reasons 
+- the third tends to systematically underpredict the linear model value 
+- the fourth is sufficiently wide, that even though the middle of the bin tends to be about the same as the linear result, the ends of the bin are quite a ways off. 
+
+Because the grouped model approximates a continuous linear relationship using a step function, some loss of robustness is expected even when the linear specification is correct. The simulation establishes a benchmark for how much robustness we would expect under the linear model itself.
+
+]
+
+---
+
+## Expectations Simulation
+
+.pull-left[
+
+
+
+
+&lt;img src="lecture4_2026_files/figure-html/unnamed-chunk-21-1.png" alt="Ridgeline binned histogram showing the simulation-based distribution of overlap coefficients under the linear specification for each of five education groups. Red points mark the observed overlap coefficients from the actual data. Groups 1 and 3 have observed overlap values that fall in the lower tail of their simulated distributions, indicating robustness lower than expected under the linear model." width="90%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+
+Histograms give the simulated distribution of robustness under the linear specification.  Red points are the observed robustness scores. 1
+
+The simulation shows that groups 1 and 3 have robustness values that are quite low relative to what we might expect if the linear functional form for education was correct. 
+- Robustness for the other groups is around where we would expect. 
+
+
+See the code file for the simulation code.  
+]
 
 ---
 
 ## Exercise
 
-Banda and Casesse have a paper in _Political Behavior_ (2021) about sexism, racial resentment, party ID and voter turnout.  One of their control variables is retrospective economic evaluations (`econanx`).  This is treated linearly in their model. - What happens if we relax the relevant assumptions on economic anxiety?  
-- Is the effect of economic anxiety robust?  
-- Their main arguments are about the slopes of sexism and resentment by `pid3`.  Do those survive?
+Using the Berry and Kleinberg data, estimate their first model and evaluate the robustness of the `L_hse_usnum` linear effect variable. 
 
-Starter code on next slide
-
----
-
-## Banda and Casesse Replication Starter Code 
 
 
 ``` r
-bc &lt;- rio::import("banda_casesse_rep/banda_casesse_data_postprocess.dta")
+ctrls &lt;- c("L_hse_sanction", "L_growth", "L_lnpercap", "L_lnpop", "L_polity2", 
+           "L_durable", "L_civintensity", "L_spending", "L_s_us", "L_lnustrade", 
+           "L_us_distance", "L_usstock2000_adj", "allfdi2000")
+f2 &lt;- reformulate(c("L_ab_sum", "L_hse_usnum", ctrls), 
+                  response="usfdi2000_adj")
 
-bc &lt;- bc |&gt; 
-  select("vote2016_clerical", "pid3", "sexism", "pid3", "resentment", "ideo7", "female", 
-"interest", "edu", "income", "cattend", "age", "econanx", "competition", 
-"race5", "V160102", "V160202") |&gt; 
-  drop_na() |&gt; 
-  mutate(pid3 = rio::factorize(pid3), 
-         econanx_fac = rio::factorize(econanx), 
-         econanx_facn = as.factor(econanx)) |&gt; 
-  filter(race5 == 1)
+bkdat &lt;- rio::import("../data/barry_klineberg_2015.dta")
+bkdat &lt;- bkdat |&gt; 
+  drop_na(all_of(c(ctrls, "L_ab_sum", "L_hse_usnum", "usfdi2000_adj")))
 
-library(survey)
-bc_des &lt;- svydesign(id=~1, psu=~V160202, weights=~V160102, data=bc)
-
-bcmod_l &lt;- svyglm(vote2016_clerical ~ pid3*sexism + pid3*resentment + ideo7 + 
-             female + interest + edu+ income + cattend + age + econanx +
-             competition, design=bc_des, family=binomial)
-
-avg_slopes(bcmod_l, variables="resentment", by="pid3")
-avg_slopes(bcmod_l, variables="sexism", by="pid3")
+bkmod &lt;- lm(f2, data=bkdat)
 ```
+
 
 
 ---
 
-## Functional Form Robustness Workflow
+## Extending the Workflow to GLMs
 
-1. Identify the assumptions implied by the target model.
-2. Relax one assumption at a time.
-3. Evaluate robustness using predictions or first differences.
-4. Determine which assumptions matter.
-5. Describe the alternative relationships when robustness is low.
+
+The same workflow applies:
+
+1. Identify plausible alternatives.
+2. Estimate alternative models.
+3. Compare substantive quantities.
+4. Evaluate robustness.
+
+The only difference is that diagnostics and quantities of interest must be adapted to the GLM setting.
+
+
+---
+
+## Partial Residuals in GLMs
+
+For a linear model:
+
+`$$y_i=f(x_i)+g(\mathbf z_i)+e_i\quad \text{with}\quad r_i^{(x)}=\hat f(x_i)+\hat e_i$$`
+--
+
+For a GLM:
+
+`$$g(\mu_i)=f(x_i)+h(\mathbf z_i)$$`
+
+the residuals are no longer additive on the response scale.
+
+Instead, we work on the linear predictor (link) scale
+
+`$$\eta_i=g(\mu_i)$$`
+So, `\(\hat{f}(x_i)\)` is `\(x\)`'s contribution to the linear predictor on the link scale. 
+
+---
+
+## Working Residuals
+
+GLMs are estimated iteratively by repeatedly fitting approximate linear models.
+
+The working residuals - `\(r_i^{(w)}\)` are the residuals from these local linear approximations.
+
+`$$r_i^{(x)} = \hat{f}(x_i)+r_i^{(w)}$$`
+Workflow after this is identical
+- C+R plots tend to be noisier and may have unusual looking patterns, but they will still highlight unmodeled structure in the same way. 
+
+---
+
+## Box-Tidwell for GLMs
+
+We can estimate the Box-Tidwell transformation in a GLM.  There is a function `glm_bt()` in the `nprobustness` package that does this.  The formula must contain a variable raised to the `lambda` power, e.g. `I(x^lambda)`.  Here's what the prestige example would look like: 
+
+
+``` r
+glm_bt(prestige ~ I(income^lambda) + women + education, 
+       data = Prestige, width=6)
+```
+
+```
+## Box-Tidwell Power Transformation
+## ---------------------------------
+## estimate    lower    upper 
+##  0.08073 -0.20712  0.36743
+```
+
+---
+
+## Exercise
+
+In Fearon and Laitin's widely-cited 2003 _APSR_ piece, they predict the civil war onsets with a number of variables. 
+
+
+``` r
+fldat &lt;- rio::import("../data/fl_repdata.dta")
+fldat$onset &lt;- ifelse(fldat$onset &gt; 1, 1, fldat$onset)
+base_mod &lt;- glm(onset ~ warl + gdpenl + lpopl1 + lmtnest + ncontig + Oil +
+                nwstate + instab + polity2l + ethfrac + relfrac, 
+                data=fldat, family=binomial)
+```
+
+Thinking about `polity2l` as a continuous variable, evaluate its 
+
+
+
+---
+---
+
+## Functional Form Robustness Workflow
+### Numeric Variables
+
+1. Estimate baseline model.
+2. Use C+R plot to identify unmodeled non-linearity. 
+    - If simple &amp; monotone, non-linear transformations should be a plausible alternative. 
+    - If not simple &amp; monotone, polynomials are a better place to find plausible alternatives. 
+3. Evaluate robustness using predictions.
+4. Describe the alternative relationships when robustness is low.
+
+The plausible alternative model will identify which assumptions are violated - constant marginal effect and/or monotonicity. 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

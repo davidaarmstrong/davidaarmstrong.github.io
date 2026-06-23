@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+  <head>
+    <title>Lecture 6</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="lecture6_2026_files/header-attrs/header-attrs.js"></script>
+    <link href="lecture6_2026_files/remark-css/default.css" rel="stylesheet" />
+    <script src="lecture6_2026_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture6_2026_files/fabric/fabric.min.js"></script>
+    <link href="lecture6_2026_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture6_2026_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture6_2026_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture6_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture6_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture6_2026_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture6_2026_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <link href="lecture6_2026_files/htmltools-fill/fill.css" rel="stylesheet" />
+    <script src="lecture6_2026_files/htmlwidgets/htmlwidgets.js"></script>
+    <script src="lecture6_2026_files/plotly-binding/plotly.js"></script>
+    <script src="lecture6_2026_files/typedarray/typedarray.min.js"></script>
+    <script src="lecture6_2026_files/jquery/jquery.min.js"></script>
+    <link href="lecture6_2026_files/crosstalk/css/crosstalk.min.css" rel="stylesheet" />
+    <script src="lecture6_2026_files/crosstalk/js/crosstalk.min.js"></script>
+    <link href="lecture6_2026_files/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+    <script src="lecture6_2026_files/plotly-main/plotly-latest.min.js"></script>
+    <script>
+    function releaseMath(el) {
+      const codes = el.getElementsByTagName('code');
+
+      for (let i = 0; i < codes.length;) {
+        const code = codes[i];
+
+        if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+          const text = code.textContent.trim();
+
+          const isMath =
+            /^\$\$(.|\s)+\$\$$/.test(text) ||
+            /^\$(?!\$)(.|\s)+\$$/.test(text) ||
+            /^\\\((.|\s)+\\\)$/.test(text) ||
+            /^\\\[(.|\s)+\\\]$/.test(text) ||
+            /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text);
+
+          if (isMath) {
+            code.outerHTML = code.innerHTML;
+            continue;
+          }
+        }
+
+        i++;
+      }
+    }
+    </script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-svg.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      function rerenderMath() {
+        releaseMath(document);
+
+        if (window.MathJax && MathJax.typesetPromise) {
+          MathJax.typesetPromise().catch(function (err) {
+            console.error("MathJax typeset failed:", err);
+          });
+        }
+      }
+
+      if (window.slideshow && typeof slideshow.on === "function") {
+        slideshow.on("afterShowSlide", rerenderMath);
+      }
+
+      rerenderMath();
+    });
+    </script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="www/layout.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 6
+]
+.subtitle[
+## Robustness to Effect Heterogeneity
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+.full-width table {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+.right-shift50 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -50px;
+}
+
+&lt;/style&gt;
+
+
+
+
+
+
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That the nature of the relaionship between `\(x\)` and `\(y\)` regarding moderation is appropriately specified.    
+
+Why might this assumption fail?
+
+- The estimated relationship is unconditional, but the effect varies across cases.
+- The estimated relationship is moderated, but the unconditional relationship is also plausible.
+- The estimated relationship is moderated, but the form of moderation is misspecified (e.g., wrong moderator, omitted moderator, or incorrect functional form).
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That the nature of the relaionship between `\(x\)` and `\(y\)` regarding moderation is appropriately specified.    
+
+What kinds of inferential instability can result?
+- Misleading conclusions about the average effect. 
+- Improper estimation of effect sizes/directions (e.g., Simpson's paradox). 
+- Poor predictions. 
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That the nature of the relaionship between `\(x\)` and `\(y\)` regarding moderation is appropriately specified.    
+
+What tools exist to evaluate robustness?
+- Interaction models
+- Smooth interactions with GAMs
+- `interflex` family of tests
+- Specification curves across multiple moderators
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That the nature of the relaionship between `\(x\)` and `\(y\)` regarding moderation is appropriately specified.    
+
+What are the limits of these tools?
+- Cannot search for moderators - a moderator must be proposed by the researcher. 
+- Evidence for moderation is often low power.
+    - Interaction effects are typically estimated much less precisely than average effects.
+    - Reliable estimation requires sufficient support across combinations of x and the moderator.
+
+---
+
+## Effect Heterogeneity
+
+Consider the following linear model: 
+
+`$$y_i = b_0 + b_1 x_i + b_2 z_i + e_i$$`
+
+In this model, the effect of `\(x\)` is: 
+
+`$$\frac{\partial y}{\partial x} = b_1$$` 
+
+The marginal effect is constant.
+
+- In the previous lecture, we evaluated whether this assumption was reasonable across the values of `\(x\)`.
+    - Is the effect of a one-unit change in `\(x\)` always the same regardless of the starting value?
+- Here, we ask a related question:
+    - Is the effect of `\(x\)` constant across the values of _other variables_?
+
+---
+
+## Mediation vs Moderation
+
+
+.pull-left[
+Moderation asks - does the direct effect of `\(X\)` vary by some other variable, `\(W\)`? 
+- This is the effect heterogeneity of interest today. 
+
+Mediation asks - is the effect of `\(X\)` direct and/or indirect through some other variable, `\(M\)`? 
+- This is a related, but quite different question that we will not discuss today. 
+]
+.right-shift50[
+
+
+&lt;img src="med_mod.png" alt="Two path diagrams stacked vertically. Top diagram labelled Mediation: X points to M (path a) and M points to Y (path b), with a dashed arrow from X directly to Y (path c-prime, the direct effect). Bottom diagram labelled Moderation: X points to Y with a solid arrow, and W points upward to the midpoint of the X-to-Y arrow, indicated by a filled square, showing that W moderates the effect of X on Y rather than transmitting it." width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Moderation Effect
+
+Suppose we are estimating a relationship between `\(y\)` and `\(x\)` and we suspect/hypothesize that relationship is moderated by `\(z\)`.  
+
+.pull-left[
+- We are really saying: 
+
+`$$\frac{\partial y}{\partial x} = f(z)$$` 
+
+The simplest `\(f(z)\)` would just be linear: 
+
+`$$\frac{\partial y}{\partial x} = b_1 + b_2 z_i$$`
+]
+.pull-right[
+What model would generate this marginal effect: 
+
+`$$y_i = b_0 + b_1x_i + b_2x_iz_i + b_3 z_i + \mathbf{gw}_i + e_i$$`
+
+The marginal effect of `\(x\)` from the above equation is `\(b_1 + b_2 z_i\)`. 
+]
+
+???
+
+The interaction term determines how the effect of x changes across values of z. The main effect of z determines how the baseline level of y changes across values of z.
+
+---
+
+## Robustness Workflow for Moderation
+
+1. Estimate the target (unconditional) model.
+2. Estimate a plausible moderated alternative.
+3. Evaluate evidence for moderation.
+4. Characterize the variation in effects.
+5. Assess whether substantive conclusions change.
+
+_Typology of Models_
+
+
+
+|Model              |Assumption Change                                   |
+|:------------------|:---------------------------------------------------|
+|Single interaction |Single effect varies across groups                  |
+|Full interaction   |All effects vary across groups                      |
+|Subgroup Analyses  |All effects + residual variances vary across groups |
+
+
+
+---
+
+## Interaction Effects 
+
+We often denote product regressors `\(x_iz_i\)` as _interaction effects_.  
+
+Ultimately we want to know two things:
+
+- Is there statistical evidence of a moderated effect?
+- How variable is the moderated effect? 
+- Does the variation change or qualify the substantive conclusion? 
+
+These last two questions get to the heart of the robustness discussion. 
+
+Below, we walk through all the possible two-way interaction scenarios and we will discuss how to answer these questions.
+
+---
+
+# Two Categorical Variables
+
+With two categorical variables, essentially you are estimating a different conditional mean for every pair of values across the two categorical variables. You could do that as follows:
+.left-code[
+
+``` r
+library(DAMisc)
+library(car)
+data(Duncan)
+Duncan &lt;- Duncan %&gt;% 
+  mutate(
+    inc.cat = cut(Duncan$income, 3), 
+    inc.cat = factor(
+      as.numeric(inc.cat), 
+      labels=c("Low", "Middle", "High")))
+
+mod &lt;- lm(prestige~ inc.cat * type + 
+            education, data=Duncan)
+```
+]
+.right-plot[
+
+``` r
+library(broom)
+tidy(mod)
+```
+
+```
+## # A tibble: 10 × 5
+##    term                   estimate std.error statistic    p.value
+##    &lt;chr&gt;                     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+##  1 (Intercept)               7.88      3.44      2.29  0.0279    
+##  2 inc.catMiddle            22.5       4.88      4.60  0.0000530 
+##  3 inc.catHigh              51.3       9.44      5.44  0.00000429
+##  4 typeprof                 55.6      11.7       4.76  0.0000330 
+##  5 typewc                    2.54      8.12      0.314 0.756     
+##  6 education                 0.280     0.112     2.50  0.0174    
+##  7 inc.catMiddle:typeprof  -41.6      11.2      -3.70  0.000740  
+##  8 inc.catHigh:typeprof    -50.4      13.4      -3.76  0.000621  
+##  9 inc.catMiddle:typewc    -13.0      10.3      -1.26  0.215     
+## 10 inc.catHigh:typewc      -33.6      13.1      -2.56  0.0148
+```
+
+]
+
+---
+
+## Evidence of Moderation
+
+.pull-left[
+We evaluate evidence of moderation by evaluating the moderated model agains the unconditional model: 
+
+
+``` r
+uncond_mod &lt;- lm(prestige~ inc.cat + type + 
+            education, data=Duncan)
+```
+
+In this case, there is evidence of a moderated effect - `inc.cat`'s effect is moderated by `type` (and vice-versa).  
+
+]
+.pull-right[
+
+
+``` r
+anova(uncond_mod, mod, test="F")
+```
+
+```
+## Analysis of Variance Table
+## 
+## Model 1: prestige ~ inc.cat + type + education
+## Model 2: prestige ~ inc.cat * type + education
+##   Res.Df    RSS Df Sum of Sq      F   Pr(&gt;F)   
+## 1     39 4552.2                                
+## 2     35 2907.7  4    1644.4 4.9484 0.002871 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+The `anova()` function works because the unconditional model is nested in the conditional model. 
+]
+
+---
+
+## Variation in Effects
+
+.pull-left[
+There is considerable variation around the original effect. 
+- The main conclusions appear to not hold up - some positive effects are negative in some groups. 
+]
+.right-shift50[
+&lt;img src="lecture6_2026_files/figure-html/unnamed-chunk-7-1.png" alt="Point-range plot showing pairwise income group comparisons (Low vs. Middle, Low vs. High, Middle vs. High) for each occupation type (Overall, bc, prof, wc), colour-coded by type. The Overall estimate shows positive prestige differences for higher income groups; the type-specific estimates reveal substantial heterogeneity — some comparisons within blue-collar and professional occupations change sign or lose precision relative to the pooled result, indicating that the unconditional effect masks meaningful variation across occupation types." width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Robustness Evaluation
+
+The unconditional relationship is not robust to this moderated alternative.
+
+
+```
+## # A tibble: 9 × 6
+##   contrast      type    ovl    np    js    kl
+##   &lt;chr&gt;         &lt;fct&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 High - Low    bc    0.14  0.123 0.738 2.83 
+## 2 High - Middle bc    0.315 0.309 0.477 1.31 
+## 3 Middle - Low  bc    0.387 0.554 0.397 1.38 
+## 4 High - Low    prof  0.052 0.028 0.895 4.79 
+## 5 High - Middle prof  0.616 0.797 0.162 0.466
+## 6 Middle - Low  prof  0.018 0.006 0.958 6.08 
+## 7 High - Low    wc    0.386 0.432 0.392 1.07 
+## 8 High - Middle wc    0.525 0.536 0.256 0.629
+## 9 Middle - Low  wc    0.591 0.595 0.2   0.482
+```
+
+---
+
+## Two Categorical Summary
+
+With these two categorical variables, the unconditional relationship fails to account for substantial heterogeneity across occupation types.
+- The sensitive seems to vary by occupation type - WC sensitivity is low, but Professional sensitivity is quite high.  
+- Also, the difference between High and Low income seems to be the most sensitive contrast with generally lower overlap coefficients within each occupation type.  
+
+---
+
+## One Categorical + One Numeric
+
+With one categorical variable, `\(d\)` (we'll use a binary variable here) and one numeric variable, `\(x\)`, we would have
+ 
+`$$y_i = b_0 + b_1x_i + b_2 d_i + b_3x_id_i + e_i$$`
+
+We can think of the moderation effect in two ways: 
+
+.pull-left[
+
+_Marginal Effect of `\(x\)`_
+`$$\frac{\partial y}{\partial x} = b_1 + b_3 d$$`
+]
+.pull-right[
+
+_Marginal effect of `\(d\)`_
+
+`$$\frac{\partial y}{\partial d} = b_2 + b_3 x$$`
+
+]
+---
+
+## Interaction of Education and Sex
+
+
+``` r
+data(SLID, package="carData")
+mod2_0 &lt;- lm(log(wages) ~ education + sex, data=SLID)
+mod2_1 &lt;- lm(log(wages) ~ education * sex, data=SLID)
+tidy(mod2_1)
+```
+
+```
+## # A tibble: 4 × 5
+##   term              estimate std.error statistic   p.value
+##   &lt;chr&gt;                &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)         1.73     0.0492      35.3  1.69e-237
+## 2 education           0.0577   0.00358     16.1  1.14e- 56
+## 3 sexMale             0.477    0.0669       7.13 1.15e- 12
+## 4 education:sexMale  -0.0186   0.00489     -3.81 1.41e-  4
+```
+
+There is evidence of a moderation effect (i.e., a plausible alternative to the unconditional relationship). 
+
+---
+
+## Robustness and Effects of Education
+
+_Effect_
+
+
+```
+## # A tibble: 5 × 5
+##   model                     sex               estimate std.error  p.value
+##   &lt;chr&gt;                     &lt;chr&gt;                &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 Unconditional             Female              0.0477   0.00244 4.65e-85
+## 2 Unconditional             Male                0.0477   0.00244 4.66e-85
+## 3 Conditional               Female              0.0577   0.00358 1.95e-58
+## 4 Conditional               Male                0.0391   0.00333 7.28e-32
+## 5 Difference in Conditional (Male) - (Female)  -0.0186   0.00489 1.39e- 4
+```
+
+_Robustness_
+
+
+```
+## # A tibble: 2 × 5
+##   sex       ovl     np    js    kl
+##   &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 Female 0.0949 0.0729 0.820  4.01
+## 2 Male   0.133  0.124  0.758  3.44
+```
+
+
+---
+
+## Effect of Sex
+
+.pull-left[
+The unconditional effect is flat and the conditional effect is negatively sloped. 
+
+- Note the density of education - it marks the regions where comparisons are permissible. 
+
+- The effects are always positive (males are predicted to earn more than females regardless of education).  
+
+- The difference between salaries of females and males decreases with education.  
+
+]
+.right-shift100[
+&lt;img src="lecture6_2026_files/figure-html/unnamed-chunk-12-1.png" alt="Two-panel stacked figure. Top panel: overlapping histograms of years of education separately for female and male workers in the SLID data, showing that the two distributions are similar and broadly overlapping across the full education range. Bottom panel: line plot with confidence ribbons showing the predicted wage gap between males and females (in log wages) across years of education for the unconditional and conditional models. The unconditional effect is a flat, horizontal line indicating a constant male premium; the conditional effect declines with education, showing the gap narrows as education increases, though males are always predicted to earn more." width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Robustness of Sex Effect
+
+
+```
+## # A tibble: 10 × 5
+##    education     ovl       np        js       kl
+##        &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1      0    0.00187 0.000502 0.994     7.93    
+##  2      2.22 0.00298 0.000776 0.991     7.62    
+##  3      4.44 0.00551 0.00146  0.985     7.19    
+##  4      6.67 0.0128  0.00391  0.970     6.49    
+##  5      8.89 0.0418  0.0203   0.914     5.20    
+##  6     11.1  0.209   0.247    0.639     2.60    
+##  7     13.3  0.993   0.950    0.0000609 0.000169
+##  8     15.6  0.213   0.256    0.632     2.56    
+##  9     17.8  0.0426  0.0209   0.913     5.17    
+## 10     20    0.0130  0.00398  0.970     6.47
+```
+
+The sex effect is not robust as a constant effect, but the conclusion that men earn more remains robust over the observed range.
+
+---
+
+## One Categorical + One Numeric Summary
+
+Even though the robustness statistics are low, the substantive story is not overturned by moderation.
+
+- The effects have the same signs, though their magnitudes differ.
+
+---
+
+## Two Numeric Variables
+
+With two numeric variables the interpretation gets a bit trickier.  For example, consider the following model:
+
+`$$\hat{Y}_{i} = b_{0} + b_{1}X_{i1} + b_{2}X_{i2} + b_{3}X_{i3} + b_{4}X_{i1}X_{i2}$$`
+
+
+We want to know the partial conditional effect of both `\(X_1\)` and `\(X_2\)`, but unlike above, neither can be boiled down to a small set of values.  Just think about the equation:
+
+`$$\begin{aligned}
+\frac{\partial \hat{Y}}{\partial X_{1}} &amp;= \beta_{1} + \beta_{4}X_{2}\\
+\frac{\partial \hat{Y}}{\partial X_{2}} &amp;= \beta_{2} + \beta_{4}X_{1}
+\end{aligned}$$`
+
+
+Note, that `\(\beta_4\)` is the amount by which the *effect* of `\(X_1\)` goes up for every additional unit of `\(X_2\)` and the amount by which the *effect* of `\(X_2\)` goes up for every additional unit of `\(X_1\)`.
+
+---
+
+## Testable Hypotheses
+
+`$$\hat{Y}_{i} = b_{0} + b_{1}X_{i1} + b_{2}X_{i2} + b_{3}X_{i3} + b_{4}X_{i1}X_{i2}$$`
+Berry, Golder and Milton (2012) suggest that we should be able to test 5 hypotheses:
+
+.small[
+- `\(\mathbf{P}_{X_{1}|X_{2}=\text{min}}\)` The marginal effect of `\(X_{1}\)` is [positive, zero, negative] when `\(X_{2}\)` takes its lowest value.
+- `\(\mathbf{P}_{X_{1}|X_{2} = \text{max}}\)` The marginal effect of `\(X_{1}\)` is [positive, zero, negative] when `\(X_{2}\)` takes its highest value.
+- `\(\mathbf{P}_{X_{2}|X_{1}=\text{min}}\)` The marginal effect of `\(X_{2}\)` is [positive, zero, negative] when `\(X_{1}\)` takes its lowest value.
+- `\(\mathbf{P}_{X_{2}|X_{1} = \text{max}}\)` The marginal effect of `\(X_{2}\)` is [positive, zero, negative] when `\(X_{1}\)` takes its highest value.
+- `\(\mathbf{P}_{X_{1}X_{2}}\)` The marginal effect of each of `\(X_{1}\)` and `\(X_{2}\)` is [positively, negatively] related to the other variable.
+]
+
+
+---
+
+## Example
+
+
+``` r
+data(Prestige, package="carData")
+Prestige$income &lt;- Prestige$income/1000
+addmod &lt;- lm(prestige ~ income + education + type, data=Prestige)
+intmod &lt;- lm(prestige ~ income*education + type, data=Prestige)
+tidy(intmod)
+```
+
+```
+## # A tibble: 6 × 5
+##   term             estimate std.error statistic       p.value
+##   &lt;chr&gt;               &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;
+## 1 (Intercept)       -17.8      7.59       -2.34 0.0212       
+## 2 income              3.79     0.945       4.01 0.000124     
+## 3 education           5.10     0.777       6.57 0.00000000293
+## 4 typeprof            5.48     3.71        1.48 0.144        
+## 5 typewc             -3.58     2.43       -1.48 0.143        
+## 6 income:education   -0.210    0.0698     -3.01 0.00335
+```
+---
+
+# Is Moderation a Plausible Alternative?
+
+- The `income:education` line answers this question.  If it is significant, then there is a significant interaction, otherwise there is not.
+
+- This is counter to a minor, though still influential, point in Brambor, Clark and Golder (2006), but is consistent with Berry, Golder and Milton (2012).
+
+- The interaction provides evidence that moderation is a plausible alternative specification, so we evaluate robustness to it.
+
+---
+
+## Robustness
+
+.pull-left[
+
+``` r
+# Income Robustness
+add_slopes_inc &lt;- slopes(addmod, 
+   newdata=datagrid(education = 
+      seq_range(Prestige$education, 10)), 
+   variables="income", by="education")
+int_slopes_inc &lt;- slopes(intmod, 
+   newdata=datagrid(education = 
+      seq_range(Prestige$education, 10)), 
+   variables="income", by="education")
+rob_inc &lt;-map_df(1:10, \(i)
+ robustness(dnorm, dnorm, 
+    target_args = list(
+      mean = add_slopes_inc$estimate[i], 
+      sd = add_slopes_inc$std.error[i]), 
+    alt_args = list(
+      mean = int_slopes_inc$estimate[i], 
+      sd = int_slopes_inc$std.error[i]))) |&gt; 
+  mutate(education = add_slopes_inc$education, 
+         .before="ovl")
+```
+]
+.pull-right[
+
+``` r
+# Education Robustness
+add_slopes_ed &lt;- slopes(addmod, 
+   newdata=datagrid(income = 
+      seq_range(Prestige$income, 10)), 
+   variables="education", by="income")
+int_slopes_ed &lt;- slopes(intmod, 
+   newdata=datagrid(income = 
+      seq_range(Prestige$income, 10)), 
+   variables="education", by="income")
+rob_ed&lt;- map_df(1:10, \(i)
+  robustness(dnorm, dnorm, 
+    target_args = list(
+      mean = add_slopes_ed$estimate[i], 
+      sd = add_slopes_ed$std.error[i]), 
+    alt_args = list(
+      mean = int_slopes_ed$estimate[i], 
+      sd = int_slopes_ed$std.error[i]))) |&gt; 
+  mutate(income = add_slopes_ed$income, 
+         .before="ovl")
+```
+]
+
+---
+
+## Robustness Scores
+
+.pull-left[
+_Income Coefficients_
+
+
+``` r
+rob_inc
+```
+
+```
+## # A tibble: 10 × 5
+##    education    ovl     np     js     kl
+##        &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+##  1      6.38 0.0484 0.0273 0.895  4.23  
+##  2      7.45 0.0682 0.0436 0.860  3.88  
+##  3      8.51 0.102  0.0786 0.803  3.42  
+##  4      9.58 0.163  0.160  0.705  2.78  
+##  5     10.6  0.279  0.355  0.536  1.92  
+##  6     11.7  0.494  0.695  0.275  0.879 
+##  7     12.8  0.839  0.939  0.0292 0.0855
+##  8     13.8  0.756  0.910  0.0666 0.197 
+##  9     14.9  0.437  0.617  0.337  1.10  
+## 10     16.0  0.247  0.299  0.580  2.12
+```
+]
+.pull-right[
+_Education Coefficient_
+
+``` r
+rob_ed
+```
+
+```
+## # A tibble: 10 × 5
+##    income    ovl     np      js     kl
+##     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+##  1  0.611 0.346  0.470  0.447   1.53  
+##  2  3.42  0.582  0.790  0.191   0.587 
+##  3  6.23  0.921  0.954  0.00736 0.0214
+##  4  9.03  0.714  0.890  0.0911  0.272 
+##  5 11.8   0.432  0.609  0.343   1.13  
+##  6 14.6   0.259  0.320  0.564   2.06  
+##  7 17.5   0.160  0.156  0.710   2.82  
+##  8 20.3   0.104  0.0804 0.800   3.40  
+##  9 23.1   0.0716 0.0467 0.854   3.83  
+## 10 25.9   0.0520 0.0300 0.888   4.16
+```
+
+]
+---
+
+## Conditional Effect + Robustness
+
+.pull-left[
+&lt;img src="lecture6_2026_files/figure-html/unnamed-chunk-18-1.png" alt="Two-panel stacked figure for the income effect in the Prestige data. Top panel: a narrow colour bar spanning the education range, with tiles shaded light to dark purple indicating Low, Medium, or High robustness of the additive income effect relative to the interaction model at each education value; robustness is High at the lowest education values and mostly Low to Medium across the rest of the range. Bottom panel: line plot with confidence ribbon showing the conditional effect of income on prestige (from the interaction model) across years of education, with a rug plot marking observed education values. The effect is positive and significant at low education levels and decreases steadily as education increases, approaching zero at the highest education values." width="90%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="lecture6_2026_files/figure-html/unnamed-chunk-19-1.png" alt="Two-panel stacked figure for the education effect in the Prestige data. Top panel: a narrow colour bar spanning the income range, with tiles shaded light to dark purple indicating Low, Medium, or High robustness of the additive education effect relative to the interaction model at each income value; most of the range is shaded Low or Medium, with High robustness only appearing at the lowest income values. Bottom panel: line plot with confidence ribbon showing the conditional effect of education on prestige (from the interaction model) across income (in thousands of dollars), with a rug plot marking observed income values. The effect is positive and statistically distinguishable from zero at low to moderate income levels but shrinks toward zero and becomes indistinguishable from zero at higher income values." width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+
+# Interpretation
+
+
+- The effect of income is nearly always significant, though it gets smaller as education gets bigger.  That is, as education increases, we expect smaller increases in prestige from increasing income
+
+- The effect of education is significant and positive until around 16,000 dollars, which is around 2/3 the range of `income`, but is the `\(96^{th}\)` percentile because of the skewness of income.
+
+- This suggests that people tend to derive prestige from either higher incomes or higher education, but not really both.
+
+---
+
+## Berry, Golder and Milton Test
+
+
+``` r
+BGMtest(intmod, vars = c("income", "education"))
+```
+
+```
+##              est    se      t p-value
+## P(X|Zmin)  2.445 0.520  4.698 0.000  
+## P(X|Zmax)  0.429 0.287  1.495 0.138  
+## P(Z|Xmin)  4.756 0.712  6.681 0.000  
+## P(Z|Xmax) -0.335 1.466 -0.229 0.820  
+## P(XZ)     -0.210 0.070 -3.012 0.003
+```
+
+---
+
+
+# When Confidence Bounds Equal Zero
+
+You may want to know when the confidence bounds are equal to zero.  Consider the equation:
+
+`$$\hat{Y}_{i} = \beta_{0} + \beta_{1}X_{i1} + \beta_{2}X_{i2} + \beta_{3}X_{i3} + \beta_{4}X_{i1}X_{i2}$$`
+
+
+- We know that the conditional effect of `\(X_1\)` is `\(\beta_1 + \beta_4X_2\)` and that the lower bound is `\((\beta_1 + \beta_4X_2) - 1.96\times SE(\beta_1 + \beta_4X_2)\)`.
+
+- Since those are all quantities that we know (or estimate), we could set it equal to zero and solve.
+
+- This is what the `changeSig` function does.
+
+---
+
+
+# Change in Significance
+
+
+
+``` r
+changeSig(intmod, c("income", "education"))
+```
+
+```
+## LB for B(income | education) = 0 when education=15.4979 (95th pctile)
+## UB for B(income | education) = 0 when education=27.9396 (&gt; Maximum Value in Data)
+## LB for B(education | income) = 0 when income=15.9273 (96th pctile)
+## UB for B(education | income) = 0 when income=59.5175 (&gt; Maximum Value in Data)
+```
+
+---
+
+## 3-D Surface
+
+.pull-left[
+
+``` r
+inc_seq &lt;- seq_range(Prestige$income, 25)
+ed_seq &lt;- seq_range(Prestige$education, 25)
+
+pred_3d &lt;- function(model, variables, ...){
+  d &lt;- marginaleffects::datagrid(model = model, 
+                                 grid_type = "mean_or_mode")
+  o &lt;- outer(variables[[1]], variables[[2]], 
+        Vectorize(function(x,y){
+          d[[names(variables)[1]]] &lt;- x
+          d[[names(variables)[2]]] &lt;- y
+          predict(model, newdata=d)
+        }))
+  md &lt;- insight::get_data(model)
+  ch &lt;- geometry::convhulln(md[,names(variables)])
+  inch &lt;- outer(variables[[1]], variables[[2]], 
+                Vectorize(function(x,y)geometry::inhulln(ch, matrix(c(x,y), nrow=1))))
+  o_in &lt;- o
+  o_in[which(!inch, arr.ind=TRUE)] &lt;- NA
+res &lt;- list(variables[[1]], variables[[2]], predictions=t(o), predictions_inhull = o_in)
+names(res)[1:2] &lt;- names(variables)
+return(res)
+  }
+
+preds &lt;- pred_3d(intmod, 
+        variables = list(education = ed_seq, 
+                         income = inc_seq))
+```
+]
+.pull-right[
+<div class="plotly html-widget html-fill-item" id="htmlwidget-809331564a1a7a9f527e" style="width:100%;height:432px;"></div>
+<script type="application/json" data-for="htmlwidget-809331564a1a7a9f527e">{"x":{"visdat":{"5445eb19fab":["function () ","plotlyVisDat"]},"cur_data":"5445eb19fab","attrs":{"5445eb19fab":{"x":[6.3799999999999999,6.7795833333333331,7.1791666666666663,7.5787499999999994,7.9783333333333335,8.3779166666666676,8.7774999999999999,9.1770833333333339,9.5766666666666662,9.9762500000000003,10.375833333333333,10.775416666666667,11.175000000000001,11.574583333333333,11.974166666666667,12.373750000000001,12.773333333333333,13.172916666666666,13.5725,13.972083333333334,14.371666666666666,14.771249999999998,15.170833333333334,15.570416666666667,15.970000000000001],"y":[0.61099999999999999,1.6638333333333333,2.7166666666666668,3.7694999999999999,4.8223333333333329,5.875166666666666,6.9279999999999999,7.980833333333333,9.033666666666667,10.086500000000001,11.139333333333333,12.192166666666667,13.245000000000001,14.297833333333333,15.350666666666667,16.403499999999998,17.456333333333333,18.509166666666665,19.562000000000001,20.614833333333333,21.667666666666666,22.720500000000001,23.773333333333333,24.826166666666666,25.879000000000001],"z":[[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,23.215466682930792,25.701143475402397,28.186820267874005,30.672497060345609,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,25.026902227510263,27.424154154456527,29.821406081402788,32.218658008349045,34.615909935295313,37.013161862241574,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,26.83833777208973,29.147164833510647,31.455991894931568,33.764818956352485,36.073646017773406,38.382473079194327,40.691300140615247,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,28.649773316669208,30.870175512564778,33.090577708460351,35.310979904355932,37.531382100251506,39.751784296147079,41.97218649204266,44.192588687938226,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,30.461208861248679,32.593186191618912,34.725163521989138,36.857140852359372,38.989118182729598,41.121095513099824,43.253072843470058,45.385050173840298,47.517027504210525,49.649004834580758,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,32.272644405828153,34.316196870673032,36.359749335517918,38.403301800362804,40.446854265207691,42.490406730052577,44.533959194897463,46.577511659742349,48.621064124587228,50.664616589432114,52.708169054277,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,34.08407995040762,36.039207549727159,37.994335149046705,39.949462748366244,41.90459034768579,43.859717947005329,45.814845546324868,47.769973145644407,49.725100744963953,51.680228344283499,53.635355943603038,55.590483542922577,null,null,null,null,null,null,null,null,null,null,null],[null,null,35.895515494987087,37.762218228781286,39.628920962575485,41.495623696369677,43.362326430163876,45.229029163958067,47.095731897752266,48.962434631546472,50.829137365340657,52.695840099134855,54.562542832929061,56.429245566723246,58.295948300517445,60.162651034311644,null,null,null,null,null,null,null,null,null],[null,null,37.706951039566562,39.485228907835413,41.263506776104272,43.041784644373116,44.820062512641975,46.598340380910827,48.376618249179671,50.15489611744853,51.933173985717382,53.71145185398624,55.489729722255099,57.268007590523943,59.046285458792795,60.824563327061647,62.602841195330491,null,null,null,null,null,null,null,null],[null,null,39.518386584146029,41.20823958688954,42.898092589633045,44.587945592376549,46.277798595120061,47.967651597863565,49.657504600607076,51.347357603350588,53.037210606094092,54.727063608837604,56.416916611581115,58.106769614324612,59.796622617068124,61.486475619811628,63.176328622555147,64.866181625298651,null,null,null,null,null,null,null],[null,null,41.329822128725503,42.931250265943667,44.532678403161825,46.134106540379996,47.73553467759816,49.336962814816317,50.938390952034482,52.539819089252646,54.141247226470817,55.742675363688988,57.344103500907153,58.945531638125303,60.546959775343467,62.148387912561631,63.749816049779795,65.35124418699796,66.952672324216124,68.554100461434274,null,null,null,null,null],[null,null,43.141257673304978,44.654260944997802,46.167264216690619,47.680267488383436,49.193270760076253,50.706274031769077,52.219277303461901,53.732280575154704,55.245283846847535,56.758287118540352,58.271290390233176,59.784293661925986,61.297296933618803,62.81030020531162,64.323303477004444,65.836306748697268,67.349310020390078,68.862313292082888,70.375316563775712,null,null,null,null],[null,null,null,46.377271624051922,47.801850030219391,49.226428436386868,50.651006842554352,52.075585248721815,53.500163654889292,54.924742061056769,56.349320467224253,57.77389887339173,59.198477279559199,60.623055685726669,62.047634091894146,63.472212498061616,64.896790904229093,66.321369310396577,67.745947716564046,69.170526122731516,70.595104528899,72.01968293506647,null,null,null],[null,null,null,48.100282303106056,49.436435843748178,50.772589384390308,52.108742925032445,53.444896465674574,54.781050006316704,56.117203546958827,57.453357087600963,58.789510628243093,60.125664168885223,61.461817709527352,62.797971250169482,64.134124790811612,65.470278331453741,66.806431872095871,68.142585412738001,69.478738953380116,70.814892494022274,72.15104603466439,73.487199575306533,74.823353115948635,null],[null,null,null,49.823292982160183,51.071021657276965,52.318750332393748,53.566479007510537,54.814207682627327,56.061936357744109,57.309665032860899,58.557393707977674,59.805122383094464,61.052851058211253,62.300579733328036,63.548308408444818,64.7960370835616,66.04376575867839,67.291494433795179,68.539223108911955,69.786951784028759,71.034680459145534,72.282409134262323,73.530137809379099,74.777866484495902,null],[null,null,null,51.546303661214303,52.705607470805738,53.864911280397187,55.02421508998863,56.183518899580072,57.342822709171507,58.502126518762942,59.661430328354392,60.820734137945841,61.980037947537284,63.139341757128712,64.298645566720154,65.457949376311589,66.617253185903039,67.776556995494488,68.935860805085923,70.095164614677358,71.254468424268794,72.413772233860243,73.573076043451692,74.732379853043113,null],[null,null,null,53.26931434026843,54.340193284334525,55.41107222840062,56.481951172466722,57.55283011653281,58.623709060598912,59.694588004665007,60.765466948731103,61.836345892797198,62.9072248368633,63.978103780929388,65.048982724995483,66.119861669061578,67.190740613127687,68.261619557193782,69.332498501259863,70.403377445325972,71.474256389392082,72.545135333458177,73.616014277524272,74.686893221590353,null],[null,null,null,null,55.974779097863305,56.95723317640406,57.939687254944815,58.92214133348557,59.90459541202631,60.887049490567065,61.869503569107827,62.851957647648582,63.834411726189337,64.816865804730085,65.79931988327084,66.781773961811581,67.764228040352336,68.746682118893091,69.729136197433846,70.711590275974586,71.694044354515341,72.676498433056096,73.658952511596851,74.641406590137592,null],[null,null,null,null,57.609364911392099,58.5033941244075,59.397423337422907,60.291452550438322,61.18548176345373,62.079510976469123,62.973540189484538,63.867569402499946,64.761598615515368,65.655627828530754,66.549657041546169,67.44368625456157,68.337715467576984,69.231744680592399,70.1257738936078,71.019803106623201,71.913832319638615,72.807861532654016,73.701890745669431,74.595919958684817,null],[null,null,null,null,59.243950724920872,60.049555072410939,60.855159419901,61.660763767391053,62.466368114881121,63.271972462371188,64.077576809861256,64.883181157351316,65.688785504841391,66.494389852331437,67.299994199821512,68.105598547311573,68.911202894801633,69.716807242291708,70.52241158978174,71.328015937271829,72.133620284761889,72.93922463225195,73.74482897974201,74.550433327232071,null],[null,null,null,null,null,null,62.312895502379085,63.030074984343806,63.747254466308526,64.464433948273253,65.18161343023796,65.89879291220268,66.6159723941674,67.333151876132121,68.050331358096841,68.767510840061547,69.484690322026296,70.201869803990988,70.919049285955708,71.636228767920443,72.353408249885163,73.070587731849884,73.787767213814604,74.50494669577931,null],[null,null,null,null,null,null,null,null,65.028140817735945,65.656895434175311,66.285650050614692,66.914404667054058,67.543159283493438,68.171913899932804,68.800668516372184,69.42942313281155,70.058177749250945,70.686932365690325,71.315686982129691,71.944441598569043,72.573196215008437,73.201950831447803,73.830705447887183,74.459460064326564,null],[null,null,null,null,null,null,null,null,null,null,67.389686670991409,67.930016421905435,68.470346172819461,69.010675923733487,69.551005674647513,70.091335425561553,70.631665176475579,71.171994927389605,71.712324678303617,72.252654429217671,72.792984180131697,73.333313931045723,73.873643681959763,74.413973432873775,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"surface"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"title":"Education"},"yaxis":{"title":"Income"},"zaxis":{"title":"Predicted Prestige"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":[["0","rgba(68,1,84,1)"],["0.0416666666666667","rgba(70,19,97,1)"],["0.0833333333333334","rgba(72,32,111,1)"],["0.125","rgba(71,45,122,1)"],["0.166666666666667","rgba(68,58,128,1)"],["0.208333333333333","rgba(64,70,135,1)"],["0.25","rgba(60,82,138,1)"],["0.291666666666667","rgba(56,93,140,1)"],["0.333333333333333","rgba(49,104,142,1)"],["0.375","rgba(46,114,142,1)"],["0.416666666666667","rgba(42,123,142,1)"],["0.458333333333333","rgba(38,133,141,1)"],["0.5","rgba(37,144,140,1)"],["0.541666666666667","rgba(33,154,138,1)"],["0.583333333333333","rgba(39,164,133,1)"],["0.625","rgba(47,174,127,1)"],["0.666666666666667","rgba(53,183,121,1)"],["0.708333333333333","rgba(79,191,110,1)"],["0.75","rgba(98,199,98,1)"],["0.791666666666667","rgba(119,207,85,1)"],["0.833333333333333","rgba(147,214,70,1)"],["0.875","rgba(172,220,52,1)"],["0.916666666666667","rgba(199,225,42,1)"],["0.958333333333333","rgba(226,228,40,1)"],["1","rgba(253,231,37,1)"]],"showscale":true,"x":[6.3799999999999999,6.7795833333333331,7.1791666666666663,7.5787499999999994,7.9783333333333335,8.3779166666666676,8.7774999999999999,9.1770833333333339,9.5766666666666662,9.9762500000000003,10.375833333333333,10.775416666666667,11.175000000000001,11.574583333333333,11.974166666666667,12.373750000000001,12.773333333333333,13.172916666666666,13.5725,13.972083333333334,14.371666666666666,14.771249999999998,15.170833333333334,15.570416666666667,15.970000000000001],"y":[0.61099999999999999,1.6638333333333333,2.7166666666666668,3.7694999999999999,4.8223333333333329,5.875166666666666,6.9279999999999999,7.980833333333333,9.033666666666667,10.086500000000001,11.139333333333333,12.192166666666667,13.245000000000001,14.297833333333333,15.350666666666667,16.403499999999998,17.456333333333333,18.509166666666665,19.562000000000001,20.614833333333333,21.667666666666666,22.720500000000001,23.773333333333333,24.826166666666666,25.879000000000001],"z":[[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,23.215466682930792,25.701143475402397,28.186820267874005,30.672497060345609,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,25.026902227510263,27.424154154456527,29.821406081402788,32.218658008349045,34.615909935295313,37.013161862241574,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,26.83833777208973,29.147164833510647,31.455991894931568,33.764818956352485,36.073646017773406,38.382473079194327,40.691300140615247,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,28.649773316669208,30.870175512564778,33.090577708460351,35.310979904355932,37.531382100251506,39.751784296147079,41.97218649204266,44.192588687938226,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,30.461208861248679,32.593186191618912,34.725163521989138,36.857140852359372,38.989118182729598,41.121095513099824,43.253072843470058,45.385050173840298,47.517027504210525,49.649004834580758,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,32.272644405828153,34.316196870673032,36.359749335517918,38.403301800362804,40.446854265207691,42.490406730052577,44.533959194897463,46.577511659742349,48.621064124587228,50.664616589432114,52.708169054277,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,34.08407995040762,36.039207549727159,37.994335149046705,39.949462748366244,41.90459034768579,43.859717947005329,45.814845546324868,47.769973145644407,49.725100744963953,51.680228344283499,53.635355943603038,55.590483542922577,null,null,null,null,null,null,null,null,null,null,null],[null,null,35.895515494987087,37.762218228781286,39.628920962575485,41.495623696369677,43.362326430163876,45.229029163958067,47.095731897752266,48.962434631546472,50.829137365340657,52.695840099134855,54.562542832929061,56.429245566723246,58.295948300517445,60.162651034311644,null,null,null,null,null,null,null,null,null],[null,null,37.706951039566562,39.485228907835413,41.263506776104272,43.041784644373116,44.820062512641975,46.598340380910827,48.376618249179671,50.15489611744853,51.933173985717382,53.71145185398624,55.489729722255099,57.268007590523943,59.046285458792795,60.824563327061647,62.602841195330491,null,null,null,null,null,null,null,null],[null,null,39.518386584146029,41.20823958688954,42.898092589633045,44.587945592376549,46.277798595120061,47.967651597863565,49.657504600607076,51.347357603350588,53.037210606094092,54.727063608837604,56.416916611581115,58.106769614324612,59.796622617068124,61.486475619811628,63.176328622555147,64.866181625298651,null,null,null,null,null,null,null],[null,null,41.329822128725503,42.931250265943667,44.532678403161825,46.134106540379996,47.73553467759816,49.336962814816317,50.938390952034482,52.539819089252646,54.141247226470817,55.742675363688988,57.344103500907153,58.945531638125303,60.546959775343467,62.148387912561631,63.749816049779795,65.35124418699796,66.952672324216124,68.554100461434274,null,null,null,null,null],[null,null,43.141257673304978,44.654260944997802,46.167264216690619,47.680267488383436,49.193270760076253,50.706274031769077,52.219277303461901,53.732280575154704,55.245283846847535,56.758287118540352,58.271290390233176,59.784293661925986,61.297296933618803,62.81030020531162,64.323303477004444,65.836306748697268,67.349310020390078,68.862313292082888,70.375316563775712,null,null,null,null],[null,null,null,46.377271624051922,47.801850030219391,49.226428436386868,50.651006842554352,52.075585248721815,53.500163654889292,54.924742061056769,56.349320467224253,57.77389887339173,59.198477279559199,60.623055685726669,62.047634091894146,63.472212498061616,64.896790904229093,66.321369310396577,67.745947716564046,69.170526122731516,70.595104528899,72.01968293506647,null,null,null],[null,null,null,48.100282303106056,49.436435843748178,50.772589384390308,52.108742925032445,53.444896465674574,54.781050006316704,56.117203546958827,57.453357087600963,58.789510628243093,60.125664168885223,61.461817709527352,62.797971250169482,64.134124790811612,65.470278331453741,66.806431872095871,68.142585412738001,69.478738953380116,70.814892494022274,72.15104603466439,73.487199575306533,74.823353115948635,null],[null,null,null,49.823292982160183,51.071021657276965,52.318750332393748,53.566479007510537,54.814207682627327,56.061936357744109,57.309665032860899,58.557393707977674,59.805122383094464,61.052851058211253,62.300579733328036,63.548308408444818,64.7960370835616,66.04376575867839,67.291494433795179,68.539223108911955,69.786951784028759,71.034680459145534,72.282409134262323,73.530137809379099,74.777866484495902,null],[null,null,null,51.546303661214303,52.705607470805738,53.864911280397187,55.02421508998863,56.183518899580072,57.342822709171507,58.502126518762942,59.661430328354392,60.820734137945841,61.980037947537284,63.139341757128712,64.298645566720154,65.457949376311589,66.617253185903039,67.776556995494488,68.935860805085923,70.095164614677358,71.254468424268794,72.413772233860243,73.573076043451692,74.732379853043113,null],[null,null,null,53.26931434026843,54.340193284334525,55.41107222840062,56.481951172466722,57.55283011653281,58.623709060598912,59.694588004665007,60.765466948731103,61.836345892797198,62.9072248368633,63.978103780929388,65.048982724995483,66.119861669061578,67.190740613127687,68.261619557193782,69.332498501259863,70.403377445325972,71.474256389392082,72.545135333458177,73.616014277524272,74.686893221590353,null],[null,null,null,null,55.974779097863305,56.95723317640406,57.939687254944815,58.92214133348557,59.90459541202631,60.887049490567065,61.869503569107827,62.851957647648582,63.834411726189337,64.816865804730085,65.79931988327084,66.781773961811581,67.764228040352336,68.746682118893091,69.729136197433846,70.711590275974586,71.694044354515341,72.676498433056096,73.658952511596851,74.641406590137592,null],[null,null,null,null,57.609364911392099,58.5033941244075,59.397423337422907,60.291452550438322,61.18548176345373,62.079510976469123,62.973540189484538,63.867569402499946,64.761598615515368,65.655627828530754,66.549657041546169,67.44368625456157,68.337715467576984,69.231744680592399,70.1257738936078,71.019803106623201,71.913832319638615,72.807861532654016,73.701890745669431,74.595919958684817,null],[null,null,null,null,59.243950724920872,60.049555072410939,60.855159419901,61.660763767391053,62.466368114881121,63.271972462371188,64.077576809861256,64.883181157351316,65.688785504841391,66.494389852331437,67.299994199821512,68.105598547311573,68.911202894801633,69.716807242291708,70.52241158978174,71.328015937271829,72.133620284761889,72.93922463225195,73.74482897974201,74.550433327232071,null],[null,null,null,null,null,null,62.312895502379085,63.030074984343806,63.747254466308526,64.464433948273253,65.18161343023796,65.89879291220268,66.6159723941674,67.333151876132121,68.050331358096841,68.767510840061547,69.484690322026296,70.201869803990988,70.919049285955708,71.636228767920443,72.353408249885163,73.070587731849884,73.787767213814604,74.50494669577931,null],[null,null,null,null,null,null,null,null,65.028140817735945,65.656895434175311,66.285650050614692,66.914404667054058,67.543159283493438,68.171913899932804,68.800668516372184,69.42942313281155,70.058177749250945,70.686932365690325,71.315686982129691,71.944441598569043,72.573196215008437,73.201950831447803,73.830705447887183,74.459460064326564,null],[null,null,null,null,null,null,null,null,null,null,67.389686670991409,67.930016421905435,68.470346172819461,69.010675923733487,69.551005674647513,70.091335425561553,70.631665176475579,71.171994927389605,71.712324678303617,72.252654429217671,72.792984180131697,73.333313931045723,73.873643681959763,74.413973432873775,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]],"type":"surface","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+]
+
+---
+
+## Robustness of Predictions
+
+.pull-left[
+The colored tiles are present for values in the convex hull.  
+- There are small, disconnected regions of high robustness. 
+]
+.right-shift50[
+&lt;img src="lecture6_2026_files/figure-html/unnamed-chunk-23-1.png" alt="Tile plot with education on the x-axis and income (in thousands of dollars) on the y-axis, covering only the region within the convex hull of observed Prestige data. Each tile is shaded light, medium, or dark purple corresponding to High, Moderate, or Low overlap coefficient between the additive and interaction model predictions at that education-income combination. Most of the occupied region is shaded Low or Moderate, with small disconnected patches of High robustness concentrated at low-income, mid-education values, indicating that the interaction model produces meaningfully different predictions from the additive model across most of the observed data support." width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Full Interaction Model
+
+.pull-left[
+The fully interactive model would interact all variables with a grouping variable: 
+
+
+``` r
+library(broom)
+data(Prestige, package="carData")
+Prestige$income &lt;- Prestige$income/1000
+
+fi_mod &lt;- lm(prestige ~ (income + education)*type, 
+             data=Prestige)
+slopes(fi_mod, 
+       by="type") |&gt; 
+  filter_out(term == "type") |&gt; 
+  as_tibble() |&gt; 
+  select(type, term, estimate, std.error)
+```
+]
+.pull-right[
+
+```
+## # A tibble: 6 × 4
+##   type  term      estimate std.error
+##   &lt;fct&gt; &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;
+## 1 bc    education    1.71      0.957
+## 2 prof  education    3.10      0.863
+## 3 wc    education    6.00      1.47 
+## 4 bc    income       3.52      0.556
+## 5 prof  income       0.620     0.222
+## 6 wc    income       1.45      0.700
+```
+]
+
+---
+
+## Full Interaction Robustness
+
+
+```
+## # A tibble: 6 × 7
+## # Rowwise: 
+##   type  term      estimate std.error base_est base_se     ovl
+##   &lt;fct&gt; &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1 bc    education    1.71      0.957     3.67   0.640 0.214  
+## 2 prof  education    3.10      0.863     3.67   0.640 0.683  
+## 3 wc    education    6.00      1.47      3.67   0.641 0.242  
+## 4 bc    income       3.52      0.556     1.01   0.221 0.00112
+## 5 prof  income       0.620     0.222     1.01   0.221 0.374  
+## 6 wc    income       1.45      0.700     1.01   0.221 0.425
+```
+
+---
+
+## Simulation
+
+.pull-left[
+Most of the coefficients are quite sensitive to the no moderation assumption. 
+- Income for White Colloar and Education for Professional incomes appear to be about what we would expect if the additive model is true.  
+- The other effects have overlap coefficients significantly lower than we would expect if the additive model were, in fact, true. 
+]
+.pull-right[
+&lt;img src="lecture6_2026_files/figure-html/unnamed-chunk-26-1.png" alt="Faceted binned ridge histogram with two panels side by side, one for income and one for education. Within each panel, occupation types (bc, prof, wc) are arranged on the y-axis. Gray bars show the simulated distribution of overlap coefficients under the additive null model; red points mark the observed overlap coefficient from the actual data. For income, the observed overlap for blue-collar and professional occupations falls well below the bulk of the simulated distribution, indicating robustness substantially lower than expected under the additive model; white-collar income overlap is closer to the centre of its distribution. For education, professional and blue-collar observed overlaps again fall in the lower tail of the simulated distributions, while white-collar education overlap sits near the centre, consistent with the conclusion that the full interaction model reveals genuine heterogeneity for most groups." width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+
+## Subgroup Analysis
+
+.pull-left[
+Sometimes, people prefer estimating subset models - it makes interpretations a bit easier immediately. 
+
+Subgroup analysis relaxes other assumptions: 
+- all effects vary by group. 
+- residual variances differ. 
+
+
+]
+.pull-right[
+_Subgroup Robustness_
+
+
+```
+## # A tibble: 6 × 6
+## # Rowwise: 
+##   type      n term      estimate base_est     ovl
+##   &lt;fct&gt; &lt;int&gt; &lt;chr&gt;        &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
+## 1 prof     31 income       0.620     1.24 0.157  
+## 2 prof     31 education    3.10      4.29 0.275  
+## 3 bc       44 income       3.52      1.24 0.00168
+## 4 bc       44 education    1.71      4.29 0.0307 
+## 5 wc       23 income       1.45      1.24 0.435  
+## 6 wc       23 education    6.00      4.29 0.231
+```
+]
+
+---
+
+## Robustness and Effect Heterogeneity
+
+
+|Approach           |Robustness Question                                   |
+|:------------------|:-----------------------------------------------------|
+|Single interaction |Does a single effect vary?                            |
+|Full interaction   |Do all effects vary?                                  |
+|Subgroup Analyses  |Do the relationships survive in distinct populations? |
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+  </body>
+</html>

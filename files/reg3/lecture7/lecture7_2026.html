@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+  <head>
+    <title>Lecture 7</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="lecture7_2026_files/header-attrs/header-attrs.js"></script>
+    <link href="lecture7_2026_files/remark-css/default.css" rel="stylesheet" />
+    <script src="lecture7_2026_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture7_2026_files/fabric/fabric.min.js"></script>
+    <link href="lecture7_2026_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture7_2026_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture7_2026_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture7_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture7_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture7_2026_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture7_2026_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <link href="lecture7_2026_files/htmltools-fill/fill.css" rel="stylesheet" />
+    <script src="lecture7_2026_files/htmlwidgets/htmlwidgets.js"></script>
+    <link href="lecture7_2026_files/datatables-css/datatables-crosstalk.css" rel="stylesheet" />
+    <script src="lecture7_2026_files/datatables-binding/datatables.js"></script>
+    <script src="lecture7_2026_files/jquery/jquery-3.6.0.min.js"></script>
+    <link href="lecture7_2026_files/dt-core/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="lecture7_2026_files/dt-core/css/jquery.dataTables.extra.css" rel="stylesheet" />
+    <script src="lecture7_2026_files/dt-core/js/jquery.dataTables.min.js"></script>
+    <link href="lecture7_2026_files/crosstalk/css/crosstalk.min.css" rel="stylesheet" />
+    <script src="lecture7_2026_files/crosstalk/js/crosstalk.min.js"></script>
+    <script>
+    function releaseMath(el) {
+      const codes = el.getElementsByTagName('code');
+
+      for (let i = 0; i < codes.length;) {
+        const code = codes[i];
+
+        if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+          const text = code.textContent.trim();
+
+          const isMath =
+            /^\$\$(.|\s)+\$\$$/.test(text) ||
+            /^\$(?!\$)(.|\s)+\$$/.test(text) ||
+            /^\\\((.|\s)+\\\)$/.test(text) ||
+            /^\\\[(.|\s)+\\\]$/.test(text) ||
+            /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text);
+
+          if (isMath) {
+            code.outerHTML = code.innerHTML;
+            continue;
+          }
+        }
+
+        i++;
+      }
+    }
+    </script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-svg.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      function rerenderMath() {
+        releaseMath(document);
+
+        if (window.MathJax && MathJax.typesetPromise) {
+          MathJax.typesetPromise().catch(function (err) {
+            console.error("MathJax typeset failed:", err);
+          });
+        }
+      }
+
+      if (window.slideshow && typeof slideshow.on === "function") {
+        slideshow.on("afterShowSlide", rerenderMath);
+      }
+
+      rerenderMath();
+    });
+    </script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="www/layout.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 7
+]
+.subtitle[
+## Robustness to Effect Heterogeneity in GLMs
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+.full-width table {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+.right-shift50 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -50px;
+}
+
+&lt;/style&gt;
+
+
+
+
+
+
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That the nature of the relaionship between `\(x\)` and `\(y\)` regarding moderation in non-linear GLMs is appropriately specified.    
+
+Why might this assumption fail?
+
+- The nature of the conditional relationship is not appropriately captured by the model's form. 
+- The model imposes conditionality that is not really there. 
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That the nature of the relaionship between `\(x\)` and `\(y\)` regarding moderation in non-linear GLMs is appropriately specified.    
+
+What kinds of inferential instability can result?
+- Misleading conclusions about the average effect. 
+- Improper estimation of effect sizes/directions (e.g., Simpson's paradox). 
+- Poor predictions. 
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That the nature of the relaionship between `\(x\)` and `\(y\)` regarding moderation in non-linear GLMs is appropriately specified.    
+
+What tools exist to evaluate robustness?
+- Interaction models
+- Smooth interactions with GAMs
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That the nature of the relaionship between `\(x\)` and `\(y\)` regarding moderation in non-linear GLMs is appropriately specified.    
+
+What are the limits of these tools?
+- In essence, all variables are moderators - which to investigate?
+- Evidence for moderation is often low power.
+    - Interaction effects are typically estimated much less precisely than average effects.
+    - Reliable estimation requires sufficient support across combinations of x and the moderator.
+
+---
+
+## Transition from Linear to GLM
+
+Consider a linear model: `\(y = b_0 + b_1x + b_2z + e\)`
+- The effect of `\(x\)` is `\(\frac{\partial y}{\partial x} = b_1\)`
+
+In the non-linear model: `\(E(y|x,z) = g^{-1}(b_0 + b_1x + b_2z) =  g^{-1}(\eta)\)`
+- The effect of `\(x\)` is 
+
+`$$\frac{\partial g^{-1}(\eta)}{\partial x} = \frac{\partial g^{-1}(\eta)}{\partial \eta}\frac{\partial \eta}{\partial x}$$`
+
+---
+
+## Common Links and First Derivatives
+
+| Model | Response Function | Effect of `\(x\)` |
+|---------|---------|---------|
+| Linear | `\(E(Y)=\eta\)` | `\(\beta_x\)` |
+| Binary | `\(p=F(\eta)\)` | `\(\beta_x f(\eta)\)` |
+| Log-Link | `\(\mu=e^\eta\)` | `\(\beta_x \mu\)` |
+| Ordered | `\(P(Y=k)=F(\tau_k-\eta)-F(\tau_{k-1}-\eta)\)` | `\(\beta_x[f(\tau_{k-1}-\eta)-f(\tau_k-\eta)]\)` |
+| Multinomial Logit | `\(p_k=\frac{e^{\eta_k}}{\sum_j e^{\eta_j}}\)` | `\(p_k\left(\beta_{xk}-\sum_j p_j\beta_{xj}\right)\)` |
+
+where
+
+- `\(F(\cdot)\)` is a cumulative distribution function (CDF)
+- `\(f(\cdot)=F^{\prime}(\cdot)\)` is the corresponding probability density function (PDF)
+
+---
+
+## Binary Model Example
+
+Consider the binary regression model: 
+
+`$$\log\left(\frac{p}{1-p}\right) = b_0 + b_1x + b_2z$$`
+
+The effect of `\(x\)` is: 
+
+$$\frac{\partial E(y|x,z)}{\partial x} = f(\eta)b_1 = p(1-p)b_1 $$
+
+
+Because `\(p\)` depends on all predictors, the effect of `\(x\)` changes across values of `\(x\)` and `\(z\)`.
+
+---
+
+## Effect Visualization
+
+The effect is biggest when `\(p=0.5\)` and gets smaller in either direction. 
+
+.pull-left[
+&lt;img src="lecture7_2026_files/figure-html/unnamed-chunk-2-1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="lecture7_2026_files/figure-html/unnamed-chunk-3-1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Link vs Product Term Conditionality
+
+Mechanical conditionality that comes from the non-linear link: 
+- _can_ dampen or amplify the coefficient of `\(x\)` as a function of `\(z\)`.
+- _cannot_ allow a coefficient to change signs. 
+
+Including a product term: 
+- _can_ permit sign flips based on different values of the conditioning variable. 
+- _can_ reduce the level of conditionality between `\(x\)` and `\(z\)` in some circumstances. 
+
+---
+
+## Link vs Product Term Conditionality
+
+If `\(E(y|x,z) = g^{-1}(b_0 + b_1x + b_2z)\)`
+
+`$$\frac{\partial g^{-1}(\eta)}{\partial x} = \frac{\partial g^{-1}(\eta)}{\partial \eta}b_1$$`
+
+If `\(E(y|x,z) = g^{-1}(b_0 + b_1x + b_2z + b_3xz)\)`
+
+`$$\frac{\partial g^{-1}(\eta)}{\partial x} = \frac{\partial g^{-1}(\eta)}{\partial \eta}(b_1 + b_3z)$$`
+---
+
+## Conditionality in GLMs
+
+If the model induces conditionality by definition, how do we think about moderation? 
+
+1. Just as before - generally, an investigation about conditionality should be theoretically interesting. 
+    - At this stage, you should not go "hunting for" interactions.  
+2. Unlike before, the mechanical model building exercise does not lead to clear, immediate answers. 
+    - Whether the product term is significant and the extent of the moderation are less related here. 
+3. Whether a product term belongs in the model depends on whether it generates substantively important conditionality beyond the mechanical conditionality induced by the link function.
+    
+---
+
+## Evaluating Conditionality
+
+
+| Variable Types | Marginal Effect of `\(x\)` | Interaction Quantity |
+|---------------|-------------------------|----------------------|
+| `\(x,z\)` both continuous | `\(\frac{\partial E(Y)}{\partial x}\)` | `\(\frac{\partial}{\partial z}\frac{\partial E(Y)}{\partial x}\)` |
+| `\(x\)` continuous, `\(z\)` binary | `\(\frac{\partial E(Y)}{\partial x}\)` | `\(\Delta_z\left(\frac{\partial E(Y)}{\partial x}\right)\)` |
+| `\(x,z\)` both binary | `\(\Delta_x E(Y)\)` | `\(\Delta_z\left(\Delta_x E(Y)\right)\)` |
+
+--
+
+Finite Difference Approximation for 1 - interquartile change in marginal effects: 
+
+`$$\frac{\partial}{\partial z}\frac{\partial E(Y)}{\partial x} \approx \frac{
+\left.\frac{\partial E(Y)}{\partial x}\right|_{z=P_{75}} -
+\left.\frac{\partial E(Y)}{\partial x}\right|_{z=P_{25}}}
+{P_{75}-P_{25}}$$`
+
+
+---
+
+## Example: ANES Voting Democrat
+
+.pull-left[
+
+``` r
+anes &lt;- rio::import("../data/anes1992.dta")
+anesu &lt;- anes |&gt;  
+  mutate(retnat = rio::factorize(retnat), 
+         educ = rio::factorize(educ)) |&gt;
+  drop_na(votedem, retnat, pid, age, male,
+          educ, black, south)
+add_mod &lt;- glm(votedem ~ retnat + pid + age + male + educ +
+                black + south, data=anesu, family=binomial)
+tidy(add_mod)
+```
+
+```
+## # A tibble: 9 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   0.512    0.673      0.760  4.47e- 1
+## 2 retnatsame    1.33     0.594      2.24   2.50e- 2
+## 3 retnatworse   1.65     0.570      2.89   3.89e- 3
+## 4 pid          -0.916    0.0557   -16.4    1.06e-60
+## 5 age           0.0131   0.00566    2.32   2.05e- 2
+## 6 male         -0.292    0.180     -1.62   1.04e- 1
+## 7 educ          0.251    0.104      2.42   1.57e- 2
+## 8 black         2.15     0.477      4.50   6.64e- 6
+## 9 south         0.0129   0.221      0.0584 9.53e- 1
+```
+]
+.right-shift50[
+_Two Categorical Variables: `retnat` and `black`_
+
+
+``` r
+econ_comps &lt;- avg_comparisons(add_mod, 
+  datagrid(male = c(0,1), grid_type="counterfactual"), 
+  variables = list(retnat = c("better", "worse")), 
+  by = "male")
+
+econ_comps
+```
+
+```
+## 
+##  male Estimate Std. Error    z Pr(&gt;|z|)   S  2.5 % 97.5 %
+##     0    0.203     0.0666 3.04  0.00235 8.7 0.0720  0.333
+##     1    0.199     0.0638 3.12  0.00180 9.1 0.0741  0.324
+## 
+## Term: retnat
+## Type: response
+## Comparison: worse - better
+```
+
+``` r
+econ_comps |&gt; hypotheses(~pairwise)
+```
+
+```
+## 
+##   Hypothesis Estimate Std. Error      z Pr(&gt;|z|)   S   2.5 %  97.5 %
+##  (b2) - (b1) -0.00331    0.00364 -0.909    0.363 1.5 -0.0104 0.00382
+```
+]
+
+
+---
+
+## Example: ANES Voting Democrat
+
+.pull-left[
+
+``` r
+prod_mod &lt;- glm(votedem ~ male*retnat + pid + age + black + educ +
+                south, data=anesu, family=binomial)
+tidy(prod_mod)
+```
+
+```
+## # A tibble: 11 × 5
+##    term             estimate std.error statistic  p.value
+##    &lt;chr&gt;               &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1 (Intercept)       -1.30     1.44      -0.899  3.69e- 1
+##  2 male               2.04     1.54       1.33   1.84e- 1
+##  3 retnatsame         3.02     1.44       2.10   3.56e- 2
+##  4 retnatworse        3.49     1.41       2.47   1.34e- 2
+##  5 pid               -0.916    0.0558   -16.4    1.21e-60
+##  6 age                0.0130   0.00568    2.30   2.17e- 2
+##  7 black              2.22     0.484      4.59   4.41e- 6
+##  8 educ               0.259    0.104      2.48   1.31e- 2
+##  9 south              0.0178   0.223      0.0801 9.36e- 1
+## 10 male:retnatsame   -2.15     1.59      -1.36   1.75e- 1
+## 11 male:retnatworse  -2.44     1.55      -1.57   1.16e- 1
+```
+]
+.right-shift50[
+_Two Categorical Variables: `retnat` and `male`_
+
+
+``` r
+econ_comps2 &lt;- avg_comparisons(prod_mod, 
+  datagrid(male = c(0,1), grid_type="counterfactual"), 
+  variables = list(retnat = c("better", "worse")), 
+  by = "male")
+
+econ_comps2
+```
+
+```
+## 
+##  male Estimate Std. Error    z Pr(&gt;|z|)    S   2.5 % 97.5 %
+##     0    0.379     0.0976 3.88   &lt;0.001 13.2  0.1873   0.57
+##     1    0.129     0.0770 1.68   0.0925  3.4 -0.0214   0.28
+## 
+## Term: retnat
+## Type: response
+## Comparison: worse - better
+```
+
+``` r
+econ_comps2 |&gt; hypotheses(~pairwise)
+```
+
+```
+## 
+##   Hypothesis Estimate Std. Error  z Pr(&gt;|z|)   S  2.5 %   97.5 %
+##  (b2) - (b1)   -0.249      0.124 -2   0.0452 4.5 -0.493 -0.00527
+```
+]
+
+---
+
+## Effects: 
+
+&lt;img src="lecture7_2026_files/figure-html/unnamed-chunk-8-1.png" alt="" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Example: ANES Voting Democrat
+
+.pull-left[
+
+``` r
+add_mod &lt;- glm(votedem ~ retnat + pid + age + male + educ +
+                black + south, data=anesu, family=binomial)
+tidy(add_mod)
+```
+
+```
+## # A tibble: 9 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   0.512    0.673      0.760  4.47e- 1
+## 2 retnatsame    1.33     0.594      2.24   2.50e- 2
+## 3 retnatworse   1.65     0.570      2.89   3.89e- 3
+## 4 pid          -0.916    0.0557   -16.4    1.06e-60
+## 5 age           0.0131   0.00566    2.32   2.05e- 2
+## 6 male         -0.292    0.180     -1.62   1.04e- 1
+## 7 educ          0.251    0.104      2.42   1.57e- 2
+## 8 black         2.15     0.477      4.50   6.64e- 6
+## 9 south         0.0129   0.221      0.0584 9.53e- 1
+```
+]
+.right-shift50[
+_One Categorical, One Numeric: `pid` and `black`_
+
+
+``` r
+pid_slopes &lt;- avg_slopes(add_mod, 
+  datagrid(black = c(0,1), grid_type="counterfactual"), 
+  variables = "pid", 
+  by = "black")
+
+pid_slopes
+```
+
+```
+## 
+##  black Estimate Std. Error     z Pr(&gt;|z|)     S  2.5 %  97.5 %
+##      0   -0.119    0.00213 -55.8   &lt;0.001   Inf -0.123 -0.1148
+##      1   -0.109    0.00595 -18.3   &lt;0.001 246.3 -0.121 -0.0973
+## 
+## Term: pid
+## Type: response
+## Comparison: dY/dX
+```
+
+``` r
+pid_slopes |&gt; hypotheses(~pairwise)
+```
+
+```
+## 
+##   Hypothesis Estimate Std. Error    z Pr(&gt;|z|)   S     2.5 % 97.5 %
+##  (b2) - (b1)  0.00997    0.00516 1.93   0.0533 4.2 -0.000143 0.0201
+```
+]
+
+
+---
+
+## Example: ANES Voting Democrat
+
+.pull-left[
+
+``` r
+prod_mod &lt;- glm(votedem ~ male + retnat + pid*black + age + educ +
+                south, data=anesu, family=binomial)
+tidy(prod_mod)
+```
+
+```
+## # A tibble: 10 × 5
+##    term        estimate std.error statistic  p.value
+##    &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1 (Intercept)  0.571     0.673      0.848  3.96e- 1
+##  2 male        -0.294     0.180     -1.63   1.02e- 1
+##  3 retnatsame   1.31      0.591      2.21   2.69e- 2
+##  4 retnatworse  1.64      0.567      2.90   3.78e- 3
+##  5 pid         -0.930     0.0577   -16.1    2.21e-58
+##  6 black        1.28      0.847      1.51   1.32e- 1
+##  7 age          0.0129    0.00567    2.28   2.27e- 2
+##  8 educ         0.255     0.104      2.45   1.42e- 2
+##  9 south        0.00259   0.221      0.0117 9.91e- 1
+## 10 pid:black    0.254     0.219      1.16   2.46e- 1
+```
+]
+.right-shift50[
+_One Categorical, One Numeric: `pid` and `black`_
+
+
+``` r
+pid_slopes2 &lt;- avg_slopes(prod_mod, 
+  datagrid(black = c(0,1), grid_type="counterfactual"), 
+  variables = "pid", 
+  by = "black")
+
+pid_slopes2
+```
+
+```
+## 
+##  black Estimate Std. Error      z Pr(&gt;|z|)   S  2.5 %  97.5 %
+##      0  -0.1193    0.00209 -56.94  &lt; 0.001 Inf -0.123 -0.1152
+##      1  -0.0879    0.02674  -3.29  0.00101 9.9 -0.140 -0.0355
+## 
+## Term: pid
+## Type: response
+## Comparison: dY/dX
+```
+
+``` r
+pid_slopes2 |&gt; hypotheses(~pairwise)
+```
+
+```
+## 
+##   Hypothesis Estimate Std. Error    z Pr(&gt;|z|)   S  2.5 % 97.5 %
+##  (b2) - (b1)   0.0314     0.0267 1.18     0.24 2.1 -0.021 0.0838
+```
+]
+
+---
+
+## Effects: 
+
+&lt;img src="lecture7_2026_files/figure-html/unnamed-chunk-13-1.png" alt="" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Example: ANES Voting Democrat
+
+.pull-left[
+
+``` r
+add_mod &lt;- glm(votedem ~ retnat + pid + age + male + educ +
+                black + south, data=anesu, family=binomial)
+tidy(add_mod)
+```
+
+```
+## # A tibble: 9 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   0.512    0.673      0.760  4.47e- 1
+## 2 retnatsame    1.33     0.594      2.24   2.50e- 2
+## 3 retnatworse   1.65     0.570      2.89   3.89e- 3
+## 4 pid          -0.916    0.0557   -16.4    1.06e-60
+## 5 age           0.0131   0.00566    2.32   2.05e- 2
+## 6 male         -0.292    0.180     -1.62   1.04e- 1
+## 7 educ          0.251    0.104      2.42   1.57e- 2
+## 8 black         2.15     0.477      4.50   6.64e- 6
+## 9 south         0.0129   0.221      0.0584 9.53e- 1
+```
+]
+.right-shift50[
+_Two Numeric: `pid` and `age`_
+
+
+``` r
+pid_slopes &lt;- avg_slopes(add_mod, 
+  datagrid(age = c(20, 60), grid_type="counterfactual"), 
+  variables = "pid", 
+  by = "age")
+
+pid_slopes
+```
+
+```
+## 
+##  age Estimate Std. Error     z Pr(&gt;|z|)   S  2.5 % 97.5 %
+##   20   -0.112    0.00263 -42.6   &lt;0.001 Inf -0.117 -0.107
+##   60   -0.112    0.00198 -56.3   &lt;0.001 Inf -0.116 -0.108
+## 
+## Term: pid
+## Type: response
+## Comparison: dY/dX
+```
+
+``` r
+pid_slopes |&gt; hypotheses(~pairwise)
+```
+
+```
+## 
+##   Hypothesis Estimate Std. Error     z Pr(&gt;|z|)   S    2.5 %  97.5 %
+##  (b2) - (b1) 0.000116   0.000764 0.152    0.879 0.2 -0.00138 0.00161
+```
+]
+
+
+---
+
+## Example: ANES Voting Democrat
+
+.pull-left[
+
+``` r
+prod_mod &lt;- glm(votedem ~ male + retnat + pid*age + black + educ +
+                south, data=anesu, family=binomial)
+tidy(prod_mod)
+```
+
+```
+## # A tibble: 10 × 5
+##    term        estimate std.error statistic    p.value
+##    &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+##  1 (Intercept) -0.286     0.868     -0.329  0.742     
+##  2 male        -0.305     0.180     -1.69   0.0904    
+##  3 retnatsame   1.30      0.590      2.20   0.0275    
+##  4 retnatworse  1.61      0.567      2.83   0.00464   
+##  5 pid         -0.689     0.164     -4.20   0.0000268 
+##  6 age          0.0303    0.0133     2.28   0.0226    
+##  7 black        2.19      0.479      4.57   0.00000495
+##  8 educ         0.274     0.105      2.60   0.00938   
+##  9 south        0.00976   0.221      0.0442 0.965     
+## 10 pid:age     -0.00487   0.00339   -1.43   0.152
+```
+]
+.right-shift50[
+_Two Numeric: `pid` and `age`_
+
+
+``` r
+pid_slopes2 &lt;- avg_slopes(prod_mod, 
+  datagrid(age = c(20, 60), grid_type="counterfactual"), 
+  variables = "pid", 
+  by = "age")
+
+pid_slopes2
+```
+
+```
+## 
+##  age Estimate Std. Error     z Pr(&gt;|z|)     S  2.5 %  97.5 %
+##   20   -0.106    0.00571 -18.6   &lt;0.001 254.3 -0.117 -0.0951
+##   60   -0.113    0.00188 -60.0   &lt;0.001   Inf -0.117 -0.1093
+## 
+## Term: pid
+## Type: response
+## Comparison: dY/dX
+```
+
+``` r
+pid_slopes2 |&gt; hypotheses(~pairwise)
+```
+
+```
+## 
+##   Hypothesis Estimate Std. Error     z Pr(&gt;|z|)   S  2.5 %  97.5 %
+##  (b2) - (b1) -0.00673    0.00575 -1.17    0.242 2.0 -0.018 0.00454
+```
+]
+
+---
+
+## Effects: 
+
+&lt;img src="lecture7_2026_files/figure-html/unnamed-chunk-18-1.png" alt="" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Product Term can Reduce Moderation
+
+
+
+.pull-left[
+
+``` r
+g_add &lt;- glm(y ~ x + z, data=ex_dat, family=binomial)
+comps_add &lt;- avg_comparisons(g_add, 
+                datagrid(z = c(0,1), grid_type = "counterfactual"), 
+                variables = list(x = c(.25, .75)), 
+                by = "z")
+
+comps_add
+```
+
+```
+## 
+##  z Estimate Std. Error    z Pr(&gt;|z|)    S  2.5 % 97.5 %
+##  0   0.1685     0.0326 5.17   &lt;0.001 22.0 0.1046 0.2323
+##  1   0.0597     0.0131 4.54   &lt;0.001 17.4 0.0339 0.0855
+## 
+## Term: x
+## Type: response
+## Comparison: 0.75 - 0.25
+```
+
+``` r
+comps_add |&gt; hypotheses(~pairwise)
+```
+
+```
+## 
+##   Hypothesis Estimate Std. Error     z Pr(&gt;|z|)    S  2.5 % 97.5 %
+##  (b2) - (b1)   -0.109     0.0229 -4.76   &lt;0.001 19.0 -0.154 -0.064
+```
+]
+.pull-right[
+
+``` r
+g_prod &lt;- glm(y ~ x * z, data=ex_dat, family=binomial)
+comps_prod &lt;- avg_comparisons(g_prod, 
+                datagrid(z = c(0,1), grid_type = "counterfactual"), 
+                variables = list(x = c(.25, .75)), 
+                by = "z")
+
+comps_prod
+```
+
+```
+## 
+##  z Estimate Std. Error    z Pr(&gt;|z|)    S  2.5 % 97.5 %
+##  0    0.119     0.0377 3.16  0.00159  9.3 0.0451  0.193
+##  1    0.105     0.0216 4.88  &lt; 0.001 19.8 0.0631  0.148
+## 
+## Term: x
+## Type: response
+## Comparison: 0.75 - 0.25
+```
+
+``` r
+comps_prod |&gt; hypotheses(~pairwise)
+```
+
+```
+## 
+##   Hypothesis Estimate Std. Error      z Pr(&gt;|z|)   S   2.5 % 97.5 %
+##  (b2) - (b1)  -0.0135     0.0435 -0.312    0.755 0.4 -0.0987 0.0716
+```
+]
+
+---
+
+## Reducing Moderation - What's Happening?
+
+&lt;img src="rainey_example.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Effect Heterogeneity in GLMs. 
+
+In non-linear GLMs, robustness to effect heterogeneity is really two questions (or two different sets of assumptions). 
+
+1. Is the functional form as estimated adequate (i.e., is a product term needed if not already included)? 
+2. Do the effects interestingly by subgroup? 
+
+**Robustness Evaluation**
+
+| Instability Type | Interpretation |
+|------------------|----------------|
+| `\(\overline{ME}^{(a)}_x \not\approx \overline{ME}^{(a)}_x(z_0)\)` | Population effect is not representative of subgroup `\(z_0\)` |
+| `\(\overline{ME}^{(a)}_x(z_0) \not\approx \overline{ME}^{(p)}_x(z_0)\)` | Conclusions depend on whether moderation is explicitly modeled |
+| `\(\overline{ME}^{(a)}_x \not\approx \overline{ME}^{(p)}_x(z_0)\)` | Overall substantive conclusion is not robust |
+
+---
+
+## Robustness Workflow
+
+1. Estimate the baseline model. 
+    - Compute overall effect (average first difference or first derivative)
+2. Identify plausible subgroups
+3. Estimate one or more alternative specifications
+    - Single interaction effect
+    - Full interaction effect
+    - Subgroup Models
+4. Compare baseline and subgroup effects. 
+    - Evaluate robustness statistics. 
+    - Evaluate changes in substantive conclusions. 
+    - Consider whether any observed instability is larger than expected. 
+    
+---
+
+## Subgroup Robustness Plot
+
+&lt;img src="lecture7_2026_files/figure-html/unnamed-chunk-23-1.png" alt="" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Simulation for Expectations
+
+.pull-left[
+A question that always comes up - what would we expect under the baseline model specification? 
+- Here, we would do something similar to before, but simulating the response is slightly different. 
+
+1. Estimate the baseline model. 
+2. Simulate `\(\eta\)` on the link scale with `\(\mathbf{Xb}\)`.  
+3. Transform `\(\eta\)` into `\(y\)` using the appropriate `r*()` function in R.  
+4. Re-run the baseline and subgroup models and calculate robustness. 
+
+
+]
+.pull-right[
+<div class="datatables html-widget html-fill-item" id="htmlwidget-17b62bb2686b1a099a1f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-17b62bb2686b1a099a1f">{"x":{"filter":"none","vertical":false,"data":[["Black","White","South","Not South","Male","Female","Econ Worse","Econ Better/Same","Democrat","Independent","Republican","Younger","Middle Aged","Older"],[0.4456124203884608,0.8866658451381858,0.5314093031177137,0.7963924339264506,0.6613542541597717,0.6754186455375625,0.7651738689961634,0.6171545732566259,0.5039052134755407,0.04687754511484747,0.1021442342207329,0.62982108061771,0.7355128574254209,0.4490474413448938],[0.3918885324389243,0.8944160681721746,0.498648060857547,0.8195725199716356,0.727684891758977,0.6662486608355953,0.7866632799355312,0.5783829565473443,0.6394877829041457,0.2362064100368336,0.5646622727448016,0.5369093427585245,0.5678508837846772,0.635297528117008],[0.5052631578947369,0.3894736842105263,0.4736842105263158,0.3684210526315789,0.2947368421052631,0.4,0.3157894736842105,0.4842105263157895,0.1578947368421053,0.06315789473684211,0,0.5789473684210527,0.9789473684210527,0.1368421052631579]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>group<\/th>\n      <th>obs<\/th>\n      <th>sim<\/th>\n      <th>pct<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"tip","pageLength":6,"scrollX":true,"columnDefs":[{"targets":1,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatRound(data, 2, 3, \",\", \".\", null);\n  }"},{"className":"dt-right","targets":[1,2,3]},{"name":"group","targets":0},{"name":"obs","targets":1},{"name":"sim","targets":2},{"name":"pct","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.columnDefs.2.render"],"jsHooks":[]}</script>
+]
+
+---
+
+## Separation
+
+In subgroup analyses, as samples get small, separation problems are more likely.  In these cases, finite maximum likelihood estimates may not exist.
+
+If some linear combination of the predictors perfectly predicts the outcome,
+
+$$
+P(Y=1 \mid \mathbf{x}) =
+`\begin{cases}
+1 &amp; \text{for one region of the predictor space}\\
+0 &amp; \text{for another}
+\end{cases}`
+$$
+
+then the likelihood can always be increased by making one or more coefficients arbitrarily large.
+
+---
+
+## Consequences of Separation
+
+- Coefficient estimates diverge toward `\(\pm\infty\)`
+- Standard errors become enormous
+- Wald confidence intervals are meaningless
+- The model often fails to converge
+- Predictions may be numerically unstable
+
+.pull-left[
+### Complete separation
+
+Every success lies on one side of a threshold and every failure on the other.
+]
+
+.pull-right[
+### Quasi-complete separation
+
+Only a few observations violate the perfect split, but the likelihood surface is still nearly flat.
+]
+
+.bottom-note[
+Separation becomes increasingly common with small samples, rare events, and many indicator variables.
+]
+
+---
+
+## Firth's Logistic Regression
+
+Instead of maximizing the ordinary likelihood,
+
+$$
+\ell(\boldsymbol{\beta}),
+$$
+
+Firth (1993) maximizes the *penalized* likelihood
+
+$$
+\ell^*(\boldsymbol{\beta})
+=
+\ell(\boldsymbol{\beta})
++\frac12\log |I(\boldsymbol{\beta})|,
+$$
+
+where `\(I(\boldsymbol{\beta})\)` is the Fisher information matrix.
+
+---
+
+## Intuition
+
+The penalty acts like a weak amount of prior information that shrinks estimates away from infinity.
+
+As a result,
+
+- finite coefficient estimates always exist
+- first-order small-sample bias is removed
+- confidence intervals behave much better
+- predictions are typically more stable than ordinary MLE
+
+### When should you use it?
+
+- Separation or quasi-separation
+- Rare-event logistic regression
+- Small samples
+- Models with many dummy variables relative to the sample size
+
+---
+
+## Firth's Model in R
+
+The `logistf` package in R has a function `logistf` that takes as input either: 
+- a glm object, or
+- formula and data 
+
+The `marginaleffects` functions work with `logistf` models. 
+- If you see large parameters and really large standard errors in the model output, consider switching to `logistf`.  
+
+---
+
+## Banda and Casesse Replication
+
+Banda and Casesse look at the effect of sexism and resentment moderated by party ID on vote in the 2016 election.  They initially estimate these effects through an interaction.  
+1. What do the second differences look like? 
+2. What do the effects or sexism and resentment look like in the no product term, single interaction, full interaction and subgroup models with pid? 
+3. Do the moderated effects persist for men and women?  What about those who thought the economy got worse vs those who didn't? 
+    - `econanx` 1 and 2 are worse, 3 is same, 4 and 5 are better. 
+4. Are any of these robustness statistics much lower than we would expect?
+
+---
+
+
+## Robustness and Effect Heterogeneity in GLMs
+
+
+|Approach           |Assumption                                                |
+|:------------------|:---------------------------------------------------------|
+|No product term    |Link-induced conditionality is sufficient                 |
+|Single interaction |One effect may vary across groups                         |
+|Full interaction   |All effects may vary across groups                        |
+|Subgroup Analyses  |Coefficients and error structure may differ across groups |
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+  </body>
+</html>

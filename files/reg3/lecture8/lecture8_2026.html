@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+  <head>
+    <title>Lecture 8</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="lecture8_2026_files/header-attrs/header-attrs.js"></script>
+    <link href="lecture8_2026_files/remark-css/default.css" rel="stylesheet" />
+    <script src="lecture8_2026_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture8_2026_files/fabric/fabric.min.js"></script>
+    <link href="lecture8_2026_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture8_2026_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture8_2026_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture8_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture8_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture8_2026_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture8_2026_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <script>
+    function releaseMath(el) {
+      const codes = el.getElementsByTagName('code');
+
+      for (let i = 0; i < codes.length;) {
+        const code = codes[i];
+
+        if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+          const text = code.textContent.trim();
+
+          const isMath =
+            /^\$\$(.|\s)+\$\$$/.test(text) ||
+            /^\$(?!\$)(.|\s)+\$$/.test(text) ||
+            /^\\\((.|\s)+\\\)$/.test(text) ||
+            /^\\\[(.|\s)+\\\]$/.test(text) ||
+            /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text);
+
+          if (isMath) {
+            code.outerHTML = code.innerHTML;
+            continue;
+          }
+        }
+
+        i++;
+      }
+    }
+    </script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-svg.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      function rerenderMath() {
+        releaseMath(document);
+
+        if (window.MathJax && MathJax.typesetPromise) {
+          MathJax.typesetPromise().catch(function (err) {
+            console.error("MathJax typeset failed:", err);
+          });
+        }
+      }
+
+      if (window.slideshow && typeof slideshow.on === "function") {
+        slideshow.on("afterShowSlide", rerenderMath);
+      }
+
+      rerenderMath();
+    });
+    </script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="www/layout.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 8
+]
+.subtitle[
+## Robustness to Non-linear Effect Heterogeneity
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+.full-width table {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+.right-shift50 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -50px;
+}
+
+&lt;/style&gt;
+
+
+
+
+
+
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That the nature of the relaionship between `\(x\)` and `\(y\)` regarding moderation in non-linear GLMs is appropriately specified.    
+
+Why might this assumption fail?
+
+- The nature of the conditional relationship is not appropriately captured by the model's form. 
+- The model imposes conditionality that is not really there. 
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That the nature of the relaionship between `\(x\)` and `\(y\)` regarding moderation in non-linear GLMs is appropriately specified.    
+
+What kinds of inferential instability can result?
+- Misleading conclusions about the average effect. 
+- Improper estimation of effect sizes/directions (e.g., Simpson's paradox). 
+- Poor predictions. 
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That the nature of the relaionship between `\(x\)` and `\(y\)` regarding moderation in non-linear GLMs is appropriately specified.    
+
+What tools exist to evaluate robustness?
+- Interflex models
+- Smooth interactions with GAMs
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That the nature of the relaionship between `\(x\)` and `\(y\)` regarding moderation in non-linear GLMs is appropriately specified.    
+
+What are the limits of these tools?
+- In essence, all variables are moderators - which to investigate?
+- Evidence for moderation is often low power.
+    - Interaction effects are typically estimated much less precisely than average effects.
+    - Reliable estimation requires sufficient support across combinations of x and the moderator.
+
+
+---
+
+# Problems With Linear Interactions
+
+Consider the following model:
+
+`$$y = a + b_{1}X + b_{2}D + b_{3}X\times D + e$$`
+
+Hainmueller, Mummolo and Xu argue that our linear interaction models like above suffer from two potential problems:
+
+- The conditional partial effect of each variable is a linear function of the other: `\(b_{D|X} = b_{2} + b_{3}X\)`.  Thus for every additional unit of `\(X\)` the effect of `\(D\)` changes by the same amount.
+
+- Support - most political scientists do not pay attention to the joint density of the interacting variables and what the implies about our ability to make inferences.
+
+
+---
+
+## Linearity
+
+Consider the same model as before
+
+`$$y = b_0 + b_{1}X + b_{2}D + b_{3}X\times D + e$$`
+
+Consider two different values of `\(D: \{d_{1}, d_{2}\}\)`, the effect of this contrast is:
+
+`$$\begin{aligned}
+    \hat{Y}(D=d_{1}|X) - \hat{Y}(D=d_{2}|X) =&amp;  (a + b_{1}X + b_{2}d_{1} + b_{3}Xd_{1})\\
+    &amp; - (a + b_{1}X + b_{2}d_{2} + b_{3}Xd_{2})\\
+    =&amp; b_{2}(d_{1}-d_{2}) + b_{3}X(d_{1}-d_{2})
+\end{aligned}$$`
+
+The effect will only be appropriately estimated if *both* functions of `\(X\)` (for `\(d_{1}\)` and `\(d_{2}\)` are linear).
+
+
+
+---
+
+## Support
+
+`$$b_{2}(d_{1}-d_{2}) + b_{3}X(d_{1}-d_{2})$$`
+
+The equation above makes it clear that to reliably estimate the treatment:
+
+- We must have reasonable data density at both `\(d_{1}\)` and `\(d_{2}\)` for each value of `\(X\)`.
+
+- Failure of this condition results in interaction effects that are a function of interpolation and extrapolation.
+
+
+
+
+---
+
+# Diagnostics I
+
+.left-code[
+
+``` r
+library(interflex)
+set.seed(43901)
+X1 &lt;- rnorm(200, 3, 1)
+X2 &lt;- runif(200, -3, 3)
+e &lt;- rnorm(200, 0, 4)
+D1 &lt;- rbinom(200, 1, .5)
+Y1 &lt;- 5-4*X1 -9*D1 + 3*D1*X1 + e
+Y2 &lt;- 2.5- X2^2 -5*D1 + 2*D1*X2^2  + e
+dat &lt;- as.data.frame(cbind(Y1,Y2,D1,X1, X2))
+dat$D10 &lt;- 1-dat$D1
+i1 &lt;- interflex(estimator="raw", 
+               dat, 
+               "Y1", 
+               "D1", 
+               "X1", 
+               treat.type="discrete")
+
+plot(i1)
+```
+]
+.right-plot-shift[
+
+```
+## Baseline group not specified; choose treat = 0 as the baseline group.
+```
+
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-2-1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+
+# Diagnostics II
+
+.left-code[
+
+``` r
+library(interflex)
+i2 &lt;- interflex(estimator="raw", 
+               dat, 
+               "Y2", 
+               "D1", 
+               "X2", 
+               treat.type="discrete")
+
+plot(i2)
+```
+]
+.right-plot-shift[
+
+```
+## Baseline group not specified; choose treat = 0 as the baseline group.
+```
+
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-3-1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+
+---
+
+# Binning Estimator for Interaction Effects
+
+- Discretize `\(X\)` using its three terciles.
+
+`$$G_{1}=\left\{\begin{array}{ll}
+        1, &amp;\text{ if }X &lt; \delta_{\frac{1}{3}}\\
+        0, &amp;\text{ Otherwise }
+    \end{array}\right. \text{ }
+    G_{2}=\left\{\begin{array}{ll}
+        1, &amp;\text{ if }\delta_{\frac{1}{3}} \geq X &lt; \delta_{\frac{2}{3}}\\
+        0, &amp;\text{ Otherwise }
+    \end{array}\right.\text{ }
+    G_{3}=\left\{\begin{array}{ll}
+        1, &amp;\text{ if }\delta_{\frac{2}{3}} \geq X\\
+        0, &amp;\text{ Otherwise }
+    \end{array}\right.$$`
+
+
+- Pick an evaluation point, `\(x_{j}\)`, in each of the `\(J\)` bins (usually the median of the `\(x\)` values within the bin)
+
+- Estimate the model:
+
+`$$Y = \sum_{j=1}^{J} \left\{u_{j} + \alpha_{j}D +\eta_{j}(X-x_{j}) + \beta_{j}(X-x_{j})D\right\}G_{j} + \ldots + \varepsilon$$`
+
+
+---
+
+# Advantages over Linear Interaction Effect
+
+
+- More flexible for non-linear functional forms.  It fits separate interactions to each bin.
+
+- Since `\((X-x_{j}) = 0\)` at the evaluation point, the partial conditional effect within each bin is just `\(\alpha_{j}\)`.
+
+- Binning ensures that there is sufficient joint support on `\(X\)` and `\(D\)` since they are constructed from `\(X\)`.
+
+- This model nests the linear interaction model, so it can serve as a test of the linear interaction effect model.
+
+---
+
+# Binning Estimator
+
+.left-code[
+
+``` r
+b1 &lt;- interflex(estimator="binning", 
+                dat, 
+                "Y1",
+                "D1", 
+                "X1", 
+                treat.type="discrete") 
+plot(b1)
+```
+]
+.right-plot-shift2[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-4-1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+# Binning Estimator II
+
+.left-code[
+
+``` r
+b2 &lt;- interflex(estimator="binning", 
+                dat, 
+                "Y2",
+                "D1", 
+                "X2", 
+                treat.type="discrete") 
+plot(b2)
+```
+]
+.right-plot-shift2[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-5-1.png" alt="" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# Kernel Estimator
+
+A kernel estimator is more flexible allowing the conditional partial effect to change across the values of `\(X\)`.
+
+`$$Y = f(X) + g(X)D + \gamma(X)Z + \varepsilon$$`
+
+
+- This is the standard linear interaction effect model when `\(f(x) = \mu + \nu X\)` and `\(g(x) = \alpha + \beta X\)` and `\(\gamma(X) = \gamma\)`.
+
+---
+
+# Figure
+.left-code[
+
+``` r
+k1 &lt;- interflex(estimator="kernel", 
+                dat, 
+                "Y1", 
+                "D1", 
+                "X1", 
+                treat.type="discrete", 
+                parallel=FALSE)
+```
+
+```
+## Baseline group not specified; choose treat = 0 as the baseline group. 
+## Cross-validating bandwidth ...
+```
+
+```
+## Optimal bw=0.6184.
+## Number of evaluation points:50
+```
+]
+.right-plot-shift2[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-6-1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+# Figure II
+.left-code[
+
+``` r
+k2 &lt;- interflex(estimator="kernel", 
+                 dat, 
+                 "Y2", 
+                 "D1", 
+                 "X2",
+                 treat.type="discrete", 
+                 parallel=FALSE)
+```
+
+```
+## Baseline group not specified; choose treat = 0 as the baseline group. 
+## Cross-validating bandwidth ...
+```
+
+```
+## Optimal bw=0.891.
+## Number of evaluation points:50
+```
+]
+.right-plot-shift2[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-7-1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+# On Prestige Data
+
+
+``` r
+data(Prestige, package='carData')
+Prestige$income &lt;- Prestige$income/1000
+interflex("raw", Prestige, "prestige", "income", "education", ncols=3)
+```
+
+&lt;img src="lecture8_2026_files/figure-html/praw-1.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Binning Estimator: Prestige Data
+.left-code[
+
+``` r
+pres.b &lt;- interflex("binning", 
+                    Prestige, 
+                    "prestige", 
+                    "income", 
+                    "education",
+                    Z = c("type", 
+                          "women"), 
+                    na.rm=T, 
+                    figure=FALSE)
+```
+]
+.right-plot-shift2[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-8-1.png" alt="" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# Kernel Estimator: Prestige Data
+
+.left-code[
+
+
+``` r
+pres.k &lt;- interflex("kernel", 
+                    Prestige, 
+                    "prestige", 
+                    "income", 
+                    "education",
+                    Z=c("type", 
+                        "women"), 
+                    na.rm=T, 
+                    figure=FALSE, 
+                    treat.type="continuous", 
+                    parallel=FALSE)
+```
+]
+
+.right-plot-shift2[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-9-1.png" alt="" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# GAMs for the Fake Data I
+
+
+
+``` r
+library(mgcv)
+dat$D1 &lt;- as.factor(dat$D1)
+mod0u &lt;- gam(Y1 ~ X1 + D1, data=dat)
+mod0 &lt;- gam(Y1 ~ X1*D1, data=dat)
+mod1 &lt;- gam(Y1 ~ s(X1, by=D1) + D1,  
+               data=dat)
+anova(mod0, mod1, test="F")
+```
+
+```
+## Analysis of Deviance Table
+## 
+## Model 1: Y1 ~ X1 * D1
+## Model 2: Y1 ~ s(X1, by = D1) + D1
+##   Resid. Df Resid. Dev     Df Deviance      F Pr(&gt;F)
+## 1    196.00     2947.9                              
+## 2    194.36     2910.8 1.6418   37.127 1.5153 0.2242
+```
+
+---
+
+## Conditional Effects of X1
+
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-10-1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Robustness of Conditional Effect of X1
+
+
+```
+## # A tibble: 20 × 5
+## # Rowwise: 
+##       X1 D1    ovl_u_li ovl_li_g ovl_u_g
+##    &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
+##  1 0.121 0       0.0829    0.532  0.347 
+##  2 0.121 1       0.129     0.511  0.432 
+##  3 0.756 0       0.0829    0.578  0.358 
+##  4 0.756 1       0.129     0.534  0.459 
+##  5 1.39  0       0.0829    0.657  0.339 
+##  6 1.39  1       0.129     0.585  0.470 
+##  7 2.03  0       0.0829    0.769  0.239 
+##  8 2.03  1       0.129     0.705  0.372 
+##  9 2.66  0       0.0829    0.877  0.138 
+## 10 2.66  1       0.129     0.822  0.259 
+## 11 3.29  0       0.0829    0.768  0.102 
+## 12 3.29  1       0.129     0.871  0.158 
+## 13 3.93  0       0.0830    0.595  0.0967
+## 14 3.93  1       0.129     0.731  0.117 
+## 15 4.56  0       0.0829    0.511  0.124 
+## 16 4.56  1       0.129     0.632  0.129 
+## 17 5.20  0       0.0829    0.474  0.155 
+## 18 5.20  1       0.129     0.587  0.171 
+## 19 5.83  0       0.0829    0.452  0.169 
+## 20 5.83  1       0.129     0.559  0.195
+```
+---
+
+## Simulation
+
+
+``` r
+sim_function &lt;- function(base, alt, vbl, byvar, m_num = 10, s_len = 10, 
+                         type = c("slopes", "comparisons", "predictions", 
+                                  "avg_slopes", "avg_comparisons", "avg_predictions"), 
+                         R = 25, progress=TRUE, 
+                         ...){
+  type_fun &lt;- match.arg(type)
+  nlevs &lt;- function(x){
+    if(inherits(x, "factor"))length(levels(x))
+    else length(unique(na.omit(x)))
+  }
+  tmp &lt;- insight::get_data(base)
+  sim_resp &lt;- try(simulate(base)[[1]])
+  if(inherits(sim_resp, "try-error")){
+    stop("simulate() failed on base model.\n")
+  }else{
+  setvars &lt;- union(vbl, byvar)
+  vars &lt;- lapply(setvars, \(x){
+    nl &lt;- nlevs(tmp[[x]])
+    if(nl &gt; m_num){
+      seq_range(tmp[[x]], n=s_len)
+    }else{
+      if(inherits(tmp[[x]], "factor"))levels(tmp[[x]])
+      else sort(unique(na.omit(tmp[[x]])))
+    }
+  })
+  names(vars) &lt;- setvars  
+  vars$model &lt;- base
+  vars$grid_type = "mean_or_mode"
+  dg &lt;- do.call(marginaleffects::datagrid, vars)
+  efun &lt;- rlang::eval_bare(rlang::parse_expr(type_fun))
+  e_base_orig &lt;- efun(base, newdata=dg, variables=vbl, by=byvar)
+  e_alt_orig &lt;- efun(alt, newdata=dg, variables=vbl, by=byvar)
+  out &lt;- purrr::map(1:R, \(z){
+    tmp$sim_resp &lt;- simulate(base)[[1]]
+    up_base &lt;- update(base, sim_resp~ ., data=tmp)
+    up_alt &lt;- update(alt, sim_resp ~ ., data=tmp)
+    rob &lt;- purrr::map(1:nrow(e_base), \(i){
+    e_base &lt;- efun(up_base, newdata=dg, variables=vbl, by=byvar)
+    e_alt &lt;- efun(up_alt, newdata=dg, variables=vbl, by=byvar)
+    nprobustness::robustness(
+      dnorm, dnorm, 
+      target_args = list(mean = e_base$estimate[i], sd = e_base$std.error[i]), 
+      alt_args = list(mean = e_alt$estimate[i], sd = e_alt$std.error[i]))
+    }) |&gt; 
+      bind_rows() |&gt; 
+      bind_cols(dg |&gt; select(setvars))
+  }, .progress=progress) |&gt; 
+    bind_rows(.id="iter")
+  rob_orig &lt;- purrr::map_df(1:nrow(e_base_orig), \(i){
+  nprobustness::robustness(
+    dnorm, dnorm, 
+    target_args = list(mean = e_base_orig$estimate[i], sd = e_base_orig$std.error[i]), 
+    alt_args = list(mean = e_alt_orig$estimate[i], sd = e_alt_orig$std.error[i]))
+  }) 
+out &lt;- out |&gt; 
+  reframe(ovl = list(ovl), np = list(np), js = list(js), kl = list(kl), .by=all_of(setvars))
+out &lt;- bind_cols(out, rob_orig |&gt; setNames(paste0(names(rob_orig), "_obs")))
+out &lt;- out |&gt; 
+  rowwise() |&gt; 
+  mutate(ovl_pct = mean(ovl_obs &gt; ovl, na.rm=TRUE), 
+         np_pct = mean(np_obs &gt; np, na.rm=TRUE), 
+         js_pct = mean(js_obs &gt; js, na.rm=TRUE), 
+         kl_pct = mean(kl_obs &gt; kl, na.rm=TRUE)) |&gt; 
+  ungroup()
+return(out)
+}
+}
+
+sim_lg &lt;- sim_function(mod0, mod1, vbl="X1", byvar=c("X1", "D1"))
+```
+
+
+---
+
+# GAMs for the Fake Data II
+
+
+
+``` r
+mod0b &lt;- gam(Y2 ~ X2*D1, data=dat)
+mod1b &lt;- gam(Y2 ~ s(X2, by=D1) + D1,
+               data=dat)
+anova(mod0b, mod1b)
+```
+
+```
+## Analysis of Deviance Table
+## 
+## Model 1: Y2 ~ X2 * D1
+## Model 2: Y2 ~ s(X2, by = D1) + D1
+##   Resid. Df Resid. Dev     Df Deviance      F    Pr(&gt;F)    
+## 1    196.00     5080.2                                     
+## 2    188.02     2781.8 7.9818   2298.4 19.651 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+# Treatment Effect Plot
+
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-13-1.png" alt="" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+# GAMs for the Prestige Data
+
+
+
+``` r
+library(mgcv)
+Prestige &lt;- na.omit(Prestige)
+mod_int0 &lt;- gam(prestige ~ log(income)*education + 
+    women + type, data=Prestige)
+mod_int1 &lt;- gam(prestige ~ ti(income) + ti(education) + 
+              ti(income, education) + women + type, 
+            data=Prestige)
+anova(mod_int0, mod_int1)
+```
+
+```
+## Analysis of Deviance Table
+## 
+## Model 1: prestige ~ log(income) * education + women + type
+## Model 2: prestige ~ ti(income) + ti(education) + ti(income, education) + 
+##     women + type
+##   Resid. Df Resid. Dev    Df Deviance      F Pr(&gt;F)
+## 1    91.000     3649.6                             
+## 2    86.746     3450.9 4.254   198.69 1.1898 0.3212
+```
+
+---
+
+
+# Interactions Conclusion
+
+The GAM framework provides us the ability to: 
+- model general non-linear interactions in both continuous and discrete variables
+- do most everything suggested by Hainmueller et al. 
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+  </body>
+</html>

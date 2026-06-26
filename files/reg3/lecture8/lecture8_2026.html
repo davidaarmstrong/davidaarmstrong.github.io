@@ -496,21 +496,10 @@ pres.k &lt;- interflex("kernel",
 ``` r
 library(mgcv)
 dat$D1 &lt;- as.factor(dat$D1)
-mod0u &lt;- gam(Y1 ~ X1 + D1, data=dat)
-mod0 &lt;- gam(Y1 ~ X1*D1, data=dat)
+mod0u &lt;- lm(Y1 ~ X1 + D1, data=dat)
+mod0 &lt;- lm(Y1 ~ X1*D1, data=dat)
 mod1 &lt;- gam(Y1 ~ s(X1, by=D1) + D1,  
                data=dat)
-anova(mod0, mod1, test="F")
-```
-
-```
-## Analysis of Deviance Table
-## 
-## Model 1: Y1 ~ X1 * D1
-## Model 2: Y1 ~ s(X1, by = D1) + D1
-##   Resid. Df Resid. Dev     Df Deviance      F Pr(&gt;F)
-## 1    196.00     2947.9                              
-## 2    194.36     2910.8 1.6418   37.127 1.5153 0.2242
 ```
 
 ---
@@ -525,171 +514,271 @@ anova(mod0, mod1, test="F")
 
 
 ```
-## # A tibble: 20 × 5
-## # Rowwise: 
-##       X1 D1    ovl_u_li ovl_li_g ovl_u_g
-##    &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
-##  1 0.121 0       0.0829    0.532  0.347 
-##  2 0.121 1       0.129     0.511  0.432 
-##  3 0.756 0       0.0829    0.578  0.358 
-##  4 0.756 1       0.129     0.534  0.459 
-##  5 1.39  0       0.0829    0.657  0.339 
-##  6 1.39  1       0.129     0.585  0.470 
-##  7 2.03  0       0.0829    0.769  0.239 
-##  8 2.03  1       0.129     0.705  0.372 
-##  9 2.66  0       0.0829    0.877  0.138 
-## 10 2.66  1       0.129     0.822  0.259 
-## 11 3.29  0       0.0829    0.768  0.102 
-## 12 3.29  1       0.129     0.871  0.158 
-## 13 3.93  0       0.0830    0.595  0.0967
-## 14 3.93  1       0.129     0.731  0.117 
-## 15 4.56  0       0.0829    0.511  0.124 
-## 16 4.56  1       0.129     0.632  0.129 
-## 17 5.20  0       0.0829    0.474  0.155 
-## 18 5.20  1       0.129     0.587  0.171 
-## 19 5.83  0       0.0829    0.452  0.169 
-## 20 5.83  1       0.129     0.559  0.195
+## # A tibble: 20 × 4
+##       X1 D1    ovl_0u0 ovl_01
+##    &lt;dbl&gt; &lt;fct&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+##  1 0.121 0      0.0829  0.532
+##  2 0.121 1      0.129   0.511
+##  3 0.756 0      0.0829  0.578
+##  4 0.756 1      0.129   0.534
+##  5 1.39  0      0.0829  0.657
+##  6 1.39  1      0.129   0.585
+##  7 2.03  0      0.0830  0.769
+##  8 2.03  1      0.129   0.705
+##  9 2.66  0      0.0830  0.877
+## 10 2.66  1      0.129   0.822
+## 11 3.29  0      0.0830  0.768
+## 12 3.29  1      0.129   0.871
+## 13 3.93  0      0.0829  0.595
+## 14 3.93  1      0.129   0.731
+## 15 4.56  0      0.0829  0.511
+## 16 4.56  1      0.129   0.633
+## 17 5.20  0      0.0829  0.474
+## 18 5.20  1      0.129   0.587
+## 19 5.83  0      0.0829  0.452
+## 20 5.83  1      0.129   0.559
 ```
 ---
 
 ## Simulation
+.pull-left[
+
+``` r
+me_fun &lt;- function(obj){
+  avg_slopes(
+    obj, 
+    newdata = datagrid(
+       model = mod1, 
+       X1 = seq_range(dat$X1, n=10), 
+       D1 = factor(0:1)), 
+    variables="X1", 
+    by=c("X1", "D1"))
+}
+
+sim_rob &lt;- sim_robustness(
+  mod0, 
+  mod1, 
+  dat, 
+  me_fn = me_fun, 
+  type="ovl",
+  R=100)
+```
+]
+.pull-right[
 
 
 ``` r
-sim_function &lt;- function(base, alt, vbl, byvar, m_num = 10, s_len = 10, 
-                         type = c("slopes", "comparisons", "predictions", 
-                                  "avg_slopes", "avg_comparisons", "avg_predictions"), 
-                         R = 25, progress=TRUE, 
-                         ...){
-  type_fun &lt;- match.arg(type)
-  nlevs &lt;- function(x){
-    if(inherits(x, "factor"))length(levels(x))
-    else length(unique(na.omit(x)))
-  }
-  tmp &lt;- insight::get_data(base)
-  sim_resp &lt;- try(simulate(base)[[1]])
-  if(inherits(sim_resp, "try-error")){
-    stop("simulate() failed on base model.\n")
-  }else{
-  setvars &lt;- union(vbl, byvar)
-  vars &lt;- lapply(setvars, \(x){
-    nl &lt;- nlevs(tmp[[x]])
-    if(nl &gt; m_num){
-      seq_range(tmp[[x]], n=s_len)
-    }else{
-      if(inherits(tmp[[x]], "factor"))levels(tmp[[x]])
-      else sort(unique(na.omit(tmp[[x]])))
-    }
-  })
-  names(vars) &lt;- setvars  
-  vars$model &lt;- base
-  vars$grid_type = "mean_or_mode"
-  dg &lt;- do.call(marginaleffects::datagrid, vars)
-  efun &lt;- rlang::eval_bare(rlang::parse_expr(type_fun))
-  e_base_orig &lt;- efun(base, newdata=dg, variables=vbl, by=byvar)
-  e_alt_orig &lt;- efun(alt, newdata=dg, variables=vbl, by=byvar)
-  out &lt;- purrr::map(1:R, \(z){
-    tmp$sim_resp &lt;- simulate(base)[[1]]
-    up_base &lt;- update(base, sim_resp~ ., data=tmp)
-    up_alt &lt;- update(alt, sim_resp ~ ., data=tmp)
-    rob &lt;- purrr::map(1:nrow(e_base), \(i){
-    e_base &lt;- efun(up_base, newdata=dg, variables=vbl, by=byvar)
-    e_alt &lt;- efun(up_alt, newdata=dg, variables=vbl, by=byvar)
-    nprobustness::robustness(
-      dnorm, dnorm, 
-      target_args = list(mean = e_base$estimate[i], sd = e_base$std.error[i]), 
-      alt_args = list(mean = e_alt$estimate[i], sd = e_alt$std.error[i]))
-    }) |&gt; 
-      bind_rows() |&gt; 
-      bind_cols(dg |&gt; select(setvars))
-  }, .progress=progress) |&gt; 
-    bind_rows(.id="iter")
-  rob_orig &lt;- purrr::map_df(1:nrow(e_base_orig), \(i){
-  nprobustness::robustness(
-    dnorm, dnorm, 
-    target_args = list(mean = e_base_orig$estimate[i], sd = e_base_orig$std.error[i]), 
-    alt_args = list(mean = e_alt_orig$estimate[i], sd = e_alt_orig$std.error[i]))
-  }) 
-out &lt;- out |&gt; 
-  reframe(ovl = list(ovl), np = list(np), js = list(js), kl = list(kl), .by=all_of(setvars))
-out &lt;- bind_cols(out, rob_orig |&gt; setNames(paste0(names(rob_orig), "_obs")))
-out &lt;- out |&gt; 
-  rowwise() |&gt; 
-  mutate(ovl_pct = mean(ovl_obs &gt; ovl, na.rm=TRUE), 
-         np_pct = mean(np_obs &gt; np, na.rm=TRUE), 
-         js_pct = mean(js_obs &gt; js, na.rm=TRUE), 
-         kl_pct = mean(kl_obs &gt; kl, na.rm=TRUE)) |&gt; 
-  ungroup()
-return(out)
-}
-}
-
-sim_lg &lt;- sim_function(mod0, mod1, vbl="X1", byvar=c("X1", "D1"))
+summary(sim_rob, .by=c("X1", "D1"))
 ```
 
+```
+## # A tibble: 20 × 5
+##       X1 D1    ovl_pct ovl_mean_sim ovl_obs
+##    &lt;dbl&gt; &lt;fct&gt;   &lt;dbl&gt;        &lt;dbl&gt;   &lt;dbl&gt;
+##  1 0.121 0        0.36        0.705   0.532
+##  2 0.121 1        0.35        0.708   0.511
+##  3 0.756 0        0.36        0.720   0.578
+##  4 0.756 1        0.35        0.720   0.534
+##  5 1.39  0        0.36        0.746   0.657
+##  6 1.39  1        0.35        0.743   0.585
+##  7 2.03  0        0.36        0.787   0.769
+##  8 2.03  1        0.37        0.775   0.705
+##  9 2.66  0        0.36        0.809   0.877
+## 10 2.66  1        0.37        0.810   0.822
+## 11 3.29  0        0.38        0.781   0.768
+## 12 3.29  1        0.38        0.824   0.871
+## 13 3.93  0        0.34        0.749   0.595
+## 14 3.93  1        0.37        0.790   0.731
+## 15 4.56  0        0.33        0.713   0.511
+## 16 4.56  1        0.37        0.763   0.633
+## 17 5.20  0        0.35        0.696   0.474
+## 18 5.20  1        0.37        0.736   0.587
+## 19 5.83  0        0.35        0.688   0.452
+## 20 5.83  1        0.37        0.721   0.559
+```
+]
 
 ---
 
 # GAMs for the Fake Data II
 
-
+.pull-left[
 
 ``` r
 mod0b &lt;- gam(Y2 ~ X2*D1, data=dat)
-mod1b &lt;- gam(Y2 ~ s(X2, by=D1) + D1,
-               data=dat)
-anova(mod0b, mod1b)
+summary(mod0b)
 ```
 
 ```
-## Analysis of Deviance Table
 ## 
-## Model 1: Y2 ~ X2 * D1
-## Model 2: Y2 ~ s(X2, by = D1) + D1
-##   Resid. Df Resid. Dev     Df Deviance      F    Pr(&gt;F)    
-## 1    196.00     5080.2                                     
-## 2    188.02     2781.8 7.9818   2298.4 19.651 &lt; 2.2e-16 ***
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## Y2 ~ X2 * D1
+## 
+## Parametric coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept)  -0.7306     0.5234  -1.396   0.1644  
+## X2            0.1852     0.2934   0.631   0.5286  
+## D11           1.4302     0.7290   1.962   0.0512 .
+## X2:D11       -0.1729     0.4026  -0.429   0.6681  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## 
+## R-sq.(adj) =  0.00551   Deviance explained = 2.05%
+## GCV = 26.448  Scale est. = 25.919    n = 200
+```
+]
+.pull-right[
+
+``` r
+mod1b &lt;- gam(Y2 ~ s(X2, by=D1) + D1,
+               data=dat)
+summary(mod1b)
 ```
 
+```
+## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## Y2 ~ s(X2, by = D1) + D1
+## 
+## Parametric coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)  -0.9804     0.4013  -2.443  0.01547 * 
+## D11           1.6839     0.5533   3.043  0.00267 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Approximate significance of smooth terms:
+##             edf Ref.df     F p-value    
+## s(X2):D10 5.198  6.321 11.83  &lt;2e-16 ***
+## s(X2):D11 2.969  3.660 19.98  &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## R-sq.(adj) =  0.438   Deviance explained = 46.4%
+## GCV = 15.439  Scale est. = 14.654    n = 200
+```
+]
 ---
 
 # Treatment Effect Plot
 
-&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-13-1.png" alt="" width="65%" style="display: block; margin: auto;" /&gt;
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-16-1.png" alt="" width="40%" style="display: block; margin: auto;" /&gt;
 
 ---
 
+## Marginal Effect of X2|D
 
-# GAMs for the Prestige Data
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-17-1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
 
+---
+
+## Robustness of Conditional Effect of X2
+
+
+```
+## # A tibble: 20 × 5
+##        X2 D1    estimate base_est       ovl
+##     &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+##  1 -2.99  0       9.07     0.185  0.00808  
+##  2 -2.99  1      -4.61     0.0123 0.00586  
+##  3 -2.33  0       7.59     0.185  0.000529 
+##  4 -2.33  1      -4.37     0.0123 0.000443 
+##  5 -1.66  0       3.02     0.185  0.0940   
+##  6 -1.66  1      -3.46     0.0123 0.000858 
+##  7 -0.996 0       1.45     0.185  0.255    
+##  8 -0.996 1      -2.15     0.0123 0.0297   
+##  9 -0.331 0       1.26     0.185  0.260    
+## 10 -0.331 1      -0.706    0.0123 0.384    
+## 11  0.335 0      -1.15     0.185  0.246    
+## 12  0.335 1       1.22     0.0123 0.224    
+## 13  1.00  0       0.0503   0.185  0.311    
+## 14  1.00  1       3.14     0.0123 0.00369  
+## 15  1.67  0      -2.84     0.185  0.0682   
+## 16  1.67  1       4.01     0.0123 0.000217 
+## 17  2.33  0      -8.81     0.185  0.0000385
+## 18  2.33  1       4.06     0.0123 0.00356  
+## 19  3.00  0     -10.1      0.185  0.00721  
+## 20  3.00  1       3.94     0.0123 0.0276
+```
+---
+
+## Simulation
+.pull-left[
+
+``` r
+me_fun &lt;- function(obj){
+  avg_slopes(
+    obj, 
+    newdata = datagrid(
+       model = mod1, 
+       X2 = seq_range(dat$X2, n=10), 
+       D1 = factor(0:1)), 
+    variables="X2", 
+    by=c("X2", "D1"))
+}
+
+sim_rob2 &lt;- sim_robustness(
+  mod0b, 
+  mod1b, 
+  dat, 
+  me_fn = me_fun, 
+  type="ovl",
+  R=100)
+```
+]
+.pull-right[
 
 
 ``` r
-library(mgcv)
-Prestige &lt;- na.omit(Prestige)
-mod_int0 &lt;- gam(prestige ~ log(income)*education + 
-    women + type, data=Prestige)
-mod_int1 &lt;- gam(prestige ~ ti(income) + ti(education) + 
-              ti(income, education) + women + type, 
-            data=Prestige)
-anova(mod_int0, mod_int1)
+summary(sim_rob2, .by=c("X2", "D1"))
 ```
 
 ```
-## Analysis of Deviance Table
-## 
-## Model 1: prestige ~ log(income) * education + women + type
-## Model 2: prestige ~ ti(income) + ti(education) + ti(income, education) + 
-##     women + type
-##   Resid. Df Resid. Dev    Df Deviance      F Pr(&gt;F)
-## 1    91.000     3649.6                             
-## 2    86.746     3450.9 4.254   198.69 1.1898 0.3212
+## # A tibble: 20 × 5
+##        X2 D1    ovl_pct ovl_mean_sim   ovl_obs
+##     &lt;dbl&gt; &lt;fct&gt;   &lt;dbl&gt;        &lt;dbl&gt;     &lt;dbl&gt;
+##  1 -2.99  0        0           0.776 0.00808  
+##  2 -2.99  1        0           0.747 0.00586  
+##  3 -2.33  0        0           0.785 0.000529 
+##  4 -2.33  1        0           0.760 0.000443 
+##  5 -1.66  0        0           0.810 0.0940   
+##  6 -1.66  1        0           0.780 0.000858 
+##  7 -0.996 0        0.06        0.831 0.255    
+##  8 -0.996 1        0           0.798 0.0297   
+##  9 -0.331 0        0.06        0.839 0.260    
+## 10 -0.331 1        0.16        0.812 0.384    
+## 11  0.335 0        0.08        0.834 0.246    
+## 12  0.335 1        0.09        0.805 0.224    
+## 13  1.00  0        0.09        0.829 0.311    
+## 14  1.00  1        0           0.787 0.00369  
+## 15  1.67  0        0.01        0.815 0.0682   
+## 16  1.67  1        0           0.771 0.000217 
+## 17  2.33  0        0           0.787 0.0000385
+## 18  2.33  1        0           0.751 0.00356  
+## 19  3.00  0        0           0.775 0.00721  
+## 20  3.00  1        0.01        0.741 0.0276
 ```
+]
 
 ---
 
+## Exercise
+
+Look at the Banda and Casesse Replication
+1. Estimate the linear interaction model for resentment and sexism with pid
+2. Estimate the linear three-way interaction. 
+3. Estimate the GAM with smooth interactions for resentment and sexism with pid. 
+4. Estimate the GAM with smoothe 2-d interaction for resentment and sexism for each pid. 
+5. Evaluate robustness. 
+
+---
 
 # Interactions Conclusion
 

@@ -235,7 +235,7 @@ rob_min$se &lt;- se
 
 ## Visualization
 
-&lt;img src="lecture9_2026_files/figure-html/unnamed-chunk-3-1.png" alt="" width="75%" style="display: block; margin: auto;" /&gt;
+&lt;img src="lecture9_2026_files/figure-html/unnamed-chunk-3-1.png" alt="Two-panel figure with subset models ordered by OVL from top (highest) to bottom (lowest). Left panel: a forest plot of point estimates and 95% confidence intervals for the minority coefficient across all subset models, colored on a viridis scale from low OVL (purple) to high OVL (yellow), with a dashed vertical line at the full-model estimate. Right panel: a grid of dark (included) and light (excluded) squares showing which covariates entered each model. The pairing reveals which variable combinations produce estimates most similar to the full-model result." width="75%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -625,7 +625,7 @@ robustness(dnorm, dnorm,
 ```
 ]
 .pull-right[
-&lt;img src="lecture9_2026_files/figure-html/unnamed-chunk-8-1.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+&lt;img src="lecture9_2026_files/figure-html/unnamed-chunk-8-1.png" alt="Overlapping density plot comparing the sampling distribution of the minority coefficient under two models: the baseline full-model (one shaded region) and the AICc-weighted model-averaged estimate (another shaded region). The x-axis shows the effect of minority on undercount. The substantial overlap between the two densities indicates that model averaging shifts the estimated effect only modestly relative to the uncertainty in either estimate." width="90%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---

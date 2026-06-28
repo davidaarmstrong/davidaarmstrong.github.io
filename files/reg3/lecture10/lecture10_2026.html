@@ -352,7 +352,7 @@ robustness(slp_full, slp_pds) |&gt; select(veto, estimate, base_est, ovl)
 ## Effects
 
 .pull-left[
-&lt;img src="lecture10_2026_files/figure-html/unnamed-chunk-4-1.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+&lt;img src="lecture10_2026_files/figure-html/unnamed-chunk-4-1.png" alt="Line plot with confidence ribbons showing the conditional effect of behavioral democracy (voice) on repression across levels of institutional democracy (veto), for the baseline interaction model and the PDS-LASSO corrected model. A horizontal dashed line marks zero effect; a rug plot shows observed veto values. Both curves slope downward — larger veto reduces the repressive effect of voice — but the PDS model shows different confidence bounds, indicating that omitted moderator-covariate interactions shift the uncertainty without reversing the direction of the interaction." width="90%" style="display: block; margin: auto;" /&gt;
 
 ]
 .pull-right[
@@ -365,10 +365,10 @@ robustness(slp_full, slp_pds) |&gt; select(veto, estimate, base_est, ovl)
 
 ## Conclusion
 
-Blackwell &amp; Olson suggest that omitted interaction bias could be problematic in interaction models. 
-- This is protection against a particular kind of unanticipated confounding. 
-- The PDS Interaction model is a special case of a more general technique - Double Machine Learning (DML). 
+Blackwell &amp; Olson suggest that omitted moderator–covariate interactions can bias estimates of the focal interaction.
 
+- This protects against one specific form of model misspecification in interaction models.
+- The PDS interaction procedure is a specialized application of ideas that later developed into the broader Double Machine Learning (DML) framework.
 
 
     </textarea>

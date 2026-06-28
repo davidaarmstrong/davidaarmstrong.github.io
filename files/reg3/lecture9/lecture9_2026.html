@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+  <head>
+    <title>Lecture 9</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="lecture9_2026_files/header-attrs/header-attrs.js"></script>
+    <link href="lecture9_2026_files/remark-css/default.css" rel="stylesheet" />
+    <script src="lecture9_2026_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture9_2026_files/fabric/fabric.min.js"></script>
+    <link href="lecture9_2026_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture9_2026_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture9_2026_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture9_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture9_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture9_2026_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture9_2026_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <script>
+    function releaseMath(el) {
+      const codes = el.getElementsByTagName('code');
+
+      for (let i = 0; i < codes.length;) {
+        const code = codes[i];
+
+        if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+          const text = code.textContent.trim();
+
+          const isMath =
+            /^\$\$(.|\s)+\$\$$/.test(text) ||
+            /^\$(?!\$)(.|\s)+\$$/.test(text) ||
+            /^\\\((.|\s)+\\\)$/.test(text) ||
+            /^\\\[(.|\s)+\\\]$/.test(text) ||
+            /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text);
+
+          if (isMath) {
+            code.outerHTML = code.innerHTML;
+            continue;
+          }
+        }
+
+        i++;
+      }
+    }
+    </script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-svg.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      function rerenderMath() {
+        releaseMath(document);
+
+        if (window.MathJax && MathJax.typesetPromise) {
+          MathJax.typesetPromise().catch(function (err) {
+            console.error("MathJax typeset failed:", err);
+          });
+        }
+      }
+
+      if (window.slideshow && typeof slideshow.on === "function") {
+        slideshow.on("afterShowSlide", rerenderMath);
+      }
+
+      rerenderMath();
+    });
+    </script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="www/layout.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 9
+]
+.subtitle[
+## Robustness to Effect Model Specification Ambiguity
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+.full-width table {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+.right-shift50 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -50px;
+}
+
+
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+&lt;/style&gt;
+
+
+
+
+
+
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That the chosen model specification is appropriate.
+
+Why might this assumption fail?
+
+- Some covariates may not belong in the model. 
+- Multiple plausible specifications are consistent with the theory.
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That the chosen model specification is appropriate.
+
+What kinds of inferential instability can result?
+- Estimated effects can be sensitive to model specification
+- Uncertainty may be understated if model selection uncertainty is ignored. 
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That the chosen model specification is appropriate.
+
+What tools exist to evaluate robustness?
+- Subset Regression Models
+- Information Criteria (AIC/BIC)
+- Model Averaging
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- That the chosen model specification is appropriate.
+
+What are the limits of these tools?
+- They do not search across different functional forms (unless those are included in the feature set). 
+- They do not address uncertainty arising from measurement, missing data, or unobserved confounding.
+
+
+---
+
+## Subset Methods
+
+- The goal of subset methods is to examine *which subsets give the best fit to the data for a given number of predictors*
+- Even when the number of variables is large, it is feasible to examine all subsets
+  - If there are `\(p\)` potential predictors, then there are `\(2^p\)` possible models
+- Subset techniques have the advantage over stepwise regression of revealing alternative *nearly equivalent* models and thus avoid the appearance of a uniquely "correct" result
+- Several measures can be used to determine the best model subset
+  - `\(R^{2}\)`
+  - AIC
+  - BIC
+
+---
+
+## Subset regression as robustness analysis
+
+1. Define a focal variable.
+2. Force the focal variable into all candidate models.
+3. Estimate all plausible covariate subsets.
+4. Extract the focal effect and uncertainty from each model.
+5. Compare the target effect to the distribution of subset-specific effects.
+
+---
+
+
+## Model Selection Example: Ericksen Data (1)
+.pull-left[
+
+``` r
+library(leaps)
+library(car)
+Ericksen &lt;- DAMisc::scaleDataFrame(Ericksen)
+X &lt;- model.matrix(undercount ~ .,
+  data=Ericksen)[,-1]
+y &lt;- model.response(model.frame(undercount
+   ~ ., data=Ericksen))
+
+full &lt;- lm(undercount ~ ., data=Ericksen)
+rmods &lt;- regsubsets(x=X, y=y, method="exhaustive",
+    all.best=TRUE, nbest=10, force.in = 1)
+```
+]
+.pull-right[
+
+``` r
+n_mods &lt;- nrow(summary(rmods)$which)
+b &lt;- sapply(1:n_mods, \(i)coef(rmods, id=i)["minority"])
+se &lt;- sapply(1:n_mods, \(i)sqrt(vcov(rmods, id=i)["minority", "minority"]))
+library(nprobustness)
+rob_min &lt;- robustness(dnorm, dnorm, 
+  target_args = list(mean = coef(full)["minority"], 
+                     sd = sqrt(vcov(full)["minority", "minority"])),
+  alt_args = list(mean = b, sd = se))
+rob_min$bic &lt;- summary(rmods)$bic
+rob_min$bic_delta &lt;- rob_min$bic - min(rob_min$bic)
+rob_min$b &lt;- b
+rob_min$se &lt;- se
+```
+]
+
+---
+
+## Visualization
+
+&lt;img src="lecture9_2026_files/figure-html/unnamed-chunk-3-1.png" alt="" width="75%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Which Model Should We Choose?
+
+The subset analysis revealed many models - some plausible, others maybe less so.
+
+Two questions naturally arise:
+
+- Which of these models should we trust?
+- Should we trust only one?
+
+There are two broad approaches:
+
+1. Choose the model(s) that best balances fit and complexity.
+2. Average across plausible models to account for model uncertainty.
+
+Information theory provides a principled way to determine which models are plausible.
+
+---
+
+## Information Theory
+
+Information theorists believe in reality, but not in the notion of "true" models.
+
+- Reality is more complex than any statistical model.
+- Models are approximations.
+- The goal is not to find the true model.
+- The goal is to find the best approximating model among a set of plausible alternatives.
+
+---
+
+
+## Principles for Model-based Inference
+
+
+**Parsimony**
+- Encapsulates the bias-variance tradeoff.
+
+**Multiple Working Hypotheses**
+- There is no single null hypothesis against which an alternative is to be tested.
+- rather, there is a (small-ish) set, well-specified and theoretically derived working hypotheses.
+
+**Strength of Evidence**
+- We must be able to quantify the "strength of evidence" supporting various working hypotheses if science is to progress in the usual way.
+	
+
+---
+
+
+## K-L Information
+
+Kullback and Leibler (1951) quantified the meaning of "information".
+
+`$$I(f,g) = \int f(x)log\left(\frac{f(x)}{g(x|\theta)}\right)dx$$`
+
+where:
+- `\(f\)` denotes a fixed (i.e., constant) reality (reality is non-parametric [i.e., it has no parameters])
+- `\(g\)` is a model approximating `\(f\)` with parameters `\(\theta\)`.
+- `\(I(f,g)\)` is the information lost when using `\(g\)` to approximate `\(f\)`.
+
+
+---
+
+
+## Expected Information
+
+We cannot use `\(I(f,g)\)` in model selection because it requires knowledge of `\(f\)` and `\(\theta\)` (the parameters in `\(g\)`.)  Instead, consider the *Expected Infromation*
+
+`$$\begin{aligned}
+	E_f\left[I(f,g)\right] &amp;= E_{f}\left[log(f(x))\right] - E_{f}\left[log(g(x|\theta))\right]\\
+		   &amp;= C - E_{f}\left[log(g(x|\theta))\right]
+\end{aligned}$$`
+
+If we wanted to compare model `\(g(x|\theta)\)` with model `\(m(x|\gamma)\)`, we could calculate: 
+
+`$$\begin{aligned}
+E_f\left[I(f,g)\right] - E_f\left[I(f,m)\right] &amp;= \left(E_{f}\left[log(f(x))\right] - E_{f}\left[log(g(x|\theta))\right]\right)\\
+&amp;-\left(E_{f}\left[log(f(x))\right] - E_{f}\left[log(m(x|\gamma))\right]\right)\\
+&amp;= E_{f}\left[log(g(x|\theta))\right]-E_{f}\left[log(m(x|\gamma))\right]\\
+&amp;\approx E_{f}\left[log(g(x|\hat{\theta}))\right]-E_{f}\left[log(m(x|\hat{\gamma}))\right]
+\end{aligned}$$`
+
+---
+
+
+## Expected Information in Model Comparisons
+
+As described above, we could use expected information to compare models.  Some things to note: 
+
+1. We usually describe a "candidate set" of models - the set of models over which the comparison is to be made. 
+2. There is no assumption that the "true" model is in the candidate set of models. 
+3. In fact, there is no assumption that a true model exists at all. 
+    - The guiding principle that reality is complex and nonparametric eschews the idea of a "true" model - all models are simplifications, abstractions and approximations and those none is in any sense "true". 
+
+---
+
+
+## Akaike's Information Criterion (AIC)
+
+The goal was to estimate: `\(E_{y}E_{x}\left[log(g(x|\hat{\theta}(y)))\right]\)`, essentially the relative information with `\(\theta\)` replaced with the MLE estimates `\(\hat{\theta}\)`.
+
+
+- Akaike found that `\(log(\mathcal{L}(\hat{\theta}|\text{data}))\)` was a biased estimator of `\(E_{y}E_{x}\left[log(g(x|\hat{\theta}(y)))\right]\)`, but that asymptotically the bias is approximately equal to `\(K\)`, the number of parameters in `\(\hat{\theta}\)`.  Thus,
+
+`$$log(\mathcal{L}(\hat{\theta}|\text{data})) - K \approx C-\hat{E}_{\hat{g}}\left[I(f, \hat{g})\right]$$`
+
+
+`\(K\)` is not arbitrary, but chosen to minimize bias in the estimated expected information.
+
+`$$\begin{aligned}
+	AIC &amp;= -2(log(\mathcal{L}(\hat{\theta}|\text{data})) - K)\\
+		&amp;= -2log(\mathcal{L}(\hat{\theta}|\text{data})) + 2K
+\end{aligned}$$`
+
+
+---
+
+
+## Small-sample Correction
+
+When `\(K\)` is large relative to `\(n\)` or for any value of `\(K\)` for small `\(n\)`, there is a correction to `\(AIC\)`.
+
+`$$AIC_{c} = -2log(\mathcal{L}(\hat{\theta}|\text{data})) + 2K + \frac{2K(K+1)}{n-K-1}$$`
+
+- This should be used probably always, but especially if `\(n/K \leq 40\)` for the largest `\(K\)` in the model set.
+- `\(AIC_{c}\)` converges to `\(AIC\)` as `\(n\rightarrow \infty\)`.
+
+
+
+---
+
+## BIC
+
+The BIC is defined as:
+
+`$$BIC = -2\log(\mathcal{L}) + K\log(n)$$`
+
+- BIC is not derived from information-theoretic principles.
+- The BIC is meant to approximate the Bayes Factor (or rather its log):
+
+`$$\frac{\Pr(D|M_{1})}{\Pr(D|M_{2})} = \frac{\int \Pr(\theta_{1}|M_{1})\Pr(D|\theta_{1},M_{1})d\theta_{1}}{\int \Pr(\theta_{2}|M_{2})\Pr(D|\theta_{2},M_{2})d\theta_{2}}$$`
+
+---
+
+## AIC or BIC
+
+The question of whether to use AIC or BIC is often left to how much you want to penalize additional model parameters.  In actuality, the question is one of performance in picking the K-L best model.
+
+- When there are "tapering effects" that should remain in selected models, AIC is better
+
+- When the candidate set contains a relatively simple model with most of the explanatory power, BIC often performs better.
+
+It's worth noting, as a selection tool BIC's consistency in picking the best model depends on the "true" model being in the candidate set. 
+
+
+---
+
+## Delta values
+
+Often, for `\(AIC_{c}\)`, `\(AIC\)` or `\(BIC\)` to be interpretable, `\(\Delta_{i}\)` should be calculated such that for each model `\(i\)` in the model set,
+
+`$$\Delta_{i} = \star IC_{i} - \star IC_{\text{min}}$$`
+
+This gives the "best" model `\(\Delta_{i} = 0\)`
+- For AIC, this captures the additional expected information loss incurred by using model `\(g_i\)` rather than the best-supported approximating model in the candidate set, `\(g_{min}\)`.
+    - The large `\(\Delta_{i}\)`, the less support model `\(i\)` receives as the best approximating model in the candidate set.
+- For BIC, `\(\Delta_i\)` measures the decrease in approximate posterior support for model `\(i\)` relative to the model with the smallest BIC.
+    - Larger values indicate that model `\(i\)` is increasingly less supported by the data relative to the model with the smallest BIC.
+
+---
+
+## Interpreting `\(\Delta\)` values
+
+Conventional cut-off values for AIC `\(\Delta_{i}\)` are:
+- `\(\Delta_{i} \leq 2\)` indicates substantial support,
+- `\(4 \leq \Delta_{i} \leq 7\)` indicates less support,
+- `\(\Delta_{i} \geq 10\)` indicates essentially no support.
+
+For BIC, the `\(\Delta\)` values translate directly into odds ratios of support for the minimum BIC model relative to the candidate model: 
+
+`$$OR = e^{\left(\frac{\Delta}{2}\right)}$$`
+- `\(\Delta = 1.39\)` has `\(OR \approx 2\)`
+- `\(\Delta = 4.6\)` has `\(OR \approx 10\)`
+- `\(\Delta = 6\)` has `\(OR \approx 20\)`
+- `\(\Delta = 9.2\)` has `\(or \approx 100\)`
+
+---
+
+## IC Weights
+
+We can construct weights from the `\(\Delta_i\)` values in the following way:
+
+`$$w_{i} = \frac{exp\left(\frac{-\Delta_{i}}{2}\right)}{\sum_{i} exp\left(\frac{-\Delta_{i}}{2}\right)}$$`
+
+
+- AIC `\(w_{i}\)` gives (essentially) the relative probability (or evidence) that model `\(i\)` is the KL-best approximating model among the candidate models.
+- BIC `\(w_{i}\)` approximates the posterior probability among the candidate models, conditional on: the candidate model set, equal prior model probabilities, the Laplace approximation or the marginal likelihood.
+
+---
+
+## Why Choose?  Average Instead
+
+Model selection ignores uncertainty in the selection process.
+
+Model averaging propagates that uncertainty into the final estimate.
+
+Instead of asking: _Which model should I believe?_
+
+we ask _How much support does each plausible model receive?_
+
+The result is an estimate that reflects both
+
+* sampling uncertainty
+* model specification uncertainty
+
+---
+
+## Model Averaging
+
+These estimates can be used to give us measures of effects and sampling variance that are *unconditional* on the model selected.
+
+**Average Effect**
+
+`$$\hat{\bar{\theta}} = \sum_{i}w_{i}\hat{\theta}_{i}$$`
+**Sampling Variability**
+
+`$$\widehat{var}\left(\hat{\bar{\theta}}\right)  = \sum_{i}w_{i}\left[\widehat{var}(\hat{\theta}_{i}|g_{i}) + \left(\hat{\theta}_{i} - \hat{\bar{\theta}}\right)^{2}\right]$$`
+
+---
+
+
+## Model Averaging
+
+We can let the function sort out which variables ought to be in the model:
+
+
+``` r
+library(leaps)
+library(MuMIn)
+E &lt;- na.omit(Ericksen)
+fm1 &lt;- lm(undercount ~ ., data=E,
+    na.action="na.fail")
+out &lt;- dredge(fm1, fixed=~minority)
+ma &lt;- model.avg(out, fit=TRUE)
+```
+
+The `dredge()` function estimates all `\(2^k\)` models and `model.avg()` averages over them based on their AIC weights. 
+- using `rank=BIC` will use BIC weights rather than AIC weights
+
+---
+
+
+## Model Selection Summary
+
+
+``` r
+sma &lt;- summary(ma, subset=delta &lt; 4)
+```
+
+.pull-left[
+
+
+``` r
+printCoefmat(sma$coefmat.full, digits=3)
+```
+
+```
+##              Estimate Std. Error Adjusted SE z value Pr(&gt;|z|)    
+## (Intercept)    0.1618     0.2507      0.2532    0.64  0.52284    
+## conventional   0.2959     0.0910      0.0925    3.20  0.00138 ** 
+## crime          0.2124     0.1537      0.1551    1.37  0.17084    
+## language       0.1594     0.1147      0.1158    1.38  0.16881    
+## poverty       -0.1598     0.1605      0.1619    0.99  0.32365    
+## minority       0.6479     0.1740      0.1763    3.68  0.00024 ***
+## citystate     -0.2135     0.3165      0.3193    0.67  0.50369    
+## highschool     0.0157     0.1039      0.1050    0.15  0.88118    
+## housing       -0.0246     0.0672      0.0680    0.36  0.71809    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+.pull-right[
+
+``` r
+printCoefmat(sma$coefmat.subset, digits=3)
+```
+
+```
+##              Estimate Std. Error Adjusted SE z value Pr(&gt;|z|)    
+## (Intercept)    0.1618     0.2507      0.2532    0.64  0.52284    
+## conventional   0.2984     0.0872      0.0888    3.36  0.00078 ***
+## crime          0.2680     0.1221      0.1243    2.16  0.03114 *  
+## language       0.2006     0.0910      0.0928    2.16  0.03068 *  
+## poverty       -0.2445     0.1368      0.1394    1.75  0.07941 .  
+## minority       0.6479     0.1740      0.1763    3.68  0.00024 ***
+## citystate     -0.4571     0.3212      0.3270    1.40  0.16216    
+## highschool     0.0525     0.1848      0.1869    0.28  0.77895    
+## housing       -0.0810     0.1016      0.1034    0.78  0.43353    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+]
+
+
+---
+
+
+## Multi-model Sampling Variance in R
+
+.pull-left[
+
+``` r
+as_tibble(sma$coefmat.full[,c(1,3,5)], rownames="param")
+```
+
+```
+## # A tibble: 9 × 4
+##   param        Estimate `Adjusted SE` `Pr(&gt;|z|)`
+##   &lt;chr&gt;           &lt;dbl&gt;         &lt;dbl&gt;      &lt;dbl&gt;
+## 1 (Intercept)    0.162         0.253    0.523   
+## 2 conventional   0.296         0.0925   0.00138 
+## 3 crime          0.212         0.155    0.171   
+## 4 language       0.159         0.116    0.169   
+## 5 poverty       -0.160         0.162    0.324   
+## 6 minority       0.648         0.176    0.000238
+## 7 citystate     -0.214         0.319    0.504   
+## 8 highschool     0.0157        0.105    0.881   
+## 9 housing       -0.0246        0.0680   0.718
+```
+
+The `coefmat.full` element averages over all models including zeros for the coefficient when the variable was excluded. 
+
+]
+.pull-left[
+
+``` r
+as_tibble(sma$coefmat.subset[,c(1,3,5)], rownames="param")
+```
+
+```
+## # A tibble: 9 × 4
+##   param        Estimate `Adjusted SE` `Pr(&gt;|z|)`
+##   &lt;chr&gt;           &lt;dbl&gt;         &lt;dbl&gt;      &lt;dbl&gt;
+## 1 (Intercept)    0.162         0.253    0.523   
+## 2 conventional   0.298         0.0888   0.000781
+## 3 crime          0.268         0.124    0.0311  
+## 4 language       0.201         0.0928   0.0307  
+## 5 poverty       -0.244         0.139    0.0794  
+## 6 minority       0.648         0.176    0.000238
+## 7 citystate     -0.457         0.327    0.162   
+## 8 highschool     0.0525        0.187    0.779   
+## 9 housing       -0.0810        0.103    0.434
+```
+
+The `coefmat.subset` element averages across only those models that included the variable of interest, disregarding those where the variable was not included. 
+
+]
+
+
+---
+
+
+## Robustness to Selection Ambiguity
+
+.pull-left[
+We could look at the robustness of the model averaged coefficient relative to our full model coefficient.  
+- This explicitly operationalizes the _plausible_ part of plausible models. 
+
+
+
+
+``` r
+dredge_b &lt;- coef(ma)["minority"]
+dredge_se &lt;- sqrt(vcov(ma)["minority", "minority"])
+robustness(dnorm, dnorm, 
+  target_args = list(mean = coef(full)["minority"],
+                     sd=sqrt(vcov(full)["minority","minority"])), 
+  alt_args = list(mean = dredge_b, sd = dredge_se))
+```
+
+```
+##        ovl         np         js         kl 
+## 0.80378349 0.89762265 0.04406693 0.11724404
+```
+]
+.pull-right[
+&lt;img src="lecture9_2026_files/figure-html/unnamed-chunk-8-1.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Model Averaging with GLMs
+
+One of the problems with the above workflow is that it uses the coefficient as the estimand of interest. 
+- In GLMs, as we've seen, the coefficients across specifications are not comparable.  
+- Instead, we would want first differences or something similar. 
+
+Workflow: 
+
+1. Estimate models with `dredge()`
+2. Get models with `get.models()`
+3. Calculate quantities of interest from models. 
+4. Get weights with `Weights()`
+5. Make a weighted sum of the quantities from 3. 
+6. Calculate variances either with a bootstrap or from the equation above. 
+
+
+---
+
+## ANES Example
+
+.pull-left[
+
+``` r
+anes &lt;- rio::import("../data/anes1992.dta")
+anesu &lt;- anes |&gt;
+  mutate(retnat = rio::factorize(retnat),
+         educ = rio::factorize(educ)) |&gt;
+  drop_na(votedem, retnat, pid, age, male,
+          educ, black, south)
+
+
+add_mod &lt;- glm(votedem ~ retnat + pid + age + male + educ +
+                black + south, data=anesu, family=binomial, 
+               na.action = na.fail)
+
+res &lt;- dredge(add_mod, fixed="pid", rank=AIC)
+
+mods &lt;- get.models(res, subset = delta &lt; 4)
+mes &lt;- purrr::map(mods, \(m) {
+  avg_comparisons(m, variables = list(pid = c(4, 5)))
+})
+
+wts &lt;- Weights(res)[names(mods)]
+wts &lt;- wts / sum(wts)
+
+est &lt;- purrr::map_dbl(mes, \(x) x$estimate)
+var &lt;- purrr::map_dbl(mes, \(x) x$std.error^2)
+
+ave_me &lt;- sum(wts * est)
+ave_me_se &lt;- sqrt(sum(wts * (var + (est - ave_me)^2)))
+```
+]
+.pull-right[
+
+``` r
+full_me &lt;- avg_comparisons(add_mod, 
+    variables = list(pid = c(4,5)))
+
+robustness(dnorm, dnorm, 
+  target_args = list(mean = full_me$estimate, 
+                     sd = full_me$std.error), 
+  alt_args = list(mean = ave_me, 
+                  sd = ave_me_se)) |&gt; 
+  round(3)
+```
+
+```
+##   ovl    np    js    kl 
+## 0.991 0.949 0.000 0.000
+```
+This workflow allows us to evaluate robustness of any averaged quantity - so long as it has an approximately normal distribution. 
+- This will be more challenging for non-Gaussian estimands. 
+
+
+]
+
+
+---
+
+## Exercise
+
+Using the Berry and Kleinberg data, evaluate robustness of the two main variables in the first model to model selection ambiguity. 
+
+
+``` r
+ctrls &lt;- c("L_hse_sanction", "L_growth", "L_lnpercap", "L_lnpop", "L_polity2", 
+           "L_durable", "L_civintensity", "L_spending", "L_s_us", "L_lnustrade", 
+           "L_us_distance", "L_usstock2000_adj", "allfdi2000")
+f2 &lt;- reformulate(c("L_ab_sum", "L_hse_usnum", ctrls), 
+                  response="usfdi2000_adj")
+
+bkdat &lt;- rio::import("../data/barry_klineberg_2015.dta")
+bkdat &lt;- bkdat |&gt;
+  drop_na(all_of(c(ctrls, "L_ab_sum", "L_hse_usnum", "usfdi2000_adj")))
+
+bkmod &lt;- lm(f2, data=bkdat)
+```
+
+---
+
+## Multi-model Averaging Cautions
+
+- Difficult if candidate models have different functional forms for the same variable (e.g., additive in one model and conditional in another.)
+
+- Only really takes care of the model if all of the models you ever want to estimate are in the candidate set.
+
+- Won't probably do what you want if you've got different ways to operationalize a single concept. 
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+  </body>
+</html>

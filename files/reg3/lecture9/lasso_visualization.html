@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LASSO Regularization</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, -apple-system, sans-serif; display: flex; height: 100vh; background: #f3f4f6; color: #1f2937; }
+#sidebar {
+  width: 270px; min-width: 270px; padding: 18px 16px; background: white;
+  border-right: 1px solid #e5e7eb; overflow-y: auto; display: flex; flex-direction: column; gap: 14px;
+}
+#main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; }
+canvas { background: white; border-radius: 6px; box-shadow: 0 2px 10px rgba(0,0,0,.12); display: block; }
+h1 { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 2px; }
+.subtitle { font-size: 11px; color: #6b7280; }
+hr { border: none; border-top: 1px solid #e5e7eb; }
+.group label { display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 5px; }
+.group .hint { font-size: 11px; color: #9ca3af; margin-top: 3px; }
+input[type=number], select {
+  width: 100%; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px;
+  font-size: 13px; color: #111; background: white;
+}
+input[type=number]:focus { outline: 2px solid #3b82f6; border-color: transparent; }
+input[type=range] { width: 100%; accent-color: #3b82f6; cursor: pointer; }
+.slider-row { display: flex; justify-content: space-between; font-size: 11px; color: #6b7280; margin-top: 2px; }
+.radio-row { display: flex; gap: 16px; }
+.radio-row label { font-size: 13px; font-weight: 400; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+button {
+  width: 100%; padding: 8px 12px; border: none; border-radius: 5px;
+  font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s;
+}
+.btn-primary { background: #2563eb; color: white; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-primary:disabled { background: #93c5fd; cursor: default; }
+.btn-green { background: #059669; color: white; }
+.btn-green:hover { background: #047857; }
+.btn-green:disabled { background: #6ee7b7; cursor: default; }
+.info-box {
+  background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 5px;
+  padding: 10px 12px; font-size: 12px; line-height: 1.7; display: none;
+}
+.info-box strong { color: #065f46; display: block; margin-bottom: 2px; }
+.info-row { display: flex; justify-content: space-between; }
+.info-row span:first-child { color: #4b5563; }
+.info-row span:last-child { font-weight: 600; color: #111; font-variant-numeric: tabular-nums; }
+.warn-box {
+  background: #fff7ed; border: 1px solid #fed7aa; border-radius: 5px;
+  padding: 8px 12px; font-size: 12px; color: #9a3412; display: none;
+}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div>
+    <h1>LASSO / Ridge Regularization</h1>
+    <p class="subtitle">Visualizing coefficient shrinkage in 2D</p>
+  </div>
+
+  <hr>
+
+  <div class="group">
+    <label>Correlation Between Variables</label>
+    <input type="number" id="corr" value="0.9" min="-0.99" max="0.99" step="0.01">
+  </div>
+
+  <div class="group">
+    <button class="btn-primary" id="makeBtn">Make Data</button>
+  </div>
+
+  <hr>
+
+  <div class="group">
+    <label>Constraint Shrinkage: <span id="shrinkVal">1.00</span></label>
+    <input type="range" id="shrink" min="0" max="1" step="0.005" value="1">
+    <div class="slider-row"><span>0 (all shrunk)</span><span>1 (OLS)</span></div>
+  </div>
+
+  <div class="group">
+    <label>Norm</label>
+    <div class="radio-row">
+      <label><input type="radio" name="norm" value="l1" checked> L1 (LASSO)</label>
+      <label><input type="radio" name="norm" value="l2"> L2 (Ridge)</label>
+    </div>
+  </div>
+
+  <div class="group">
+    <label>RSS Ellipse Target (% of OLS RSS)</label>
+    <input type="number" id="targetSS" value="110" min="100" max="500" step="0.5">
+    <p class="hint">≥100 draws ellipse of equal residual SS. 100 = OLS fit.</p>
+  </div>
+
+  <div class="group">
+    <button class="btn-green" id="findTangent" disabled>Find Tangent Point</button>
+    <p class="hint">Sets the ellipse to the exact level where it touches the constraint.</p>
+  </div>
+
+  <div id="warnBox" class="warn-box">OLS estimate is inside the constraint region — no regularization effect at this shrinkage level.</div>
+
+  <div id="infoBox" class="info-box">
+    <strong>Tangent Point (Regularized Estimate)</strong>
+    <div class="info-row"><span>β₁</span><span id="tp1">—</span></div>
+    <div class="info-row"><span>β₂</span><span id="tp2">—</span></div>
+    <div class="info-row"><span>|β|₁</span><span id="tpL1">—</span></div>
+    <div class="info-row"><span>RSS (% of OLS)</span><span id="tpRSS">—</span></div>
+  </div>
+</div>
+
+<div id="main">
+  <canvas id="plot" width="680" height="680"></canvas>
+</div>
+
+<script>
+// ─── Random / stats ──────────────────────────────────────────────────────────
+
+function randn() {
+  let u = 0, v = 0;
+  while (!u) u = Math.random();
+  while (!v) v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+function scaleCols(X) {
+  const n = X.length, p = X[0].length;
+  const out = Array.from({length: n}, () => new Array(p));
+  for (let j = 0; j < p; j++) {
+    let m = 0;
+    for (let i = 0; i < n; i++) m += X[i][j];
+    m /= n;
+    let s = 0;
+    for (let i = 0; i < n; i++) s += (X[i][j] - m) ** 2;
+    s = Math.sqrt(s / (n - 1));
+    for (let i = 0; i < n; i++) out[i][j] = (X[i][j] - m) / s;
+  }
+  return out;
+}
+
+function scaleVec(y) {
+  const n = y.length;
+  let m = 0;
+  for (const v of y) m += v;
+  m /= n;
+  let s = 0;
+  for (const v of y) s += (v - m) ** 2;
+  s = Math.sqrt(s / (n - 1));
+  return y.map(v => (v - m) / s);
+}
+
+function generateData(n, corr) {
+  let X = [];
+  for (let i = 0; i < n; i++) {
+    const z1 = randn(), z2 = randn();
+    X.push([z1, corr * z1 + Math.sqrt(1 - corr * corr) * z2]);
+  }
+  X = scaleCols(X);
+  const ystar = X.map(r => r[0]);                       // true beta = [1, 0]
+  let y = ystar.map(v => v + randn() * 2);
+  y = scaleVec(y);
+  return { X, y };
+}
+
+// ─── Matrix ops (2×2) ────────────────────────────────────────────────────────
+
+function XtX(X) {
+  let a = 0, b = 0, c = 0;
+  for (const r of X) { a += r[0]*r[0]; b += r[0]*r[1]; c += r[1]*r[1]; }
+  return [[a, b], [b, c]];
+}
+
+function Xty(X, y) {
+  let a = 0, b = 0;
+  for (let i = 0; i < X.length; i++) { a += X[i][0]*y[i]; b += X[i][1]*y[i]; }
+  return [a, b];
+}
+
+function inv2(A) {
+  const d = A[0][0]*A[1][1] - A[0][1]*A[1][0];
+  return [[ A[1][1]/d, -A[0][1]/d], [-A[1][0]/d,  A[0][0]/d]];
+}
+
+function mv(A, v) {
+  return [A[0][0]*v[0]+A[0][1]*v[1], A[1][0]*v[0]+A[1][1]*v[1]];
+}
+
+function dot(a, b) { return a[0]*b[0] + a[1]*b[1]; }
+
+function computeOLS(X, y) {
+  const A = XtX(X), b = Xty(X, y);
+  const beta = mv(inv2(A), b);
+  let rss = 0;
+  for (let i = 0; i < X.length; i++) {
+    const e = y[i] - beta[0]*X[i][0] - beta[1]*X[i][1];
+    rss += e * e;
+  }
+  return { beta, A, rss };
+}
+
+// Quadratic form: (p - beta)' A (p - beta)  — excess RSS at point p
+function quadForm(p, beta, A) {
+  const d = [p[0]-beta[0], p[1]-beta[1]];
+  return dot(d, mv(A, d));
+}
+
+// ─── Constraint sizes ─────────────────────────────────────────────────────────
+
+function constraintSize(beta, norm, shrink) {
+  if (norm === 'l2') return Math.sqrt(beta[0]**2 + beta[1]**2) * shrink;
+  return (Math.abs(beta[0]) + Math.abs(beta[1])) * shrink;
+}
+
+function olsInsideConstraint(beta, norm, s) {
+  // Use relative tolerance: OLS is "inside" only if clearly below the boundary
+  if (norm === 'l2') return Math.sqrt(beta[0]**2 + beta[1]**2) < s * (1 - 1e-6);
+  return (Math.abs(beta[0]) + Math.abs(beta[1])) < s * (1 - 1e-6);
+}
+
+// ─── Ellipse helpers ──────────────────────────────────────────────────────────
+
+// Eigendecomposition of 2×2 symmetric matrix
+function eig2sym(A) {
+  const [a, b, c] = [A[0][0], A[0][1], A[1][1]];
+  const tr = a + c, det = a*c - b*b;
+  const disc = Math.sqrt(Math.max(0, (tr/2)**2 - det));
+  const l1 = tr/2 + disc, l2 = tr/2 - disc;
+  let v1, v2;
+  if (Math.abs(b) > 1e-10) {
+    v1 = norm2([b, l1-a]); v2 = norm2([b, l2-a]);
+  } else if (a >= c) {
+    v1 = [1,0]; v2 = [0,1];
+  } else {
+    v1 = [0,1]; v2 = [1,0];
+  }
+  return { eigenvalues: [l1, l2], eigenvectors: [v1, v2] };
+}
+
+function norm2(v) { const m = Math.sqrt(v[0]**2+v[1]**2); return [v[0]/m, v[1]/m]; }
+
+// ─── L1 tangent: analytic per-face minimisation ───────────────────────────────
+//
+// Diamond faces parameterised as b(t), t ∈ [0, s]:
+//   Face 0 NE: [ t,  s-t]
+//   Face 1 NW: [-t,  s-t]
+//   Face 2 SW: [-t, -(s-t)]
+//   Face 3 SE: [ t, -(s-t)]
+//
+// Minimise quadForm(b(t), beta, A) over t ∈ [0, s].
+
+function facePoint(face, t, s) {
+  switch (face) {
+    case 0: return [ t,  s-t];
+    case 1: return [-t,  s-t];
+    case 2: return [-t, -(s-t)];
+    case 3: return [ t, -(s-t)];
+  }
+}
+
+function faceArgmin(face, s, beta, A) {
+  const [a11, a12, a22] = [A[0][0], A[0][1], A[1][1]];
+  const [b1, b2] = beta;
+  let tStar;
+
+  // Analytic unconstrained argmin on each face:
+  if (face === 0) {           // b = [t, s-t]
+    const denom = a11 - 2*a12 + a22;
+    tStar = Math.abs(denom) < 1e-12
+      ? s/2
+      : ((a11-a12)*b1 + (a22-a12)*(s-b2)) / denom;
+  } else if (face === 1) {    // b = [-t, s-t]
+    const denom = a11 + 2*a12 + a22;
+    tStar = Math.abs(denom) < 1e-12
+      ? s/2
+      : ((a12+a22)*(s-b2) - (a11+a12)*b1) / denom;
+  } else if (face === 2) {    // b = [-t, -(s-t)]
+    const denom = a11 - 2*a12 + a22;
+    tStar = Math.abs(denom) < 1e-12
+      ? s/2
+      : ((a22-a12)*(s+b2) - (a11-a12)*b1) / denom;
+  } else {                    // b = [t, -(s-t)]
+    const denom = a11 + 2*a12 + a22;
+    tStar = Math.abs(denom) < 1e-12
+      ? s/2
+      : ((a11+a12)*b1 + (a12+a22)*(s+b2)) / denom;
+  }
+
+  // Clamp to [0, s] then evaluate at tStar and both endpoints
+  tStar = Math.max(0, Math.min(s, tStar));
+  const candidates = [tStar, 0, s].map(t => {
+    const p = facePoint(face, t, s);
+    return { t, p, val: quadForm(p, beta, A) };
+  });
+  return candidates.reduce((best, c) => c.val < best.val ? c : best);
+}
+
+function findTangentL1(s, beta, A) {
+  let best = null;
+  for (let f = 0; f < 4; f++) {
+    const res = faceArgmin(f, s, beta, A);
+    if (!best || res.val < best.val) best = res;
+  }
+  return best; // { p, val }  — val = delta RSS above OLS
+}
+
+// ─── L2 tangent: ridge regression via bisection ───────────────────────────────
+// Solve |( A + λI )^{-1} A β̂|² = s²  for λ ≥ 0
+
+function ridgeBeta(lambda, A, beta) {
+  const B = [[A[0][0]+lambda, A[0][1]], [A[1][0], A[1][1]+lambda]];
+  const Ab = mv(A, beta);
+  return mv(inv2(B), Ab);
+}
+
+function findTangentL2(s, beta, A) {
+  const olsMag = Math.sqrt(beta[0]**2 + beta[1]**2);
+  if (olsMag <= s) return { p: beta, val: 0 };
+
+  // Bisect for λ: magnitude of ridgeBeta = s
+  let lo = 0, hi = 1e6;
+  for (let i = 0; i < 60; i++) {
+    const mid = (lo + hi) / 2;
+    const rb = ridgeBeta(mid, A, beta);
+    const mag = Math.sqrt(rb[0]**2 + rb[1]**2);
+    if (mag > s) lo = mid; else hi = mid;
+  }
+  const p = ridgeBeta((lo+hi)/2, A, beta);
+  return { p, val: quadForm(p, beta, A) };
+}
+
+// ─── Drawing ──────────────────────────────────────────────────────────────────
+
+const canvas = document.getElementById('plot');
+const ctx = canvas.getContext('2d');
+
+let appState = null;   // { X, y, ols }
+let tangentInfo = null; // { p, rssPct }
+
+function getPlotRange(beta) {
+  return Math.max(Math.abs(beta[0]), Math.abs(beta[1])) * 1.6 + 0.15;
+}
+
+function makeTransform(plotRange) {
+  const W = canvas.width, H = canvas.height, pad = 56;
+  const pw = W - 2*pad, ph = H - 2*pad;
+  const toScreen = (bx, by) => [
+    pad + (bx + plotRange) / (2*plotRange) * pw,
+    pad + (plotRange - by) / (2*plotRange) * ph
+  ];
+  return { toScreen, W, H, pad, pw, ph, plotRange };
+}
+
+function drawAxes(tf) {
+  const { toScreen, W, H, pad, plotRange } = tf;
+  ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1;
+
+  // Grid lines every 0.5
+  const step = plotRange > 1.5 ? 1 : 0.5;
+  for (let v = -Math.ceil(plotRange/step)*step; v <= Math.ceil(plotRange/step)*step; v += step) {
+    const [x0,y0] = toScreen(v, -plotRange*1.2);
+    const [x1,y1] = toScreen(v,  plotRange*1.2);
+    ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
+    const [x2,y2] = toScreen(-plotRange*1.2, v);
+    const [x3,y3] = toScreen( plotRange*1.2, v);
+    ctx.beginPath(); ctx.moveTo(x2,y2); ctx.lineTo(x3,y3); ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle = '#9ca3af'; ctx.lineWidth = 1.5;
+  const [ax0,ay0] = toScreen(-plotRange, 0), [ax1,ay1] = toScreen(plotRange, 0);
+  ctx.beginPath(); ctx.moveTo(ax0,ay0); ctx.lineTo(ax1,ay1); ctx.stroke();
+  const [bx0,by0] = toScreen(0,-plotRange), [bx1,by1] = toScreen(0, plotRange);
+  ctx.beginPath(); ctx.moveTo(bx0,by0); ctx.lineTo(bx1,by1); ctx.stroke();
+
+  // Tick labels
+  ctx.fillStyle = '#9ca3af'; ctx.font = '11px system-ui'; ctx.textBaseline = 'middle';
+  for (let v = -Math.ceil(plotRange/step)*step; v <= Math.ceil(plotRange/step)*step; v += step) {
+    if (Math.abs(v) < 1e-9) continue;
+    const [tx,ty] = toScreen(v, 0);
+    ctx.textAlign = 'center'; ctx.fillText(v.toFixed(step < 1 ? 1 : 0), tx, ty+16);
+    const [lx,ly] = toScreen(0, v);
+    ctx.textAlign = 'right'; ctx.fillText(v.toFixed(step < 1 ? 1 : 0), lx-6, ly);
+  }
+
+  // Axis labels
+  ctx.fillStyle = '#6b7280'; ctx.font = 'bold 13px system-ui'; ctx.textAlign = 'center';
+  ctx.fillText('β₁', W/2, H-10);
+  ctx.save(); ctx.translate(14, H/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('β₂', 0, 0); ctx.restore();
+}
+
+function drawDiamond(tf, s) {
+  const { toScreen } = tf;
+  ctx.fillStyle = 'rgba(96,165,250,.18)';
+  ctx.strokeStyle = 'rgba(37,99,235,.6)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  const corners = [[s,0],[0,s],[-s,0],[0,-s]];
+  corners.forEach(([x,y],i) => {
+    const [sx,sy] = toScreen(x,y);
+    if (i===0) ctx.moveTo(sx,sy); else ctx.lineTo(sx,sy);
+  });
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+}
+
+function drawCircle(tf, s) {
+  const { toScreen, pw, plotRange } = tf;
+  ctx.fillStyle = 'rgba(96,165,250,.18)';
+  ctx.strokeStyle = 'rgba(37,99,235,.6)';
+  ctx.lineWidth = 1.5;
+  const [cx,cy] = toScreen(0,0);
+  const r = s / (2*plotRange) * pw;
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,2*Math.PI); ctx.fill(); ctx.stroke();
+}
+
+function drawEllipse(tf, beta, A, delta, strokeStyle, lineWidth) {
+  if (delta <= 0) return;
+  const { toScreen, plotRange, pw, ph, pad } = tf;
+  const eg = eig2sym(A);
+  const [l1,l2] = eg.eigenvalues;
+  const [v1,v2] = eg.eigenvectors;
+  const a1 = Math.sqrt(delta/l1), a2 = Math.sqrt(delta/l2);
+
+  ctx.beginPath();
+  const N = 300;
+  for (let i = 0; i <= N; i++) {
+    const t = 2*Math.PI*i/N;
+    const u1 = a1*Math.cos(t), u2 = a2*Math.sin(t);
+    const bx = beta[0] + v1[0]*u1 + v2[0]*u2;
+    const by = beta[1] + v1[1]*u1 + v2[1]*u2;
+    const [sx,sy] = toScreen(bx,by);
+    if (i===0) ctx.moveTo(sx,sy); else ctx.lineTo(sx,sy);
+  }
+  ctx.closePath();
+  ctx.strokeStyle = strokeStyle; ctx.lineWidth = lineWidth; ctx.stroke();
+}
+
+function drawPoint(tf, p, color, radius, label) {
+  const [sx,sy] = tf.toScreen(p[0],p[1]);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(sx,sy,radius,0,2*Math.PI); ctx.fill();
+  if (label) {
+    ctx.fillStyle = color;
+    ctx.font = '12px system-ui'; ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+    ctx.fillText(label, sx+8, sy-4);
+  }
+}
+
+function redraw() {
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#fff'; ctx.fillRect(0,0,W,H);
+
+  if (!appState) {
+    ctx.fillStyle = '#9ca3af'; ctx.font = '15px system-ui';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('Click "Make Data" to generate data', W/2, H/2);
+    return;
+  }
+
+  const { ols } = appState;
+  const { beta, A, rss } = ols;
+  const norm = document.querySelector('input[name="norm"]:checked').value;
+  const shrink = parseFloat(document.getElementById('shrink').value);
+  const targetPct = parseFloat(document.getElementById('targetSS').value);
+  const s = constraintSize(beta, norm, shrink);
+  const targetDelta = rss * (targetPct/100) - rss;  // delta above OLS RSS
+
+  const tf = makeTransform(getPlotRange(beta));
+  drawAxes(tf);
+
+  // Constraint region
+  if (norm === 'l1') drawDiamond(tf, s);
+  else drawCircle(tf, s);
+
+  // RSS ellipse (user-specified)
+  if (targetPct > 100) {
+    drawEllipse(tf, beta, A, targetDelta, 'rgba(220,38,38,.8)', 2);
+  }
+
+  // Tangent ellipse (if found) — in green, slightly dashed
+  if (tangentInfo) {
+    const tangentDelta = rss * (tangentInfo.rssPct/100) - rss;
+    if (tangentDelta > 0) {
+      ctx.setLineDash([6,3]);
+      drawEllipse(tf, beta, A, tangentDelta, 'rgba(5,150,105,.9)', 2);
+      ctx.setLineDash([]);
+      // Tangent point
+      drawPoint(tf, tangentInfo.p, '#059669', 6,
+        `(${tangentInfo.p[0].toFixed(3)}, ${tangentInfo.p[1].toFixed(3)})`);
+    }
+  }
+
+  // OLS point
+  drawPoint(tf, beta, '#1d4ed8', 6, 'β̂ (OLS)');
+
+  // Legend
+  drawLegend(norm, targetPct);
+}
+
+function drawLegend(norm, targetPct) {
+  const items = [
+    { color: 'rgba(37,99,235,.7)', dash: false, label: `${norm === 'l1' ? 'L1 (LASSO)' : 'L2 (Ridge)'} constraint` },
+    { color: '#1d4ed8', dash: false, dot: true, label: 'OLS estimate' },
+  ];
+  if (targetPct > 100) {
+    items.push({ color: 'rgba(220,38,38,.8)', dash: false, label: `RSS ellipse (${targetPct.toFixed(1)}%)` });
+  }
+  if (tangentInfo) {
+    items.push({ color: 'rgba(5,150,105,.9)', dash: true, label: `Tangent ellipse (${tangentInfo.rssPct.toFixed(2)}%)` });
+    items.push({ color: '#059669', dash: false, dot: true, label: 'Regularized estimate' });
+  }
+
+  const x0 = 65, y0 = 62;
+  ctx.font = '12px system-ui'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+  items.forEach(({ color, dash, dot, label }, i) => {
+    const y = y0 + i*20;
+    ctx.strokeStyle = color; ctx.lineWidth = 2;
+    if (dash) ctx.setLineDash([5,3]);
+    if (dot) {
+      ctx.fillStyle = color;
+      ctx.beginPath(); ctx.arc(x0+10, y, 5, 0, 2*Math.PI); ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x0+20, y); ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#374151'; ctx.fillText(label, x0+27, y);
+  });
+}
+
+// ─── Controls ────────────────────────────────────────────────────────────────
+
+document.getElementById('makeBtn').addEventListener('click', () => {
+  const corr = parseFloat(document.getElementById('corr').value);
+  const { X, y } = generateData(500, corr);
+  const ols = computeOLS(X, y);
+  appState = { X, y, ols };
+  tangentInfo = null;
+  document.getElementById('infoBox').style.display = 'none';
+  document.getElementById('warnBox').style.display = 'none';
+  document.getElementById('findTangent').disabled = false;
+  redraw();
+});
+
+document.getElementById('shrink').addEventListener('input', e => {
+  document.getElementById('shrinkVal').textContent = parseFloat(e.target.value).toFixed(2);
+  tangentInfo = null;
+  document.getElementById('infoBox').style.display = 'none';
+  document.getElementById('warnBox').style.display = 'none';
+  redraw();
+});
+
+document.getElementById('targetSS').addEventListener('input', redraw);
+document.querySelectorAll('input[name="norm"]').forEach(r => r.addEventListener('change', () => {
+  tangentInfo = null;
+  document.getElementById('infoBox').style.display = 'none';
+  document.getElementById('warnBox').style.display = 'none';
+  redraw();
+}));
+
+document.getElementById('findTangent').addEventListener('click', () => {
+  if (!appState) return;
+  const { ols } = appState;
+  const { beta, A, rss } = ols;
+  const norm = document.querySelector('input[name="norm"]:checked').value;
+  const shrink = parseFloat(document.getElementById('shrink').value);
+  const s = constraintSize(beta, norm, shrink);
+
+  const warnBox = document.getElementById('warnBox');
+  const infoBox = document.getElementById('infoBox');
+
+  if (olsInsideConstraint(beta, norm, s)) {
+    warnBox.style.display = 'block';
+    infoBox.style.display = 'none';
+    tangentInfo = null;
+    redraw();
+    return;
+  }
+  warnBox.style.display = 'none';
+
+  const result = norm === 'l1'
+    ? findTangentL1(s, beta, A)
+    : findTangentL2(s, beta, A);
+
+  const rssPct = (rss + result.val) / rss * 100;
+  tangentInfo = { p: result.p, rssPct };
+
+  // Update the target SS field so user can see the exact value
+  document.getElementById('targetSS').value = rssPct.toFixed(3);
+
+  // Show info panel
+  infoBox.style.display = 'block';
+  document.getElementById('tp1').textContent = result.p[0].toFixed(5);
+  document.getElementById('tp2').textContent = result.p[1].toFixed(5);
+  document.getElementById('tpL1').textContent =
+    (Math.abs(result.p[0]) + Math.abs(result.p[1])).toFixed(5);
+  document.getElementById('tpRSS').textContent = rssPct.toFixed(3) + '%';
+
+  redraw();
+});
+
+// Initial render
+redraw();
+</script>
+</body>
+</html>

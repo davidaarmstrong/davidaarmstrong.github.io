@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+  <head>
+    <title>Lecture 10</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="lecture10_2026_files/header-attrs/header-attrs.js"></script>
+    <link href="lecture10_2026_files/remark-css/default.css" rel="stylesheet" />
+    <script src="lecture10_2026_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture10_2026_files/fabric/fabric.min.js"></script>
+    <link href="lecture10_2026_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture10_2026_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture10_2026_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture10_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture10_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture10_2026_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture10_2026_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <script>
+    function releaseMath(el) {
+      const codes = el.getElementsByTagName('code');
+
+      for (let i = 0; i < codes.length;) {
+        const code = codes[i];
+
+        if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+          const text = code.textContent.trim();
+
+          const isMath =
+            /^\$\$(.|\s)+\$\$$/.test(text) ||
+            /^\$(?!\$)(.|\s)+\$$/.test(text) ||
+            /^\\\((.|\s)+\\\)$/.test(text) ||
+            /^\\\[(.|\s)+\\\]$/.test(text) ||
+            /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text);
+
+          if (isMath) {
+            code.outerHTML = code.innerHTML;
+            continue;
+          }
+        }
+
+        i++;
+      }
+    }
+    </script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-svg.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      function rerenderMath() {
+        releaseMath(document);
+
+        if (window.MathJax && MathJax.typesetPromise) {
+          MathJax.typesetPromise().catch(function (err) {
+            console.error("MathJax typeset failed:", err);
+          });
+        }
+      }
+
+      if (window.slideshow && typeof slideshow.on === "function") {
+        slideshow.on("afterShowSlide", rerenderMath);
+      }
+
+      rerenderMath();
+    });
+    </script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="www/layout.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 10
+]
+.subtitle[
+## Robustness to Effect Model Interaction Confounding
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+.full-width table {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+.right-shift50 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -50px;
+}
+
+
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+&lt;/style&gt;
+
+
+
+
+
+
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- The specified interaction captures the relevant effect heterogeneity.
+
+Why might this assumption fail?
+
+- There may be unanticipated interactions between the moderator and other covariates.
+
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- The specified interaction captures the relevant effect heterogeneity.
+
+What kinds of inferential instability can result?
+- Estimated effects can be sensitive to model specification
+- Standard errors may understate uncertainty if interaction selection uncertainty is ignored.
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- The specified interaction captures the relevant effect heterogeneity.
+
+What tools exist to evaluate robustness?
+- Post Double Selection (PDS) LASSO
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- The specified interaction captures the relevant effect heterogeneity.
+
+What are the limits of these tools?
+- The theoretically motivated tuning parameter is developed only for the linear model.
+- The procedure searches only for omitted moderator–covariate interactions; it does not address other forms of model misspecification.
+
+---
+
+## Blackwell and Olson (2021)
+
+Model of interest: 
+
+`$$Y_i = \beta_0 + \beta_1D_i + \beta_2V_i + \beta_3D_iV_i + \beta_4\mathbf{x}_i + e_i$$`
+
+Fully Moderated model: 
+
+`$$Y_i = \delta_0 + \delta_1D_i + \delta_2V_i + \delta_3D_iV_i + \delta_4\mathbf{x}_i + \delta_5\mathbf{x}_iV_i + e_i$$`
+
+`\(\hat{\beta}_3\)` will be an unbiased estimator of the population interaction if: 
+- `\(\delta_5 = 0\)` _and/or_, 
+- `\(\gamma_v = 0\)` where `\(D_iV_i = \gamma_0 + \gamma_v\mathbf{x}_iV_i + \varepsilon_i\)`
+
+Otherwise: _omitted interaction bias_. 
+
+---
+
+## Why not estimate the fully moderated model?
+
+- The number of interactions grows rapidly.
+- Many interactions are likely irrelevant.
+- Estimating all interactions can substantially increase variance.
+- We need a principled way to identify which interactions matter.
+
+--
+
+Enter the **LASSO**
+
+
+---
+
+## What is the LASSO
+
+The LASSO stands for Least Absolute Shrinkage and Selection Operator
+
+Shrinkage estimators can reduce sampling variability and sometimes improve model fit (particularly in the presence of collinearity).
+- Shrinkage estimators impose constraints on the fitted model (particularly on the size of the coefficients).
+- The result of these constraints is to shrink the estimates toward zero.
+- Ridge Regression and the LASSO are the two most prominent shrinkage estimators.
+
+
+NB: these are *biased* estimators, so they might be good for stabilizing predictions, but their coefficients won't be particularly good for more conventional theory testing.
+
+---
+
+## LASSO (the L1 norm)
+
+The LASSO minimizes the following: 
+
+`$$\sum
+\left(
+y_i-\beta_0-\sum_j\beta_jx_{ij}
+\right)^2.$$`
+
+- Doesn't necessarily use all of the variables (i.e., some coefficients could be zero)
+
+- Main use is low-variance predictions in the presence of
+    - Highly collinear variables
+    - Number of parameters similar to or larger than number of observations. 
+
+---
+class: center, middle
+exclude: false
+
+&lt;iframe src="lasso_visualization.html" style="position:fixed;top:0;left:0;width:100%;height:100%;border:none;"&gt;&lt;/iframe&gt;
+
+
+---
+
+## Solution: 
+
+Post double-selection LASSO. 
+
+1. Run LASSO of `\(Y_i\)` on `\([V_i, \mathbf{x}_i, \mathbf{x}_iV_i]\)` with carefully chosen tuning parameter.
+2. Run LASSO of `\(D_i\)` on `\([V_i, \mathbf{x}_i, \mathbf{x}_iV_i]\)` with carefully chosen tuning parameter. 
+3. Run LASSO of `\(V_i\)` on `\([V_i, \mathbf{x}_i, \mathbf{x}_iV_i]\)` with carefully chosen tuning parameter.
+4. Collect all variables selected in steps 1-3 and any constitutive terms of higher order interactions into `\(Z^{*}\)`.  
+5. Regress `\(Y_i\)` on `\(D_i,V_i,D_iV_i,\mathbf{z}_{i}^{*}\)`
+
+---
+
+## Properties of PDS LASSO
+
+1. Coefficients on `\(D_i\)` and `\(D_iV_i\)` are consistent
+2. SE from OLS model are asymptotically correct
+
+---
+
+## Choosing `\(\lambda\)`
+
+.pull-left[
+The choice of `\(\lambda\)` is important.  Previous work suggests that: 
+
+`$$\lambda_{yj} = \lambda_{y0} \sqrt{\frac{1}{N}\sum_iZ_{ij}^2\varepsilon_{yi}^2}$$`
+
+where `\(\hat{\varepsilon}_{yi}\)` could be estimated by a first stage LASSO.  
+]
+.pull-right[
+The penalty has two parts:
+
+- an overall penalty that increases with the number of candidate variables,
+- a variable-specific loading that accounts for heteroskedasticity and variable scale.
+
+The goal is not prediction.
+
+The goal is to avoid selecting variables because of random sample correlations.
+]
+
+---
+
+## Robustness Workflow with Inters
+
+1. Estimate target model. 
+2. Estimate PDS LASSO on moderator-covariate interactions. 
+3. Calculate robustness quantities of interest. 
+
+---
+
+## inters package
+
+The `inters` package in R estimates these models. Two examples: 
+
+1. _Measuring the Democracy Repression Nexus_ (Armstrong, _Electoral Studies_, 2009)
+    - Outcome: Repression (`rep`), Treatment: Behavioural Democracy (`voice`), Moderator: Institutional Democracy (`veto`), Controls: `iwar`, `cwar`, `gdp10k`, `logpop`. 
+
+2. _Protesting While Black_ (Armstrong, _ASR_, 2011)
+    - Outcome: Police Presence (`police1`), Treatment: African American Protest (`afam`), Moderator: Year (`evyy`), Controls: `ny`, `south`, `logpart`, `propdam`, `counterd`, `standard2`, `extcont2`, `govtarg`, `stratvar`, `viold`
+
+---
+
+## Democracy and Repression
+
+.pull-left[
+
+``` r
+library(inters)
+drn &lt;- rio::import("../module2/drn_proxies.dta")
+drn_full &lt;- lm(rep ~ voice*veto + rgdpch + 
+  log(pop) + iwar + cwar, data=drn)
+drn_pds &lt;- post_ds_interaction(drn, 
+  "voice", "veto", "rep", 
+  c("log(pop)", "iwar", "cwar", "rgdpch"))
+drn_pds &lt;- lm(rep ~ voice*veto + log(pop) + 
+  rgdpch + iwar + cwar + iwar*veto + 
+    rgdpch*veto, data = drn)
+
+slp_full &lt;- slopes(drn_full, 
+       datagrid(veto = seq(-1.25, 2.25, by=.5)), 
+       variables="voice", 
+       by="veto")
+slp_pds &lt;- slopes(drn_pds, 
+       datagrid(veto = seq(-1.25, 2.25, by=.5)), 
+       variables="voice", 
+       by="veto")
+```
+]
+.pull-right[
+
+``` r
+robustness(slp_full, slp_pds) |&gt; select(veto, estimate, base_est, ovl)
+```
+
+```
+## # A tibble: 8 × 4
+##    veto estimate base_est    ovl
+##   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+## 1 -1.25 -0.00712  -0.0356 0.423 
+## 2 -0.75  0.0353    0.0294 0.842 
+## 3 -0.25  0.0777    0.0943 0.537 
+## 4  0.25  0.120     0.159  0.172 
+## 5  0.75  0.162     0.224  0.0700
+## 6  1.25  0.205     0.289  0.0432
+## 7  1.75  0.247     0.354  0.0347
+## 8  2.25  0.290     0.419  0.0316
+```
+]
+
+---
+
+## Effects
+
+.pull-left[
+&lt;img src="lecture10_2026_files/figure-html/unnamed-chunk-4-1.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+
+]
+.pull-right[
+- Robustness statistics are not great. 
+- The substantive conclusion still holds - even down to the insignificance at the lowest level of veto. 
+- The addition of other interactions doesn't change the story. 
+]
+
+---
+
+## Conclusion
+
+Blackwell &amp; Olson suggest that omitted interaction bias could be problematic in interaction models. 
+- This is protection against a particular kind of unanticipated confounding. 
+- The PDS Interaction model is a special case of a more general technique - Double Machine Learning (DML). 
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+  </body>
+</html>

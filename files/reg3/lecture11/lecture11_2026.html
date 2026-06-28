@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+  <head>
+    <title>Lecture 11</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="lecture11_2026_files/header-attrs/header-attrs.js"></script>
+    <link href="lecture11_2026_files/remark-css/default.css" rel="stylesheet" />
+    <script src="lecture11_2026_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture11_2026_files/fabric/fabric.min.js"></script>
+    <link href="lecture11_2026_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture11_2026_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture11_2026_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture11_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture11_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture11_2026_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture11_2026_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <link href="lecture11_2026_files/htmltools-fill/fill.css" rel="stylesheet" />
+    <script src="lecture11_2026_files/htmlwidgets/htmlwidgets.js"></script>
+    <script src="lecture11_2026_files/plotly-binding/plotly.js"></script>
+    <script src="lecture11_2026_files/typedarray/typedarray.min.js"></script>
+    <script src="lecture11_2026_files/jquery/jquery.min.js"></script>
+    <link href="lecture11_2026_files/crosstalk/css/crosstalk.min.css" rel="stylesheet" />
+    <script src="lecture11_2026_files/crosstalk/js/crosstalk.min.js"></script>
+    <link href="lecture11_2026_files/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+    <script src="lecture11_2026_files/plotly-main/plotly-latest.min.js"></script>
+    <script>
+    function releaseMath(el) {
+      const codes = el.getElementsByTagName('code');
+
+      for (let i = 0; i < codes.length;) {
+        const code = codes[i];
+
+        if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+          const text = code.textContent.trim();
+
+          const isMath =
+            /^\$\$(.|\s)+\$\$$/.test(text) ||
+            /^\$(?!\$)(.|\s)+\$$/.test(text) ||
+            /^\\\((.|\s)+\\\)$/.test(text) ||
+            /^\\\[(.|\s)+\\\]$/.test(text) ||
+            /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text);
+
+          if (isMath) {
+            code.outerHTML = code.innerHTML;
+            continue;
+          }
+        }
+
+        i++;
+      }
+    }
+    </script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-svg.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      function rerenderMath() {
+        releaseMath(document);
+
+        if (window.MathJax && MathJax.typesetPromise) {
+          MathJax.typesetPromise().catch(function (err) {
+            console.error("MathJax typeset failed:", err);
+          });
+        }
+      }
+
+      if (window.slideshow && typeof slideshow.on === "function") {
+        slideshow.on("afterShowSlide", rerenderMath);
+      }
+
+      rerenderMath();
+    });
+    </script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="www/layout.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 11
+]
+.subtitle[
+## Robustness to Flexible Confounding
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+.full-width table {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+.right-shift50 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -50px;
+}
+
+
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+&lt;/style&gt;
+
+
+
+
+
+
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- The nuisance functions relating the controls to the treatment and outcome are adequately modeled.
+
+Why might this assumption fail?
+
+- There may be unmodeled nonlinearities and interactions in the nuisance functions relating the controls to the treatment and outcome.
+
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- The nuisance functions relating the controls to the treatment and outcome are adequately modeled.
+
+What kinds of inferential instability can result?
+- Estimated treatment effects can be sensitive to how the controls are modeled.
+- Conventional parametric models may inadequately remove confounding.
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- The nuisance functions relating the controls to the treatment and outcome are adequately modeled.
+
+What tools exist to evaluate robustness?
+- Double Machine Learning
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- The nuisance functions relating the controls to the treatment and outcome are adequately modeled.
+
+What are the limits of these tools?
+- They do not solve omitted variable bias or endogeneity (inherently). 
+
+
+---
+
+## Recovering Treatment Effects
+
+We want to estimate a **treatment effect** `\(\tau\)` in the model:
+
+`$$Y_i = \tau D_i + g(\mathbf{X}_i) + \varepsilon_i$$`
+
+- `\(Y_i\)` — outcome (vote share, conflict onset, support for policy...)
+- `\(D_i\)` — treatment or variable of interest (could be continuous)
+- `\(\mathbf{X}_i\)` — a vector of **controls** (possibly many)
+- `\(g(\mathbf{X}_i)\)` — unknown function; we don't care about its form
+- `\(\varepsilon_i\)` — idiosyncratic error, `\(\mathbb{E}[\varepsilon_i | D_i, \mathbf{X}_i] = 0\)`
+
+--
+
+**The Selection Equation**
+
+`$$D_i = m(\mathbf{X}_i) + v_i$$`
+
+where `\(m(\mathbf{X}_i) = \mathbb{E}[D_i | \mathbf{X}_i]\)` and `\(\mathbb{E}[v_i | \mathbf{X}_i] = 0\)`.
+
+---
+
+## Why Might Regression Adjustment Fail?
+
+- nonlinear confounding
+- interactions among controls
+- many controls (`\(p \rightarrow n\)`)
+- highly collinear controls
+- unknown functional form
+
+---
+
+## The Key Theorem
+
+**Frisch-Waugh-Lovell (FWL):** In OLS, the coefficient on `\(D\)` from
+
+`$$Y = \tau D + \mathbf{X}\boldsymbol{\beta} + \varepsilon$$`
+
+is **numerically identical** to `\(\hat{\tau}\)` from:
+
+`$$\tilde{Y} = \tau \tilde{D} + \varepsilon$$`
+
+where `\(\tilde{Y}\)` and `\(\tilde{D}\)` are the **residuals** from regressing `\(Y\)` and `\(D\)` on `\(\mathbf{X}\)`.
+
+--
+
+**Intuition:** OLS already "partials out" `\(\mathbf{X}\)` from both sides.
+`\(\hat{\tau}\)` uses only the variation in `\(D\)` *unexplained* by the controls.
+
+--
+
+**DML generalizes this.** Instead of OLS projections, use any ML method to partial out `\(\mathbf{X}\)`.
+
+---
+
+## DML in one sentence
+
+Classical regression removes confounding by fitting linear regressions for
+
+`$$\begin{aligned}
+Y &amp;= Xb + \tilde Y\\
+D &amp;= Xg + \tilde D
+\end{aligned}$$`
+
+DML removes confounding by fitting flexible machine learning models for
+
+`$$\begin{aligned}
+Y &amp;= f(X) + \tilde Y\\
+D &amp;= g(X) + \tilde D
+\end{aligned}$$`
+
+Everything else is about making inference valid.
+
+
+---
+
+## Why Not Just Use OLS with Many Controls?
+
+When the number of controls `\(p\)` is large relative to `\(n\)`:
+
+- OLS is **imprecise** (high variance, may be infeasible if `\(p &gt; n\)`)
+- **Regularized regression** (LASSO, ridge) introduces **bias**
+
+--
+
+**Regularization bias problem (Belloni, Chernozhukov, Hansen 2014):**
+
+If you run LASSO of `\(Y\)` on `\((D, \mathbf{X})\)`, LASSO may **drop** `\(D\)` or shrink `\(\hat{\tau}\)` toward zero even if `\(\tau \neq 0\)`.
+
+Inference after model selection is **invalid** without corrections.
+
+--
+
+**Post-double-selection** (Belloni et al.) is one fix — but it requires LASSO specifically, and is sensitive to that choice.
+
+---
+
+## The Bias from Naïve Partialing Out
+
+Suppose we run:
+
+1. LASSO of `\(Y\)` on `\(\mathbf{X}\)` → residuals `\(\tilde{Y}\)`
+2. LASSO of `\(D\)` on `\(\mathbf{X}\)` → residuals `\(\tilde{D}\)`
+3. OLS of `\(\tilde{Y}\)` on `\(\tilde{D}\)` → `\(\hat{\tau}\)`
+
+**What goes wrong?**
+
+The nuisance estimates `\(\hat{g}(\mathbf{X}_i)\)` and `\(\hat{m}(\mathbf{X}_i)\)` have regularization error.
+- This error is as big as ordinary sampling error and thus is not small enough to ignore. 
+
+---
+
+## The DML Estimator 
+
+**Three steps:**
+
+.pull-left[
+**Step 1 — Partial out the outcome**
+
+Estimate `\(\hat{g}(\mathbf{X}_i) = \widehat{\mathbb{E}}[Y_i | \mathbf{X}_i]\)` using any ML method.
+
+`$$\tilde{Y}_i = Y_i - \hat{g}(\mathbf{X}_i)$$`
+
+**Step 2 — Partial out the treatment**
+
+Estimate `\(\hat{m}(\mathbf{X}_i) = \widehat{\mathbb{E}}[D_i | \mathbf{X}_i]\)` using any ML method.
+
+`$$\tilde{D}_i = D_i - \hat{m}(\mathbf{X}_i)$$`
+]
+
+.pull-right[
+**Step 3 — Recover `\(\tau\)`**
+
+OLS of `\(\tilde{Y}\)` on `\(\tilde{D}\)`:
+
+`$$\hat{\tau} = \left(\sum_i \tilde{D}_i^2\right)^{-1} \sum_i \tilde{D}_i \tilde{Y}_i$$`
+
+**That's it.** The estimator is the FWL residual-on-residual regression, with ML doing the partialing.
+
+]
+
+???
+
+The estimating equation for `\(\tau\)` is *insensitive* to small errors in `\(g\)` and `\(m\)`.
+
+Small ML estimation errors in the nuisance functions **do not affect** `\(\hat{\tau}\)` to first order.
+
+This is what buys us valid inference even when the ML models converge slowly.
+
+---
+
+## Cross-Fitting: The Other Key Ingredient
+
+**Problem:** If we estimate `\(\hat{g}\)` and `\(\hat{m}\)` on the same sample we use for Step 3, overfitting creates a new bias.
+
+**Solution: `\(K\)`-fold cross-fitting**
+
+1. Split the sample into `\(K\)` folds (typically `\(K = 5\)`)
+2. For each fold `\(k\)`:
+   - Estimate `\(\hat{g}^{(-k)}\)` and `\(\hat{m}^{(-k)}\)` on the **other** `\(K-1\)` folds
+   - Compute residuals `\(\tilde{Y}_i\)` and `\(\tilde{D}_i\)` for observations in fold `\(k\)`
+3. Stack all residuals, run OLS
+
+--
+
+**Why it works:** Each observation's residual uses a model trained on *different* data.
+Overfitting does not create systematic bias in the residuals.
+
+Same logic as cross-validation — just applied to the partialing step.
+
+---
+
+## Assumptions
+
+**1. Conditional ignorability (the usual one)**
+
+`$$Y(d) \perp D \mid \mathbf{X} \quad \text{for all } d$$`
+
+No unobserved confounders given `\(\mathbf{X}\)`. DML cannot partial out variables you didn't measure.
+
+--
+
+**2. The nuisance functions are estimable**
+
+The ML models for `\(g(\mathbf{X})\)` and `\(m(\mathbf{X})\)` must converge **faster than `\(n^{-1/4}\)`**.
+
+- LASSO achieves this under sparsity
+- Random forests and boosting can achieve this under smoothness
+- This is a *much* weaker requirement than `\(\sqrt{n}\)`-consistency
+
+--
+
+**3. Overlap**
+
+`\(0 &lt; \mathbb{P}(D = 1 | \mathbf{X}) &lt; 1\)` for binary `\(D\)`.
+(Or: `\(\text{Var}(D | \mathbf{X}) &gt; 0\)` for continuous `\(D\)`.)
+
+---
+
+# What DML Does Not Require
+
+.pull-left[
+**You do NOT need:**
+
+- Correct specification of `\(g(\mathbf{X})\)`
+- Correct specification of `\(m(\mathbf{X})\)`
+- Sparsity (unless using LASSO)
+- Knowledge of which controls matter
+- Linear functional forms
+
+]
+
+.pull-right[
+**You DO still need:**
+
+- Selection on observables
+- Enough data for ML to work
+- The residualized treatment–outcome relationship must have the correct functional form.
+
+]
+
+---
+
+## Machine Learning Models
+
+There are a number of models you could uses as learners in the DML framework. We will discuss _Random Forests_ and _MARS_.
+- Easy to use. 
+- Not too many tuning parameters. 
+- Pretty flexible. 
+- Data requirements are not too heavy. 
+
+Random forests use classification and regression trees to which we turn next. 
+
+---
+
+## Classification and Regression Trees (CART)
+
+CART works in a decision-tree framework.
+
+
+- Considering all independent variables, which dichotomization on one of them explains the most variance.
+
+- Conditional on the previous *split*, which next dichotomization explains the most variance.
+
+- Loss function is the well-known residual sum of squares.
+
+- Continue until some fit is not improved (or the nodes/leaves get too small).
+
+---
+
+## Notation
+
+
+`$$f(X_i) = T(X_i, \Theta)\equiv \sum_{b=1}^{B}c_{b}I(X_i \in R_b)$$`
+
+
+- `\(T()\)` is a regression tree, with rules `\(\Theta\)` regarding tree depth, stopping rules, etc...
+
+- `\(X_i\)` is the data.
+
+- `\(c_b\)` is the predicted value in each of the `\(B\)` regions.
+
+- `\(I()\)` is an indicator function.
+
+- `\(R_b\)` defines the different regions in the space.
+
+---
+
+## Variance of RF Predictions
+
+In addition to finding non-linearities and interactions (i.e., producing a low bias prediction), RF also attempts to produce a low-variance prediction, too. 
+
+.pull-left[
+`$$\operatorname{Var}\left(\frac{1}{M}\sum_{m=1}^M T_m\right) = \rho\sigma^2+\frac{1-\rho}{M}\sigma^2$$`
+
+where
+
+- `\(\sigma^2\)` is the variance of a typical tree,
+- `\(\rho\)` is the average pairwise correlation between trees.
+- If `\(\rho=0\)` (independence), then
+
+`$$\operatorname{Var}=\frac{\sigma^2}{M}$$`
+]
+.pull-right[
+so variance shrinks to zero as M grows.
+
+- If \rho=1 (perfect correlation),
+
+`$$\operatorname{Var}=\sigma^2$$`
+
+and averaging accomplishes nothing.
+
+In practice, `\(0&lt;\rho&lt;1\)`, so averaging still helps, but the residual variance is bounded below by `\(\rho\sigma^2\)`.
+]
+
+---
+## Example
+
+
+
+``` r
+library(rpart)
+library(dplyr)
+library(car)
+data(SLID)
+SLID$log_wages &lt;- log(SLID$wages)
+SLID$male &lt;- as.numeric(SLID$sex == "Male")
+SLID &lt;- na.omit(SLID)
+mod &lt;- rpart(log(wages) ~ age + education, data=SLID)
+mod
+```
+
+```
+## n= 3987 
+## 
+## node), split, n, deviance, yval
+##       * denotes terminal node
+## 
+##  1) root 3987 1010.05600 2.619376  
+##    2) age&lt; 23.5 610   64.40401 2.065618 *
+##    3) age&gt;=23.5 3377  724.80820 2.719404  
+##      6) education&lt; 15.65 2522  478.96440 2.641188  
+##       12) age&lt; 31.5 551   85.16101 2.490391 *
+##       13) age&gt;=31.5 1971  377.77110 2.683344 *
+##      7) education&gt;=15.65 855  184.90490 2.950116  
+##       14) age&lt; 29.5 205   36.60541 2.616058 *
+##       15) age&gt;=29.5 650  118.20740 3.055473 *
+```
+
+
+
+
+---
+
+## Decision Tree
+
+
+&lt;img src="lecture11_2026_files/figure-html/regtreeplot-1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+## Surface Plot
+
+.left-code[
+
+``` r
+age.s &lt;- seq(20, 95, length=25)
+educ.s &lt;- seq(9, 20, length=25)
+cartpred &lt;- function(x,y){
+  predict(mod, 
+          newdata=data.frame(
+            age = x, 
+            education=y))
+}
+p &lt;- outer(age.s, 
+           educ.s, 
+           cartpred)
+```
+
+
+``` r
+library(plotly)
+plot_ly() %&gt;% 
+  add_surface(x=~age.s, y=~educ.s, z=~exp(p)) %&gt;% 
+  layout(
+    scene= list(
+      xaxis=list(title="Age"), 
+      yaxis=list(title="Education"),
+      zaxis=list(title="Predicted Wage")))
+```
+]
+.right-plot[
+<div class="plotly html-widget html-fill-item" id="htmlwidget-2d2a8e0284e99ac23d68" style="width:95%;height:432px;"></div>
+<script type="application/json" data-for="htmlwidget-2d2a8e0284e99ac23d68">{"x":{"visdat":{"702661fee726":["function () ","plotlyVisDat"]},"cur_data":"702661fee726","attrs":{"702661fee726":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"z":{},"type":"surface","x":{},"y":{},"inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"title":"Age"},"yaxis":{"title":"Education"},"zaxis":{"title":"Predicted Wage"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"exp(p)","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":[["0","rgba(68,1,84,1)"],["0.0416666666666667","rgba(70,19,97,1)"],["0.0833333333333333","rgba(72,32,111,1)"],["0.125","rgba(71,45,122,1)"],["0.166666666666667","rgba(68,58,128,1)"],["0.208333333333333","rgba(64,70,135,1)"],["0.25","rgba(60,82,138,1)"],["0.291666666666667","rgba(56,93,140,1)"],["0.333333333333333","rgba(49,104,142,1)"],["0.375","rgba(46,114,142,1)"],["0.416666666666667","rgba(42,123,142,1)"],["0.458333333333333","rgba(38,133,141,1)"],["0.5","rgba(37,144,140,1)"],["0.541666666666667","rgba(33,154,138,1)"],["0.583333333333333","rgba(39,164,133,1)"],["0.625","rgba(47,174,127,1)"],["0.666666666666667","rgba(53,183,121,1)"],["0.708333333333333","rgba(79,191,110,1)"],["0.75","rgba(98,199,98,1)"],["0.791666666666667","rgba(119,207,85,1)"],["0.833333333333333","rgba(147,214,70,1)"],["0.875","rgba(172,220,52,1)"],["0.916666666666667","rgba(199,225,42,1)"],["0.958333333333333","rgba(226,228,40,1)"],["1","rgba(253,231,37,1)"]],"showscale":true,"z":[[7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327],[7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327,7.8901692191242327],[12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,13.681683811606806,13.681683811606806,13.681683811606806,13.681683811606806,13.681683811606806,13.681683811606806,13.681683811606806,13.681683811606806,13.681683811606806,13.681683811606806],[12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,12.065997678097855,13.681683811606806,13.681683811606806,13.681683811606806,13.681683811606806,13.681683811606806,13.681683811606806,13.681683811606806,13.681683811606806,13.681683811606806,13.681683811606806],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727],[14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,14.633950953106877,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727,21.231233301314727]],"type":"surface","x":[20,23.125,26.25,29.375,32.5,35.625,38.75,41.875,45,48.125,51.25,54.375,57.5,60.625,63.75,66.875,70,73.125,76.25,79.375,82.5,85.625,88.75,91.875,95],"y":[9,9.4583333333333339,9.9166666666666661,10.375,10.833333333333334,11.291666666666666,11.75,12.208333333333332,12.666666666666666,13.125,13.583333333333332,14.041666666666666,14.5,14.958333333333332,15.416666666666666,15.875,16.333333333333332,16.791666666666664,17.25,17.708333333333332,18.166666666666664,18.625,19.083333333333332,19.541666666666664,20],"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+]
+
+---
+
+## (Lack of) Smoothness of CART Models
+
+Problems with CART
+
+
+- Not particularly smooth - step functions aren't great approximations for smooth curves (though they can do OK).
+
+- No real means for inference here.  Bootstrapping can be problematic because the function is "non-regular" (small data changes can result in wild changes in the model)
+
+- In more complicated models, it's difficult to figure out what effects look like.
+
+
+---
+
+# Ensemble Methods
+
+Ensemble methods produce a bunch of `\((M)\)` trees to better fit `\(f(X)\)` and to prevent overfitting, with general form:
+
+`$$f(X_i) = \sum_{m=1}^{M}T_{m}(X_i, \Theta_m)$$`
+
+**Random Forests**
+
+- Draw lots of random samples from the data
+- In each random sample, fit a tree on a random subset of the variables
+- Average across the trees `\(\hat{f}_{\text{bag}}(X_i) = \frac{1}{M}\sum_{m=1}^{M}T_m(X_i, \Theta_m)\)`
+
+The effectiveness of ensemble averaging depends on the trees making different prediction errors.
+- Highly correlated trees provide little benefit from averaging.
+- Random Forests deliberately reduce the correlation among trees by randomly restricting the candidate predictors at each split.
+
+---
+
+
+# Random Forests
+  
+.pull-left[
+CART approximates smooth functions using piecewise-constant regions, producing discontinuous prediction surfaces 
+- RF is better at approximating smooth functions.
+
+``` r
+library(randomForest)
+rfmod &lt;- randomForest(log(wages) ~ age+education, 
+                      data=SLID, 
+                      type="regression")
+```
+  ]
+.pull-right-shift2[
+<div class="plotly html-widget html-fill-item" id="htmlwidget-8447b8e635c34659872f" style="width:100%;height:432px;"></div>
+<script type="application/json" data-for="htmlwidget-8447b8e635c34659872f">{"x":{"visdat":{"7026529062b":["function () ","plotlyVisDat"]},"cur_data":"7026529062b","attrs":{"7026529062b":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"z":{},"type":"surface","x":{},"y":{},"inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"title":"Age"},"yaxis":{"title":"Education"},"zaxis":{"title":"Predicted Wage"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"exp(rfp)","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":[["0","rgba(68,1,84,1)"],["0.0416666666666667","rgba(70,19,97,1)"],["0.0833333333333333","rgba(72,32,111,1)"],["0.125","rgba(71,45,122,1)"],["0.166666666666667","rgba(68,58,128,1)"],["0.208333333333333","rgba(64,70,135,1)"],["0.25","rgba(60,82,138,1)"],["0.291666666666667","rgba(56,93,140,1)"],["0.333333333333333","rgba(49,104,142,1)"],["0.375","rgba(46,114,142,1)"],["0.416666666666667","rgba(42,123,142,1)"],["0.458333333333333","rgba(38,133,141,1)"],["0.5","rgba(37,144,140,1)"],["0.541666666666667","rgba(33,154,138,1)"],["0.583333333333333","rgba(39,164,133,1)"],["0.625","rgba(47,174,127,1)"],["0.666666666666667","rgba(53,183,121,1)"],["0.708333333333333","rgba(79,191,110,1)"],["0.75","rgba(98,199,98,1)"],["0.791666666666667","rgba(119,207,85,1)"],["0.833333333333333","rgba(147,214,70,1)"],["0.875","rgba(172,220,52,1)"],["0.916666666666667","rgba(199,225,42,1)"],["0.958333333333333","rgba(226,228,40,1)"],["1","rgba(253,231,37,1)"]],"showscale":true,"z":[[10.007811860219558,9.2380299689353187,8.4679086322837804,7.8919454949724193,8.2893228669567858,9.0872485653059876,8.2237977946376724,7.8381407136366228,7.6458670766994201,8.3961156750721777,9.9332325970846185,8.7423912120150504,7.59142020478461,7.3124763801751076,8.1392467315923547,8.1687177006381013,7.7132964880634374,9.504699725134218,9.6542201801237724,9.1918966492813201,9.1644533264789629,9.3844065483296912,10.311917095483786,12.184853000392991,11.928484841605277],[12.320538292090021,10.365145367572556,9.4128926026381041,9.0486631066375036,9.476736304317976,10.477527728719576,10.046770272286865,9.885879376154632,9.1601862273060579,9.0350002708639661,9.6451441318002615,9.4343847982510223,8.8202955497342472,9.4060721201090089,9.6235238245961359,8.8441892504221631,8.3509617002710481,9.6698125842508187,9.8120501741558446,9.4237297560191795,9.6700935687994161,10.285651500296263,12.75477359025896,14.606862690443313,14.1304301242732],[11.451022000114127,10.159153459535073,10.479656535774501,11.575782357537056,12.311139010926601,8.8685121569786673,8.2217825202350916,11.210408045650647,12.080337040040726,11.46602529265404,11.240179985340509,11.945947535446125,8.6796209713603183,13.453095029458066,11.842309750969221,13.318994062977625,14.619672824764146,13.443272286754715,15.066977832178804,12.652346673199055,12.22086397226942,10.101707033543626,11.197054195624334,15.530238554922434,16.161967011071035],[10.826308341212373,10.496163026056095,10.176158614078838,9.6727035948049007,10.451329447189202,11.186121987676019,9.7729940722946687,9.6212072861358617,11.234515385518977,12.792586195843116,11.765826369393285,13.341202959060901,13.109291846820152,14.180477217545729,10.622736326377073,12.784747763998091,14.279428621221594,11.813926803569331,16.941083069510185,16.311311723191981,15.286021918254455,15.720214086401407,16.078329687685937,17.388245738304359,17.529752551052269],[12.881208671433779,11.469835016704016,10.073937687434448,9.8492540299144515,11.247977921841869,13.509483210203104,14.740857691959269,11.426036333404376,13.978173863132984,15.136962048921069,14.141242336738658,15.809165213495559,17.402208545576887,15.991662041434767,14.271924799838974,15.181658187880169,14.238840816437133,18.863316365888803,15.634457898968769,19.641792272334033,20.946416617932506,20.347412239054972,20.15765153897997,20.657047881465228,17.420418656820743],[12.689826101217577,15.061241555934936,17.038819425711377,11.53423521571678,15.264876108252439,11.579757844029006,11.792172190127005,16.273787517142772,15.845400078903104,15.888135225352594,12.477639698779251,16.426047162787203,14.353791507194719,17.027272443366996,17.193448458806127,17.098941486378173,18.375797426635557,27.571186666070655,21.292235197816034,25.239495947371815,22.328679952193191,22.90702478797548,25.656521708217227,20.983967133697238,23.05524336709475],[11.686305458015543,13.253953271401413,13.306598740432369,11.852974466390997,16.472308020658311,14.225197742280207,14.921825643927241,18.318650888987079,15.514114943836271,15.784180568563082,17.129457169352584,16.019418769167658,17.797768654146733,17.161460963949196,16.183185443513562,15.960525863955763,17.939049221088286,27.499405052041734,19.686831773901527,19.864660633665125,17.00162084856078,16.882145694739958,20.767846811598783,19.210733096009715,21.226708976038193],[15.042239323585967,12.796873948479679,12.213031270432428,9.3927518348709409,15.102481308014839,12.901863640165923,12.603947577545414,17.858106846619155,17.116258450581832,12.532170266204592,15.937780291850903,15.859399392661224,16.049560919825794,20.373680272669947,17.970010163933445,17.415970033242981,17.563678002525137,27.283989501924317,25.393813359683204,21.270774461072794,17.937801759485737,19.509441771791096,22.446679507150808,19.252970040395418,20.639734639897092],[14.982457523958502,10.881469644609883,11.936288759985329,9.4470125892368646,13.407524354036738,11.994330190812253,12.573680951052141,19.250650811316422,16.659884992491577,15.818913851688476,14.9286059721895,16.637478657882831,16.482863519077185,18.266750207532581,16.163435007513186,16.834025996628696,19.230333272565229,24.038904899723047,20.269300720143026,21.518168512265593,17.396526165483209,19.196630263572462,23.382632200046245,16.404793681912839,17.330954229622531],[14.725386409026681,13.905755797879147,15.178493467927991,11.120747833547346,13.376581613805952,12.795292963428897,15.064152133022114,15.072621996249074,17.234311298519131,16.267277419577272,16.161849959745361,15.055321621477116,15.122409047705943,18.326141220058812,19.339310923462705,18.197022399667865,18.814419541344652,25.779008290747917,22.618552920586051,24.07640621490858,25.296200136739802,27.078440836592538,27.479115828952601,25.050313555761178,28.255415574140894],[14.184414686490031,14.791331768497365,14.396623718589316,10.457387371524854,14.559700795563268,14.0946931649004,15.042020616813758,14.588344312435638,16.623592885500191,14.721341176898221,17.847937554129789,16.614646537568806,16.048452842039957,17.846695311781904,20.667022894227262,17.684349124428746,21.109092974957257,23.727899938826067,23.031910270616503,22.050010700487256,22.255155705425803,22.338910447036113,24.966073794149615,24.255927038846981,29.424274338177558],[12.506890784949373,12.466166489209227,11.951054920501649,10.213019792540274,15.902849002076684,14.027160794082674,14.196662106779611,13.968261702562558,14.989913600624455,15.352428929719803,17.259063693261275,18.07886896712693,16.705255531396343,16.292310329877544,19.389171678483937,16.785910314781326,20.341515209037144,24.670892312443328,24.154045455447527,22.692487445195194,22.416351835186926,23.007859892764039,24.368139109400637,22.602870642654391,25.032530751676891],[12.626367394223264,11.930108071929242,13.677381432132197,10.514053506315937,17.261990421160153,12.481700677783389,12.046289625587148,12.148139945120873,14.567463969335435,14.442510858414641,15.977315737411454,21.832696253239707,21.179284546255683,17.901304105167448,20.246893202227298,17.477205880513022,19.27375195469682,20.015629358538519,20.416761942367053,21.272707252964601,24.207382019626888,24.646610782497415,25.693651956847575,24.379181967314079,28.520509960228623],[13.585887453032106,11.594998917362284,11.656204360892644,10.654119346810941,12.643298208725,10.533114895842314,11.330168760395649,13.358644884041862,16.651403937420451,15.411662841873378,13.644600384352058,18.794330948673522,19.404936279678054,21.455824776782645,20.192423938780266,15.642025738090085,15.600257296142756,16.861550783025692,17.928342664756663,15.38817448167261,19.766148639859438,18.973778898398255,19.242790002616658,17.747495038601375,18.294457263896749],[12.759978971741726,12.326781954827876,12.363945766594551,10.635999747618122,12.608490294089053,10.771906660875663,11.421604948605093,14.769596960709777,16.475508342989439,15.726451207058711,14.231901468802308,18.616451578607403,19.379817731523978,22.982579036189808,20.680564738539712,16.326053535400391,16.924559466750043,20.060516142948526,21.18670104178495,18.171172715103314,20.362210413600497,19.190667342971949,19.940040878014372,23.107663044551938,26.838680036719182],[10.539582373261746,10.451452808661113,9.7329157034667979,9.2055097729179653,10.977948552836713,10.771520969117557,10.963155853074356,14.234415465947798,18.070162408941616,15.533187489112539,14.020146480297184,14.625667617996342,16.133603992621943,19.230277259148398,18.360672344566712,14.256148048032905,14.727105416286639,18.278621406256772,18.957882826733865,16.340475793142474,16.246931259280387,14.303635004411488,14.270463641737162,16.923464758480716,19.565074830571035],[10.632451730004673,10.616162611283357,9.9404433530238983,9.4059819974939245,11.216269429831604,10.944096604250444,11.056219069972014,13.716798471895627,16.999287588149585,15.114148285470469,13.655635278440544,14.40722044654882,16.104365543328299,19.745419713505438,19.001681933263448,16.160887636381975,17.023697283480047,20.014151889681525,20.262094093377907,17.549495889590847,17.356642725591495,15.371448592099224,15.241742822614651,17.716622996996414,20.418594967839308],[10.632451730004673,10.616162611283357,9.9404433530238983,9.4059819974939245,11.216269429831604,10.944096604250444,11.056219069972014,13.716798471895627,16.999287588149585,15.114148285470469,13.655635278440544,14.40722044654882,16.104365543328299,19.745419713505438,19.001681933263448,16.160887636381975,17.023697283480047,20.014151889681525,20.262094093377907,17.549495889590847,17.356642725591495,15.371448592099224,15.241742822614651,17.716622996996414,20.418594967839308],[10.632451730004673,10.616162611283357,9.9404433530238983,9.4059819974939245,11.216269429831604,10.944096604250444,11.056219069972014,13.716798471895627,16.999287588149585,15.114148285470469,13.655635278440544,14.40722044654882,16.104365543328299,19.745419713505438,19.001681933263448,16.160887636381975,17.023697283480047,20.014151889681525,20.262094093377907,17.549495889590847,17.356642725591495,15.371448592099224,15.241742822614651,17.716622996996414,20.418594967839308],[10.632451730004673,10.616162611283357,9.9404433530238983,9.4059819974939245,11.216269429831604,10.944096604250444,11.056219069972014,13.716798471895627,16.999287588149585,15.114148285470469,13.655635278440544,14.40722044654882,16.104365543328299,19.745419713505438,19.001681933263448,16.160887636381975,17.023697283480047,20.014151889681525,20.262094093377907,17.549495889590847,17.356642725591495,15.371448592099224,15.241742822614651,17.716622996996414,20.418594967839308],[10.632451730004673,10.616162611283357,9.9404433530238983,9.4059819974939245,11.216269429831604,10.944096604250444,11.056219069972014,13.716798471895627,16.999287588149585,15.114148285470469,13.655635278440544,14.40722044654882,16.104365543328299,19.745419713505438,19.001681933263448,16.160887636381975,17.023697283480047,20.014151889681525,20.262094093377907,17.549495889590847,17.356642725591495,15.371448592099224,15.241742822614651,17.716622996996414,20.418594967839308],[10.632451730004673,10.616162611283357,9.9404433530238983,9.4059819974939245,11.216269429831604,10.944096604250444,11.056219069972014,13.716798471895627,16.999287588149585,15.114148285470469,13.655635278440544,14.40722044654882,16.104365543328299,19.745419713505438,19.001681933263448,16.160887636381975,17.023697283480047,20.014151889681525,20.262094093377907,17.549495889590847,17.356642725591495,15.371448592099224,15.241742822614651,17.716622996996414,20.418594967839308],[10.632451730004673,10.616162611283357,9.9404433530238983,9.4059819974939245,11.216269429831604,10.944096604250444,11.056219069972014,13.716798471895627,16.999287588149585,15.114148285470469,13.655635278440544,14.40722044654882,16.104365543328299,19.745419713505438,19.001681933263448,16.160887636381975,17.023697283480047,20.014151889681525,20.262094093377907,17.549495889590847,17.356642725591495,15.371448592099224,15.241742822614651,17.716622996996414,20.418594967839308],[10.632451730004673,10.616162611283357,9.9404433530238983,9.4059819974939245,11.216269429831604,10.944096604250444,11.056219069972014,13.716798471895627,16.999287588149585,15.114148285470469,13.655635278440544,14.40722044654882,16.104365543328299,19.745419713505438,19.001681933263448,16.160887636381975,17.023697283480047,20.014151889681525,20.262094093377907,17.549495889590847,17.356642725591495,15.371448592099224,15.241742822614651,17.716622996996414,20.418594967839308],[10.632451730004673,10.616162611283357,9.9404433530238983,9.4059819974939245,11.216269429831604,10.944096604250444,11.056219069972014,13.716798471895627,16.999287588149585,15.114148285470469,13.655635278440544,14.40722044654882,16.104365543328299,19.745419713505438,19.001681933263448,16.160887636381975,17.023697283480047,20.014151889681525,20.262094093377907,17.549495889590847,17.356642725591495,15.371448592099224,15.241742822614651,17.716622996996414,20.418594967839308]],"type":"surface","x":[20,23.125,26.25,29.375,32.5,35.625,38.75,41.875,45,48.125,51.25,54.375,57.5,60.625,63.75,66.875,70,73.125,76.25,79.375,82.5,85.625,88.75,91.875,95],"y":[9,9.4583333333333339,9.9166666666666661,10.375,10.833333333333334,11.291666666666666,11.75,12.208333333333332,12.666666666666666,13.125,13.583333333333332,14.041666666666666,14.5,14.958333333333332,15.416666666666666,15.875,16.333333333333332,16.791666666666664,17.25,17.708333333333332,18.166666666666664,18.625,19.083333333333332,19.541666666666664,20],"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+  
+]
+
+---
+
+## Multivariate Adaptive Regression Splines (MARS)
+
+.pull-left[
+The main component of MARS is a pair of piecewise linear (hinge) splines.
+
+`$$\begin{aligned}
+(x-t)_{+} &amp;= \left\{\begin{array}{ll}
+  x-t &amp; \text{ if } x &gt; t\\
+  0   &amp;   \text{ otherwise.}
+\end{array}\right.\\
+(t-x)_{+} &amp;= \left\{\begin{array}{ll}
+  t-x &amp; \text{ if } x &lt; t\\
+  0   &amp;   \text{ otherwise.}
+\end{array}\right.
+\end{aligned}$$`
+]
+.pull-right[
+&lt;img src="lecture11_2026_files/figure-html/hinge-1.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## MARS Notation
+
+MARS takes the form:
+
+`$$f(x) = \beta_0 + \sum_{m=1}^{M} \beta_mh_m(x)$$`
+
+where `\(h_m\)` is the pair of hinge functions.
+
+Computationally:
+
+
+- Forward pass - add pairs of hinge functions by reduction in SSRes until all pairs are in.
+
+- Backward pass - take individual functions out by min increase in SSRes until GCV criterion is satisfied.
+
+
+
+---
+
+## Interactions
+
+
+- The `degree` parameter in the R algorithm controls the degree of interaction you want to allow.
+
+  
+- This can make the model really complicated because it's expanding all possible interactions among hinge functions and then pulling them out on the backward pass step.
+
+- This model is more easily constrained (particular w.r.t additivity) than the other models we talked about before.
+  
+
+- You can also identify variables that will enter the model linearly *if they enter the model at all *.
+
+---
+
+
+## MARS Wages
+
+.pull-left[
+
+``` r
+library(earth)
+SLID &lt;- SLID %&gt;% 
+  filter(!is.na(wages) &amp;
+         !is.na(education) &amp; 
+           wages &gt; 0)
+emod &lt;- earth(log(wages) ~ age + 
+                education, data=SLID, 
+              degree=3)
+```
+]
+.pull-right-shift2[
+
+``` r
+summary(emod)
+```
+
+```
+## Call: earth(formula=log(wages)~age+education, data=SLID, degree=3)
+## 
+##                               coefficients
+## (Intercept)                     2.67729521
+## h(32-age)                      -0.04911792
+## h(age-32)                      -0.03004296
+## h(12.6-education)              -0.15924569
+## h(education-12.6)               0.15407459
+## h(age-32) * h(education-17.1)  -0.01138343
+## h(age-32) * h(17.1-education)   0.00653049
+## h(age-34) * h(education-12.6)   0.00532288
+## h(51-age) * h(education-12.6)  -0.00497051
+## h(58-age) * h(12.6-education)   0.00417662
+## h(age-58) * h(12.6-education)  -0.01522641
+## 
+## Selected 11 of 12 terms, and 2 of 2 predictors
+## Termination condition: RSq changed by less than 0.001 at 12 terms
+## Importance: age, education
+## Number of terms at each degree of interaction: 1 4 6
+## GCV 0.1659743    RSS 653.1369    GRSq 0.3451777    RSq 0.3533659
+```
+]
+
+---
+
+## Surface Plot
+
+.left-code[
+
+``` r
+marspred &lt;- function(x,y){
+  predict(emod, 
+          newdata=data.frame(age = x, 
+                             education=y))
+}
+p2 &lt;- outer(age.s, 
+            educ.s, 
+            marspred)
+```
+
+
+``` r
+plot_ly() %&gt;% 
+  add_surface(x=~age.s, y=~educ.s, z=~exp(p2)) %&gt;% 
+  layout(
+    scene= list(
+      xaxis=list(title="Age"), 
+      yaxis=list(title="Education"),
+      zaxis=list(title="Predicted Wage")
+    ))
+```
+]
+.right-plot[
+<div class="plotly html-widget html-fill-item" id="htmlwidget-0d3556e28770e3ca009c" style="width:95%;height:432px;"></div>
+<script type="application/json" data-for="htmlwidget-0d3556e28770e3ca009c">{"x":{"visdat":{"7026699349a1":["function () ","plotlyVisDat"]},"cur_data":"7026699349a1","attrs":{"7026699349a1":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"z":{},"type":"surface","x":{},"y":{},"inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"title":"Age"},"yaxis":{"title":"Education"},"zaxis":{"title":"Predicted Wage"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"exp(p2)","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":[["0","rgba(68,1,84,1)"],["0.0416666666666667","rgba(70,19,97,1)"],["0.0833333333333333","rgba(72,32,111,1)"],["0.125","rgba(71,45,122,1)"],["0.166666666666667","rgba(68,58,128,1)"],["0.208333333333333","rgba(64,70,135,1)"],["0.25","rgba(60,82,138,1)"],["0.291666666666667","rgba(56,93,140,1)"],["0.333333333333333","rgba(49,104,142,1)"],["0.375","rgba(46,114,142,1)"],["0.416666666666667","rgba(42,123,142,1)"],["0.458333333333333","rgba(38,133,141,1)"],["0.5","rgba(37,144,140,1)"],["0.541666666666667","rgba(33,154,138,1)"],["0.583333333333333","rgba(39,164,133,1)"],["0.625","rgba(47,174,127,1)"],["0.666666666666667","rgba(53,183,121,1)"],["0.708333333333333","rgba(79,191,110,1)"],["0.75","rgba(98,199,98,1)"],["0.791666666666667","rgba(119,207,85,1)"],["0.833333333333333","rgba(147,214,70,1)"],["0.875","rgba(172,220,52,1)"],["0.916666666666667","rgba(199,225,42,1)"],["0.958333333333333","rgba(226,228,40,1)"],["1","rgba(253,231,37,1)"]],"showscale":true,"z":[[8.0522929157058609,8.0542649040604406,8.056237375350511,8.0582103296943526,8.0601837672102512,8.0621576880165495,8.0641320922315884,8.0661069799737692,8.0677889661026363,8.0677475206374929,8.0677060753852654,8.0676646303459414,8.0676231855195333,8.0675817409060304,8.0675402965054346,8.0674988523177458,8.0674574083429604,8.0674159645810803,8.0673745210321073,8.0673330776960306,8.0672916345728609,8.0672501916625858,8.0672087489652089,8.0671673064807301,8.0671258642091477],[8.9572515979000542,9.0132024335515641,9.0695027621223989,9.1261547666952545,9.1831606439892752,9.2405226044452853,9.2982428723114445,9.3563236857295315,9.4159821628520284,9.4832070730352171,9.550911931934424,9.6191001661183009,9.6877752266193173,9.756940589108396,9.8265997540708376,9.8967562469834576,9.9674136184930493,10.038575444596052,10.110245326819546,10.182426892403518,10.255123794484453,10.328339712280206,10.40207835127622,10.476343443413054,10.55113874727526],[9.9639142574646282,10.086310678361844,10.210210613185543,10.335632531055264,10.462595127964628,10.59111732956829,10.721218294003068,10.852917414743757,10.989469415184459,11.147004310685098,11.3067974811181,11.468881299029599,11.633288601028671,11.800052694439726,11.969207364050254,12.140786878955284,12.314825999499991,12.491359984321782,12.670424597493369,12.8520561157682,13.036291335929807,13.223167582246475,13.412722714032753,13.604995133319399,13.800023792633258],[11.083710917909473,11.287182757788006,11.494389880003851,11.705400855884365,11.920285515571225,12.13911497112943,12.361961640080503,12.588899269367699,12.825899193366231,13.10270925705543,13.385493468069846,13.674380761159139,13.969502853757891,14.270994306041807,14.578992582280156,14.893638113512198,15.215074361576384,15.543447884521443,15.878908403429117,16.22160887067913,16.571705539687446,16.929358036149608,17.294729430821693,17.667986313871985,18.049298870837376],[12.168506070339408,12.447601751876846,12.73309874504633,13.025143869714046,13.323887313192435,13.629482707475681,13.94208720824653,14.261861575695347,14.598094325283093,14.99723970657991,15.407298638088177,15.8285695213022,16.261358916697535,16.705981766816279,17.162761625451985,17.632030893101039,18.114131058851783,18.609412948887499,19.111279776938581,19.612002739785609,20.125844838998621,20.653149801052667,21.194270358190103,21.749568484375228,22.319415637430996],[12.469466554534174,12.712533252691083,12.960338038038383,13.212973269876581,13.470533107861524,13.733113547098581,14.000812453920974,14.273729602365579,14.57187653212822,14.996227414996151,15.43293591504494,15.882361901214542,16.344875722268998,16.820858511981701,17.310702503208098,17.814811351104538,18.33360046575968,18.867497354512462,19.365772383510738,19.769681000358361,20.182013870446863,20.60294669699153,21.0326588478197,21.47133343180295,21.919157376883401],[12.777870615822378,12.983103486292798,13.191632722205311,13.403511268417629,13.618792920165898,13.837532336723058,14.059785055276672,14.285607505029645,14.553450386275394,15.058203539835663,15.580462902526188,16.120835637186765,16.679949964712183,17.258455894402612,17.857025979644781,18.476356099801944,19.117166269222132,19.780201474304882,20.365916329116668,20.758250501742957,21.158142699283168,21.565738521444338,21.981186372803194,22.404637516839784,22.836246131012199],[13.093902354253244,13.259432465996182,13.427055171463456,13.596796924745197,13.76868451435808,13.942745067473068,14.119006054196584,14.297495291905863,14.535047540294098,15.120435798430941,15.729400134445383,16.362890057386089,17.021893317074369,17.707437444222908,18.420591352581649,19.162467005608939,19.934221150266602,20.737057120642326,21.417712638084264,21.796252751134467,22.181483243293275,22.573522361401839,22.972490442215094,23.378509949339204,23.791705510821881],[13.417750423174409,13.541642759447429,13.666679051339162,13.792869861524418,13.920225850208071,14.048757776025665,14.178476496952179,14.309392971219406,14.516667964721609,15.182925249326717,15.879761091653771,16.608578925802391,17.370846597911896,18.168099322417447,19.001942773986809,19.874056321364545,20.786196409636897,21.740200097729023,22.523828893067549,22.886159599598578,23.254318957266968,23.628400728962443,24.00850018589616,24.394714131864458,24.787140927902726],[13.749608141847544,13.829859542990482,13.910579342019293,13.991770272800029,14.073435085155275,14.155576544957352,14.238197434221924,14.321300551202279,14.498311630132502,15.245672955442489,16.031559383869183,16.857956813692166,17.726953512598428,18.640745394637246,19.601641569192363,20.612070175993452,21.674584520911836,22.79186952804503,23.68707044383817,24.030566501438489,24.379043738195904,24.732574388260513,25.091231733279898,25.455090117589311,25.824224963622051],[14.089673610849134,14.12421065718982,14.158832361813083,14.193538932235935,14.228330576484069,14.263207503093088,14.298169921109773,14.333218040093326,14.478779008958044,15.298696173861938,16.165044336634359,17.080452833085513,18.047699895390526,19.069721083925092,20.149618196586729,21.29066868264081,22.496335589662337,23.770278073762018,24.766864939551819,25.072538159905811,25.381984006220737,25.695249040333504,26.012380398748331,26.333425799729262,26.658433550480208],[14.438149830325511,14.424826663535104,14.41151579103278,14.398217201473663,14.384930883523365,14.371656825857947,14.358395017163932,14.345145446138257,14.445504187914846,15.237159215164116,16.072199206622066,16.953001782659442,17.882074864057063,18.862063812841686,19.895758964460217,20.986103572738525,22.136202190246902,23.349329507933472,24.231040800721473,24.318089415914944,24.405450748233086,24.493125921094123,24.581116061952084,24.669422302311308,24.758045777741007],[14.795244821172655,14.731840902352589,14.668708696300405,14.605847038611275,14.543254769870371,14.480930735631423,14.418873786395478,14.357082777589662,14.412305838355513,15.175869780650247,15.979887339494031,16.826501747432651,17.71796978546902,18.656667798860273,19.645098031631843,20.68589529669396,21.781833999341004,22.935835532855762,23.7068090660349,23.586342518210216,23.466488123168467,23.347242770245057,23.228603364582231,23.110566827048814,22.993130094160332],[13.657887040906974,13.73497323108732,13.812494501796493,13.890453308663274,13.968852121176203,14.047693422761789,14.126979710863225,14.206713497019438,14.379183784534924,15.114826874687386,15.888105672415353,16.70094563111282,17.555370710911429,18.453508418312929,19.397595103650563,20.389981529570182,21.433138724396301,22.52966413495815,23.19391893709745,22.876614353685646,22.56365065802667,22.254968464572798,21.950509200200717,21.650215093097216,21.354029161796774],[12.359671398572239,12.585208108252443,12.814860364841055,13.04870326798097,13.286813287717713,13.529268289506293,13.7761475596743,14.027531831349746,14.346137851111834,15.054029505647449,15.796851160142763,16.576326390358794,17.394263819677729,18.252561315668011,19.153210393723519,20.098300837994618,21.09002555033312,22.130685638502204,22.692125041467005,22.188242364546497,21.695548492184258,21.213794974982857,20.742738880408037,20.282142670285644,19.831774081019027],[11.184854335311606,11.531690703956638,11.889282283443812,12.257962587126153,12.638075470427916,13.02997545154672,13.43402804210041,13.850610088027247,14.313167863147962,14.993476685890988,15.706120774923562,16.452637034385496,17.234635417894946,18.053802400610298,18.911904616320165,19.810792667405121,20.75240511588823,21.73877266418101,22.201187315265052,21.520583929786753,20.860845237792905,20.221331607680927,19.601423016503723,19.000518448843405,18.418035314113286],[10.121706513701509,10.566364048006626,11.030555869592908,11.515140140866579,12.021012724238206,12.549108838324749,13.100404786910333,13.675919763862204,14.280273646107089,14.933167431751233,15.615911506395198,16.329870624571736,17.076471937359759,17.857207845152963,18.673638980857039,19.527397329478568,20.420189490341418,21.353800088451635,21.720870888327411,20.873015765278314,20.058255922495679,19.275299514773685,18.522905122949883,17.799879785568734,17.105077107377657],[9.1596134985921829,9.6818456253513023,10.233852632268984,10.8173321236155,11.434078491968682,12.085988436565058,12.775066796277898,13.503432715160329,14.247455025854082,14.873100763518082,15.526220361485322,16.208020274070957,16.919759934385219,17.662754080780957,18.438375185462096,19.2480559897391,20.093292150614523,20.97564500358769,21.250945971839627,20.244933341912098,19.286545011294098,18.373526461685103,17.503729902922171,16.67510922050576,15.885715162308085],[8.288969782913659,8.8713709169255974,9.4946928275577562,10.161810698015341,10.875801728159793,11.639959328640602,12.45780831233785,13.333121153188685,14.214711828654028,14.813275705422159,15.437044364312538,16.087079147424955,16.76448608865805,17.470417795625529,18.206075410817498,18.97271065534386,19.771627958737266,20.604186678439397,20.791187748403502,19.635750321247315,18.544524504520933,17.513941839373096,16.540632178418193,15.621412664889633,14.7532773242595],[7.5010828865885975,8.1287416667333687,8.808920269715605,9.5460133314077602,10.34478321216055,11.210390766426581,12.148428687055604,13.164957639698711,14.182043881171264,14.753691285619034,15.348380556087658,15.967040460180369,16.610637202106446,17.28017593166955,17.976702314080089,18.701304163043304,19.455113139673607,20.23930651988853,20.341376264481802,19.044898008142734,17.831052108990573,16.694571909894055,15.630526429458214,14.63429896739067,13.701567073476665],[6.7880865710785736,7.4482784795324735,8.1726789615547908,8.9675327785049443,9.8396920412326949,10.79667527933359,11.84673225532876,12.9989150825058,14.149451010468507,14.694346536173352,15.260225995015496,15.847897478508148,16.458200197778261,17.092005681983196,17.750219022878458,18.433780167313792,19.143665259503202,19.880888034985929,19.901296325170073,18.471824819858416,17.145029479511624,15.913535274398278,14.770496908864571,13.709560771563204,12.72482961872355],[6.1428623031004879,6.8247773866038681,7.5823914127442489,8.4241076711026803,9.3592622948815603,10.398227815258418,11.552528211239974,12.834966731124526,14.11693304400589,14.635240493043167,15.172577756197292,15.729643518825766,16.307162118729448,16.905884487989713,17.526589129385556,18.170083128659957,18.837203203952068,19.528816793759571,19.470737391244921,17.915995771132625,16.48540052805463,15.169038553150026,13.957788300949764,12.843256582908056,11.817720407980891],[5.5589681834091973,6.2534700474334581,7.0347385241130409,7.9136136780491677,8.902289862053232,10.014484913237805,11.265630487383017,12.673086172459044,14.084489809640099,14.576372196064257,15.085432931533669,15.612271947422316,16.157510126922773,16.721790036761146,17.305776684466061,17.910158302084358,18.535647157267025,19.182980392681223,19.0494934784397,17.376891974753065,15.851149797971946,14.459372267652975,13.189796894186294,12.031693969113432,10.975275883907473],[5.0305746310736144,5.7299872829415754,6.5266409248489925,7.4340552009123977,8.4676294232459757,9.6449039066351023,10.985857637185688,12.513247326547692,14.052121135623413,14.517740688934538,14.998788629628116,15.49577618008632,16.009231502136593,16.539700258343231,17.087746191897448,17.653951725722152,18.238918581428248,18.843268418780106,18.637363058899265,16.854010157156235,15.241300900767149,13.782906915425793,12.464062239577627,11.271413821869055,10.19288632404373],[4.5524061811199976,5.2503256613737808,6.0552416576541388,6.9835575728832389,8.0541915799721959,9.2889621557329924,10.713032720155097,12.355424442361421,14.019826850602836,14.459345019198523,14.912641975691097,15.380149681736487,15.862313640883643,16.359593323109653,16.872462602663852,17.401410209638257,17.946940195694648,18.509572414392039,18.234148964766771,16.34686218860276,14.654915013007214,13.138089228414856,11.778259268005874,10.559175613172794,9.466270617143568]],"type":"surface","x":[20,23.125,26.25,29.375,32.5,35.625,38.75,41.875,45,48.125,51.25,54.375,57.5,60.625,63.75,66.875,70,73.125,76.25,79.375,82.5,85.625,88.75,91.875,95],"y":[9,9.4583333333333339,9.9166666666666661,10.375,10.833333333333334,11.291666666666666,11.75,12.208333333333332,12.666666666666666,13.125,13.583333333333332,14.041666666666666,14.5,14.958333333333332,15.416666666666666,15.875,16.333333333333332,16.791666666666664,17.25,17.708333333333332,18.166666666666664,18.625,19.083333333333332,19.541666666666664,20],"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+]
+
+
+---
+
+## Choosing the ML Method
+
+**The choice of ML for `\(\hat{g}\)` and `\(\hat{m}\)` does not affect the asymptotic distribution of `\(\hat{\tau}\)`** — as long as convergence is fast enough.
+
+In practice, choose based on what you think fits the data generating process:
+
+| If you believe... | Consider... |
+|---|---|
+| True model is sparse (few controls matter) | LASSO, elastic net |
+| Many controls matter, nonlinear interactions | Random forest, MARS |
+| Smooth effects, moderate `\(p\)` | Ridge regression, GAM |
+| No strong prior | Try multiple, compare residuals |
+
+**Practical tip from Ratkovic:** Check that `\(\tilde{D}\)` residuals are not too small — if `\(m(\mathbf{X})\)` predicts `\(D\)` almost perfectly, you have a weak "instrument" problem.
+
+---
+
+## Diagnostics to Run
+
+**Before trusting your estimate:**
+
+1. **Check residual `\(\tilde{D}\)`**: plot against `\(\mathbf{X}\)`. Should look like noise.
+   If systematic patterns remain, your `\(\hat{m}\)` is not fitting well.
+
+2. **Check residual `\(\tilde{Y}\)`**: same logic.
+
+3. **Vary the ML method**: if `\(\hat{\tau}\)` changes a lot across choices, your nuisance models are not converging fast enough.
+
+4. **Check overlap**: plot `\(\hat{m}(\mathbf{X}_i)\)` — extreme propensity scores indicate thin overlap regions.
+
+---
+
+## Robustness Workflow
+
+A. Parametric GLM AME - Conventional applied baseline.
+
+B. Parametric DML - Same controls, but DML/residualized response-scale estimand.
+
+C. Flexible outcome DML - ML for `\(E[Y|X]\)`, parametric learner for `\(E[D|X]\)`.
+
+D. Flexible treatment DML - Parametric learner for `\(E[Y|X]\)`, ML for `\(E[D|X]\)`.
+
+E. Fully flexible DML - ML for both nuisance functions.
+
+--
+
+**Comparisons**
+- A vs B tells how the DML partial linear model machinery changes the estimated treatment effect. 
+- B vs D, E, F give a sense of how (and if so, where) flexible functional forms make a difference. 
+
+---
+
+## Implementation in R: DML Models
+
+
+``` r
+library(DoubleML)     # or hdm, or build it manually
+library(mlr3)
+library(mlr3extralearners)
+
+data_ml &lt;- DoubleMLData$new(SLID, y_col = "log_wages", d_cols = "male",
+                             x_cols = c("education", "age", "language"))
+
+pr &lt;- lrn("regr.lm")
+pc &lt;- lrn("classif.logistic")
+npr &lt;- lrn("regr.ranger")
+npc &lt;- lrn("classif.ranger")
+
+mod_a &lt;- lm(log_wages ~ sex + age + education + language, data=SLID)
+mod_b &lt;- DoubleMLPLR$new(data_ml, ml_l = pr, ml_m = pc, n_folds=5)
+mod_b$fit(store_predictions = TRUE)
+
+mod_c &lt;- DoubleMLPLR$new(data_ml, ml_l = npr, ml_m = pc, n_folds=5)
+mod_c$fit(store_predictions = TRUE)
+mod_d &lt;- DoubleMLPLR$new(data_ml, ml_l = pr, ml_m = npc, n_folds=5)
+mod_d$fit(store_predictions = TRUE)
+mod_e &lt;- DoubleMLPLR$new(data_ml, ml_l = npr, ml_m = npc, n_folds=5)
+mod_e$fit(store_predictions = TRUE)
+```
+
+
+---
+
+## Robustness in R
+
+.pull-left[
+
+``` r
+dml_rob &lt;- tibble::tribble(
+  ~model, ~coef, ~se, 
+  "B", mod_b$coef, mod_b$se, 
+  "C", mod_c$coef, mod_c$se, 
+  "D", mod_d$coef, mod_d$se, 
+  "E", mod_e$coef, mod_e$se) |&gt; 
+mutate(A_est = coef(mod_a)[2], 
+       A_se = sqrt(diag(vcov(mod_a)))[2])
+dml_rob$ovl &lt;- robustness(dnorm, dnorm, 
+  target_args = list(mean = dml_rob$A_est[1], 
+                     sd = dml_rob$A_se[1]), 
+  alt_args = list(mean = dml_rob$coef, 
+                  sd = dml_rob$se))$ovl
+```
+]
+.pull-right[
+
+``` r
+dml_rob
+```
+
+```
+## # A tibble: 4 × 6
+##   model  coef     se A_est   A_se   ovl
+##   &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+## 1 B     0.224 0.0133 0.224 0.0133 0.999
+## 2 C     0.215 0.0126 0.224 0.0133 0.706
+## 3 D     0.217 0.0132 0.224 0.0133 0.786
+## 4 E     0.216 0.0126 0.224 0.0133 0.756
+```
+]
+
+---
+
+## Diagnostics in R. 
+
+
+
+.pull-left[
+&lt;img src="lecture11_2026_files/figure-html/unnamed-chunk-11-1.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="lecture11_2026_files/figure-html/unnamed-chunk-12-1.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+## With MARS instead
+
+
+``` r
+pr &lt;- lrn("regr.lm")
+pc &lt;- lrn("classif.logistic")
+npr &lt;- lrn("regr.earth")
+npc &lt;- lrn("classif.earth")
+
+mod_a &lt;- lm(log_wages ~ sex + age + education + language, data=SLID)
+mod_b &lt;- DoubleMLPLR$new(data_ml, ml_l = pr, ml_m = pc, n_folds=5)
+mod_b$fit(store_predictions = TRUE)
+
+mod_c &lt;- DoubleMLPLR$new(data_ml, ml_l = npr, ml_m = pc, n_folds=5)
+mod_c$fit(store_predictions = TRUE)
+mod_d &lt;- DoubleMLPLR$new(data_ml, ml_l = pr, ml_m = npc, n_folds=5)
+mod_d$fit(store_predictions = TRUE)
+mod_e &lt;- DoubleMLPLR$new(data_ml, ml_l = npr, ml_m = npc, n_folds=5)
+mod_e$fit(store_predictions = TRUE)
+```
+
+---
+
+## MARS Diagnostics
+
+
+
+.pull-left[
+&lt;img src="lecture11_2026_files/figure-html/unnamed-chunk-15-1.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="lecture11_2026_files/figure-html/unnamed-chunk-16-1.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Robustness
+
+.pull-left[
+
+``` r
+dml_rob_mars &lt;- tibble::tribble(
+  ~model, ~mars_coef, ~mars_se, 
+  "B", mod_b$coef, mod_b$se, 
+  "C", mod_c$coef, mod_c$se, 
+  "D", mod_d$coef, mod_d$se, 
+  "E", mod_e$coef, mod_e$se) |&gt; 
+mutate(A_est = coef(mod_a)[2], 
+       A_se = sqrt(diag(vcov(mod_a)))[2])
+dml_rob_mars$mars_ovl &lt;- robustness(dnorm, dnorm, 
+  target_args = list(mean = dml_rob_mars$A_est[1], 
+                     sd = dml_rob_mars$A_se[1]), 
+  alt_args = list(mean = dml_rob_mars$mars_coef, 
+                  sd = dml_rob_mars$mars_se))$ovl
+```
+]
+.pull-right[
+
+```
+## # A tibble: 4 × 6
+##   model A_est rf_coef mars_coef rf_ovl mars_ovl
+##   &lt;chr&gt; &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;
+## 1 B     0.224   0.224     0.225  0.999    0.989
+## 2 C     0.224   0.215     0.218  0.706    0.793
+## 3 D     0.224   0.217     0.223  0.786    0.967
+## 4 E     0.224   0.216     0.222  0.756    0.912
+```
+]
+
+---
+
+## Robustness Workflow
+
+1. Parametric DML
+2. Flexible outcome learner
+3. Flexible treatment learner
+4. Flexible learners for both
+5. Compare treatment effects
+6. Compute overlap statistics
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+  </body>
+</html>

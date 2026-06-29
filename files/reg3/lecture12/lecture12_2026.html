@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+  <head>
+    <title>Lecture 12</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="lecture12_2026_files/header-attrs/header-attrs.js"></script>
+    <link href="lecture12_2026_files/remark-css/default.css" rel="stylesheet" />
+    <script src="lecture12_2026_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture12_2026_files/fabric/fabric.min.js"></script>
+    <link href="lecture12_2026_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture12_2026_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture12_2026_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture12_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture12_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture12_2026_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture12_2026_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <script>
+    function releaseMath(el) {
+      const codes = el.getElementsByTagName('code');
+
+      for (let i = 0; i < codes.length;) {
+        const code = codes[i];
+
+        if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+          const text = code.textContent.trim();
+
+          const isMath =
+            /^\$\$(.|\s)+\$\$$/.test(text) ||
+            /^\$(?!\$)(.|\s)+\$$/.test(text) ||
+            /^\\\((.|\s)+\\\)$/.test(text) ||
+            /^\\\[(.|\s)+\\\]$/.test(text) ||
+            /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text);
+
+          if (isMath) {
+            code.outerHTML = code.innerHTML;
+            continue;
+          }
+        }
+
+        i++;
+      }
+    }
+    </script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-svg.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      function rerenderMath() {
+        releaseMath(document);
+
+        if (window.MathJax && MathJax.typesetPromise) {
+          MathJax.typesetPromise().catch(function (err) {
+            console.error("MathJax typeset failed:", err);
+          });
+        }
+      }
+
+      if (window.slideshow && typeof slideshow.on === "function") {
+        slideshow.on("afterShowSlide", rerenderMath);
+      }
+
+      rerenderMath();
+    });
+    </script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="www/layout.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 12
+]
+.subtitle[
+## Robustness to Unmeasured Confounders: Sensitivity Analysis
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+.full-width table {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+.right-shift50 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -50px;
+}
+
+
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+&lt;/style&gt;
+
+
+
+
+
+
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- All relevant confounders are measured and included in the model. 
+
+Why might this assumption fail?
+- Relevant confounders could remain unmeasured or otherwise not included in the analysis. 
+
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- All relevant confounders are measured and included in the model. 
+
+What kinds of inferential instability can result?
+- Estimated treatment effects can be sensitive to potential correlated confounders.
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- All relevant confounders are measured and included in the model. 
+
+What tools exist to evaluate robustness?
+- Sensitivity Analysis
+
+---
+count: false
+
+## Today’s Robustness Question
+
+What assumption/abstraction are we perturbing?
+- All relevant confounders are measured and included in the model. 
+
+What are the limits of these tools?
+- They can present a quite wide range of effects. 
+- Different methods provide different amounts of guidance about whether the required confounding is plausible.
+- Some methods provide benchmarks using observed covariates, but all require assumptions that cannot themselves be verified.
+---
+
+## Sensitivity Analysis
+
+In general, sensitivity analysis is an effort to understand how our conclusions _could_ change - If a covariate was added that related to our treatment and/or the outcome 
+
+The goal is not to "find the right answer", but to understand the conditions under which our answer might change. 
+- Generally, we will not _know_ how likely such a scenario is, but there are some tools that help benchmark the result. 
+
+---
+
+## Prestige Model
+.pull-left[
+
+``` r
+data(Prestige, package="carData")
+# Prestige$income &lt;- Prestige$income/1000
+Prestige &lt;- Prestige |&gt; 
+  mutate(log_income = log(income), 
+         type_wc = as.numeric(type == "wc"), 
+         type_prof = as.numeric(type == "prof"))
+mod &lt;- lm(prestige ~ log_income + women + 
+            education + type_prof + 
+            type_wc, data=Prestige)
+tidy(mod)
+```
+
+```
+## # A tibble: 6 × 5
+##   term         estimate std.error statistic       p.value
+##   &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;
+## 1 (Intercept) -116.       18.8        -6.15 0.0000000196 
+## 2 log_income    14.7       2.31        6.34 0.00000000842
+## 3 women          0.0838    0.0322      2.60 0.0108       
+## 4 education      2.97      0.602       4.94 0.00000349   
+## 5 type_prof      5.29      3.56        1.49 0.140        
+## 6 type_wc       -3.22      2.41       -1.34 0.185
+```
+]
+.pull-right[
+What would it take to: 
+- Make the income effect insignificant?
+- Flip the sign of the income effect? 
+
+Sensitivity analysis can answer these questions. 
+]
+
+
+---
+
+
+## Sensitivity to Confounding Variables
+
+[Frank (2000)](https://doi.org/10.1177/0049124100029002001) discusses sensitivity as robustness to the presence of unobserved confounders. 
+- Confounder: variable that correlates with both treatment and outcome (and is causally prior to the treatment). 
+
+
+`$$y = \beta_0 + \beta_1x + \varepsilon$$` 
+
+`\(\beta_1\)` can be causally interpreted if `\(\rho_{x, \varepsilon} = 0\)`  or alternatively `\(E(\varepsilon|x) = 0\)`. 
+
+
+
+**ITCV**: Impact Threshold for a Confounding Variable
+- Amount of confounding required to make a significant effect cross the significance threshold. 
+
+---
+
+## Sensitivity
+.pull-left[
+
+``` r
+library(konfound)
+k &lt;- konfound(mod, "log_income", index="IT", to_return="table")
+```
+
+```
+## Dependent variable is prestige
+## 
+## X represents log_income, Y represents prestige, v represents each covariate.
+## First table is based on unconditional correlations, second table is based on
+## partial correlations.
+```
+
+``` r
+k$Main_Output |&gt; select(-statistic)
+```
+
+```
+## # A tibble: 6 × 5
+##   term        estimate std.error p.value   itcv
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+## 1 (Intercept) -116.       18.8     0     NA    
+## 2 log_income    14.7       2.31    0      0.104
+## 3 women          0.084     0.032   0.011  0.061
+## 4 education      2.97      0.602   0      0.512
+## 5 type_prof      5.29      3.56    0.14   0.489
+## 6 type_wc       -3.22      2.41    0.185  0.044
+```
+]
+.pull-right-shift[
+ITCV measures _inferential robustness_ - how big does a confounder effect have to be to change the inference I make? 
+- Not the same as "significantly" changing the effect size. 
+- an omitted variable would need partial correlations resembling education's to nullify the income result — still a real concern, but less alarming than the unconditional picture.
+
+
+``` r
+k$Partial_Impact |&gt; select(1,4)
+```
+
+```
+## # A tibble: 4 × 2
+##   term      Partial_Impact
+##   &lt;chr&gt;              &lt;dbl&gt;
+## 1 women             0.147 
+## 2 education         0.218 
+## 3 type_prof         0.0159
+## 4 type_wc          -0.0006
+```
+
+]
+
+---
+
+## Robustness in Replacement
+
+.pull-left[
+Whereas the ITCV is about potential _confounding variables_, the Robustness in Replacement (RiR) index answers 
+- how many observations would I have to replace with null effect observations to nullify the effect. 
+
+]
+.pull-right[
+
+``` r
+k2 &lt;- konfound(mod, "log_income", index="RIR", to_return="raw_output")
+```
+
+``` r
+# Number of observations to nullify effect
+k2$RIR_primary
+```
+
+```
+## [1] 67
+```
+
+``` r
+# percentage of observations to nullify effect
+k2$RIR_perc
+```
+
+```
+## [1] 68.67414
+```
+]
+
+---
+
+## Cinelli and Hazlett (2020)
+
+Frank (2000) tells us how much confounding is needed to push our result across the significance threshold. 
+
+- as Gelman &amp; Stern remind us, the difference between significant and not significant is not necessarily itself significant. 
+- A confounder that moves our t-statistic from 6.3 to 1.9 has done something — but it hasn't shown the effect is zero.
+- A confounder that moves the t-statistic from 2.5 to 1.5 may not be that problematic. 
+
+Cinelli &amp; Hazlett answer a similar question, but provide more useful context 
+- how related would an omitted variable have to be to `\(X\)` and `\(Y\)` to change the significance. 
+- how related to change the sign?
+- and how those requirements compare to the observed strength of covariates already in the model — giving a direct plausibility benchmark. 
+
+---
+
+## Three Sensitivity Statistics
+
+Cinelli and Hazlett propose a sensitivity analysis framework that provides more concrete advice about what is a "good" and "bad" value (in the OLS context). 
+
+1. `\(R_{Y \sim D|\mathbf{X}}^2\)` - the partial `\(R^{2}\)` of `\(Y\)` with respect to the treatment controlling for `\(\mathbf{X}\)`. 
+  - A covariate that explained all residual variance in `\(Y\)` would have to explain at least `\(2.2\%\)` in the residual variance in the treatment to eliminate its effect.
+2. `\(RV\)` - Unobserved confounders explaining at least `\(RV\%\)` of the variance in both the treatment and the outcome could eliminate the effect of the treatment. 
+3. `\(RV_{\alpha=0.05}\)` - Unobserved confounders explaining at least `\(RV_{\alpha=0.05}\%\)` of the residual variance in both the outcome and treatment could render the treatment insignificant. 
+
+
+---
+
+## In R
+
+.pull-left[
+
+
+``` r
+library(sensemakr)
+s &lt;- sensemakr(mod, "log_income")
+s
+```
+
+```
+## Sensitivity Analysis to Unobserved Confounding
+## 
+## Model Formula: prestige ~ log_income + women + education + type_prof + type_wc
+## 
+## Null hypothesis: q = 1 and reduce = TRUE 
+## 
+## Unadjusted Estimates of ' log_income ':
+##   Coef. estimate: 14.65518 
+##   Standard Error: 2.31151 
+##   t-value: 6.34009 
+## 
+## Sensitivity Statistics:
+##   Partial R2 of treatment with outcome: 0.30407 
+##   Robustness Value, q = 1 : 0.4777 
+##   Robustness Value, q = 1 alpha = 0.05 : 0.36173 
+## 
+## For more information, check summary.
+```
+
+
+]
+.pull-right-shift[
+
+- What proportion of the residual variance of the treatment and control have to be explained by an unobserved confounder (orthogonal to the covariates) to move the coefficient across the significance threshold? **36.2%**
+
+- What proportion of the residual variance of the treatment and control have to be explained by an unobserved confounder (orthogonal to the covariates) to move the coefficient across zero? **47.7%**
+
+- What proportion of the residual variance of the treatment would an unobserved confounder that explains `\(100\%\)` of the outcome residual variance have to explain to fully account for the observed treatment effect? **30.4%**
+
+]
+---
+
+## Benchmark Variables 
+
+Benchmark variables allow us to evaluate whether unobserved confounders would need to be stronger than observed confounders to eliminate the effect. 
+
+1. `\(R_{Y\sim Z|D,\mathbf{X}}^2\)` - the partial `\(R^{2}\)` of `\(Y\)` with respect to the benchmark variable `\(Z\)` controlling for `\(\mathbf{X}\)` and the t
+  - If `\(R_{Y\sim Z|D,\mathbf{X}}^2 &lt; RV\)`, a confounder as strong as the benchmark would not be able to eliminate the treatment effect. 
+2. `\(R_{D\sim Z|\mathbf{X}}^2\)` - the partial `\(R^2\)` of the treatment with respect to `\(Z\)`. 
+  - If `\(R_{D\sim Z|\mathbf{X}}^2 &lt; R_{Y \sim D|\mathbf{X}}^2\)`, then even in the worst case secnario where an unobserved covariate explained all the residual variance in the outcome and is as strongly associated with the treatment as the benchmark covariate it would still not eliminate the effect of the treatment. 
+
+---
+
+## Benchmark Output
+
+
+``` r
+s &lt;- sensemakr(mod, "log_income", "education", kd=1:2)
+s$bounds
+```
+
+```
+##    bound_label    r2dz.x   r2yz.dx  treatment adjusted_estimate adjusted_se
+## 1 1x education 0.1713843 0.3749099 log_income         8.4812432    2.018664
+## 2 2x education 0.3427685 0.8060845 log_income         0.2797287    1.262456
+##   adjusted_t adjusted_lower_CI adjusted_upper_CI
+## 1  4.2014142          4.472002         12.490484
+## 2  0.2215749         -2.227619          2.787076
+```
+
+
+---
+
+## Plot
+
+.pull-left[
+
+``` r
+plot(s)
+```
+]
+.pull-right[
+&lt;img src="lecture12_2026_files/figure-html/unnamed-chunk-9-1.png" alt="Contour plot from sensemakr showing the sensitivity of the log-income coefficient to hypothetical unmeasured confounders. The x-axis is the partial R² of a confounder with the treatment and the y-axis is the partial R² with the outcome. Labeled contours show adjusted coefficient values at each combination; a dashed contour marks where the estimate crosses zero. Benchmark triangles at 1× and 2× the strength of education are plotted to show that a confounder no stronger than education at either scaling would not be sufficient to eliminate the income effect." width="100%" /&gt;
+]
+
+---
+
+## Oster (2019): Coefficient Stability and Selection
+
+Frank and Cinelli &amp; Hazlett ask: *how strong would a hypothetical omitted variable need to be?*
+
+Oster asks a related but different question:
+
+&gt; **What does the behavior of your coefficient as controls are added tell you about omitted variable bias?**
+
+The key insight: if adding observed controls moves your coefficient, that movement is informative about how much unobserved selection might remain — provided we're willing to make an assumption about the *relationship* between observed and unobserved selection.
+
+???
+
+Oster (2019) "Unobservable Selection and Coefficient Stability: Theory and Evidence", Journal of Business &amp; Economic Statistics. Builds on Altonji, Elder &amp; Taber (2005).
+
+The shift from Frank: instead of asking about a hypothetical confounder, Oster uses the *observed* behavior of estimates as controls are added. This is more empirical and less hypothetical — but it requires an assumption Frank doesn't.
+
+---
+
+## The Proportional Selection Assumption
+
+Let:
+- `\(\dot{\beta}\)`, `\(\dot{R}^2\)` = coefficient and `\(R^2\)` **without** controls  
+- `\(\tilde{\beta}\)`, `\(\tilde{R}^2\)` = coefficient and `\(R^2\)` **with** controls
+- `\(R^2_{max}\)` = the `\(R^2\)` a model with *all* relevant variables would achieve
+
+Oster's key assumption: selection on unobservables is proportional to selection on observables, scaled by `\(\delta\)`:
+
+`$$\beta^*(\delta, R^2_{max}) \approx \tilde{\beta} - \delta \left[(\dot{\beta} - \tilde{\beta}) \times \frac{R^2_{max} - \tilde{R}^2}{\tilde{R}^2 - \dot{R}^2}\right]$$`
+
+- `\(\delta = 1\)`: unobservables generate as much selection as observables  
+- `\(\delta &gt; 1\)`: unobservables generate *more* selection than observables
+
+???
+
+The formula has two moving parts beyond the observed coefficients: delta (the proportionality assumption) and R_max (how much variance could ever be explained). Both require researcher choices.
+
+Note: if the coefficient doesn't move when controls are added (β̇ ≈ β̃), the bracketed term is small regardless of δ — this is the "stability implies robustness" intuition. But Oster formalizes when that intuition is and isn't warranted.
+
+---
+
+## The `\(\delta^*\)` Statistic
+
+Solve for the `\(\delta\)` that sets `\(\beta^* = 0\)`: `\(\quad \delta^* = \frac{\tilde{\beta}(\tilde{R}^2 - \dot{R}^2)}{(\dot{\beta} - \tilde{\beta})(R^2_{max} - \tilde{R}^2)}\)`
+
+**Interpretation:**
+
+- `\(\delta^* &gt; 1\)`: unobservables would need to generate *more* selection than observables to explain away the result — **robust**
+- `\(\delta^* &lt; 1\)`: unobservables need to generate *less* selection than observables — **fragile**
+- `\(\delta^* = 1\)`: the benchmark of equal selection
+
+.pull-left[
+**Compared to Frank:** Frank asks what correlation an omitted variable needs. Oster asks how much stronger unobserved selection needs to be than observed selection.
+]
+
+.pull-right[
+**The `\(R^2_{max}\)` problem:** `\(\delta^*\)` is sensitive to the choice of `\(R^2_{max}\)`. Oster suggests `\(R^2_{max} = \min(1.3\tilde{R}^2, 1)\)` as a default — but this is itself a sensitivity parameter.
+]
+
+???
+
+The R package robomit implements this. psacalc is the Stata equivalent.
+
+The R_max choice is non-trivial. If your outcome is hard to predict (low `\(R^2\)`), `\(1.3\times \tilde R\)`  might be too conservative. If you have a rich set of controls already, it might be too generous. Some researchers report `\(\delta^{*}\)` across a range of $R_{max}^{2} values.
+
+---
+
+## Oster Statistics in R
+
+.pull-left[
+
+``` r
+o_delta(
+  y = "prestige",
+  x = "log_income", 
+  con = "women + education + type",
+  type="lm",
+  R2max = 0.9,
+  data = Prestige
+)
+```
+
+```
+## # A tibble: 7 × 2
+##   Name                      Value
+##   &lt;chr&gt;                     &lt;dbl&gt;
+## 1 delta*                    1.60 
+## 2 Uncontrolled Coefficient 21.6  
+## 3 Controlled Coefficient   14.7  
+## 4 Uncontrolled R-square     0.549
+## 5 Controlled R-square       0.865
+## 6 Max R-square              0.9  
+## 7 beta hat                  0
+```
+
+]
+.pull-right[
+
+``` r
+o_delta(
+  y = "prestige",
+  x = "log_income", 
+  con = "women + education + type",
+  type="lm",
+  R2max = 0.95,
+  data = Prestige
+)
+```
+
+```
+## # A tibble: 7 × 2
+##   Name                      Value
+##   &lt;chr&gt;                     &lt;dbl&gt;
+## 1 delta*                    1.04 
+## 2 Uncontrolled Coefficient 21.6  
+## 3 Controlled Coefficient   14.7  
+## 4 Uncontrolled R-square     0.549
+## 5 Controlled R-square       0.865
+## 6 Max R-square              0.95 
+## 7 beta hat                  0
+```
+]
+
+Note: the sensitivity analysis is quite sensitive to `\(R^{2}_{max}\)`. 
+
+---
+
+## Clarke, Kenkel and Rueda (2018) 
+
+Clarke et al ask...
+
+- From a sensitivity point of view, is adding more controls necessarily better? 
+
+--
+
+**Answer: Not necessarily**
+
+When observed and unobserved confounders pull the bias in opposite directions, controlling for the observed one removes its countervailing pressure — leaving bias of the unobserved confounder to act unopposed. 
+- You've made things worse by eliminating one side of a tug-of-war.
+
+???
+
+Suppose richer people are more likely to get the treatment and have better outcomes (U biases upward). But more educated people are less likely to get the treatment and have better outcomes (X biases downward). The two partially cancel. Control for education and you've removed the downward pressure — now U's upward bias dominates
+
+---
+
+## When is it better to condition on `\(X\)`?
+
+.pull-left[
+&lt;img src="pkr_fig.png" alt="Scatter plot with β_X on the x-axis and β_U on the y-axis, both ranging from −1 to 1. Two shaded regions in the upper-left and lower-right are labeled 'Worse to include X', corresponding to configurations where the observed confounder X and the unobserved confounder U have opposite-signed effects. Two unshaded regions in the upper-right and lower-left are labeled 'Better to include X', where X and U reinforce each other. A staircase boundary running through the origin separates the regions, illustrating that conditioning on an observed covariate can worsen omitted-variable bias when the observed and unobserved confounders pull in opposite directions." width="100%" /&gt;
+]
+.pull-right[
+With observed cofounder `\(X\)` and unobserved confounder `\(U\)`, it is _worse_ to control for `\(X\)` if
+1. `\(U\)` is a confounder _and_
+2. `\(U\)` and `\(X\)` have countervailing effects _and_
+3. The confounding effect of `\(U\)` is at least as great as that of `\(X\)`
+]
+
+---
+
+## Robustness Workflow
+
+1. Estimate the preferred model.
+2. Identify the treatment effect of interest.
+3. Evaluate robustness using sensitivity analysis.
+4. Benchmark against observed covariates.
+5. Ask whether the required confounding is substantively plausible.
+6. Interpret conclusions in light of the assumptions of the sensitivity method.
+
+Remember: 
+- Sensitivity analysis does not tell us whether our estimate is correct.
+- It tells us what assumptions would have to be false for our conclusion to change.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+  </body>
+</html>

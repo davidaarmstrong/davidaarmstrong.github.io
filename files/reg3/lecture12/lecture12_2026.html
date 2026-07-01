@@ -268,8 +268,7 @@ k$Main_Output |&gt; select(-statistic)
 .pull-right-shift[
 ITCV measures _inferential robustness_ - how big does a confounder effect have to be to change the inference I make? 
 - Not the same as "significantly" changing the effect size. 
-- an omitted variable would need partial correlations resembling education's to nullify the income result — still a real concern, but less alarming than the unconditional picture.
-
+- an omitted variable would need partial correlations no larger than education's or women's to nullify the income result — a real concern. 
 
 ``` r
 k$Partial_Impact |&gt; select(1,4)
@@ -398,7 +397,7 @@ s
 
 Benchmark variables allow us to evaluate whether unobserved confounders would need to be stronger than observed confounders to eliminate the effect. 
 
-1. `\(R_{Y\sim Z|D,\mathbf{X}}^2\)` - the partial `\(R^{2}\)` of `\(Y\)` with respect to the benchmark variable `\(Z\)` controlling for `\(\mathbf{X}\)` and the t
+1. `\(R_{Y\sim Z|D,\mathbf{X}}^2\)` - the partial `\(R^{2}\)` of `\(Y\)` with respect to the benchmark variable `\(Z\)` controlling for `\(\mathbf{X}\)` and the treatment. 
   - If `\(R_{Y\sim Z|D,\mathbf{X}}^2 &lt; RV\)`, a confounder as strong as the benchmark would not be able to eliminate the treatment effect. 
 2. `\(R_{D\sim Z|\mathbf{X}}^2\)` - the partial `\(R^2\)` of the treatment with respect to `\(Z\)`. 
   - If `\(R_{D\sim Z|\mathbf{X}}^2 &lt; R_{Y \sim D|\mathbf{X}}^2\)`, then even in the worst case secnario where an unobserved covariate explained all the residual variance in the outcome and is as strongly associated with the treatment as the benchmark covariate it would still not eliminate the effect of the treatment. 
@@ -409,17 +408,19 @@ Benchmark variables allow us to evaluate whether unobserved confounders would ne
 
 
 ``` r
-s &lt;- sensemakr(mod, "log_income", "education", kd=1:2)
+s &lt;- sensemakr(mod, "log_income", "education", kd=c(1,1.5,2))
 s$bounds
 ```
 
 ```
-##    bound_label    r2dz.x   r2yz.dx  treatment adjusted_estimate adjusted_se
-## 1 1x education 0.1713843 0.3749099 log_income         8.4812432    2.018664
-## 2 2x education 0.3427685 0.8060845 log_income         0.2797287    1.262456
+##      bound_label    r2dz.x   r2yz.dx  treatment adjusted_estimate adjusted_se
+## 1   1x education 0.1713843 0.3749099 log_income         8.4812432    2.018664
+## 2 1.5x education 0.2570764 0.5811953 log_income         4.7123506    1.745030
+## 3   2x education 0.3427685 0.8060845 log_income         0.2797287    1.262456
 ##   adjusted_t adjusted_lower_CI adjusted_upper_CI
 ## 1  4.2014142          4.472002         12.490484
-## 2  0.2215749         -2.227619          2.787076
+## 2  2.7004407          1.246570          8.178131
+## 3  0.2215749         -2.227619          2.787076
 ```
 
 

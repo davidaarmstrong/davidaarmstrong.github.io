@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+  <head>
+    <title>Lecture 13</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="lecture13_2026_files/header-attrs/header-attrs.js"></script>
+    <link href="lecture13_2026_files/remark-css/default.css" rel="stylesheet" />
+    <script src="lecture13_2026_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture13_2026_files/fabric/fabric.min.js"></script>
+    <link href="lecture13_2026_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture13_2026_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture13_2026_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture13_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture13_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture13_2026_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture13_2026_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <script>
+    function releaseMath(el) {
+      const codes = el.getElementsByTagName('code');
+
+      for (let i = 0; i < codes.length;) {
+        const code = codes[i];
+
+        if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+          const text = code.textContent.trim();
+
+          const isMath =
+            /^\$\$(.|\s)+\$\$$/.test(text) ||
+            /^\$(?!\$)(.|\s)+\$$/.test(text) ||
+            /^\\\((.|\s)+\\\)$/.test(text) ||
+            /^\\\[(.|\s)+\\\]$/.test(text) ||
+            /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text);
+
+          if (isMath) {
+            code.outerHTML = code.innerHTML;
+            continue;
+          }
+        }
+
+        i++;
+      }
+    }
+    </script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-svg.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      function rerenderMath() {
+        releaseMath(document);
+
+        if (window.MathJax && MathJax.typesetPromise) {
+          MathJax.typesetPromise().catch(function (err) {
+            console.error("MathJax typeset failed:", err);
+          });
+        }
+      }
+
+      if (window.slideshow && typeof slideshow.on === "function") {
+        slideshow.on("afterShowSlide", rerenderMath);
+      }
+
+      rerenderMath();
+    });
+    </script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="www/layout.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Lecture 13
+]
+.subtitle[
+## Robustness to Missing Data
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+.full-width table {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+.right-shift50 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -50px;
+}
+
+
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+&lt;/style&gt;
+
+
+
+
+
+
+
+## Today’s Robustness Question
+
+Today’s Robustness Question
+- The observed data are sufficient to recover the complete-data relationships.
+
+Why might this assumption fail?
+
+- Missingness may not be random.
+- Complete-case analysis may induce selection bias.
+- Missing observations reduce precision.
+
+---
+count: false
+
+## Today’s Robustness Question
+
+Today’s Robustness Question
+- The observed data are sufficient to recover the complete-data relationships.
+
+
+What kinds of inferential instability can result?
+
+- Effect estimates may change.
+- Standard errors may increase.
+- Conclusions may depend on assumptions about the missing-data mechanism.
+
+---
+count: false
+
+## Today’s Robustness Question
+
+Today’s Robustness Question
+- The observed data are sufficient to recover the complete-data relationships.
+
+What tools exist to evaluate robustness?
+
+- Multiple Imputation
+- Sensitivity analyses for departures from Missing at Random (briefly)
+
+---
+count: false
+
+## Today’s Robustness Question
+
+Today’s Robustness Question
+- The observed data are sufficient to recover the complete-data relationships.
+
+What are the limits?
+
+- Multiple imputation assumes Missing at Random (MAR).
+- No statistical method can recover information that is completely absent without assumptions.
+- Results should be compared across plausible imputation models.
+
+---
+## Why Care about Missing Data?
+
+- Can cause bias, if missingness is systematic.
+
+- Can reduce sample size to a point where reliable inferences are difficult to make, even if missingness is not systematic.
+
+- Systematic missingness can truncate the sample calling into question the generalizability of results.
+
+--
+
+Missing data create uncertainty not only about the parameters, but also about the data themselves.
+---
+
+## Consequences for Data Analysis
+
+The effects on data analysis are the ones most commonly acknowledged by the literature on missing data.
+
+
+- Missing data, at a minimum, can pose problems for statistical power (i.e., sample size).
+
+- Statistical procedures also make assumptions about distributions (i.e., error distributions).  Missing data can make some of these assumptions less likely to hold, especially if the missingness is not random.
+
+- Missing data can also, as previously stated, reduce reliability, which reduces effect size, which in turn reduces statistical power.
+
+
+
+---
+
+## Consequences for Validity
+
+Internal validity can be defined as - the extent to which a researcher can reasonably claim that a particular factor, usually an intervention of some sort, is responsible for the observed outcome.   Confounders and alternative explanations are threats to internal validity. *Selection bias* is an example:
+
+
+- There can be systematic differences between responders and non-responders in experiments/surveys.  These differences could be responsible for the outcome rather than the variable of interest.
+
+Missing data can lead to a more homogeneous sample that is not representative of the population which can cause all sorts of problems for generalizability.
+
+- The same can be true of missingness on particular variables.
+
+
+
+
+---
+
+## Robustness Workflow
+
+1. Explore missing-data patterns.
+    - Potentially estimate models removing different missing data patterns. 
+2. Theorize the missing-data mechanism.
+3. Estimate the complete-case model.
+4. Estimate one or more multiple-imputation models.
+5. Compare treatment effects across analyses.
+6. Examine whether conclusions depend on the imputation model or the inclusion of variables with extensive missingness.
+
+
+---
+
+## Missing Data Patterns
+
+&lt;img src="lecture13_2026_files/figure-html/unnamed-chunk-2-1.png" alt="Tile plot of missing-data patterns for vote_left, educ3, age, gender, income, and spend_scale. Columns are the distinct missingness patterns found in the data, labelled with their sample size; rows are the six variables; black tiles mark observed values and gray tiles mark missing values for that variable within that pattern." width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Run Models Excluding Different Patterns
+
+.pull-left[
+We can exclude one pattern each time
+- Identify the excluded variable(s). 
+- Save the average effect of some variable (e.g. `educ3`). 
+- Calculate robustness
+
+]
+.pull-right[
+
+```
+## # A tibble: 4 × 5
+##   excluded_vars             n estimate std.error    ovl
+##   &lt;chr&gt;                 &lt;int&gt;    &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;
+## 1 ""                      900   0.0801    0.0408 1.000 
+## 2 "spend_scale"           971   0.237     0.0453 0.0678
+## 3 "income"                926   0.0634    0.0394 0.834 
+## 4 "income, spend_scale"  1001   0.215     0.0446 0.113
+```
+]
+
+The effect depends on which variables are retained because of missingness.
+- Large changes indicate that conclusions are sensitive to the variables retained because of missing-data constraints.
+
+
+
+---
+
+## Rubin's Classification Scheme
+
+Rubin suggested three types of missing data - missing completely at random (MCAR), missing at random (MAR) and missing not at random (MNAR).  This classification scheme is based on:
+
+- The variables with the missing data,
+- Associated variables (i.e., covariates), and
+- a hypothetical mechanism underlying the missingness.
+
+
+
+---
+## Background on Rubin's Classification
+
+
+- Refer to `\(\mathbf{R}\)` as the matrix of dummy variables that mirrors the data matrix where 1 indicates missing and 0 indicates non-missing.
+
+- Refer to `\(\mathbf{Y}\)` as the data matrix - the matrix of variables for all observations.  Where `\(\mathbf{Y}_{obs}\)` refers to the observed (i.e., non-missing) values and `\(\mathbf{Y}_{miss}\)` as the missing values.
+
+- `\(\phi\)` is the relationship of the observed variable matrices `\(\mathbf{Y}_{obs}\)` and `\(\mathbf{Y}_{miss}\)` to the dummy variable matrix `\(\mathbf{R}\)`.  `\(\phi\)` is probabilistic (i.e., theoretical) here because we don't know the values of `\(\mathbf{Y}_{miss}\)` and thus can never calculate `\(\phi\)`.
+
+- `\(\phi\)` is the operative piece of information in Rubin's classification scheme.
+
+
+
+---
+
+## Classification of Missing Data Mechanisms
+
+
+- If `\(\phi = \mathbf{0}\)` (i.e., there is no relationship between `\(\mathbf{R}\)` and `\(\mathbf{Y}_{obs}\)`, and no relationship between `\(\mathbf{R}\)` and `\(\mathbf{Y}_{miss}\)`), then the data are MCAR.   Here, randomness is the mechanism that generated the missing data.
+
+- Data are MAR if there is a relationship between `\(\mathbf{R}\)` and `\(\mathbf{Y}_{obs}\)`, but there is no relationship between `\(\mathbf{R}\)` and `\(\mathbf{Y}_{miss}\)`.
+
+- Data are MNAR if there is a relationship between `\(\mathbf{R}\)` and `\(\mathbf{Y}_{miss}\)`.  The relationship between `\(\mathbf{R}\)` and `\(\mathbf{Y}_{obs}\)` is irrelevant here - it may or may not exist.  Note, that this is an impossible distinction for us to make with data.
+
+
+"Ignorability" is a property of MAR and MCAR data.  Here, the mechanism is ignorable if we can reasonably recover that information from other observable data.
+
+
+---
+
+## Missing DV Related to Observed Stuff?
+
+
+
+
+``` r
+mi_diag_plot(vote_left ~ educ3 +  age +  gender +  income +  spend_scale,  data=ces, nrow=2)
+```
+
+&lt;img src="lecture13_2026_files/figure-html/unnamed-chunk-5-1.png" alt="Faceted bar chart with one panel per predictor (educ3, age, gender, income, spend_scale), ordered left to right by strength of association (smallest chi-square p-value first). In each panel, stacked bars show the distribution of the predictor's value bins separately for observations where vote_left is missing versus observed, with a p-value annotation testing whether the distributions differ." width="90%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+## Dealing with Missing Data
+
+Two ways of dealing with missing data:
+
+
+- Listwise Deletion
+- Imputation
+  - Mean imputation
+  - Regression Imputation
+  - Hot-decking
+  - Multiple Imputation
+
+---
+
+## Listwise Deletion
+
+Listwise deletion involves deleting all observations that have at least one missing data point.  Conventional view is: 
+
+- In the best-case scenario, listwise deletion causes inefficiency.
+- In the worst-case scenario, listwise deletion causes bias and inefficiency.
+
+
+Often times, omitting variables with missing data can be preferable to listwise deletion in MSE terms (though other methods talked about later are better)
+
+
+---
+
+## Mean Imputation
+
+Both mean and regression imputation are trying to impute a "best guess" for missing data.  
+Mean imputation imputes the unconditional mean of the variable for every missing observation.
+
+- Mean imputation reduces variability in the offending `\(X\)` variable.
+- As a result, coefficient estimates will be biased (generally toward 0).
+- The variance of the coefficients will also be underestimated.
+
+
+
+
+---
+
+## Regression Imputation
+
+In regression imputation, the complete cases are used to estimate a regression model and predictions from that model are used as imputations. 
+
+That is, we are imputing each observation with it's *conditional mean*.
+
+- Impractical/impossible with complicated patterns of missing data.
+- Does a reasonably good job of recovering unbiased estimates of parameters in a wide range of situations.
+- Drastically underestimates variability in the parameters leading to overconfidence.
+
+---
+
+## Multiple Imputation
+
+MI has a similar flavor to regression imputation, but has more appealing properties.  Multiple imputation proceeds as follows:
+
+- Fill in starting values for all observations (random, mean, etc...)
+- Predict `\(X_{1}\)` using all other variables in estimation model (including `\(y\)`) and fill in the missing observations on `\(X_{1}\)` with plausible draws obtained either from the predictive distribution or from matched donor observations.
+- Using the previously predicted values for `\(X_{1}\)`, move to `\(X_{2}\)` and predict its values using all other variables.  Fill in the missing values on `\(X_{2}\)` with plausible draws obtained either from the predictive distribution or from matched donor observations.
+- Move through all the variables similarly and then start over again using the conditionally imputed values from before as starting values.
+- Repeat until convergence.
+
+---
+
+## What is the goal of multiple imputation?
+
+It is not to guess the "correct" value for each missing observation.
+
+It is to characterize the uncertainty created by the missing data and propagate that uncertainty into our estimates.
+
+Each completed dataset represents one plausible version of the missing data given the observed information.
+- by estimating models on all completed datasets and combining the estimates, we incoprorate the imputation uncertainty into our conclusions. 
+
+---
+
+## More MI
+
+
+- With multiple imputation, we impute `\(m \geq 2\)` and usually between 5 and 50 complete datasets.
+- We combine the estimates using the following set of equations:
+`$$\begin{aligned}
+\bar{Q} &amp;= \frac{1}{m}\sum_{t=1}^{m} \hat{Q}^{(t)}\\
+\bar{U} &amp;= \frac{1}{m}\sum_{t=1}^{m} U^{(t)}\\
+B &amp;= \frac{1}{m-1}\sum_{t=1}^{m} \left(\hat{Q}^{(t)} -\bar{Q}\right)\left(\hat{Q}^{(t)} -\bar{Q}\right)^{\prime}\\
+T &amp;= \bar{U} + \left(1 + \frac{1}{m}\right)B
+\end{aligned}$$`
+
+???
+
+Notice the similarity to model averaging here - the mechanics are nearly identical. 
+
+---
+
+## Some other Advice
+
+- All variables (including `\(y\)`) that are in your analysis model should be in the imputation model (otherwise, potential bias results).
+  - In fact, Pepinsky as well as Arel-Bundock and Pelc suggest that imputation helps most when `\(y\)` has some missingness. 
+  - Extra variables can be included in the imputation model if they are relevant but recent results show this doesn't increase efficiency as much as we might expect. 
+  - Also needs to include non-linear trends if they exist (e.g., polynomials).
+- The conventional advice is that somewhere in the neighborhood of 5-10 complete datasets are sufficient to generate the result.
+  - You might be better off with somewhere around 100.  
+
+
+---
+
+## Recent Perspectives on Listwise Deletion
+
+Arel-Bundock and Pelc (2018, *PA*) argue that: 
+
+- LWD does not cause bias 
+  - if data are MCAR **or**
+  - if missingness is unrelated to the DV **or** 
+  - the missingness is related to observable covariates. 
+- MI has the greatest potential to reduce bias when...
+  - data are MAR **and**
+  - the MI model assumptions hold **and** 
+  - the missingness is on the DV. 
+- In other cases, data are NI and neither LWD nor MI are guaranteed to reduce bias. 
+
+---
+
+## Pepinsky
+
+
+Pepinsky (2018, *PA*) shows: 
+
+&lt;img src="images/pepinsky.png" alt="Table from Pepinsky (2018) summarizing when listwise deletion (LWD) and multiple imputation (MI) give unbiased estimates, by missingness type. MCAR: both unbiased. MAR with missingness in X only: both unbiased. MAR with missingness in Y and X: LWD biased, MI unbiased. MNAR/NI with missingness in X only: LWD unbiased, MI unknown. MNAR/NI with missingness in Y and X: both biased." width="100%" height="40%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Best Practices (A-B &amp; P)
+
+- Define the population of interest.
+- Report the share of missing values for each variable and descriptive statistics for both complete and incomplete cases. Do fully observed units differ systematically from partially observed ones?
+- Theorize the missingness mechanism. Is the pattern of missingness driven by (a) pure chance, (b) factors unrelated to the variables of interest, (c) values of the independentvariables, (d) values of the dependent variable, or (e) unobservable factors? 
+  - Under (a), (b),and (c), LWD can be used without fear that it will introduce bias in regression estimates.
+  - Under (d), MI can sometimes reduce bias, but it only offers guarantees if data are MAR and the imputation model’s assumptions are satisfied. 
+  - Under (e) data are MNAR and neither LWD nor MI promise unbiased estimates.
+
+---
+
+## Best Practices 2 (A-B &amp; P)
+
+- Check for divergence between LWD and MI results. If estimates do diverge, which "new" observations have a strong influence on the results? Are these observations theoretically distinct?
+- Robustness checks. Do alternative imputation procedures or tuning parameters produce different results? Does the imputation model have good predictive power? Does it fill in reasonable values for missing observations? 
+
+
+---
+
+## Methods for imputation in MICE
+
+There are many different ways of imputing missing data.
+- The default method for numerical data is Predictive Mean Matching (`pmm`).
+- There are a suite of GLM methods (`norm`, `logreg`, `polr`, `polyreg`)
+- There are machine learning approaches, `cart` and `rf`.
+- The `{ImputeRobust}` package in R has a number of `gamlss` imputation models that can be plugged into `mice`. 
+
+---
+
+## Pre-imputation Diagnostics
+.pull-left[
+In addition to the diagnostics above, proportion of usable cases (PUC) can be helpful. 
+
+- What is the typical proportion of cases that can be used to impute variable `\(j\)` when variable `\(j\)` is missing? 
+- When other variables are missing how often is variable `\(j\)` available to impute those variables?
+
+
+]
+.pull-right[
+&lt;img src="lecture13_2026_files/figure-html/unnamed-chunk-7-1.png" alt="Scatter plot of proportion of usable cases (PUC) for each variable in the CES data, with the percentage of observations available to impute that variable on the x-axis and the percentage of the variable's observations available to help impute other variables on the y-axis, points colored by that variable's own percentage missing, and each point labelled with its variable name." width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Remedial Measures
+
+If there are some variables who have small values on the x-axis (percentage of obs that can impute this variable). 
+- Auxiliary variables correlated with the offending `\(x\)` and with non-overlapping missing data could help. 
+- Without auxiliary variables, the imputations will be more variable. This will propagate to point estimates. 
+
+--
+
+In our case, everything looks good - we can proceed with the imputation. 
+
+---
+
+## Imputation with MICE
+
+There are two main interventions that are sometimes required in the `mice()` function. 
+- The `methods` argument identifies what methods are being used to impute each variable.  
+    - Can be a model function - pmm, logreg, polyreg, rf, ...
+    - Can be a passive imputation `"~I(exp(x))"`. 
+- The `predictorMatrix` argument identifies which variables will be used to impute which other variables. 
+
+You can do the following to initialize the methods and predictor matrix and modify from there.  
+
+
+``` r
+m_init &lt;- mice(ces, m=1, maxit=0)
+```
+
+
+---
+
+## Modifications in Our Data
+
+- We impute `ihs_income` because its distribution is better behaved. 
+    - That means the method for income should be `"~I(sinh(ihs_income))"`. 
+- The `spend_scale` variable is defined as: 
+`(cps21_spend_env + cps21_spend_educ + cps_spend_imm_min + cps_spend_rec_indi)/4`, so we'll need a passive imputation here too: 
+
+
+``` r
+meths &lt;- m_init$method
+meths["spend_scale"] &lt;- "~I((as.numeric(cps21_spend_educ) + as.numeric(cps21_spend_env) + as.numeric(cps21_spend_imm_min) + as.numeric(cps21_spend_rec_indi))/4)"
+meths["income"] &lt;- "~I(sinh(ihs_income))"
+```
+
+We can also shut the predictor matrix to and from these variables off:
+
+
+``` r
+pmat &lt;- m_init$predictorMatrix
+pmat[,"income"] &lt;- 0
+pmat[,"spend_scale"] &lt;- 0
+pmat["income",] &lt;- 0
+pmat["spend_scale",] &lt;- 0
+```
+
+---
+
+## Running mice
+
+We can run the `mice()` function on our data
+
+
+``` r
+m_25 &lt;- mice(ces, m=25, method = meths, predictorMatrix = pmat)
+```
+
+
+- I would use at least 25 imputations, but more is better up to a point. 
+- Make sure to pass in the methods and predictor matrix you want to use if you're updating them. 
+
+---
+
+## Post-imputation Diagnostics
+
+There are some post-imputation diagnoistics 
+- Density plots/Strip plots
+- Propensity score plots
+
+The problem is that these plots are ultimately ambiguous - they cannot distinguish between model failures and strong MAR mechanisms at work.  
+
+Convergence plots are important, though.  They can identify lack of convergence for model parameters.  
+
+---
+
+## Convergence Plot
+
+
+``` r
+plot(m_25, c("vote_left", "ihs_income", "pes21_health"))
+```
+
+&lt;img src="lecture13_2026_files/figure-html/unnamed-chunk-13-1.png" alt="Convergence trace plots from mice() for vote_left, ihs_income, and pes21_health: for each variable, one panel shows the mean and one shows the standard deviation of the imputed values across 5 MICE iterations, with one line per imputed dataset (m=25)." width="65%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## More Iterations
+
+
+``` r
+m_25b &lt;- mice(ces, m=25, maxit=20,
+              method = meths,
+              predictorMatrix = pmat)
+```
+
+&lt;img src="lecture13_2026_files/figure-html/unnamed-chunk-16-1.png" alt="Convergence trace plots from the maxit=20 mice() run for vote_left, ihs_income, and pes21_health, showing the mean and standard deviation of imputed values across 20 iterations for each of the 25 imputed datasets; chains appear well-mixed with no trend." width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Pooled Model
+
+.pull-left[
+
+
+``` r
+tidy(pool(mice_mods &lt;- with(m_25b, glm(vote_left ~ educ3 +  age +
+  gender +  ihs_income + spend_scale, family=binomial())))) |&gt;
+  select(term, estimate, p.value, riv, lambda, fmi) |&gt;
+  as_tibble() |&gt;
+  mutate(across(-term, ~round(.x, 3)))
+```
+
+```
+## # A tibble: 7 × 6
+##   term                    estimate p.value   riv lambda   fmi
+##   &lt;chr&gt;                      &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+## 1 (Intercept)               -7.00    0     0.219  0.18  0.184
+## 2 educ3Some Postsecondary    0.169   0.501 0.194  0.162 0.166
+## 3 educ3Univ +                0.568   0.023 0.218  0.179 0.183
+## 4 age                       -0.002   0.728 0.078  0.072 0.075
+## 5 genderwoman                0.205   0.235 0.156  0.135 0.138
+## 6 ihs_income                -0.039   0.31  0.289  0.224 0.229
+## 7 spend_scale                3.15    0     0.215  0.177 0.181
+```
+]
+.pull-right[
+- `riv` - increase in sampling variance caused by the imputation. 
+- `lambda` - proportion of total variance that comes from between imputation variance. 
+- `fmi` - fraction of missing information - the amount of information about parameter lost due to missing data. 
+
+One convention for picking `\(m\)` is  
+`$$m \geq 100\times \text{max}(fmi)$$` 
+]
+
+---
+
+## Robustness
+
+.pull-left[
+
+``` r
+cc_mod &lt;- glm(vote_left ~ educ3 +  age +
+  gender +  ihs_income + spend_scale,
+  data = ces, family=binomial())
+rob_imp &lt;- robustness(
+  avg_comparisons(cc_mod, variables=list(educ3 = "minmax")),
+  avg_comparisons(mice_mods, variables=list(educ3 = "minmax")))
+
+rob_imp |&gt; select(estimate, std.error, base_est, ovl)
+```
+
+```
+## # A tibble: 1 × 4
+##   estimate std.error base_est   ovl
+##      &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;
+## 1   0.0885    0.0384   0.0678 0.792
+```
+]
+.pull-right[
+The education first difference gets slightly larger and its sampling variability decreases
+- The increase in sample size/power outweighs the increase in variability due to the imputation. 
+
+]
+
+---
+
+## Sensitivity to MAR
+
+One of the main (untestable) assumptions we make is that the data are _not_ MNAR.  
+- The data we are imputing have nothing to say about whether this assumption holds. 
+
+We can do sensitivity tests for this. 
+- Can shift one variable by a constant amount (e.g., non-responders have income, on average, 10,000 dollars lower than responders). 
+- Can shift a variable by a conditional amount (e.g., female non-responders are more left-wing by 1 unit than female responders and male non-responders are 1 unit more right-wing than male responders). 
+- Can shift multiple variable if desired. 
+- Only binary and numeric variables can be tested this way (multi-category factors cannot).     
+
+---
+
+## Sensitivity - Income
+
+.pull-left[
+All non-responders are have less or more income (two different analyses) than responders by half a unit (on the IHS scale). 
+
+
+
+``` r
+library(parallel)
+meth_sens &lt;- meths
+meth_sens["ihs_income"] &lt;- "mnar.norm"
+deltas &lt;- c(-.14,  0,  .125)
+imp_s &lt;- mclapply(deltas, \(d) {
+  mice(ces, method = meth_sens,
+       predictorMatrix = pmat,
+                blots = list(ihs_income = list(ums = d)),
+                maxit = 20, m = 25, printFlag = FALSE)
+  # extract your estimate of interest from each
+}, mc.cores=3)
+```
+
+
+``` r
+mice_mods_s &lt;- list()
+mice_mods_s[[1]] &lt;- with(imp_s[[1]], glm(vote_left ~ educ3 +  age +
+  gender + ihs_income + spend_scale, family=binomial()))
+mice_mods_s[[2]] &lt;- with(imp_s[[2]], glm(vote_left ~ educ3 +  age +
+  gender + ihs_income + spend_scale, family=binomial()))
+mice_mods_s[[3]] &lt;- with(imp_s[[3]], glm(vote_left ~ educ3 +  age +
+  gender + ihs_income + spend_scale, family=binomial()))
+```
+
+
+
+]
+.pull-right[
+
+
+``` r
+comps_s &lt;- bind_rows(
+  purrr::map(mice_mods_s, \(m){
+    avg_comparisons(m, variables=list(educ3="minmax"))
+  })
+)
+
+comps_s
+```
+
+```
+## 
+##  Estimate Std. Error    t Pr(&gt;|t|)   S  2.5 % 97.5 %  Df
+##    0.0914     0.0387 2.36   0.0186 5.8 0.0154  0.167 414
+##    0.0890     0.0395 2.26   0.0248 5.3 0.0114  0.167 337
+##    0.0907     0.0384 2.36   0.0187 5.7 0.0152  0.166 447
+## 
+## Term: educ3
+## Type: response
+## Comparison: Univ + - HS or less
+```
+
+]
+
+---
+
+## Sensitivity Analysis: Conditional Mean Shift
+
+.pull-left[
+
+``` r
+library(parallel)
+meth_sens &lt;- meths
+meth_sens["ihs_income"] &lt;- "mnar.norm"
+deltas &lt;- cbind(c(-.14,  0,  .125),
+                c((.14+.125), 0,  (-.14-.125)))
+ums_spec &lt;- sprintf("%.3f + %.3f*genderwoman", deltas[,1], deltas[,2])
+ums_spec[2] &lt;- "0"
+imp_s2 &lt;- mclapply(1:3, \(d) {
+  mice(ces, method = meth_sens,
+       predictorMatrix = pmat,
+                blots = list(ihs_income = list(ums = ums_spec[d])),
+                maxit = 20, m = 25, printFlag = FALSE)
+  # extract your estimate of interest from each
+}, mc.cores=3)
+```
+
+
+``` r
+mice_mods_s2 &lt;- list()
+mice_mods_s2[[1]] &lt;- with(imp_s2[[1]], glm(vote_left ~ educ3 +  age +
+  gender + ihs_income + spend_scale, family=binomial()))
+mice_mods_s2[[2]] &lt;- with(imp_s2[[2]], glm(vote_left ~ educ3 +  age +
+  gender + ihs_income + spend_scale, family=binomial()))
+mice_mods_s2[[3]] &lt;- with(imp_s2[[3]], glm(vote_left ~ educ3 +  age +
+  gender + ihs_income + spend_scale, family=binomial()))
+```
+]
+.pull-right[
+
+
+``` r
+comps_s2 &lt;- bind_rows(
+  purrr::map(mice_mods_s2, \(m){
+    avg_comparisons(m, variables=list(educ3="minmax"))
+  })
+)
+
+comps_s2
+```
+
+```
+## 
+##  Estimate Std. Error    t Pr(&gt;|t|)   S  2.5 % 97.5 %  Df
+##    0.0917     0.0384 2.39   0.0172 5.9 0.0164  0.167 445
+##    0.0858     0.0375 2.29   0.0226 5.5 0.0121  0.160 567
+##    0.0963     0.0383 2.51   0.0123 6.3 0.0210  0.172 474
+## 
+## Term: educ3
+## Type: response
+## Comparison: Univ + - HS or less
+```
+]
+
+---
+
+## Random Forest Imputation
+
+
+``` r
+meths_rf &lt;- meths
+meths_rf &lt;- gsub("pmm|polyreg|logreg", "rf", meths_rf)
+m_25rf &lt;- mice(ces, m=25, maxit=20,
+              method = meths_rf,
+              predictorMatrix = pmat)
+```
+
+
+``` r
+tidy(pool(mice_mods_rf &lt;- with(m_25rf, glm(vote_left ~ educ3 +  age +
+  gender +  ihs_income + spend_scale, family=binomial())))) |&gt;
+  select(term, estimate, p.value, riv, lambda, fmi) |&gt;
+  as_tibble() |&gt;
+  mutate(across(-term, ~round(.x, 3)))
+```
+
+```
+## # A tibble: 7 × 6
+##   term                    estimate p.value   riv lambda   fmi
+##   &lt;chr&gt;                      &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+## 1 (Intercept)               -7.11    0     0.193  0.162 0.166
+## 2 educ3Some Postsecondary    0.165   0.505 0.15   0.13  0.133
+## 3 educ3Univ +                0.518   0.031 0.121  0.108 0.111
+## 4 age                       -0.003   0.561 0.149  0.13  0.133
+## 5 genderwoman                0.191   0.262 0.107  0.097 0.099
+## 6 ihs_income                -0.034   0.387 0.306  0.234 0.239
+## 7 spend_scale                3.21    0     0.308  0.236 0.241
+```
+
+---
+
+## Robustness 
+
+.pull-left[
+
+``` r
+comps_mi &lt;- avg_comparisons(
+  mice_mods,
+  variables=list(educ3 = "minmax"))
+comps_rf &lt;- avg_comparisons(
+  mice_mods_rf,
+  variables=list(educ3="minmax"))
+mi_comps &lt;- bind_rows(
+  comps_mi |&gt;
+    mutate(type = "MI (parametric)"),
+  comps_rf |&gt;
+    mutate(type = "MI (RF)"),
+  comps_s |&gt;
+    mutate(type = c(
+    "Sensitivity (Income - $10k)",
+    "Sensitivity (Income + $0)",
+    "Sensitivity (Income + $10k)")),
+  comps_s |&gt;
+    mutate(type = c(
+    "Sensitivity (Income Women &gt; Men)",
+    "Sensitivity (Income Women = Men)",
+    "Sensitivity (Income Women &lt; Men)"))
+  )
+
+cc_comps &lt;- avg_comparisons(
+  cc_mod,
+  variables=list(educ3 = "minmax"))
+```
+]
+.pull-right[
+
+``` r
+rob_mi &lt;- robustness(cc_comps, mi_comps)
+
+rob_mi |&gt;
+  as_tibble() |&gt;
+  select(type, estimate, ovl)
+```
+
+```
+## # A tibble: 8 × 3
+##   type                             estimate   ovl
+##   &lt;chr&gt;                               &lt;dbl&gt; &lt;dbl&gt;
+## 1 MI (parametric)                    0.0885 0.792
+## 2 MI (RF)                            0.0797 0.873
+## 3 Sensitivity (Income - $10k)        0.0914 0.765
+## 4 Sensitivity (Income + $0)          0.0890 0.790
+## 5 Sensitivity (Income + $10k)        0.0907 0.770
+## 6 Sensitivity (Income Women &gt; Men)   0.0914 0.765
+## 7 Sensitivity (Income Women = Men)   0.0890 0.790
+## 8 Sensitivity (Income Women &lt; Men)   0.0907 0.770
+```
+]
+
+---
+
+## Effects
+.pull-left[
+All estimates are close to baseline. 
+
+Robustness stats are reasonably high. 
+
+Substantive conclusions hold. 
+]
+.pull-right[
+&lt;img src="lecture13_2026_files/figure-html/unnamed-chunk-32-1.png" alt="Point-range plot of the educ3 average marginal effect (with 95% confidence interval) for each alternative analysis - parametric MI, RF-based MI, and the income-shift and gender-conditional sensitivity scenarios - ordered from least to most robust (ovl) relative to the complete-case estimate, which is marked with a dashed vertical line. All estimates cluster close to the complete-case line." width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Simulation 
+
+.pull-left[
+A simulation could help put these values in context. 
+- Want to avoid fitting `mice()` for each simulation - too computationally costly. 
+- Simulation is then conditional on the imputed datasets. 
+]
+.pull-right[
+1. Simulate a new response `\(Y^{sim}\)` from the assumed complete-data model, use `na.action=na.exclude` in the model.
+3. In each completed, imputed dataset, simluate response, where `\(Y^{sim}\)` from above is not missing, replace `\(Y^{sim}\)` in the imputed data with the one from 1 above. 
+4. Turn completed data list back into mids object. 
+5. Estimate models and calculate quantities of interest in the complete case and imputed data. 
+6. Compute the robustness metric.
+7. Repeat.
+]
+
+---
+
+## Simulation Code
+
+.pull-left[
+
+``` r
+cc_mod &lt;- glm(vote_left ~ educ3 +  age +
+  gender +  ihs_income + spend_scale,
+  data = ces, family=binomial(),
+  na.action = na.exclude)
+
+# Simulate a 0/1 response for arbitrary newdata from cc_mod's coefficients (used for rows
+# where cc_mod's own fitted values are NA due to missing predictors)
+sim_resp &lt;- function(obj, newdata){
+  X &lt;- model.matrix(formula(obj), data=newdata)
+  eta &lt;- X %*% coef(obj)
+  mu &lt;- obj$family$linkinv(eta)
+  rbinom(nrow(newdata), 1, mu)
+}
+comps &lt;- lapply(1:m_25b$m, \(i)complete(m_25b, i))  # the 25 completed (imputed) datasets
+library(miceadds)
+tmp_dat &lt;- ces
+library(progress)
+pb &lt;- progress_bar$new(total=100)
+sim_res &lt;- purrr::map(1:100, \(z){
+  pb$tick()
+# Simulate y from cc_mod's fitted values; na.action=na.exclude means this is NA wherever
+# cc_mod itself had a missing predictor
+tmp_sim_y &lt;- as.numeric(as.character(simulate(cc_mod)[[1]]))
+comps &lt;- lapply(comps, \(x){
+  x |&gt;
+    mutate(sim_y =
+             ifelse(is.na(tmp_sim_y),
+                    # where cc_mod couldn't simulate a value, use the completed (imputed)
+                    # predictors in this completed dataset instead
+                    sim_resp(cc_mod,
+                             newdata=x),
+                    tmp_sim_y))
+})
+  tmp_m &lt;- datalist2mids(comps)  # turn the completed data list back into a mids object
+  tmp_mod &lt;- with(tmp_m, glm(sim_y ~ educ3 +  age +
+  gender +  ihs_income + spend_scale, family=binomial()))
+  comp_imp &lt;- avg_comparisons(tmp_mod,
+              variables=list(educ3 = "minmax"))  # simulated MI estimate
+  tmp_dat$sim_y &lt;- tmp_sim_y
+  up_mod &lt;- update(cc_mod, sim_y ~ ., data=tmp_dat)  # simulated complete-case estimate
+  comp_base &lt;- avg_comparisons(up_mod,
+                variables=list(educ3="minmax"))
+  robustness(comp_base, comp_imp)
+})
+sim_res &lt;- bind_rows(sim_res)
+```
+]
+.pull-right[
+
+
+``` r
+sim_res |&gt; select(ovl) |&gt; pull() |&gt; summary()
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.7252  0.8793  0.9145  0.9017  0.9561  0.9906
+```
+
+``` r
+mean(bind_rows(sim_res)$ovl &lt; rob_imp$ovl)
+```
+
+```
+## [1] 0.09
+```
+]
+
+---
+
+## Missing Data Robustness Workflow
+
+1. Examine missingness.
+2. Diagnose whether MCAR is plausible.
+3. Compare complete-case analyses.
+4. Impute under MAR.
+5. Assess convergence.
+6. Perturb the imputation model (e.g., RF).
+7. Perturb the missingness mechanism (MNAR sensitivity).
+8. Compare quantities of interest using robustness metrics.
+
+---
+
+## What has this lecture taught us?
+
+- Missing data create uncertainty about the data themselves.
+- Multiple imputation propagates that uncertainty into inference.
+- The imputation model is itself a modeling assumption.
+- Robust conclusions should persist across reasonable imputation models and plausible departures from MAR.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+  </body>
+</html>

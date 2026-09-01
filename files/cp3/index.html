@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CP3 — Canadian Policy Preferences Project</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+  <div class="sidebar">
+    <h1>Policy Issues</h1>
+    <p class="sub">Canadian Policy Preferences Project</p>
+
+    <div class="field">
+      <label for="domain-select">Policy Domain</label>
+      <select id="domain-select"></select>
+    </div>
+
+    <div class="field">
+      <label for="question-select">Select Policy Issue</label>
+      <select id="question-select"></select>
+    </div>
+
+    <div class="field">
+      <label for="group-select">Select Grouping Variable</label>
+      <select id="group-select"></select>
+    </div>
+
+    <div class="field">
+      <label>Year Range: <span id="year-range-label"></span></label>
+      <div class="year-slider">
+        <div class="year-slider-track"></div>
+        <div class="year-slider-range" id="year-slider-range"></div>
+        <input type="range" id="year-min">
+        <input type="range" id="year-max">
+      </div>
+    </div>
+
+    <div class="field" id="party-field" hidden>
+      <label>Parties to show <span id="party-count"></span></label>
+      <div id="party-checks"></div>
+    </div>
+
+    <div id="status">Loading database…</div>
+  </div>
+
+  <div class="main">
+    <div class="card" id="card">
+      <h2 id="title"></h2>
+      <p class="wording" id="wording"></p>
+      <div class="flag" id="flag" hidden></div>
+      <div id="chart"></div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

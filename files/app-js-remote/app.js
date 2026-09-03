@@ -522,6 +522,7 @@ function renderChart(question, meta, rows, groupVar, wording, issueLabel) {
   const baseOpts = {
     height: 320,
     marginLeft: 52,
+    marginRight: 20,
     marginBottom: 70, // extra room below the rotated tick labels so "Year" doesn't overlap them
     marginTop: 28,
     x: { type: "band", label: "Year", tickRotate: -90, padding: 0.35, tickFormat: v => String(v) },
@@ -586,8 +587,23 @@ function renderChart(question, meta, rows, groupVar, wording, issueLabel) {
   const facetMinWidth = Math.max(220, Math.min(420, nYearsDistinct * 4));
   const availableWidth = Math.max(cardEl.clientWidth - 40, 400);
   const ncols = grouped
-    ? Math.max(1, Math.min(groupsSorted.length, Math.floor(availableWidth / facetMinWidth)))
+    ? (isParty
+        // Party questions (vote_choice: 58 distinct years, vote_intention:
+        // 67) are too dense -- many stacked colors over many years -- to
+        // share a row with other facets and stay legible. One full-width
+        // facet per row instead, so the years stay readable; see rowWidth
+        // below for the width side of this.
+        ? 1
+        : Math.max(1, Math.min(groupsSorted.length, Math.floor(availableWidth / facetMinWidth))))
     : 1;
+  // Total width for one row of facets: the full card width for the
+  // one-facet-per-row party case (no need to leave room for siblings that
+  // don't exist), otherwise facetMinWidth per facet plus the fixed
+  // marginLeft/marginRight overhead (paid once per row, not per facet --
+  // see the note above these vars' first use for why that distinction
+  // matters).
+  const rowWidth = chunkLength =>
+    isParty ? availableWidth : chunkLength * facetMinWidth + baseOpts.marginLeft + baseOpts.marginRight;
 
   if (!grouped) {
     const plotOpts = {
@@ -602,7 +618,7 @@ function renderChart(question, meta, rows, groupVar, wording, issueLabel) {
     // call, same as before, just with the sort_order-correct facet order.
     const plotOpts = {
       ...baseOpts,
-      width: groupsSorted.length * facetMinWidth,
+      width: rowWidth(groupsSorted.length),
       color: { legend: true, domain: orderedCats, range: colorRange },
       fx: { domain: groupsSorted, label: null },
       marks: buildMarks(segments, avgRows, true),
@@ -622,7 +638,7 @@ function renderChart(question, meta, rows, groupVar, wording, issueLabel) {
       const chunkAvgRows = avgRows.filter(s => chunk.includes(s.grp));
       const plotOpts = {
         ...baseOpts,
-        width: chunk.length * facetMinWidth,
+        width: rowWidth(chunk.length),
         color: { domain: orderedCats, range: colorRange },
         fx: { domain: chunk, label: null },
         marks: buildMarks(chunkSegments, chunkAvgRows, true),

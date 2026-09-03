@@ -606,9 +606,11 @@ function renderChart(question, meta, rows, groupVar, wording, issueLabel) {
     isParty ? availableWidth : chunkLength * facetMinWidth + baseOpts.marginLeft + baseOpts.marginRight;
 
   if (!grouped) {
+    // No facets to share the card with -- use the full available width,
+    // same as the single-facet-per-row party case above.
     const plotOpts = {
       ...baseOpts,
-      width: 620,
+      width: availableWidth,
       color: { legend: true, domain: orderedCats, range: colorRange },
       marks: buildMarks(segments, avgRows, false),
     };

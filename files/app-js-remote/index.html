@@ -7,8 +7,13 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Open filters" aria-expanded="false" aria-controls="sidebar">
+  <span class="sidebar-toggle-icon" aria-hidden="true">&#9776;</span> Filters
+</button>
+<div id="sidebar-backdrop" class="sidebar-backdrop"></div>
 <div class="layout">
-  <div class="sidebar">
+  <div class="sidebar" id="sidebar">
+    <button id="sidebar-close" class="sidebar-close" aria-label="Close filters">&#10005;</button>
     <h1>Policy Issues</h1>
     <p class="sub">Canadian Policy Preferences Project</p>
 

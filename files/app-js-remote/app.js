@@ -131,6 +131,10 @@ const yearSliderRangeEl = document.getElementById("year-slider-range");
 const partyFieldEl = document.getElementById("party-field");
 const partyChecksEl = document.getElementById("party-checks");
 const partyCountEl = document.getElementById("party-count");
+const sidebarEl = document.getElementById("sidebar");
+const sidebarToggleEl = document.getElementById("sidebar-toggle");
+const sidebarCloseEl = document.getElementById("sidebar-close");
+const sidebarBackdropEl = document.getElementById("sidebar-backdrop");
 
 const MAX_PARTIES = 6;
 
@@ -138,6 +142,31 @@ let conn = null;
 let catalog = []; // [{question, domain, category, title, issue_label, wording}]
 let currentQuestion = null; // question the year bounds / party options were last loaded for
 let partySelection = new Set();
+
+// ---------------------------------------------------------------------------
+// Mobile off-canvas sidebar. Wired up immediately (not gated behind DB init
+// in main() below) so the toggle works right away, even while the "Loading
+// database..." status is still showing. The CSS media query is what makes
+// any of this visible -- above the mobile breakpoint the "open" class has
+// no effect, so this is harmless to leave active at any viewport width.
+function openSidebar() {
+  sidebarEl.classList.add("open");
+  sidebarBackdropEl.classList.add("open");
+  document.body.classList.add("sidebar-open");
+  sidebarToggleEl.setAttribute("aria-expanded", "true");
+}
+function closeSidebar() {
+  sidebarEl.classList.remove("open");
+  sidebarBackdropEl.classList.remove("open");
+  document.body.classList.remove("sidebar-open");
+  sidebarToggleEl.setAttribute("aria-expanded", "false");
+}
+sidebarToggleEl.addEventListener("click", openSidebar);
+sidebarCloseEl.addEventListener("click", closeSidebar);
+sidebarBackdropEl.addEventListener("click", closeSidebar);
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeSidebar();
+});
 
 function setStatus(text, isError = false) {
   statusEl.textContent = text;
@@ -537,6 +566,23 @@ function renderChart(question, meta, rows, groupVar, wording, issueLabel) {
         },
   };
 
+  // Plot's output SVG carries its own `max-width: 100%` rule (from a
+  // :where(.plot-xxxxxx) stylesheet it injects into every chart), meant for
+  // the normal case of shrinking a chart to fit its container. The dense
+  // party series deliberately do the opposite above (resolvedWidth wider
+  // than the card, relying on .card's overflow-x:auto to make it
+  // scrollable) -- without this override Plot's own rule fights that and
+  // shrinks the chart back down to fit instead of letting it overflow.
+  // Inline styles always beat that rule's zero-specificity :where()
+  // selector, so this reliably wins regardless of Plot's internal CSS.
+  // Plot.plot() returns the <svg> itself for a plain chart, or a <figure>
+  // wrapping an svg + legend when color.legend is set -- handle both.
+  function allowOverflow(el) {
+    const svgs = el.matches?.("svg") ? [el] : [...el.querySelectorAll("svg")];
+    for (const svg of svgs) svg.style.maxWidth = "none";
+    return el;
+  }
+
   function buildMarks(segmentsSubset, avgRowsSubset, faceted) {
     return [
       ...(isParty ? [] : [Plot.ruleY([0], { stroke: "var(--baseline)" })]),
@@ -596,36 +642,74 @@ function renderChart(question, meta, rows, groupVar, wording, issueLabel) {
         ? 1
         : Math.max(1, Math.min(groupsSorted.length, Math.floor(availableWidth / facetMinWidth))))
     : 1;
-  // Total width for one row of facets: the full card width for the
-  // one-facet-per-row party case (no need to leave room for siblings that
-  // don't exist), otherwise facetMinWidth per facet plus the fixed
-  // marginLeft/marginRight overhead (paid once per row, not per facet --
-  // see the note above these vars' first use for why that distinction
-  // matters).
+
+  // Party series can run 50-70+ distinct years -- at a phone-width card
+  // that's only a few px per bar: individual party colors blur together
+  // and rotated year labels touch their neighbors. Pinch-zoom doesn't fix
+  // this (it magnifies the existing layout rather than re-flowing it), so
+  // instead these dense series get a legible minimum width of their own,
+  // wider than the card when needed -- .card's existing overflow-x:auto
+  // (see style.css) turns that into a native horizontal swipe. Desktop
+  // cards are already wider than this floor, so it's a no-op there. Applies
+  // to both facet rows (via rowWidth below) and the ungrouped single-plot
+  // case (see its width: below).
+  const MIN_YEAR_PX = 10; // per-year plotting width; confirmed legible via render test
+  const denseWidth = isParty
+    ? nYearsDistinct * MIN_YEAR_PX + baseOpts.marginLeft + baseOpts.marginRight
+    : 0;
+  const resolvedWidth = Math.max(availableWidth, denseWidth);
+
+  // Even at that legible minimum, a rotated 4-digit year label is ~11-12px
+  // wide (measured via render test) -- wider than MIN_YEAR_PX itself, so
+  // showing every single year would still touch its neighbor. Thin the
+  // *labels* (not the bars -- every year still gets a real, full-width bar)
+  // to whatever step keeps them clear, computed from the width that will
+  // actually be used. Desktop's per-year pitch is comfortably above this,
+  // so yearLabelStep resolves to 1 (every year) there, unchanged from
+  // before.
+  const MIN_LABEL_PX = 12;
+  const pxPerYear = isParty && nYearsDistinct > 0
+    ? (resolvedWidth - baseOpts.marginLeft - baseOpts.marginRight) / nYearsDistinct
+    : Infinity;
+  const yearLabelStep = pxPerYear >= MIN_LABEL_PX ? 1 : Math.ceil(MIN_LABEL_PX / pxPerYear);
+  const xOpts = {
+    ...baseOpts.x,
+    ...(yearLabelStep > 1
+      ? { ticks: [...new Set(rows.map(r => r.year))].sort((a, b) => a - b).filter((_, i) => i % yearLabelStep === 0) }
+      : {}),
+  };
+
+  // Total width for one row of facets: the resolved (possibly
+  // scroll-widened) width for the one-facet-per-row party case, otherwise
+  // facetMinWidth per facet plus the fixed marginLeft/marginRight overhead
+  // (paid once per row, not per facet -- see the note above these vars'
+  // first use for why that distinction matters).
   const rowWidth = chunkLength =>
-    isParty ? availableWidth : chunkLength * facetMinWidth + baseOpts.marginLeft + baseOpts.marginRight;
+    isParty ? resolvedWidth : chunkLength * facetMinWidth + baseOpts.marginLeft + baseOpts.marginRight;
 
   if (!grouped) {
-    // No facets to share the card with -- use the full available width,
-    // same as the single-facet-per-row party case above.
+    // No facets to share the card with -- use the full available width (or
+    // the dense-series floor, whichever is wider; see resolvedWidth above).
     const plotOpts = {
       ...baseOpts,
-      width: availableWidth,
+      width: isParty ? resolvedWidth : availableWidth,
+      x: xOpts,
       color: { legend: true, domain: orderedCats, range: colorRange },
       marks: buildMarks(segments, avgRows, false),
     };
-    container.appendChild(Plot.plot(plotOpts));
+    container.appendChild(isParty ? allowOverflow(Plot.plot(plotOpts)) : Plot.plot(plotOpts));
   } else if (ncols >= groupsSorted.length) {
     // All facets fit in one row at a legible width -- a single Plot.plot()
     // call, same as before, just with the sort_order-correct facet order.
     const plotOpts = {
       ...baseOpts,
       width: rowWidth(groupsSorted.length),
+      x: xOpts,
       color: { legend: true, domain: orderedCats, range: colorRange },
       fx: { domain: groupsSorted, label: null },
       marks: buildMarks(segments, avgRows, true),
     };
-    container.appendChild(Plot.plot(plotOpts));
+    container.appendChild(isParty ? allowOverflow(Plot.plot(plotOpts)) : Plot.plot(plotOpts));
   } else {
     // Too many groups for one legible row -- wrap into multiple rows of
     // `ncols` facets each (its own independent Plot.plot() call per row,
@@ -641,11 +725,12 @@ function renderChart(question, meta, rows, groupVar, wording, issueLabel) {
       const plotOpts = {
         ...baseOpts,
         width: rowWidth(chunk.length),
+        x: xOpts,
         color: { domain: orderedCats, range: colorRange },
         fx: { domain: chunk, label: null },
         marks: buildMarks(chunkSegments, chunkAvgRows, true),
       };
-      const row = Plot.plot(plotOpts);
+      const row = isParty ? allowOverflow(Plot.plot(plotOpts)) : Plot.plot(plotOpts);
       row.style.marginBottom = "12px";
       container.appendChild(row);
     }
@@ -807,6 +892,20 @@ async function main() {
         input.classList.add("active-thumb");
       });
     }
+
+    // Chart width is computed from cardEl.clientWidth at render time (see
+    // renderChart()'s availableWidth/rowWidth), but nothing re-renders on
+    // its own when that width changes -- most commonly a phone rotating
+    // between portrait and landscape, but also a resized desktop window.
+    // Debounced so a drag-resize doesn't re-run the DuckDB query/re-render
+    // on every intermediate frame.
+    let resizeTimer = null;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (currentQuestion) update();
+      }, 200);
+    });
 
     await update();
   } catch (err) {

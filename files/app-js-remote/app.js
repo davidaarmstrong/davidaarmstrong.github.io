@@ -54,10 +54,19 @@ import TomSelect from "https://cdn.jsdelivr.net/npm/tom-select@2.4.3/+esm";
 // app/, or renamed to anything else, as long as cp3_parquet/ is genuinely
 // its sibling (see README.md in this directory).
 const DATA_BASE_URL = new URL("../cp3_parquet/", import.meta.url).href;
-const VBL_DATA_URL = DATA_BASE_URL + "vbl_data.parquet";
-const CODE_LABELS_URL = DATA_BASE_URL + "code_labels.parquet";
+// Cache-buster: bump this string every time cp3_parquet/ is regenerated
+// (a comment right above populate_db.R's Parquet-export step points back
+// here). Without it, a browser or CDN that already cached, say,
+// vbl_data.parquet at this exact URL from a previous deploy has no reason
+// to ever re-fetch it -- same URL, so no cache layer treats it as changed,
+// even across a hard refresh or a new GitHub Pages build. Appending this
+// to every data URL means a data refresh always hits a URL nothing has
+// cached before.
+const DATA_VERSION = "2026-09-10.1";
+const VBL_DATA_URL = `${DATA_BASE_URL}vbl_data.parquet?v=${DATA_VERSION}`;
+const CODE_LABELS_URL = `${DATA_BASE_URL}code_labels.parquet?v=${DATA_VERSION}`;
 function respUrlFor(question) {
-  return `${DATA_BASE_URL}resp/question=${encodeURIComponent(question)}/data_0.parquet`;
+  return `${DATA_BASE_URL}resp/question=${encodeURIComponent(question)}/data_0.parquet?v=${DATA_VERSION}`;
 }
 
 // Domain labels used to be hardcoded here; they now come straight from

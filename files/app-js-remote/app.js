@@ -22,12 +22,17 @@
 //    every grouping column (and the display year) is denormalized directly
 //    onto each resp row at build time now — there is no `indiv` or `survey`
 //    table in this app at all, and nothing here ever joins to them.
-//  - Label lookups (code_labels) are still applied via SQL JOIN at query
-//    time, not in JS — per-decision 2026-08-31, unchanged by this rewrite.
-//  - vbl_data.type can vary by survey_obs within one question (data_quality_check.md
-//    item 3); every query here resolves the question's *dominant* type first and
-//    filters to only the waves matching it, flagging any excluded waves in the UI,
-//    exactly like prototypes/plot-diverging-poc-v2.html did.
+//  - Label lookups for grouping vars and "party" questions still go through
+//    code_labels via SQL JOIN at query time (per-decision 2026-08-31). b/lsm/
+//    nsa response labels no longer do — they come from vbl_data.value_labels,
+//    a per-question comma-separated string (2026-09 change), resolved in
+//    getQuestionMeta() and turned into a plain SQL CASE in fetchChartData().
+//  - vbl_data.type can vary by survey_id (survey wave) within one question,
+//    sourced directly from codebook.recode_type now rather than inferred from
+//    resp's actual response codes (data_quality_check.md item 3); every query
+//    here resolves the question's *dominant* type first and filters to only
+//    the waves matching it, flagging any excluded waves in the UI, exactly
+//    like prototypes/plot-diverging-poc-v2.html did.
 //  - "year" is resp.year directly, which populate_db.R already sources from
 //    survey.year (not indiv.year) at build time — see the denormalization
 //    note in populate_db.R. That used to be an app.js-level JOIN choice;
@@ -36,6 +41,12 @@
 import * as duckdb from "https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.32.0/+esm";
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm";
 import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.17/+esm";
+// Type-to-search comboboxes for the domain/question pickers (populated from
+// vbl_data via the query layer below) -- progressively enhances the plain
+// <select> elements already in index.html, see populateDomainPicker()/
+// populateQuestionPicker(). No CSS import: styled from scratch in
+// style.css to match this app's own look instead of Tom Select's theme.
+import TomSelect from "https://cdn.jsdelivr.net/npm/tom-select@2.4.3/+esm";
 
 // Resolved relative to this script's own URL, one level up then into
 // cp3_parquet/ — e.g. files/app-js-remote/app.js finds files/cp3_parquet/.
@@ -49,15 +60,13 @@ function respUrlFor(question) {
   return `${DATA_BASE_URL}resp/question=${encodeURIComponent(question)}/data_0.parquet`;
 }
 
-const DOMAIN_LABELS = {
-  econ:        "Economic Policy",
-  energy:      "Energy & Environment",
-  health:      "Health, Welfare & Public Services",
-  identity:    "Identity, Immigration & Multiculturalism",
-  intlaffairs: "International Affairs & Defence",
-  values:      "Social Values & Morality",
-  vote:        "Vote Intention & Choice",
-};
+// Domain labels used to be hardcoded here; they now come straight from
+// vbl_data.domain_label (populate_db.R -> codebook.policy_domain_label),
+// via populateDomainPicker() below. ASSUMPTION: question_codebook.csv
+// includes vote_choice/vote_intention as regular rows with their own
+// policy_domain/policy_domain_label (domain "vote") -- the old codebook.csv
+// needed a hand-added row for these (see populate_db.R git history); if the
+// new one doesn't, the Vote domain won't show up in the picker.
 
 const GROUP_VARS = [
   { value: "",                label: "None" },
@@ -67,7 +76,7 @@ const GROUP_VARS = [
   { value: "province",        label: "Province" },
   { value: "com_500",         label: "Community Size > 500,000" },
   { value: "com_100",         label: "Community Size > 100,000" },
-  { value: "woman",           label: "Gender" },
+  { value: "gender",          label: "Gender" },
   { value: "age_cats",        label: "Age Category" },
   { value: "religion",        label: "Religion" },
   { value: "degree",          label: "University Degree" },
@@ -80,10 +89,15 @@ const GROUP_VARS = [
 // neutral middle category, plus a re-derived weighted-average line.
 // `values` are the raw resp.response codes in low->high order — used to
 // remap the 0-100 native average onto the shared -100..100 diverging axis.
+// Category *text* used to live here too (one fixed generic label set per
+// type) but is now per-question, sourced from vbl_data.value_labels (a
+// comma-separated string, ascending order, applied 1:1 against these
+// `values` in getQuestionMeta()/fetchChartData() below) — see
+// populate_db.R's vbl_data section for where value_labels comes from.
 const TYPE_CONFIG = {
-  b:   { categories: ["Disagree", "Agree"],            values: [0, 1] },
-  nsa: { categories: ["Never", "Sometimes", "Always"],  values: [0, 0.5, 1] },
-  lsm: { categories: ["Less", "Same", "More"],          values: [-1, 0, 1] },
+  b:   { values: [0, 1] },
+  nsa: { values: [0, 1, 2] },
+  lsm: { values: [-1, 0, 1] },
 };
 
 const POLE_COLORS = {
@@ -139,9 +153,12 @@ const sidebarBackdropEl = document.getElementById("sidebar-backdrop");
 const MAX_PARTIES = 6;
 
 let conn = null;
-let catalog = []; // [{question, domain, category, title, issue_label, wording}]
+let catalog = []; // [{question, domain, domain_label, issue_label, wording}]
 let currentQuestion = null; // question the year bounds / party options were last loaded for
 let partySelection = new Set();
+let domainTS = null;   // TomSelect instance wrapping #domain-select
+let questionTS = null; // TomSelect instance wrapping #question-select -- destroyed/rebuilt
+                        // on every domain change, see populateQuestionPicker()
 
 // ---------------------------------------------------------------------------
 // Mobile off-canvas sidebar. Wired up immediately (not gated behind DB init
@@ -219,44 +236,89 @@ async function loadCatalog() {
   const rows = await runQuery(`
     SELECT
       question,
-      any_value(domain)   AS domain,
-      any_value(category) AS category,
-      any_value(title)       AS title,
-      any_value(issue_label) AS issue_label,
+      any_value(domain)       AS domain,
+      any_value(domain_label) AS domain_label,
+      any_value(issue_label)  AS issue_label,
       any_value(question_wording) AS wording  -- vbl_data's real column name
     FROM vbl_data
     GROUP BY question
-    ORDER BY domain, category, question
+    ORDER BY domain, issue_label, question
   `);
   return rows;
 }
 
+// Both pickers are plain native <select> elements built exactly as before
+// (options with value/textContent), then handed to `new TomSelect(...)` to
+// progressively enhance -- Tom Select reads the select's existing <option>
+// elements as its initial option list, so nothing about how the options
+// themselves get built needs to change. Destroying and recreating the
+// TomSelect instance on every repopulation (rather than using its
+// add/clear-option API) is deliberately the simplest correct option here:
+// domain repopulates once per session, question repopulates only on a
+// domain change (not per keystroke), so the rebuild cost is trivial.
+// dropdownParent: "body" keeps the dropdown from being clipped by
+// .sidebar's overflow-y: auto on mobile (see style.css's .ts-dropdown
+// comment) -- required, not cosmetic.
 function populateDomainPicker() {
   const domains = [...new Set(catalog.map(r => r.domain))].filter(Boolean);
+  const labelFor = d => catalog.find(r => r.domain === d)?.domain_label || d;
+  domainTS?.destroy();
   domainSelect.innerHTML = "";
+  // Empty-value placeholder option first, so the native <select> (and thus
+  // Tom Select) defaults to *nothing selected* instead of auto-selecting
+  // the first real domain -- this is what makes no chart render until the
+  // user actively picks both a domain and a question, see update()'s
+  // `if (!question) return;` below.
+  const placeholderOpt = document.createElement("option");
+  placeholderOpt.value = "";
+  domainSelect.appendChild(placeholderOpt);
   for (const d of domains) {
     const opt = document.createElement("option");
     opt.value = d;
-    opt.textContent = DOMAIN_LABELS[d] || d;
+    opt.textContent = labelFor(d);
     domainSelect.appendChild(opt);
   }
+  domainTS = new TomSelect(domainSelect, {
+    create: false,
+    maxItems: 1,
+    dropdownParent: "body",
+    placeholder: "Choose a Domain",
+  });
 }
 
 function populateQuestionPicker() {
   const domain = domainSelect.value;
-  const qs = catalog.filter(r => r.domain === domain);
+  const qs = domain ? catalog.filter(r => r.domain === domain) : [];
+  questionTS?.destroy();
   questionSelect.innerHTML = "";
+  // Same empty-value-placeholder-first pattern as populateDomainPicker()
+  // above, and for the same reason: default to nothing selected.
+  const placeholderOpt = document.createElement("option");
+  placeholderOpt.value = "";
+  questionSelect.appendChild(placeholderOpt);
   for (const q of qs) {
     const opt = document.createElement("option");
     opt.value = q.question;
     // The dropdown shows the short policy-issue label (issue_label); the
     // full question wording is too long to show inline, so it's set as a
-    // hover tooltip instead. vbl_data.title is still a placeholder (see
-    // populate_db.R) - not used here.
+    // hover tooltip instead (data-wording, read by TomSelect's render.option
+    // below -- a plain `title` attribute on the source <option> wouldn't
+    // carry over, since Tom Select builds its own dropdown DOM from each
+    // option's data rather than reusing the <option> elements themselves).
     opt.textContent = q.issue_label || q.question;
-    opt.title = q.wording || q.issue_label || "";
+    opt.dataset.wording = q.wording || q.issue_label || "";
     questionSelect.appendChild(opt);
   }
+  questionTS = new TomSelect(questionSelect, {
+    create: false,
+    maxItems: 1,
+    dropdownParent: "body",
+    placeholder: "Choose a Policy Issue",
+    render: {
+      option: (data, escape) =>
+        `<div title="${escape(data.wording || data.text)}">${escape(data.text)}</div>`,
+    },
+  });
 }
 
 function populateGroupPicker() {
@@ -273,20 +335,30 @@ function populateGroupPicker() {
 // 3. Query layer.
 // ---------------------------------------------------------------------------
 
-// Resolves the question's dominant vbl_data.type and how many (question,
-// survey_obs) rows use a different type (excluded from the chart below —
-// see docs/data_quality_check.md item 3).
+// Resolves the question's dominant vbl_data.type (now sourced directly from
+// codebook.recode_type via populate_db.R, not inferred from resp's actual
+// response codes) and how many (question, survey_id) waves use a different
+// type — excluded from the chart below, see docs/data_quality_check.md item
+// 3. Also resolves valueLabels: vbl_data.value_labels is a comma-separated
+// string in ascending order, applied 1:1 against TYPE_CONFIG[type].values
+// (also ascending) — see populate_db.R's vbl_data section and TYPE_CONFIG's
+// comment above. Waves where a middle category is genuinely absent from the
+// data (e.g. an nsa wave coded only 0/2, no 1) need no special handling
+// here: fetchChartData's CASE mapping simply never matches the missing code.
 async function getQuestionMeta(question) {
   const rows = await runQuery(`
-    SELECT type, COUNT(*) AS n
+    SELECT type, any_value(value_labels) AS value_labels, COUNT(*) AS n
     FROM vbl_data
     WHERE question = '${escapeSql(question)}'
     GROUP BY type
     ORDER BY n DESC
   `);
   const type = rows[0].type;
+  const valueLabels = type === "party"
+    ? null
+    : String(rows[0].value_labels || "").split(",").map(s => s.trim()).filter(Boolean);
   const excludedWaves = rows.slice(1).reduce((sum, r) => sum + Number(r.n), 0);
-  return { type, excludedWaves };
+  return { type, valueLabels, excludedWaves };
 }
 
 // Question's overall year coverage (across all its survey waves), used to
@@ -330,15 +402,17 @@ async function getPartyOptions(question) {
 // to the selected year range; `parties` (Set, "party" type only) folds every
 // party not in the set into "Other" rather than dropping it.
 //
-// Label application happens entirely via JOIN to code_labels (kept out of
-// JS, per project decision): response categories join on
-// response_fac_<type> for Likert questions, or on the question code itself
-// for "party" questions (vote_intention/vote_choice reuse the same
-// code_labels rows whether they're the chart subject or a grouping var).
-async function fetchChartData(question, type, groupVar, yearLo, yearHi, parties) {
+// Label application for "party" questions still happens via JOIN to
+// code_labels (variable = the question code itself — vote_intention/
+// vote_choice reuse the same code_labels rows whether they're the chart
+// subject or a grouping var), kept out of JS per the original project
+// decision. For b/lsm/nsa questions, response labels now come from the
+// question's own vbl_data.value_labels (resolved by getQuestionMeta into
+// `valueLabels`, ascending, matched positionally against
+// TYPE_CONFIG[type].values) rather than a generic per-type code_labels row.
+async function fetchChartData(question, type, valueLabels, groupVar, yearLo, yearHi, parties) {
   const q = escapeSql(question);
   const isParty = type === "party";
-  const respVariable = isParty ? q : `response_fac_${type}`;
   const grouped = groupVar !== "";
 
   const grpSelect = grouped ? `cl_grp.label AS grp, cl_grp.sort_order AS grp_sort,` : "";
@@ -356,12 +430,29 @@ async function fetchChartData(question, type, groupVar, yearLo, yearHi, parties)
   // Parties not in the picker's selection get folded into "Other" (matching
   // the "pick up to 6, rest -> Other" design) rather than dropped, so the
   // stack still sums to 100%.
-  let respLabelExpr = "cl_resp.label";
-  let respSortExpr = "cl_resp.sort_order";
-  if (isParty && parties && parties.size > 0) {
-    const inList = [...parties].map(p => `'${escapeSql(p)}'`).join(", ");
-    respLabelExpr = `CASE WHEN cl_resp.label IN (${inList}) THEN cl_resp.label ELSE 'Other' END`;
-    respSortExpr = `CASE WHEN cl_resp.label IN (${inList}) THEN cl_resp.sort_order ELSE 999999 END`;
+  let respLabelExpr, respSortExpr, respJoin;
+  if (isParty) {
+    respLabelExpr = "cl_resp.label";
+    respSortExpr = "cl_resp.sort_order";
+    if (parties && parties.size > 0) {
+      const inList = [...parties].map(p => `'${escapeSql(p)}'`).join(", ");
+      respLabelExpr = `CASE WHEN cl_resp.label IN (${inList}) THEN cl_resp.label ELSE 'Other' END`;
+      respSortExpr = `CASE WHEN cl_resp.label IN (${inList}) THEN cl_resp.sort_order ELSE 999999 END`;
+    }
+    respJoin = `JOIN code_labels cl_resp ON cl_resp.variable = '${q}' AND cl_resp.code = r.response`;
+  } else {
+    // r.response IS the sort key directly: TYPE_CONFIG[type].values is
+    // already in the intended ascending display order, so no separate
+    // sort_order lookup is needed. A wave missing a code (the nsa
+    // two-pole-only case) just has no matching WHEN branch for that code —
+    // nothing extra to handle.
+    const values = TYPE_CONFIG[type].values;
+    const cases = values
+      .map((v, i) => `WHEN ${v} THEN '${escapeSql(valueLabels[i] ?? String(v))}'`)
+      .join(" ");
+    respLabelExpr = `CASE r.response ${cases} END`;
+    respSortExpr = "r.response";
+    respJoin = "";
   }
 
   const lo = Number.isFinite(yearLo) ? yearLo : -999999;
@@ -383,9 +474,9 @@ async function fetchChartData(question, type, groupVar, yearLo, yearHi, parties)
       100.0 * SUM(SUM(r.weight * r.response)) OVER (PARTITION BY r.year${grpPartition})
             / SUM(SUM(r.weight)) OVER (PARTITION BY r.year${grpPartition}) AS avg_native
     FROM read_parquet('${respUrlFor(question)}') r
-    JOIN vbl_data v ON v.question = r.question AND v.survey_obs = r.survey_obs
+    JOIN vbl_data v ON v.question = r.question AND v.survey_id = r.survey_id
     ${grpJoin}
-    JOIN code_labels cl_resp ON cl_resp.variable = '${escapeSql(respVariable)}' AND cl_resp.code = r.response
+    ${respJoin}
     WHERE v.type = '${escapeSql(type)}'
       AND r.year BETWEEN ${lo} AND ${hi}
     GROUP BY r.year, ${grpGroupBy} response_fac, resp_sort
@@ -493,7 +584,7 @@ function renderChart(question, meta, rows, groupVar, wording, issueLabel) {
     }
     orderedCats = [...seen.entries()].sort((a, b) => a[1] - b[1]).map(e => e[0]);
   } else {
-    orderedCats = TYPE_CONFIG[meta.type].categories;
+    orderedCats = meta.valueLabels;
   }
 
   const groupKeyOf = grouped ? (r => `${r.year}||${r.grp}`) : (r => String(r.year));
@@ -848,7 +939,7 @@ async function update() {
 
   const { lo, hi } = currentYearRange();
   const rows = await fetchChartData(
-    question, meta.type, groupVar, lo, hi,
+    question, meta.type, meta.valueLabels, groupVar, lo, hi,
     isParty ? partySelection : null
   );
   const cat = catalog.find(c => c.question === question) || {};

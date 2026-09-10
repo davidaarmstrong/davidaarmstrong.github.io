@@ -82,6 +82,53 @@ select {
   color: var(--text-primary);
   font-size: 13px;
 }
+
+/* Tom Select progressively enhances #domain-select / #question-select
+   (see app.js's populateDomainPicker()/populateQuestionPicker()) into a
+   type-to-search combobox -- index.html loads Tom Select's own default
+   stylesheet (dist/css/tom-select.css) for the actual layout/behavior
+   (single-select item-vs-input toggling, dropdown positioning, etc; a
+   hand-rolled reconstruction of that here previously broke typing/updating
+   entirely -- don't redo that, override colors only). These rules just
+   repaint it in this app's own palette on top of that, so ONLY
+   non-structural properties (color/background/border/font-size) belong
+   here -- no display/position/flex.
+   dropdownParent: "body" (set in app.js) means .ts-dropdown renders as a
+   direct child of <body>, not inside .sidebar -- required so the dropdown
+   isn't clipped by .sidebar's overflow-y: auto on mobile -- so its z-index
+   only has to clear .sidebar-toggle (60) and .sidebar (50). */
+.ts-wrapper { width: 100%; }
+/* Fixed black/white, not var(--page)/var(--text-primary) -- deliberately
+   the same in both light and dark mode, per request.
+   !important: Tom Select's own stylesheet has higher-specificity rules for
+   its focus/dropdown-open/has-items states (.ts-wrapper.focus .ts-control
+   etc.) that reset the background to white in those states -- plain
+   .ts-control here loses to those, which is exactly the "turns white on
+   click / stays white after picking an item" bug. Brute-forcing every
+   state variant to match is more reliable than chasing each one down
+   blind (no network access here to see Tom Select's actual CSS). */
+.ts-control,
+.ts-wrapper.focus .ts-control,
+.ts-wrapper.dropdown-active .ts-control,
+.ts-control.focus,
+.ts-control input,
+.ts-control .item {
+  background: #000 !important;
+  color: #fff !important;
+  border-color: var(--border);
+  font-size: 13px;
+}
+.ts-wrapper.focus .ts-control { border-color: var(--always); box-shadow: none; }
+.ts-dropdown {
+  background: #000;
+  border-color: var(--border);
+  color: #fff;
+  font-size: 13px;
+  z-index: 70;
+}
+.ts-dropdown .option { color: #fff; }
+.ts-dropdown .option.active { background: #333; color: #fff; }
+.ts-dropdown .no-results { color: #aaa; }
 .year-slider {
   position: relative;
   height: 24px;
@@ -256,6 +303,10 @@ select {
      cursor, not a fingertip. 16px inputs also avoid iOS Safari's
      auto-zoom-on-focus behavior, which otherwise kicks in below 16px. */
   select { font-size: 16px; padding: 10px 8px; }
+  /* font-size only -- Tom Select's own stylesheet (loaded in index.html)
+     owns .ts-control's padding/layout; don't override that here, see the
+     comment above the light/dark .ts-control rules for why. */
+  .ts-control, .ts-control > input, .ts-dropdown { font-size: 16px; }
 
   .year-slider,
   .year-slider input[type="range"] { height: 32px; }

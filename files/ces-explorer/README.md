@@ -202,22 +202,37 @@ Documentation -- an explicit author-CSS `display` declaration beats the
 `[hidden]` UA-stylesheet rule at equal selector specificity. Fixed with
 `.sidebar-toggle:not([hidden])`.
 
-**Not verified**: whether tapping two options in a native `<select
-multiple>` (the Models tab's Model 1/Model 2 pickers) actually adds to the
-selection on a real phone rather than replacing it. Real mobile
-Safari/Chrome are supposed to treat plain taps on a multi-select listbox as
-additive (no ctrl/cmd-click equivalent needed), but this was only tested
-through this session's Chromium-based emulated-viewport tooling, which
-drives clicks via mouse-event semantics, not real touch events -- and
-under mouse semantics a plain second click *did* replace the first
-selection rather than add to it, matching ordinary desktop `<select
-multiple>` behavior. If that turns out to be a real problem on an actual
-phone (not just a testing-tool artifact), the fix would be swapping those
-two selects for a proper multi-select combobox library with removable tag
-pills (`cp3/app-js-remote` uses Tom Select for its own, single-select,
-pickers) -- not attempted here since it's a moderate-complexity addition
-(event-wiring changes throughout `models.js`) that seemed better to flag
-and scope separately than fold into this pass silently.
+**Confirmed on a real phone** (not just this session's emulated-viewport
+tooling, which drives clicks via mouse-event semantics and so couldn't
+actually test this): tapping multiple options in the native `<select
+multiple>` Model 1/Model 2 pickers correctly adds to the selection rather
+than replacing it, as real mobile Safari/Chrome are supposed to do (no
+ctrl/cmd-click equivalent needed on touch). The emulated testing tool's
+own second-click-replaces-first behavior earlier was a testing-tool
+artifact, not a real issue -- no Tom Select or other multi-select combobox
+library needed here.
+
+## Bug fix: Models tab predicted-probability CIs were invisible
+
+`renderPredictedProbabilities` used `Plot.ruleY(sub, {x, y1: "lower", y2:
+"upper", ...})` for the vertical confidence-interval bars. That's backwards:
+`ruleX` draws a vertical segment (fixed x, spanning y1..y2); `ruleY` draws
+a horizontal one (fixed y, spanning x1..x2). With no x1/x2 channels
+supplied, the ruleY mark silently rendered nothing at all -- confirmed by
+inspecting the rendered SVG directly (zero `<line>`/`<path>` elements for
+it, versus three once fixed). `renderGroupMeans` (the Descriptives tab's
+mean +/- CI chart) already used `ruleX` correctly and was never affected.
+
+Found because a user reported the CIs looked missing; a quick look at the
+predicted-probability table showed real, non-degenerate intervals (e.g.
+0.288-0.315), so "the interval exists but rendered too small to see" was
+tested and ruled out via a minimal reproduction before finding the actual
+mark-name swap. Fixed alongside a second, independent improvement: with
+these sample sizes a 95% CI is often only a few pixels tall regardless, so
+a solid-filled point marker the same size as the CI would still visually
+hide it even correctly rendered -- the dot is now hollow (`fill: "none"`,
+colored stroke ring) so the line is visible through its center at any
+length.
 
 ## Known gaps / next steps
 

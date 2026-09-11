@@ -105,8 +105,22 @@ export function renderPredictedProbabilities(container, data, { xLabel, yLabel }
   models.forEach((m, i) => {
     const sub = data.filter((d) => d.model === m).map((d) => ({ ...d, x: String(d.x) }));
     marks.push(
-      Plot.ruleY(sub, { x: "x", y1: "lower", y2: "upper", stroke: "model", strokeWidth: 1.5, dx: dxFor(i), fx: hasFacet ? "facet" : undefined }),
-      Plot.dot(sub, { x: "x", y: "median", fill: "model", r: 4, dx: dxFor(i), fx: hasFacet ? "facet" : undefined }),
+      // ruleX, not ruleY: ruleX draws a vertical segment (fixed x,
+      // spanning y1..y2) -- the mark this needs. ruleY draws a horizontal
+      // one (fixed y, spanning x1..x2) and was silently rendering nothing
+      // here, since this mark has no x1/x2 channels for it to span --
+      // found by inspecting the rendered SVG directly (no <line>/<path>
+      // for it at all) after the CI turned out invisible even where the
+      // predicted-probability table showed a real, non-degenerate
+      // interval. renderGroupMeans below already used ruleX correctly.
+      Plot.ruleX(sub, { x: "x", y1: "lower", y2: "upper", stroke: "model", strokeWidth: 2, dx: dxFor(i), fx: hasFacet ? "facet" : undefined }),
+      // Hollow (fill: none) rather than filled: with these sample sizes a
+      // 95% CI is often just a few pixels tall -- a filled dot the same
+      // size as the CI's pixel height would completely hide the line
+      // drawn under it, making a real (if tiny) interval look like no
+      // uncertainty at all. A hollow ring lets the line show through its
+      // center regardless of how short it is.
+      Plot.dot(sub, { x: "x", y: "median", fill: "none", stroke: "model", strokeWidth: 2, r: 4, dx: dxFor(i), fx: hasFacet ? "facet" : undefined }),
     );
   });
 

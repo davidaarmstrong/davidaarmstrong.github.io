@@ -68,7 +68,7 @@ export function initModels({ levels, labels }) {
   // so the "vary effect by" comparison plot is comparing the same
   // variable's effect across models. Live-updates as mod1/mod2 change;
   // does not itself trigger a refit (see models below on why refit is
-  // gated behind the Estimate button only).
+  // gated behind the Refresh Model Output button only).
   function refreshFocusVarChoices() {
     const mod1Vars = selectedValues(mod1Sel);
     const mod2Vars = cmActive.checked ? selectedValues(mod2Sel) : [];
@@ -249,25 +249,25 @@ export function initModels({ levels, labels }) {
     }, 0);
   }
 
-  mod1Sel.addEventListener("change", () => { refreshFocusVarChoices(); invalidateResults("Model inputs changed — click “Estimate Model” to refresh results."); });
-  mod2Sel.addEventListener("change", () => { refreshFocusVarChoices(); invalidateResults("Model inputs changed — click “Estimate Model” to refresh results."); });
+  mod1Sel.addEventListener("change", () => { refreshFocusVarChoices(); invalidateResults("Model inputs changed — click “Refresh Model Output” to refresh results."); });
+  mod2Sel.addEventListener("change", () => { refreshFocusVarChoices(); invalidateResults("Model inputs changed — click “Refresh Model Output” to refresh results."); });
   cmActive.addEventListener("change", () => {
     mod2Field.hidden = !cmActive.checked;
     refreshFocusVarChoices();
-    invalidateResults("Model inputs changed — click “Estimate Model” to refresh results.");
+    invalidateResults("Model inputs changed — click “Refresh Model Output” to refresh results.");
   });
-  dvSel.addEventListener("change", () => invalidateResults("Model inputs changed — click “Estimate Model” to refresh results."));
-  varyBySel.addEventListener("change", () => invalidateResults("Model inputs changed — click “Estimate Model” to refresh results."));
-  focusVarSel.addEventListener("change", () => invalidateResults("Model inputs changed — click “Estimate Model” to refresh results."));
+  dvSel.addEventListener("change", () => invalidateResults("Model inputs changed — click “Refresh Model Output” to refresh results."));
+  varyBySel.addEventListener("change", () => invalidateResults("Model inputs changed — click “Refresh Model Output” to refresh results."));
+  focusVarSel.addEventListener("change", () => invalidateResults("Model inputs changed — click “Refresh Model Output” to refresh results."));
   estimateBtn.addEventListener("click", estimate);
 
   refreshFocusVarChoices();
-  invalidateResults("Choose a dependent variable and at least one Model 1 variable, then click “Estimate Model.”");
+  invalidateResults("Choose a dependent variable and at least one Model 1 variable, then click “Refresh Model Output.”");
 
   return {
     setRows(newRows) {
       rows = newRows;
-      invalidateResults("Sample subset changed — click “Estimate Model” to refresh results.");
+      invalidateResults("Sample subset changed — click “Refresh Model Output” to refresh results.");
     },
   };
 }

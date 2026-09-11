@@ -124,7 +124,7 @@ Per the migration decision, three simplifications vs. the original
   require a re-fit — a distinction that depended on exactly which reactive
   a given input fed into. This port simplifies to a single rule: *any*
   input change after a successful estimate invalidates the results and
-  requires clicking "Estimate Model" again. Simpler to reason about
+  requires clicking "Refresh Model Output" again. Simpler to reason about
   (including for the students this app is for), at the cost of an extra
   click in the cases where the old app could've skipped the re-fit.
 - **Focus-variable list is live-restricted** to variables actually in the

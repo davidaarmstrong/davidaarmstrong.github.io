@@ -38,9 +38,19 @@
 
 <div id="status">Loading data&hellip;</div>
 
+<!-- Mobile-only: opens whichever tab's .sidebar is currently active (see
+     app.js). In normal document flow, not fixed-positioned, since (unlike
+     a single-page tool) this app already has persistent chrome above the
+     fold (topbar/tabs/subset-bar) that a floating button would overlap. -->
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Open options" aria-expanded="false">
+  <span class="sidebar-toggle-icon" aria-hidden="true">&#9776;</span> Options
+</button>
+<div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
 <div class="tab-panel active" id="panel-descriptives">
   <div class="layout">
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar-descriptives">
+      <button class="sidebar-close" aria-label="Close options">&#10005;</button>
       <div class="field">
         <label for="desvar">Summarise Variable</label>
         <select id="desvar"><option value="">&#160;</option></select>
@@ -73,7 +83,8 @@
 
 <div class="tab-panel" id="panel-crosstabs">
   <div class="layout">
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar-crosstabs">
+      <button class="sidebar-close" aria-label="Close options">&#10005;</button>
       <div class="field">
         <label for="rowvar">Row Variable</label>
         <select id="rowvar"><option value="">&#160;</option></select>
@@ -97,7 +108,8 @@
 
 <div class="tab-panel" id="panel-models">
   <div class="layout">
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar-models">
+      <button class="sidebar-close" aria-label="Close options">&#10005;</button>
       <div class="field">
         <label for="dv">Dependent Variable</label>
         <select id="dv"></select>

@@ -170,6 +170,55 @@ Then open `http://localhost:8733`.
   effect by", input validation, subset integration) with no console
   errors, in both light and dark emulated themes.
 
+## Mobile responsiveness
+
+Pattern borrowed from `cp3/app-js-remote`'s off-canvas sidebar (the plain
+`cp3/app-js` doesn't have it), adapted for this app's different shell: `cp3`
+is a single-page tool with a floating fixed toggle button; this app has
+persistent chrome above the fold (topbar/tabs/subset-bar) that a floating
+button would overlap, so `#sidebar-toggle` sits in normal document flow
+instead, right below that chrome. It resolves which `.sidebar` to open
+dynamically (`.tab-panel.active .sidebar`) rather than hardcoding per-tab
+ids, so it's automatically hidden on Documentation (no sidebar there) and
+closes/re-evaluates on every tab switch.
+
+Below the 760px breakpoint: each tab's sidebar becomes a slide-in drawer
+with a backdrop (tap outside, the ✕ button, or Escape to close); the
+topbar/tabs/subset-bar stack or scroll instead of overflowing; form
+controls go to 16px font (avoids iOS Safari's auto-zoom-on-focus below
+that size) and bigger touch targets; and every chart (`charts.js`) sizes
+itself to its container's actual measured width via `measuredWidth()`
+instead of a fixed pixel literal, so plots shrink to fit a phone screen
+rather than forcing horizontal scroll. The mosaic plot's whole D3-built
+layout (height, legend width, tick-label/axis-title spacing) scales by the
+same factor its width shrinks from the 560px design, with legend width
+additionally sized to the longest row-level label so long ones (e.g.
+"Conservative") don't clip.
+
+One real bug found and fixed along the way: `.sidebar-toggle`'s mobile
+media-query rule originally set `display: flex` unconditionally, which
+silently overrode the `hidden` attribute app.js sets on it for
+Documentation -- an explicit author-CSS `display` declaration beats the
+`[hidden]` UA-stylesheet rule at equal selector specificity. Fixed with
+`.sidebar-toggle:not([hidden])`.
+
+**Not verified**: whether tapping two options in a native `<select
+multiple>` (the Models tab's Model 1/Model 2 pickers) actually adds to the
+selection on a real phone rather than replacing it. Real mobile
+Safari/Chrome are supposed to treat plain taps on a multi-select listbox as
+additive (no ctrl/cmd-click equivalent needed), but this was only tested
+through this session's Chromium-based emulated-viewport tooling, which
+drives clicks via mouse-event semantics, not real touch events -- and
+under mouse semantics a plain second click *did* replace the first
+selection rather than add to it, matching ordinary desktop `<select
+multiple>` behavior. If that turns out to be a real problem on an actual
+phone (not just a testing-tool artifact), the fix would be swapping those
+two selects for a proper multi-select combobox library with removable tag
+pills (`cp3/app-js-remote` uses Tom Select for its own, single-select,
+pickers) -- not attempted here since it's a moderate-complexity addition
+(event-wiring changes throughout `models.js`) that seemed better to flag
+and scope separately than fold into this pass silently.
+
 ## Known gaps / next steps
 
 - No plot-customization controls (colors, legend position, axis title

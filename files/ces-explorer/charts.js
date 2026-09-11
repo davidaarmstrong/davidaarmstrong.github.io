@@ -6,6 +6,18 @@ function clear(container) {
   container.innerHTML = "";
 }
 
+// Sizes a chart to the width of the element it's about to render into
+// (clamped to a sensible range) instead of a fixed pixel literal, so plots
+// shrink to fit a phone screen rather than forcing horizontal scroll for
+// no reason. Measured on `container` itself -- called right after
+// `clear()`, before any content is added, so its layout width still comes
+// from its CSS box (the surrounding .card/.panel-block), not stale content.
+function measuredWidth(container, { min = 280, max = 560, fallback = 480 } = {}) {
+  const w = container.clientWidth;
+  if (!w) return fallback;
+  return Math.max(min, Math.min(max, w));
+}
+
 const catColor = (i) => `var(--cat-${(i % 13) + 1})`;
 
 export function renderHistogram(container, values, nBins, xLabel) {
@@ -13,7 +25,7 @@ export function renderHistogram(container, values, nBins, xLabel) {
   const h = histogram(values, nBins);
   const data = h.mids.map((mid, i) => ({ mid, prop: h.counts[i] / h.n }));
   const plot = Plot.plot({
-    width: 420,
+    width: measuredWidth(container, { min: 260, max: 480, fallback: 420 }),
     height: 320,
     marginLeft: 55,
     x: { label: xLabel },
@@ -41,7 +53,7 @@ export function renderFreqBar(container, ftRows, yLabel) {
   const longestLabel = Math.max(...data.map((d) => d.group.length));
   const marginLeft = Math.min(220, Math.max(70, longestLabel * 6.5));
   const plot = Plot.plot({
-    width: 480,
+    width: measuredWidth(container, { min: 260, max: 560, fallback: 480 }),
     height: Math.max(220, data.length * 34 + 40),
     marginLeft,
     marginRight: 20,
@@ -63,7 +75,7 @@ export function renderGroupMeans(container, summaryRows, yLabel) {
     return { group: String(r.group), mean: r.mean, lower: r.mean - err, upper: r.mean + err };
   });
   const plot = Plot.plot({
-    width: 420,
+    width: measuredWidth(container, { min: 260, max: 480, fallback: 420 }),
     height: 320,
     marginLeft: 55,
     marginBottom: 60,
@@ -99,7 +111,9 @@ export function renderPredictedProbabilities(container, data, { xLabel, yLabel }
   });
 
   const plot = Plot.plot({
-    width: hasFacet ? Math.max(560, [...new Set(data.map((d) => d.facet))].length * 160) : 480,
+    width: hasFacet
+      ? Math.max(560, [...new Set(data.map((d) => d.facet))].length * 160)
+      : measuredWidth(container, { min: 260, max: 560, fallback: 480 }),
     height: 340,
     marginLeft: 55,
     marginBottom: 55,
@@ -121,9 +135,23 @@ export function renderMosaic(container, ct, rowLabel, colLabel) {
   const colTotals = colLevels.map((_, j) => matrix.reduce((a, row) => a + row[j], 0));
   const grandTotal = colTotals.reduce((a, b) => a + b, 0);
 
-  const width = 560;
-  const height = 480;
-  const margin = { top: 10, right: 140, bottom: 70, left: 10 };
+  // Scale the whole layout (height, legend width) by the same factor the
+  // measured width shrinks from the original 560px design, rather than
+  // hardcoding a separate narrow-screen layout.
+  const width = measuredWidth(container, { min: 280, max: 560, fallback: 560 });
+  const scale = width / 560;
+  const height = Math.round(480 * scale);
+  // Legend width needs to fit the longest row-level label (e.g.
+  // "Conservative"), not just scale down proportionally -- a fixed
+  // fraction of a shrunk width clips long labels at narrow container
+  // widths (~6.5px/char at the legend's 11px font, plus the color swatch
+  // and its gaps).
+  const longestLabel = Math.max(...rowLevels.map((r) => String(r).length));
+  const legendWidth = Math.round(longestLabel * 6.5) + 28;
+  // 50px minimum -- below that, the rotated column tick labels and the
+  // axis title below them (see tickY/title y below) collide vertically
+  // regardless of how the two are spaced within it.
+  const margin = { top: 10, right: Math.max(Math.round(140 * scale), legendWidth), bottom: Math.max(50, Math.round(70 * scale)), left: 10 };
   const plotW = width - margin.left - margin.right;
   const plotH = height - margin.top - margin.bottom;
 
@@ -152,11 +180,12 @@ export function renderMosaic(container, ct, rowLabel, colLabel) {
       }
       yCursor += segH;
     });
+    const tickY = plotH + Math.round(margin.bottom * 0.2);
     g.append("text")
       .attr("x", xCursor + colW / 2)
-      .attr("y", plotH + 16)
+      .attr("y", tickY)
       .attr("text-anchor", "end")
-      .attr("transform", `rotate(-35 ${xCursor + colW / 2} ${plotH + 16})`)
+      .attr("transform", `rotate(-35 ${xCursor + colW / 2} ${tickY})`)
       .attr("font-size", 11)
       .attr("fill", "var(--text-secondary)")
       .text(col);
@@ -165,7 +194,7 @@ export function renderMosaic(container, ct, rowLabel, colLabel) {
 
   g.append("text")
     .attr("x", plotW / 2)
-    .attr("y", plotH + 55)
+    .attr("y", plotH + margin.bottom - 6)
     .attr("text-anchor", "middle")
     .attr("font-size", 12)
     .attr("fill", "var(--text-secondary)")

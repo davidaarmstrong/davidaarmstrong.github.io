@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CES Explorer</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <h1>CES Explorer</h1>
+  <p class="sub">Canadian Election Study, 2004&ndash;2021 &mdash; unweighted, observed cases only</p>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" data-tab="descriptives">Descriptives</button>
+  <button class="tab-btn" data-tab="crosstabs">Cross-Tabs</button>
+  <button class="tab-btn" data-tab="models">Models</button>
+  <button class="tab-btn" data-tab="documentation">Documentation</button>
+</div>
+
+<div class="subset-bar">
+  <div class="field">
+    <label for="subset-by">Subset Sample</label>
+    <select id="subset-by">
+      <option value="">None (Full Sample)</option>
+      <option value="year">Year</option>
+      <option value="province">Region</option>
+    </select>
+  </div>
+  <div class="field" id="subset-value-field" hidden>
+    <label for="subset-value">Value</label>
+    <select id="subset-value"></select>
+  </div>
+  <p id="subset-info"></p>
+</div>
+
+<div id="status">Loading data&hellip;</div>
+
+<div class="tab-panel active" id="panel-descriptives">
+  <div class="layout">
+    <div class="sidebar">
+      <div class="field">
+        <label for="desvar">Summarise Variable</label>
+        <select id="desvar"><option value="">&#160;</option></select>
+      </div>
+      <div class="field">
+        <label for="stratdes">Group By</label>
+        <select id="stratdes"><option value="">None</option></select>
+      </div>
+      <div class="field" id="nbins-field" hidden>
+        <label for="nbins">Number of Bins</label>
+        <input type="number" id="nbins" min="3" max="100" step="1" value="10">
+      </div>
+    </div>
+    <div class="main">
+      <p class="empty-hint" id="des-hint">Choose a variable to summarise from the sidebar.</p>
+      <div class="card" id="des-table-wrap" hidden></div>
+      <div class="card panels">
+        <div class="panel-block" id="des-chart-wrap" hidden>
+          <h2>Distribution</h2>
+          <div id="chart"></div>
+        </div>
+        <div class="panel-block" id="des-fac-wrap" hidden>
+          <h2>Pairwise Group Comparisons</h2>
+          <div id="pairwise-table"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-panel" id="panel-crosstabs">
+  <div class="layout">
+    <div class="sidebar">
+      <div class="field">
+        <label for="rowvar">Row Variable</label>
+        <select id="rowvar"><option value="">&#160;</option></select>
+      </div>
+      <div class="field">
+        <label for="colvar">Column Variable</label>
+        <select id="colvar"><option value="">None</option></select>
+      </div>
+    </div>
+    <div class="main">
+      <p class="empty-hint" id="xtab-hint">Choose a row variable from the sidebar.</p>
+      <div class="card" id="xtab-table-wrap" hidden></div>
+      <div class="card" id="xtab-chisq" hidden></div>
+      <div class="card" id="xtab-chart-wrap" hidden>
+        <h2 id="xtab-chart-title">Mosaic Plot</h2>
+        <div id="xtab-chart"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-panel" id="panel-models">
+  <div class="layout">
+    <div class="sidebar">
+      <div class="field">
+        <label for="dv">Dependent Variable</label>
+        <select id="dv"></select>
+      </div>
+      <div class="field">
+        <label for="mod1">Model 1 Variables</label>
+        <select id="mod1" multiple size="8"></select>
+      </div>
+      <div class="field">
+        <label><input type="checkbox" id="cmactive"> Add Comparison Model</label>
+      </div>
+      <div class="field" id="mod2-field" hidden>
+        <label for="mod2">Model 2 Variables</label>
+        <select id="mod2" multiple size="8"></select>
+      </div>
+      <div class="field">
+        <label for="varyby">Vary Effect by&hellip;</label>
+        <select id="varyby"></select>
+      </div>
+      <div class="field">
+        <label for="focusvar">Independent Variable of Interest</label>
+        <select id="focusvar"></select>
+      </div>
+      <button class="btn-primary" id="estimate-btn">Estimate Model</button>
+      <p id="model-status" class="legend-note" style="margin-top:10px"></p>
+    </div>
+    <div class="main">
+      <div id="model-results" hidden>
+        <div class="card" id="model-coef-wrap"></div>
+        <div class="card" id="model-fit-wrap"></div>
+        <div class="card" id="model-plot-wrap" hidden>
+          <h2>Average-Case Predicted Probability</h2>
+          <p class="hint">Simulated from the model's coefficient distribution (2,500 draws); all other variables held at their central tendency (mode for categorical, median for continuous).</p>
+          <div id="model-plot"></div>
+        </div>
+        <div class="card" id="model-pp-wrap" hidden>
+          <h2>Predicted Probabilities</h2>
+          <div id="model-pp-table"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-panel" id="panel-documentation">
+  <div class="main" style="max-width:900px; margin:0 auto;">
+
+    <div class="card">
+      <h2>About this app</h2>
+      <p>This app is designed as a tool for instructors to use in classes focusing on Canadian politics and political behaviour. The data come from seven independent studies &mdash; the Canadian Election Studies from 2004, 2006, 2008, 2011, 2015, 2019 and 2021 &mdash; restricted to a set of variables common to all of them.</p>
+      <p>This is a from-scratch JavaScript rewrite of an earlier R/Shiny version of the same app. Three things are deliberately simplified from that version, to keep everything running client-side in your browser with no server and no statistical software installed:</p>
+      <ul>
+        <li><strong>Unweighted.</strong> The original used survey sample weights to produce nationally representative estimates. This version uses the sample as collected, unweighted &mdash; so results describe the survey respondents, not a population-corrected estimate.</li>
+        <li><strong>Complete cases only.</strong> Rows missing a value on any variable you've selected are dropped from that analysis (the same thing statistical software does by default), rather than statistically imputed.</li>
+        <li><strong>Average-case predicted probabilities.</strong> The Models tab's predicted-probability plots and tables describe a &ldquo;typical&rdquo; respondent (see the Models section below) rather than averaging effects across every respondent in the data.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Variables</h2>
+      <ul>
+        <li><strong>Vote</strong>: actual self-reported votes from the post-election survey, not campaign-period vote intention. Respondents who did not vote, or answered none/don't know/refused, are coded missing.</li>
+        <li><strong>Turnout</strong>: whether the respondent voted. Those who said they didn't vote or didn't know are coded as not having voted.</li>
+        <li><strong>Gender</strong>: coded as a binary (Male/Female) in the CES.</li>
+        <li><strong>Age Group</strong>: age (survey year minus birth year), grouped into 18&ndash;34, 35&ndash;54, 55+.</li>
+        <li><strong>Religion</strong>: No religion/Agnostic, Catholic, Non-Catholic Christian, or Other. A separate Catholic/Not Catholic indicator is also available.</li>
+        <li><strong>Schooling</strong>: Less than High School, High School/Some College, or College/University Graduate.</li>
+        <li><strong>Union Household</strong>: whether the respondent (or, in most years, anyone in their household) belongs to a union.</li>
+        <li><strong>Year</strong>: survey year.</li>
+        <li><strong>Region</strong>: province grouped into Atlantic, Quebec, Ontario, and West.</li>
+        <li><strong>Party ID</strong>: Liberal, Conservative, NDP, Bloc Qu&eacute;b&eacute;cois, Green, or Other/Don't Know. Three variants fold the Green and/or BQ categories into Other, for models where you don't want those parties broken out separately.</li>
+        <li><strong>Personal / National Retrospective Economy</strong>: whether the respondent's own, or Canada's, economic situation got better, stayed the same, or got worse over the past year.</li>
+        <li><strong>Defense / Environment Spending</strong>: whether spending should decrease, stay the same, or increase.</li>
+        <li><strong>More Immigration</strong>: whether immigration levels should decrease, stay the same, or increase.</li>
+        <li><strong>Ties to USA</strong>: whether Canada&ndash;US ties should become more distant or closer.</li>
+        <li><strong>Private Sector Create Jobs / Blame Self for Failure</strong>: agreement with each statement, strongly disagree to strongly agree.</li>
+        <li><strong>Reduce Income Inequality / Done for Women</strong>: how much more or less should be done, much less to much more.</li>
+        <li><strong>Feelings: Conservative / Liberal / NDP / BQ / Incumbent Leader</strong>: 0&ndash;100 feeling thermometers for each party leader (and for whichever leader/party held government at the time of that survey, for the Incumbent Leader version).</li>
+        <li><strong>Incumbent Co-partisan</strong>: whether the respondent shares a party identification with the incumbent government.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Methods</h2>
+      <p>Every dependent variable in the Models tab (vote for a party, vote turnout) is binary, so it's estimated with a binomial logistic regression. Categorical predictors are dummy-coded &mdash; one indicator for every level except a reference level, which is left out. The reference categories are:</p>
+      <table class="data-table" style="max-width:600px">
+        <thead><tr><th>Variable</th><th>Reference Category</th></tr></thead>
+        <tbody>
+          <tr><td>Year</td><td>2004</td></tr>
+          <tr><td>Age Group</td><td>18&ndash;34</td></tr>
+          <tr><td>Region</td><td>Ontario</td></tr>
+          <tr><td>Schooling</td><td>Less than High School</td></tr>
+          <tr><td>Religion</td><td>No religion</td></tr>
+          <tr><td>Catholic</td><td>Not Catholic</td></tr>
+          <tr><td>Gender</td><td>Male</td></tr>
+          <tr><td>Union Household</td><td>No</td></tr>
+          <tr><td>Personal / National Retrospective Economy</td><td>Got worse</td></tr>
+          <tr><td>Party ID</td><td>Liberal</td></tr>
+          <tr><td>Defense / Environment Spending</td><td>Less</td></tr>
+          <tr><td>More Immigration</td><td>Fewer</td></tr>
+          <tr><td>Ties to USA</td><td>Much more distant</td></tr>
+          <tr><td>Private Sector Create Jobs / Blame Self for Failure / Reduce Income Inequality</td><td>Strongly disagree</td></tr>
+          <tr><td>Done for Women</td><td>Much less</td></tr>
+          <tr><td>Incumbent Co-partisan</td><td>No</td></tr>
+          <tr><td>Vote</td><td>Liberal</td></tr>
+        </tbody>
+      </table>
+      <p class="hint" style="margin-top:10px">Two data quirks worth knowing about: the Party ID variants that fold Green and/or BQ into Other (&ldquo;Party ID (No Green)&rdquo;, etc.) aren't stored with a curated category order, so their reference category is whichever value sorts first alphabetically &mdash; BQ for &ldquo;No Green&rdquo;, Conservative for the other two &mdash; not Liberal like the main Party ID variable. And the Year variable's underlying codes are 4/6/8/11/15/19/21 rather than full years, so a &ldquo;Year: 6&rdquo; row in a coefficient table means 2006, not a literal value of 6 &mdash; add 2000 to get the real year (or use the Subset Sample control at the top of the page, which does show full years, to restrict the whole app to one year at a time).</p>
+    </div>
+
+    <div class="card">
+      <h2>Descriptives tab</h2>
+      <p><strong>Summarise Variable</strong> picks a numeric variable (currently the four leader feeling thermometers) to summarise. <strong>Group By</strong> optionally splits that summary by a categorical variable. <strong>Number of Bins</strong> (shown only when there's no grouping variable) controls the histogram's resolution.</p>
+      <p>The <strong>summary table</strong> gives the mean, standard deviation, interquartile range, quartiles, and valid/missing counts &mdash; per group, if a grouping variable is chosen. With no grouping variable you get a <strong>histogram</strong> of the distribution; with one, a <strong>point-and-error-bar chart</strong> of the mean (with a 95% confidence interval) for each group. With three or more groups, you also get a <strong>pairwise comparison grid</strong>: one cell per pair of groups, colored if that pair's means are significantly different (p &lt; .05), with the pairwise p-value printed in the cell.</p>
+    </div>
+
+    <div class="card">
+      <h2>Cross-Tabs tab</h2>
+      <p><strong>Row Variable</strong> is the variable you're trying to explain &mdash; it's restricted to actual outcome-shaped questions (vote, spending opinions, retrospective economic evaluations, and similar), so you can't end up treating something like age or region as if it were the thing being predicted. <strong>Column Variable</strong> is the explanatory variable, and can be any of the demographic or attitudinal variables.</p>
+      <p>With only a row variable chosen, you get a <strong>frequency table</strong> and a horizontal <strong>bar chart</strong>. Adding a column variable turns the table into a <strong>contingency table</strong> (counts, with the column percentage underneath each count), adds a <strong>Pearson chi-squared test</strong> of independence between the two variables (with a plain-language readout of what the p-value means), and replaces the bar chart with a <strong>mosaic plot</strong>: column widths are proportional to each column's total, and the colored segments within a column show that column's breakdown on the row variable &mdash; the same numbers as the column percentages in the table, just visual.</p>
+    </div>
+
+    <div class="card">
+      <h2>Models tab</h2>
+      <p><strong>Dependent Variable</strong> is what you're explaining: vote for a specific party, or vote turnout. Choosing Vote BQ doesn't restrict your sample to Quebec automatically &mdash; but since the Bloc Qu&eacute;b&eacute;cois doesn't run candidates outside Quebec, a model that includes Region as a predictor will show near-zero predicted probabilities everywhere else and will likely trigger the app's separation warning (see below).</p>
+      <p><strong>Model 1</strong> (and, if you check <strong>Add Comparison Model</strong>, <strong>Model 2</strong>) are the variables to include. <strong>Independent Variable of Interest</strong> is restricted to variables actually in your model(s) &mdash; the intersection of both, if two models are active &mdash; and drives the plot and predicted-probability table below. <strong>Vary Effect by&hellip;</strong> adds an interaction between your variable of interest and Year, Region, or Incumbent Co-partisan, so you can see whether that variable's effect differs across those groups.</p>
+      <p>Unlike the sidebar-level Region/Year checkboxes in the original app, sample restriction here is handled by the single <strong>Subset Sample</strong> control at the top of the page, which applies to all three tabs at once.</p>
+      <p>Click <strong>Estimate Model</strong> to run the analysis &mdash; any change to the inputs afterward invalidates the results shown below until you click it again, so what you're looking at always matches the inputs exactly.</p>
+      <p><strong>Coefficients</strong> are logistic regression coefficients (log-odds), with standard errors in parentheses; a &ldquo;&#42;&rdquo; marks p &lt; .05. These tell you the direction and statistical significance of a relationship, but the units (log-odds) aren't intuitive to interpret directly &mdash; that's what the predicted-probability plot below is for.</p>
+      <p><strong>Model Fit Statistics</strong> report the Proportional Reduction in Error (PRE): how much better the model classifies votes (using a 0.5 predicted-probability cutoff) than always guessing the more common outcome. Expected PRE is the same idea but uses the predicted probabilities directly rather than a 0/1 classification, following <a href="https://doi.org/10.1093/oxfordjournals.pan.a029806" target="_blank" rel="noopener">Herron (1999)</a>. Both are at most 1 (perfect classification); a value at or below 0 means the model does no better (or actively worse) than the simplest possible guess.</p>
+      <p>When you select a variable of interest, an <strong>average-case predicted probability</strong> plot and table appear: the predicted probability of the outcome for a &ldquo;typical&rdquo; respondent &mdash; one at the most common (modal) category for every categorical variable in the model and the median value for every numeric one &mdash; as your variable of interest moves across its range. A categorical variable of interest gets one point per category; a numeric one (like a feeling thermometer) gets two, its minimum and maximum, i.e. the largest possible first difference. Each point's 95% confidence interval comes from simulating 2,500 draws from the model's estimated coefficient distribution. If a model shows signs of separation (a predictor that near-perfectly determines the outcome, as with Region predicting BQ vote), you'll see a warning, since predicted probabilities and CIs in that situation can be numerically unstable rather than a reliable estimate.</p>
+    </div>
+
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

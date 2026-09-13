@@ -10,7 +10,7 @@
 
 <div class="topbar">
   <h1>CES Explorer</h1>
-  <p class="sub">Canadian Election Study, 2004&ndash;2021 &mdash; unweighted, observed cases only</p>
+  <p class="sub">Canadian Election Study, 2004&ndash;2025 &mdash; unweighted, observed cases only</p>
 </div>
 
 <div class="tabs">
@@ -159,7 +159,7 @@
 
     <div class="card">
       <h2>About this app</h2>
-      <p>This app is designed as a tool for instructors to use in classes focusing on Canadian politics and political behaviour. The data come from seven independent studies &mdash; the Canadian Election Studies from 2004, 2006, 2008, 2011, 2015, 2019 and 2021 &mdash; restricted to a set of variables common to all of them.</p>
+      <p>This app is designed as a tool for instructors to use in classes focusing on Canadian politics and political behaviour. The data come from eight independent studies &mdash; the Canadian Election Studies from 2004, 2006, 2008, 2011, 2015, 2019, 2021 and 2025 &mdash; restricted to a set of variables common to all of them.</p>
       <p>This is a from-scratch JavaScript rewrite of an earlier R/Shiny version of the same app. Three things are deliberately simplified from that version, to keep everything running client-side in your browser with no server and no statistical software installed:</p>
       <ul>
         <li><strong>Unweighted.</strong> The original used survey sample weights to produce nationally representative estimates. This version uses the sample as collected, unweighted &mdash; so results describe the survey respondents, not a population-corrected estimate.</li>
@@ -217,7 +217,7 @@
           <tr><td>Vote</td><td>Liberal</td></tr>
         </tbody>
       </table>
-      <p class="hint" style="margin-top:10px">Two data quirks worth knowing about: the Party ID variants that fold Green and/or BQ into Other (&ldquo;Party ID (No Green)&rdquo;, etc.) aren't stored with a curated category order, so their reference category is whichever value sorts first alphabetically &mdash; BQ for &ldquo;No Green&rdquo;, Conservative for the other two &mdash; not Liberal like the main Party ID variable. And the Year variable's underlying codes are 4/6/8/11/15/19/21 rather than full years, so a &ldquo;Year: 6&rdquo; row in a coefficient table means 2006, not a literal value of 6 &mdash; add 2000 to get the real year (or use the Subset Sample control at the top of the page, which does show full years, to restrict the whole app to one year at a time).</p>
+      <p class="hint" style="margin-top:10px">Two data quirks worth knowing about: the Party ID variants that fold Green and/or BQ into Other (&ldquo;Party ID (No Green)&rdquo;, etc.) aren't stored with a curated category order, so their reference category is whichever value sorts first alphabetically &mdash; BQ for &ldquo;No Green&rdquo;, Conservative for the other two &mdash; not Liberal like the main Party ID variable. And the Year variable's underlying codes are 4/6/8/11/15/19/21/25 rather than full years, so a &ldquo;Year: 6&rdquo; row in a coefficient table means 2006, not a literal value of 6 &mdash; add 2000 to get the real year (or use the Subset Sample control at the top of the page, which does show full years, to restrict the whole app to one year at a time).</p>
     </div>
 
     <div class="card">

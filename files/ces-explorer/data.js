@@ -13,7 +13,16 @@ export async function loadData() {
     for (const c of cols) row[c] = json.data[c][i];
     rows[i] = row;
   }
-  return { rows, levels: json.levels, labels: json.labels, meta: json.meta };
+  // DISPLAY_LABELS wins over json.labels (the R `label` attribute, when the
+  // .rda happens to carry one): ces0421.rda had them, ces0425.rda doesn't
+  // (confirmed via str() -- every column's `label` attr is simply absent
+  // there), which silently degraded every axis title and table header to
+  // raw variable names ("leader_con" instead of "Feelings: Conservative")
+  // until this was noticed and fixed. Making our own list authoritative
+  // means the app's display text no longer depends on that upstream R
+  // metadata detail at all, so this can't recur with some future .rda.
+  const labels = { ...json.labels, ...DISPLAY_LABELS };
+  return { rows, levels: json.levels, labels, meta: json.meta };
 }
 
 // The "Summarise Variable" list for the Descriptives tab (numeric feeling
@@ -64,8 +73,8 @@ export const ROW_VARS = STRAT_VARS.filter((v) => [
 
 // Models tab: Dependent Variable list, ported from the old ui.r/server.R
 // dv.names. "Vote for Incumbent" (vote_incumbent) is dropped -- that
-// column never actually existed in ces0421.rda, a pre-existing bug in the
-// old app's dropdown (see app-js/README.md).
+// column has never existed in the data (ces0421.rda nor ces0425.rda), a
+// pre-existing bug in the old app's dropdown (see app-js/README.md).
 export const DV_VARS = [
   { value: "vote_lib", label: "Vote Liberal" },
   { value: "vote_con", label: "Vote Conservative" },
@@ -145,6 +154,20 @@ export const VARY_BY_OPTIONS = [
   { value: "region", label: "Region", column: "province" },
   { value: "incumbent", label: "Incumbent Co-partisan", column: "incumb_copart" },
 ];
+
+// Consolidated {value: label} lookup for axis titles/table headers/
+// coefficient rows across all three tabs, built from the picker lists
+// above rather than any per-column metadata in the .rda file (see
+// loadData() for why). Earlier list wins where the same variable appears
+// in more than one list with different phrasing -- e.g. the four feeling
+// thermometers are "Feeling Thermometer: X" in NUM_VARS (Descriptives)
+// and the terser "Feelings: X" in IV_BLOCKS (Models); NUM_VARS is listed
+// first so its fuller phrasing is what shows up everywhere.
+const LABEL_SOURCES = [...NUM_VARS, ...STRAT_VARS, ...DV_VARS, ...IV_VARS];
+export const DISPLAY_LABELS = {};
+for (const { value, label } of LABEL_SOURCES) {
+  if (!(value in DISPLAY_LABELS)) DISPLAY_LABELS[value] = label;
+}
 
 // `year` is numeric in the data, not a factor, so it has no entry in
 // json.levels -- give it a synthetic ascending level order.

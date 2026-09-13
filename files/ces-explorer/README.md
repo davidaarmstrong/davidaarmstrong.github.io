@@ -9,8 +9,9 @@ three tabs at once.
 ## Why no DuckDB-WASM (or any WASM)
 
 Unlike `cp3` (a ~36MB survey database queried live via DuckDB-WASM), the
-CES cumulative file is small: 31,732 rows x 38 columns, ~1MB as `.rda` and
-~8MB as JSON. It just ships as a static file (`data/ces_data.json`) and
+CES cumulative file is small: 35,065 rows x 38 columns (as of the 2025
+wave -- see "Data update" below), ~740KB as `.rda` and ~9.5MB as JSON. It
+just ships as a static file (`data/ces_data.json`) and
 every table/plot/model is computed with plain JS -- no SQL engine, no
 matrix/stats library, no WASM at all. Even the logistic regression (see
 Models below) is hand-rolled IRLS over plain JS arrays-of-arrays; at this
@@ -26,15 +27,16 @@ Per the migration decision, three simplifications vs. the original
   survey-adjusted statistics throughout (`svymean`, `svyglm`, `svychisq`,
   ...). This port uses plain unweighted statistics/glm everywhere.
   Cross-checked against R directly and matched exactly: overall and
-  by-province means/SDs for `leader_con`; the `vote x province` chi-square
-  (χ²=8261.93, df=15); and `glm(..., family=binomial)` coefficients/SEs
-  for several Models-tab specifications (see Validated below).
+  by-province means/SDs for `leader_con`; the `vote x province` chi-square;
+  and `glm(..., family=binomial)` coefficients/SEs for several Models-tab
+  specifications (see Validated below).
 - **No multiple imputation.** The old `server.R` loaded `mitools` and had
   leftover doc text about "Rubin's rules with five imputed datasets," but
   never actually called `MIcombine`/`imputationList` — the active data
-  file (`ces0421.rda`) already has no imputation step applied to it (the
-  imputed variant, `ces0419imp.rda`, was already disabled in the old
-  server.R). So this was already true before the port; nothing to remove.
+  file (`ces0425.rda`, formerly `ces0421.rda` -- see "Data update" below)
+  already has no imputation step applied to it (the imputed variant,
+  `ces0419imp.rda`, was already disabled in the old server.R). So this was
+  already true before the port; nothing to remove.
 - **Average-case only.** The average-case-vs-average-effect switch was
   already commented out in the old `ui.r` and the server always called
   `probci(..., type="aveCase")` — the `aveEff` branch was dead code, not
@@ -47,7 +49,11 @@ Per the migration decision, three simplifications vs. the original
   and holds the picker lists for every tab (`NUM_VARS`/`STRAT_VARS`/
   `ROW_VARS` for Descriptives & Cross-Tabs; `DV_VARS`/`IV_BLOCKS`/
   `VARY_BY_OPTIONS` for Models), all ported from the old `ui.r`/`server.R`
-  variable catalogs.
+  variable catalogs. Also builds `DISPLAY_LABELS`, a `{value: label}` map
+  derived from those same picker lists and used as the authoritative
+  source for every axis title/table header/coefficient row across all
+  three tabs (see "Data update" below for why it doesn't rely on the
+  `.rda`'s own per-column `label` attribute).
 - `stats.js` — pure functions, no DOM: mean/sd/quantile (R's type-7
   algorithm), `summarise()` (the Descriptives table), `pairwiseComparisons()`
   (one row per unordered pair of group means -- a z-test difference, its
@@ -106,9 +112,10 @@ Per the migration decision, three simplifications vs. the original
   alphabetically, not Liberal like the main Party ID variable), and
   `year_fac`'s levels are coded 4/6/8/11/15/19/21 rather than full years.
 - `data-export.R` (repo root) — one-time/rerun-on-data-change export from
-  `ces0421.rda` to `data/ces_data.json`. Column-oriented JSON (not
+  `ces0425.rda` to `data/ces_data.json`. Column-oriented JSON (not
   row-oriented) to keep the file smaller; `data.js` zips it into rows on
-  load. Drops `weight`.
+  load. Drops `weight` and (as of the 2025-wave update) the duplicate
+  `yearfac` column -- see "Data update" below.
 - `devserver.py` — the local dev server (see Running it locally). A plain
   `python -m http.server` turned out to cache JS modules across edits in a
   way that survived even hard-reloads and new tabs (confirmed via `curl`
@@ -133,9 +140,9 @@ Per the migration decision, three simplifications vs. the original
   restriction updates immediately as Model 1/2 selections change, without
   requiring a re-estimate first.
 - **`vote_incumbent`** is referenced in the old `ui.r`/`server.R` DV
-  dropdown but that column doesn't exist in `ces0421.rda` -- a
-  pre-existing bug in the Shiny app. Dropped from `DV_VARS` here rather
-  than ported forward.
+  dropdown but that column has never existed in the data (`ces0421.rda`
+  nor `ces0425.rda`) -- a pre-existing bug in the Shiny app. Dropped from
+  `DV_VARS` here rather than ported forward.
 
 ## Running it locally
 
@@ -150,9 +157,12 @@ Then open `http://localhost:8733`.
 
 ## Validated
 
+Original pass (on `ces0421.rda`, 2004-2021, since superseded by
+`ces0425.rda` -- see "Data update" below, re-validated there on the
+current data):
+
 - Descriptives/Cross-Tabs: numbers cross-checked directly against R
-  (`mean`/`sd`/`aggregate`/`chisq.test` on `ces0421.rda`, unweighted) —
-  matched exactly.
+  (`mean`/`sd`/`aggregate`/`chisq.test`, unweighted) — matched exactly.
 - Models: `fitLogistic`'s coefficients and standard errors matched R's
   `glm(dv ~ ..., family=binomial)` to displayed precision for two
   well-behaved specifications (`vote_lib ~ gender + agegrp + educ`,
@@ -162,13 +172,12 @@ Then open `http://localhost:8733`.
   substantive story as R (near-0% outside Quebec, ~39% in Quebec) with
   coefficients in the same ballpark, which is the expected residual
   difference for an ill-conditioned/separated fit, not a bug (verified via
-  a standalone Node harness against `ces0421.rda` directly, and separately
-  in-browser: a `glm()`-computed average-case prediction, 0.3449/0.3765/
-  0.4098 across age groups for a `vote_lib` model, matched the app's UI
-  output of 0.345/0.376/0.409 exactly). All three tabs' UIs exercised
-  live in-browser (single model, two-model comparison, interaction/"vary
-  effect by", input validation, subset integration) with no console
-  errors, in both light and dark emulated themes.
+  a standalone Node harness directly against the `.rda`, and separately
+  in-browser: a `glm()`-computed average-case prediction matched the app's
+  UI output exactly). All three tabs' UIs exercised live in-browser
+  (single model, two-model comparison, interaction/"vary effect by", input
+  validation, subset integration) with no console errors, in both light
+  and dark emulated themes.
 
 ## Mobile responsiveness
 
@@ -233,6 +242,51 @@ a solid-filled point marker the same size as the CI would still visually
 hide it even correctly rendered -- the dot is now hollow (`fill: "none"`,
 colored stroke ring) so the line is visible through its center at any
 length.
+
+## Data update: 2025 wave added (ces0421.rda -> ces0425.rda)
+
+The underlying data grew from seven CES waves (2004-2021, 31,732 rows) to
+eight (adding 2025, 35,065 rows): `ces0425.rda` replaces `ces0421.rda`
+throughout (`data-export.R`'s `load()` call, its `source` field in the
+exported JSON's `meta`, the topbar subtitle, the Documentation tab's "how
+many studies" text). Column names, value/level codings, and factor level
+*order* are all unchanged from the old file -- `year_fac` simply gained an
+eighth level, `"25"`, following the existing last-two-digits-of-the-
+election-year scheme, which every part of the app already reads
+dynamically from the data rather than hardcoding, so no application logic
+needed to change for the new wave itself. Two things about the new file
+did need handling:
+
+- **A duplicate `yearfac` column.** `ces0425.rda` has both `year_fac` and
+  `yearfac`, byte-for-byte identical (checked directly: same levels, same
+  values row for row) -- not a second variable, just a duplicate. Dropped
+  on export alongside `weight`.
+- **No `label` attribute on any column.** `ces0421.rda` had one per
+  column (e.g. `"Con Leader FT"` on `leader_con`), which is what the app's
+  `labels` lookup (axis titles, table headers, coefficient-table row
+  names) was sourced from end to end. `ces0425.rda` has none at all --
+  confirmed via `attr(d[[v]], "label")` returning `NULL` for every column
+  checked -- which silently degraded that entire lookup to raw variable
+  names (`"leader_con"` instead of a real label) everywhere in the app.
+  Fixed by making `data.js`'s own `DISPLAY_LABELS` (built from the picker
+  lists the app already maintains for its dropdowns -- `NUM_VARS`,
+  `STRAT_VARS`, `DV_VARS`, `IV_VARS`) authoritative over whatever the
+  `.rda` does or doesn't carry as a `label` attribute, so this can't
+  silently recur with some future data file. One label is shown
+  differently now as a result and is worth knowing about: the Cross-Tabs
+  "Vote" column header used to read "Vote (Party)" (the old R attribute's
+  wording); it now reads "Vote" (`STRAT_VARS`'s wording) -- a cosmetic
+  difference, not a data change.
+
+Re-validated end to end on `ces0425.rda` after the switch, all matching R
+directly: `leader_con` mean/SD by province (e.g. Ontario 43.100/30.937,
+n=10997); the `vote x province` chi-square (χ²=9167.22, df=15, vs. R's
+9167.2); and `glm(vote_lib ~ agegrp)` coefficients (-0.752/0.078/0.220,
+n=29,490) with its average-case predicted probabilities (0.320/0.338/
+0.370 across age groups), all exact matches to R's own `glm()`/`predict()`
+output. Also reconfirmed labels render correctly again post-fix (e.g. the
+Descriptives chart title reads "Average Feeling Thermometer:
+Conservative", not "Average leader_con").
 
 ## Known gaps / next steps
 

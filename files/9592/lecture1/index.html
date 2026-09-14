@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9592</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9592
+]
+.subtitle[
+## Lecture 1: Maximum Likelihood Estimation
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color:
+    
+   
+    
+    #  777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+.right-plot-shift3 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -25px;
+}
+.shift { 
+  position:relative; 
+  top: -100px;
+  }
+
+.shift150 { 
+  position:relative; 
+  top: -150px;
+  }
+
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid
+  #  23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position:relative; 
+  top: -50px;
+}
+
+
+.pull-right ~ * {
+  clear: both;
+}
+
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.large-code .remark-code{
+  font-size: 100%
+}
+
+.small-math {
+  font-size: 80%;
+}
+&lt;/style&gt;
+
+
+## Goals for this class
+
+1. Introductions
+2. Discuss direction for the course. 
+3. Describe Maximum Likelihood Estimation (MLE)
+4. Consider a couple of examples of MLE
+
+---
+
+## Example: London Mayoral Election
+
+.pull-left[
+London is having a mayoral election.  Incumbent (and former Western LG Program Administrator) is running.
+
+- A poll shows: 
+
+|        | Voters |
+|--------|-------|
+| Other  | 48    |
+| Morgan | 52    |
+| Total  | 100   |
+
+
+
+Assess `\(H_A:\)` Morgan wins more than `\(50\%\)` of the vote. 
+
+]
+.pull-right[
+&lt;img src="images/mayor_signs.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## How to Figure This Out?
+
+- **What are we trying to find?** The population parameter `\(\pi^M\)` — the probability a voter picks Morgan.
+
+- **What do we need to learn about it?** A point estimate, and some sense of how much that estimate could vary from sample to sample. 
+
+- **Where does the estimate come from?** The natural best guess for `\(\pi^M\)`: 
+
+`$$\begin{aligned}
+\text{Proportion for Morgan} &amp;= \frac{\text{Number for Morgan}}{\text{Total Respondents}}\\\\
+p^M &amp;= \frac{N^M}{N^T}
+\end{aligned}$$`
+
+---
+
+## Uncertainty
+
+- **Where does the uncertainty/sampling distribution come from?** Rather than deriving it directly, we get it for free once we've modeled the dependent variable itself.
+    - Think of each individual vote `\(y_i\)` (Morgan/Other) as the dependent variable. What do we know about it?
+        - It only takes two values `\(\to\)` binary/Bernoulli.
+        - Each voter has the same underlying probability `\(\pi^M\)` — we have no information to say otherwise.
+        - Secret ballot `\(\to\)` one vote doesn't affect another `\(\to\)` independence.
+    - Those three properties mean `\(y_i \sim \text{Bernoulli}(\pi^M)\)`.
+    - The total count `\(N^M = \sum y_i\)` is a sum of iid Bernoulli trials, so `\(N^M \sim \text{Binomial}(N^T, \pi^M)\)`.
+    - Since `\(p^M\)` is just `\(N^M/N^T\)`, this binomial distribution is (up to rescaling) the sampling distribution of our estimate.
+
+
+---
+
+## Binomial Distribution
+
+.pull-left[
+`$$N^M \sim \text{Binomial}(N^T, \pi^M)$$`
+
+The `\(p-\)`value we could calculate using the Binomial PMF: 
+
+`$$f(y) = {n \choose y} p^y(1-p)^{(n-y)}$$`
+
+where `\(n \choose y\)` is the binomial coefficient and is defined as `\(\frac{n!}{y!(n-y)!}\)`.  Calculating this out tells us the number of possible outcomes of size `\(n\)` that have exactly `\(y\)` successes.
+]
+.pull-right[
+`$$\begin{aligned}
+\Pr&amp;(N^M \geq 52) = \\\\
+&amp;\sum_{k=52}^{100}{100 \choose k}.5^k(1-.5)^{(100-k)}
+\end{aligned}$$`
+
+.large-code[
+
+``` r
+pbinom(51, 100, .5, lower.tail=FALSE)
+```
+
+```
+## [1] 0.3821767
+```
+]
+]
+---
+
+## How Did We Make a Best Guess?
+
+Intuitively - sample proportion is best guess of population proportion. 
+
+Systematically - First, if you had to choose between either .48 or .6 which is better? 
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-4-1.png" alt="" width="75%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## All Values
+
+.pull-left[
+Now, what if we looked at all possible values of the binomial probability? 
+- Which one maximizes the probability we would observe 52?
+
+
+]
+.pull-right[
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-5-1.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## All Values
+
+.pull-left[
+Now, what if we looked at all possible values of the binomial probability? 
+- Which one maximizes the probability we would observe 52?
+
+.center[**We just did maximum likelihood estimation!**]
+
+]
+.pull-right[
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-6-1.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+## Maximum Likelihood Estimation (MLE)
+
+Maximum Likelihood Estimation is a different way of estimating statistical relationships.  
+
+- Here, we try to identify which parameter values make it most likely (i.e., _maximize the likelihood_) that we would observe the data that we observe. 
+
+---
+
+## Probability
+
+Before we go into MLE, we need to refresh ourselves on the axioms of probability.  Let's assume that the sample space is `\(S\)` (the set of all possible outcomes): 
+1. For any event `\(A\)`, `\(Pr(A) \geq 0\)`.
+1. `\(Pr(S) = 1\)`
+1. If events `\(A\)`, `\(B\)` and `\(C\)` are mutually exclusive, then `\(Pr(A \cup B \cup C) = Pr(A) + Pr(B) + Pr(C)\)`
+
+Each statistical distribution has associated probability functions - most useful for right now - the PDF/PMF and the CDF. 
+
+---
+
+## Probability Density Function
+
+One of the main elements of a likelihood estimation is a _probability density function_ or _PDF_ .  
+
+- The PDF gives the _relative likelihood_ that an observation drawn randomly from a continuous random variable would take on a particular value.
+- We can use these relative likelihoods to find the best parameters for our relationships. 
+- For discrete variables (like our binomial example), the distribution is a _probability mass function_ or _PMF_. 
+
+---
+
+
+## Cumulative Distribution Function
+
+A counterpart to the PDF is the _Cumulative Distribution Function_ or _CDF_. 
+
+- The CDF tells us the probability of being below (or alternatively above) a certain value of a random variable. 
+- The `\(z\)`- and `\(t\)`- tables in the back of intro stats books give you the CDF for the normal and `\(t\)` distributions evaluated at lots of different points. 
+
+---
+
+## Normal PDF and CDF
+
+
+.pull-left[
+&lt;img src="lecture1_files/figure-html/normal_pdf-1.png" alt="" width="432" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="lecture1_files/figure-html/normal_cdf-1.png" alt="" width="432" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+## Discrete Distributions
+
+With discrete distributions (those where some values are impossible, like counts), we have a _probability mass function_ or _PMF_ instead of a PDF.  
+
+.pull-left[
+&lt;img src="lecture1_files/figure-html/binomial_pmf-1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="lecture1_files/figure-html/binomial_cdf-1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+## What is Likelihood
+The Likelihood Axiom is as follows:
+
+`$$L(\tilde\theta|y) \propto f(y|\tilde\theta)$$`
+
+
+- `\(f(y|\tilde\theta)\)` is a probability density function of `\(y\)` given the hypothetical model parameters `\(\tilde\theta\)`
+- `\(\propto\)` here means we could multiply `\(f(y|\tilde\theta)\)` by *any* positive function of the data alone and get the same answer for which `\(\tilde\theta\)` maximizes it. The absolute value of `\(L\)` is never meaningful, only how it moves as `\(\tilde\theta\)` changes.
+- What Maximum Likelihood Estimation does is to pick the parameters `\(\hat{\theta}\)` that make the data most likely to have been generated given the assumptions we make.
+
+---
+
+## Evaluating the Likelihood function
+Assuming that you've got lots of `\(y\)` values (i.e., `\(y_{i}\)` for `\(i = {1, \ldots, n}\)`), then you would want to know the aggregate likelihood for all values (i.e., a single number). 
+
+`$$L(\theta | y) = \prod_{i=1}^{n} L(\theta, y_{i}) \propto \prod_{i=1}^{n} f(y_{i} | \theta)$$`
+
+While this would theoretically work fine, taking the product of a bunch of small numbers is going to generate something that the computer will have difficulty dealing with, thus we usually try to maximize the log-likelihood (\ell). 
+
+`$$\ell(\theta | y) = \sum_{i=1}^{n} \ell(\theta, y_{i}) \propto \sum_{i=1}^{n} \log\left(f(y_{i} | \theta)\right)$$`
+
+---
+
+## Score Function
+
+The score function `\(S(\theta)\)` is the first partial derivative of the log-likelihood with respect to the parameter
+- First derivative shows us how steep the log-likelihood is at any particular point.  
+- Setting the first derivative to zero gives us the point at which the likelihood is maximized. 
+
+For the binomial model: 
+
+`$$\ell(p) = k \log(p) + (n-k)\log(1-p)$$`
+`$$S(p) = \frac{\partial \ell}{\partial p} = \frac{k}{p} - \frac{n-k}{1-p}$$`
+
+
+---
+
+## Likelihood and Score Functions
+
+&lt;img src="lecture1_files/figure-html/unnamed-chunk-7-1.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+## Math
+
+**First term** — `\(\dfrac{d}{dp}\big[52\log p\big]\)`: `\(\frac{d}{dp}\big[52\log p\big] = 52\cdot\frac{1}{p} = \frac{52}{p}\)`
+
+**Second term** — `\(\dfrac{d}{dp}\big[48\log(1-p)\big]\)`: here the thing inside the log isn't `\(p\)` itself but `\(u = 1-p\)`, so you need the chain rule: `\(\frac{d}{dp}\log(u) = \frac{1}{u}\cdot\frac{du}{dp}\)`. Since `\(\frac{du}{dp} = \frac{d}{dp}(1-p) = -1\)`,
+
+`$$\frac{d}{dp}\big[48\log(1-p)\big] = 48\cdot\frac{1}{1-p}\cdot(-1) = -\frac{48}{1-p}$$`
+
+**Add them** (sum rule):
+
+`$$S(p) = \frac{52}{p} - \frac{48}{1-p}$$`
+
+---
+
+## Solve
+
+.small-math[
+`$$\begin{aligned}
+\frac{k}{p} - \frac{n-k}{1-p} = 0\\\\
+\frac{k}{p} = \frac{n-k}{1-p} \\\\
+k(1-p) = (n-k)p \\\\
+k - pk = pn - pk\\\\
+k = pn\\\\
+\frac{k}{n} = p
+\end{aligned}$$`
+]
+
+---
+
+## Sampling Uncertainty
+
+Fisher Information is what tells us about the variability of the parameter estimate in repeated sampling. 
+- Negative expected first derivative of the score function with respect to `\(p\)` (negative expected second derivative of the log-likelihood function). 
+- A more peaked log-likelihood function has lower sampling variability. 
+
+
+---
+
+## Calculating Fisher Information I
+
+`$$S(p) = \frac{k}{p} - \frac{n-k}{1-p}$$`
+
+Fisher information is `\(I(p) = -E\left[\dfrac{d^2\ell}{dp^2}\right]\)`, so first differentiate the score again:
+
+`$$\frac{d^2\ell}{dp^2} = \frac{d}{dp}\left[\frac{k}{p} - \frac{n-k}{1-p}\right] = -\frac{k}{p^2} - \frac{n-k}{(1-p)^2}$$`
+
+Negate and take the expectation, using `\(E[k] = np\)` since `\(k\sim\text{Binomial}(n,p)\)`:
+
+`$$I(p) = E\left[\frac{k}{p^2} + \frac{n-k}{(1-p)^2}\right] = \frac{np}{p^2} + \frac{n-np}{(1-p)^2} = \frac{n}{p} + \frac{n(1-p)}{(1-p)^2} = \frac{n}{p} + \frac{n}{1-p}$$`
+
+---
+
+## Calculating Fisher Information II
+
+Combine over a common denominator:
+
+`$$I(p) = n\left[\frac{1}{p} + \frac{1}{1-p}\right] = n\cdot\frac{(1-p)+p}{p(1-p)} = \frac{n}{p(1-p)}$$`
+
+The inverse of Fisher Information `\((I(p)^{-1})\)` is the sampling variance of p
+
+`$$\text{Sampling Var}(p) = \frac{p(1-p)}{n}$$`
+---
+
+## I thought this was an applied class!
+
+I showed you more math than usual here because it is "easy" (tractable) in this case. 
+
+Generally, this sort of closed form solution doesn't work out.  
+
+---
+
+## MLE in R
+.pull-left[
+
+``` r
+library(maxLik)
+llfun &lt;- function(par, x, n=100){
+    p &lt;- dbinom(x, n, par[1], log=TRUE)
+    sum(p)
+}
+out &lt;- maxLik(llfun, start=.5, x=52)
+summary(out)
+```
+
+```
+## --------------------------------------------
+## Maximum Likelihood estimation
+## Newton-Raphson maximisation, 1 iterations
+## Return code 1: gradient close to zero (gradtol)
+## Log-Likelihood: -2.530081 
+## 1  free parameters
+## Estimates:
+##      Estimate Std. error t value Pr(&gt; t)    
+## [1,]  0.52000    0.04996   10.41  &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## --------------------------------------------
+```
+]
+.pull-right[
+
+``` r
+# k/n
+52/100
+```
+
+```
+## [1] 0.52
+```
+
+``` r
+# sqrt([p(1-p)]/n)
+
+sqrt((.52*(1-.52))/100)
+```
+
+```
+## [1] 0.04995998
+```
+]
+
+
+
+---
+
+## What if `\(N=1000\)`?
+
+``` r
+out &lt;- maxLik(llfun, start=.5, x=520, n=1000)
+summary(out)
+```
+
+```
+## --------------------------------------------
+## Maximum Likelihood estimation
+## Newton-Raphson maximisation, 2 iterations
+## Return code 1: gradient close to zero (gradtol)
+## Log-Likelihood: -3.679119 
+## 1  free parameters
+## Estimates:
+##      Estimate Std. error t value Pr(&gt; t)    
+## [1,]   0.5200     0.0158   32.91  &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## --------------------------------------------
+```
+
+---
+
+## Log-Likelihood Functions
+
+.pull-left[
+We could look at the two likelihood functions, one from 100 points and one from 1000 points. 
+]
+.pull-right-shift2[
+&lt;img src="lecture1_files/figure-html/lln-1.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Owners vs. Renters
+
+.pull-left[
+What if Homeowners and Renters have different opinions
+
+
+|        | Renter | Owner | Total |
+|--------|--------|-------|-------|
+| Other  | 10     | 38    | 48    |
+| Morgan | 20     | 32    | 52    |
+| Total  | 30     | 70    | 100   |
+
+
+]
+.pull-right[
+
+
+``` r
+llfun2 &lt;- function(par, x, n){
+  l &lt;- dbinom(x, n, par, log=TRUE)
+  sum(l)
+}
+out2 &lt;- maxLik(llfun2, 
+               start=c(renter=.5, owner=.5), 
+               x=c(20, 32), n=c(30, 70))
+
+summary(out2)
+```
+
+```
+## --------------------------------------------
+## Maximum Likelihood estimation
+## Newton-Raphson maximisation, 2 iterations
+## Return code 1: gradient close to zero (gradtol)
+## Log-Likelihood: -4.227176 
+## 2  free parameters
+## Estimates:
+##        Estimate Std. error t value  Pr(&gt; t)    
+## renter  0.66667    0.08607   7.746 9.48e-15 ***
+## owner   0.45714    0.05954   7.678 1.62e-14 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## --------------------------------------------
+```
+
+
+]
+
+---
+
+## Testing the Two Models: Likelihood Ratio Test
+
+.pull-left[
+If two models are nested, then we can use a likelihood ratio test to figure out whether the bigger one is "better".  
+
+`$$s = -2\left(\ell(M_{\text{small}}) - \ell(M_{\text{big}})\right)$$`
+
+Under `\(H_{0}:\)` Both Models Same, `\(s \sim \chi_{k_{\text{big}} - k_{\text{small}}}^{2}\)`. 
+
+]
+.pull-right[
+
+``` r
+llfun1 &lt;- function(par, x, n){
+   l &lt;- dbinom(x, n, c(par[1],par[1]), log=TRUE)
+   sum(l)
+}
+out1 &lt;- maxLik(llfun1, x=c(20,32), start=c(both = .5), n = c(30,70))
+lmtest::lrtest(out1, out2)
+```
+
+```
+## Likelihood ratio test
+## 
+## Model 1: out1
+## Model 2: out2
+##   #Df  LogLik Df  Chisq Pr(&gt;Chisq)  
+## 1   1 -6.1036                       
+## 2   2 -4.2272  1 3.7529    0.05272 .
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+]
+
+---
+
+## Properties of MLEs
+
+- Consistent - As sample size increases the probability that the MLE differs from the true parameter by an arbitrarily small amount is zero
+- Asymptotically efficient which means that the MLE's variance is the smallest among all possible consistent estimators. 
+- Asymptotically normally distributed
+
+All of these are asymptotic properties, so they describe the properties of the estimators as `\(n\)` is close to `\(\infty\)`.  They may behave differently in small samples.  We will discuss this a bit later on.
+
+---
+
+## Recap
+
+1. What is MLE?
+  - `\(L(\theta|\text{Data}) \propto f(\text{Data} | \theta)\)`
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

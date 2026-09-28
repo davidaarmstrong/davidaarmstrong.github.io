@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9592</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9592
+]
+.subtitle[
+## Lecture 3: Interactions
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+
+.full-width table {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+.right-shift50 {
+  width: 48%;
+  float: right;
+  position:relative; 
+  top: -50px;
+}
+.right-shift100 {
+  width: 48%;
+  float: right;
+  position: relative;
+  top: -100px;
+}
+
+
+&lt;/style&gt;
+
+
+## Goals for This Session
+
+1. Discuss Interaction Effects in the Linear Model
+2. Discuss Interaction Effects in the GLM
+3. Presentation of Interaction Results
+
+
+---
+
+# Interaction Effects 
+
+When the partial effect of one variable depends on the value of another variable, those two variables are said to "interact".  Alternatively, we say that the relationship is _conditional_. 
+  - For example, we may want to test whether age effects are different for men (coded 1) and women (coded 0).
+  - In such cases we could fit separate regressions for men and women, but this does not allow for a formal statistical test of the differences and only really works as intended in the linear model. 
+  - Specification of interaction effects facilitates statistical tests for a difference in slopes within a single regression
+
+---
+
+# Unconditional Effects in the LM
+
+Consider the following linear model: 
+
+`$$y_i = b_0 + b_1 x_i + b_2 z_i + e_i$$`
+
+In this model, the effect of `\(x\)` is: 
+
+`$$\frac{\partial y}{\partial x} = b_1$$` 
+
+The marginal effect is constant.
+
+---
+
+## Mediation vs Moderation
+
+
+.pull-left[
+Moderation asks - does the direct effect of `\(X\)` vary by some other variable, `\(W\)`? 
+- This is the effect heterogeneity of interest today. 
+
+Mediation asks - is the effect of `\(X\)` direct and/or indirect through some other variable, `\(M\)`? 
+- This is a related, but quite different question that we will not discuss today. 
+]
+.right-shift50[
+
+
+&lt;img src="med_mod.png" alt="Two path diagrams stacked vertically. Top diagram labelled Mediation: X points to M (path a) and M points to Y (path b), with a dashed arrow from X directly to Y (path c-prime, the direct effect). Bottom diagram labelled Moderation: X points to Y with a solid arrow, and W points upward to the midpoint of the X-to-Y arrow, indicated by a filled square, showing that W moderates the effect of X on Y rather than transmitting it." width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Moderation Effect
+
+Suppose we are estimating a relationship between `\(y\)` and `\(x\)` and we suspect/hypothesize that relationship is moderated by `\(z\)`.  
+
+.pull-left[
+- We are really saying: 
+
+`$$\frac{\partial y}{\partial x} = f(z)$$` 
+
+The simplest `\(f(z)\)` would just be linear: 
+
+`$$\frac{\partial y}{\partial x} = b_1 + b_2 z_i$$`
+]
+.pull-right[
+What model would generate this marginal effect: 
+
+`$$y_i = b_0 + b_1x_i + b_2x_iz_i + b_3 z_i + \mathbf{gw}_i + e_i$$`
+
+The marginal effect of `\(x\)` from the above equation is `\(b_1 + b_2 z_i\)`. 
+]
+
+???
+
+The interaction term determines how the effect of x changes across values of z. The main effect of z determines how the baseline level of y changes across values of z.
+
+---
+
+## Typology of Moderation Models
+
+We can fit different kinds of moderation models depending on our hypotheses: 
+
+_Typology of Models_
+
+
+
+|Model              |Assumption Change                                   |
+|:------------------|:---------------------------------------------------|
+|Single interaction |Single effect varies across groups                  |
+|Full interaction   |All effects vary across groups                      |
+|Subgroup Analyses  |All effects + residual variances vary across groups |
+
+---
+
+## Interaction Effects 
+
+We often denote product regressors `\(x_iz_i\)` as _interaction effects_.  
+
+Ultimately we want to know three things:
+
+- Is there statistical evidence of a moderated effect?
+- How variable is the moderated effect? 
+- Does the variation change or qualify the substantive conclusion? 
+
+Below, we walk through all the possible two-way interaction scenarios and we will discuss how to answer these questions.
+
+---
+
+# Two Categorical Variables
+
+With two categorical variables, essentially you are estimating a different conditional mean for every pair of values across the two categorical variables. You could do that as follows:
+.left-code[
+
+``` r
+load("../lecture2/ces0421.rda")
+ces21 &lt;- ces0421 |&gt; filter(year == 2021) 
+
+mod &lt;- lm(leader_lib ~ educ * agegrp, data=ces21)
+```
+]
+.right-plot[
+
+``` r
+library(broom)
+tidy(mod)
+```
+
+```
+## # A tibble: 9 × 5
+##   term                         estimate std.error statistic  p.value
+##   &lt;chr&gt;                           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)                    35.2        5.16    6.83   9.08e-12
+## 2 educHS/College                 10.3        5.29    1.95   5.15e- 2
+## 3 educCollege Grad               16.6        5.21    3.19   1.45e- 3
+## 4 agegrp35-54                    -0.609      6.13   -0.0994 9.21e- 1
+## 5 agegrp55+                       1.79       5.64    0.318  7.51e- 1
+## 6 educHS/College:agegrp35-54     -4.45       6.32   -0.704  4.81e- 1
+## 7 educCollege Grad:agegrp35-54   -4.45       6.21   -0.717  4.74e- 1
+## 8 educHS/College:agegrp55+       -6.19       5.80   -1.07   2.85e- 1
+## 9 educCollege Grad:agegrp55+    -10.8        5.71   -1.89   5.90e- 2
+```
+
+]
+
+---
+
+## Evidence of Moderation
+
+.pull-left[
+We evaluate evidence of moderation by evaluating the moderated model agains the unconditional model: 
+
+
+``` r
+uncond_mod &lt;- lm(leader_lib ~ educ + agegrp, data=ces21)
+```
+
+In this case, there is evidence of a moderated effect - `educ`'s effect is moderated by `agegrp` (and vice-versa).  
+
+]
+.pull-right[
+
+
+``` r
+anova(uncond_mod, mod, test="F")
+```
+
+```
+## Analysis of Variance Table
+## 
+## Model 1: leader_lib ~ educ + agegrp
+## Model 2: leader_lib ~ educ * agegrp
+##   Res.Df      RSS Df Sum of Sq      F   Pr(&gt;F)   
+## 1  14784 16130108                                
+## 2  14780 16110130  4     19978 4.5821 0.001069 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+The `anova()` function works because the unconditional model is nested in the conditional model. 
+]
+
+---
+
+## Variation in Effects
+
+.pull-left[
+There is considerable variation around the unconditional effect. 
+- The main conclusions appear to not hold up.
+]
+.right-shift50[
+&lt;img src="Lecture3_files/figure-html/unnamed-chunk-7-1.png" alt="Point-range plot of three education contrasts in the predicted Liberal leader feeling thermometer (HS/College minus less than HS, College Grad minus HS/College, College Grad minus less than HS), each shown for the unconditional model and for three age groups (18-34, 35-54, 55+), with a dashed reference line at zero. All point estimates are positive. The age-specific estimates are generally largest for 18-34 and always smallest for 55+. For College Grad minus HS/College, the difference is about 6 points for the two younger groups but under 2 points for the 55+ group, compared with about 4 points unconditionally. Intervals for the youngest group are wide, and all three age-specific intervals for HS/College minus less than HS reach or cross zero." width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Two Categorical Summary
+
+With these two categorical variables, the unconditional relationship fails to account for substantial heterogeneity across age groups.
+- Especially the difference between HS/College and Univ is heterogeneous
+    - Small for oldest group, larger for the other two. 
+
+---
+
+## One Categorical + One Numeric
+
+With one categorical variable, `\(d\)` (we'll use a binary variable here) and one numeric variable, `\(x\)`, we would have
+ 
+`$$y_i = b_0 + b_1x_i + b_2 d_i + b_3x_id_i + e_i$$`
+
+We can think of the moderation effect in two ways: 
+
+.pull-left[
+
+_Marginal Effect of `\(x\)`_
+`$$\frac{\partial y}{\partial x} = b_1 + b_3 d$$`
+]
+.pull-right[
+
+_Marginal effect of `\(d\)`_
+
+`$$\frac{\partial y}{\partial d} = b_2 + b_3 x$$`
+
+]
+---
+
+## Interaction of Education and Sex
+
+
+``` r
+data(SLID, package="carData")
+mod2_0 &lt;- lm(log(wages) ~ education + sex, data=SLID)
+mod2_1 &lt;- lm(log(wages) ~ education * sex, data=SLID)
+tidy(mod2_1)
+```
+
+```
+## # A tibble: 4 × 5
+##   term              estimate std.error statistic   p.value
+##   &lt;chr&gt;                &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)         1.73     0.0492      35.3  1.69e-237
+## 2 education           0.0577   0.00358     16.1  1.14e- 56
+## 3 sexMale             0.477    0.0669       7.13 1.15e- 12
+## 4 education:sexMale  -0.0186   0.00489     -3.81 1.41e-  4
+```
+
+There is evidence of a moderation effect.
+
+
+```
+## # A tibble: 5 × 5
+##   model                     sex               estimate std.error  p.value
+##   &lt;chr&gt;                     &lt;chr&gt;                &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 Unconditional             Female              0.0477   0.00244 4.67e-85
+## 2 Unconditional             Male                0.0477   0.00244 4.67e-85
+## 3 Conditional               Female              0.0577   0.00358 1.96e-58
+## 4 Conditional               Male                0.0391   0.00333 7.25e-32
+## 5 Difference in Conditional (Male) - (Female)  -0.0186   0.00489 1.39e- 4
+```
+
+---
+
+## Effect of Sex
+
+.pull-left[
+The unconditional effect is (necessarily) flat and the conditional effect is negatively sloped. 
+
+- Note the density of education - it marks the regions where comparisons are permissible. 
+
+- The effects are always positive (males are predicted to earn more than females regardless of education).  
+
+- The difference between salaries of females and males decreases with education.  
+
+]
+.right-shift100[
+&lt;img src="Lecture3_files/figure-html/unnamed-chunk-10-1.png" alt="Two-panel stacked figure. Top panel: overlapping histograms of years of education separately for female and male workers in the SLID data, showing that the two distributions are similar and broadly overlapping across the full education range. Bottom panel: line plot with confidence ribbons showing the predicted wage gap between males and females (in log wages) across years of education for the unconditional and conditional models. The unconditional effect is a flat, horizontal line indicating a constant male premium; the conditional effect declines with education, showing the gap narrows as education increases, though males are always predicted to earn more." width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Two Numeric Variables
+
+With two numeric variables the interpretation gets a bit trickier.  For example, consider the following model:
+
+`$$\hat{Y}_{i} = b_{0} + b_{1}X_{i1} + b_{2}X_{i2} + b_{3}X_{i3} + b_{4}X_{i1}X_{i2}$$`
+
+
+We want to know the partial conditional effect of both `\(X_1\)` and `\(X_2\)`, but unlike above, neither can be boiled down to a small set of values.  Just think about the equation:
+
+`$$\begin{aligned}
+\frac{\partial \hat{Y}}{\partial X_{1}} &amp;= \beta_{1} + \beta_{4}X_{2}\\
+\frac{\partial \hat{Y}}{\partial X_{2}} &amp;= \beta_{2} + \beta_{4}X_{1}
+\end{aligned}$$`
+
+
+Note, that `\(\beta_4\)` is the amount by which the *effect* of `\(X_1\)` goes up for every additional unit of `\(X_2\)` and the amount by which the *effect* of `\(X_2\)` goes up for every additional unit of `\(X_1\)`.
+
+---
+
+## Testable Hypotheses
+
+`$$\hat{Y}_{i} = b_{0} + b_{1}X_{i1} + b_{2}X_{i2} + b_{3}X_{i3} + b_{4}X_{i1}X_{i2}$$`
+Berry, Golder and Milton (2012) suggest that we should be able to test 5 hypotheses:
+
+.small[
+- `\(\mathbf{P}_{X_{1}|X_{2}=\text{min}}\)` The marginal effect of `\(X_{1}\)` is [positive, zero, negative] when `\(X_{2}\)` takes its lowest value.
+- `\(\mathbf{P}_{X_{1}|X_{2} = \text{max}}\)` The marginal effect of `\(X_{1}\)` is [positive, zero, negative] when `\(X_{2}\)` takes its highest value.
+- `\(\mathbf{P}_{X_{2}|X_{1}=\text{min}}\)` The marginal effect of `\(X_{2}\)` is [positive, zero, negative] when `\(X_{1}\)` takes its lowest value.
+- `\(\mathbf{P}_{X_{2}|X_{1} = \text{max}}\)` The marginal effect of `\(X_{2}\)` is [positive, zero, negative] when `\(X_{1}\)` takes its highest value.
+- `\(\mathbf{P}_{X_{1}X_{2}}\)` The marginal effect of each of `\(X_{1}\)` and `\(X_{2}\)` is [positively, negatively] related to the other variable.
+]
+
+
+---
+
+## Example
+
+
+``` r
+data(Prestige, package="carData")
+Prestige$income &lt;- Prestige$income/1000
+addmod &lt;- lm(prestige ~ income + education + type, data=Prestige)
+intmod &lt;- lm(prestige ~ income*education + type, data=Prestige)
+tidy(intmod)
+```
+
+```
+## # A tibble: 6 × 5
+##   term             estimate std.error statistic       p.value
+##   &lt;chr&gt;               &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;
+## 1 (Intercept)       -17.8      7.59       -2.34 0.0212       
+## 2 income              3.79     0.945       4.01 0.000124     
+## 3 education           5.10     0.777       6.57 0.00000000293
+## 4 typeprof            5.48     3.71        1.48 0.144        
+## 5 typewc             -3.58     2.43       -1.48 0.143        
+## 6 income:education   -0.210    0.0698     -3.01 0.00335
+```
+---
+
+## Evidence of Moderation
+
+- The `income:education` line answers this question.  If it is significant, then there is a significant interaction, otherwise there is not.
+
+- This is counter to a minor, though still influential, point in Brambor, Clark and Golder (2006), but is consistent with Berry, Golder and Milton (2012).
+
+- The interaction provides evidence of moderation.
+
+---
+
+## Conditional Effects
+
+&lt;img src="Lecture3_files/figure-html/unnamed-chunk-11-1.png" alt="Two-panel line plot with confidence ribbons and rug plots of the observed data from the Prestige interaction model. Left panel, Income Effect: the conditional effect of income (per 1,000 dollars) on prestige declines from about 2.4 at 6 years of education to about 0.4 at 16 years; the interval stays above zero except at the very top of the education range. Right panel, Education Effect: the conditional effect of education declines from about 5 at the lowest incomes to about zero at 26,000 dollars; the interval includes zero above roughly 16,000 dollars. The income rug is concentrated below 10,000 dollars, showing the right skew of income." width="90%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+## Interpretation
+
+
+- The effect of income is nearly always significant, though it gets smaller as education gets bigger.  That is, as education increases, we expect smaller increases in prestige from increasing income
+
+- The effect of education is significant and positive until around 16,000 dollars, which is around 2/3 the range of `income`, but is the `\(96^{th}\)` percentile because of the skewness of income.
+
+- This suggests that people tend to derive prestige from either higher incomes or higher education, but not really both.
+
+---
+
+## Berry, Golder and Milton Test
+
+
+``` r
+BGMtest(intmod, vars = c("income", "education"))
+```
+
+```
+##              est    se      t p-value
+## P(X|Zmin)  2.445 0.520  4.698 0.000  
+## P(X|Zmax)  0.429 0.287  1.495 0.138  
+## P(Z|Xmin)  4.756 0.712  6.681 0.000  
+## P(Z|Xmax) -0.335 1.466 -0.229 0.820  
+## P(XZ)     -0.210 0.070 -3.012 0.003
+```
+
+---
+
+## When Confidence Bounds Equal Zero
+
+You may want to know when the confidence bounds are equal to zero.  Consider the equation:
+
+`$$\hat{Y}_{i} = \beta_{0} + \beta_{1}X_{i1} + \beta_{2}X_{i2} + \beta_{3}X_{i3} + \beta_{4}X_{i1}X_{i2}$$`
+
+
+- We know that the conditional effect of `\(X_1\)` is `\(\beta_1 + \beta_4X_2\)` and that the lower bound is `\((\beta_1 + \beta_4X_2) - 1.96\times SE(\beta_1 + \beta_4X_2)\)`.
+
+- Since those are all quantities that we know (or estimate), we could set it equal to zero and solve.
+
+- This is what the `changeSig` function does.
+
+---
+
+## Change in Significance
+
+
+
+``` r
+changeSig(intmod, c("income", "education"))
+```
+
+```
+## LB for B(income | education) = 0 when education=15.4979 (95th pctile)
+## UB for B(income | education) = 0 when education=27.9396 (&gt; Maximum Value in Data)
+## LB for B(education | income) = 0 when income=15.9273 (96th pctile)
+## UB for B(education | income) = 0 when income=59.5175 (&gt; Maximum Value in Data)
+```
+
+---
+
+## Transition from Linear to GLM
+
+Consider a linear model: `\(y = b_0 + b_1x + b_2z + e\)`
+- The effect of `\(x\)` is `\(\frac{\partial y}{\partial x} = b_1\)`
+
+In the non-linear model: `\(E(y|x,z) = g^{-1}(b_0 + b_1x + b_2z) =  g^{-1}(\eta)\)`
+- The effect of `\(x\)` is 
+
+`$$\frac{\partial g^{-1}(\eta)}{\partial x} = \frac{\partial g^{-1}(\eta)}{\partial \eta}\frac{\partial \eta}{\partial x}$$`
+
+---
+
+## Common Links and First Derivatives
+
+| Model | Response Function | Effect of `\(x\)` |
+|---------|---------|---------|
+| Linear | `\(E(Y)=\eta\)` | `\(\beta_x\)` |
+| Binary | `\(p=F(\eta)\)` | `\(\beta_x f(\eta)\)` |
+&lt;!-- | Log-Link | `\(\mu=e^\eta\)` | `\(\beta_x \mu\)` | --&gt;
+&lt;!-- | Ordered | `\(P(Y=k)=F(\tau_k-\eta)-F(\tau_{k-1}-\eta)\)` | `\(\beta_x[f(\tau_{k-1}-\eta)-f(\tau_k-\eta)]\)` | --&gt;
+&lt;!-- | Multinomial Logit | `\(p_k=\frac{e^{\eta_k}}{\sum_j e^{\eta_j}}\)` | `\(p_k\left(\beta_{xk}-\sum_j p_j\beta_{xj}\right)\)` | --&gt;
+
+where
+
+- `\(F(\cdot)\)` is a cumulative distribution function (CDF)
+- `\(f(\cdot)=F^{\prime}(\cdot)\)` is the corresponding probability density function (PDF)
+
+---
+
+## Binary Model Example
+
+Consider the binary regression model: 
+
+`$$\log\left(\frac{p}{1-p}\right) = b_0 + b_1x + b_2z$$`
+
+The effect of `\(x\)` is: 
+
+$$\frac{\partial E(y|x,z)}{\partial x} = f(\eta)b_1 = p(1-p)b_1 $$
+
+
+Because `\(p\)` depends on all predictors, the effect of `\(x\)` changes across values of `\(x\)` and `\(z\)`.
+
+---
+
+## Effect Visualization
+
+The effect is biggest when `\(p=0.5\)` and gets smaller in either direction. 
+
+.pull-left[
+&lt;img src="Lecture3_files/figure-html/unnamed-chunk-13-1.png" alt="Line plot of the logistic CDF showing probability p as a function of the linear predictor from −5 to 5. The curve is S-shaped, rising from near zero at −5 to near one at 5, with the steepest slope at zero where p = 0.5." width="80%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="Lecture3_files/figure-html/unnamed-chunk-14-1.png" alt="Line plot of the logistic PDF showing density as a function of the linear predictor from −5 to 5. The curve is symmetric and bell-shaped, peaking at zero and tapering to near zero at the extremes, illustrating that the marginal effect of x is largest when the linear predictor is near zero." width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Link vs Product Term Conditionality
+
+Mechanical conditionality that comes from the non-linear link: 
+- _can_ dampen or amplify the coefficient of `\(x\)` as a function of `\(z\)`.
+- _cannot_ allow a marginal effect to change signs, but the second difference still could. 
+
+Including a product term: 
+- _can_ permit sign flips based on different values of the conditioning variable. 
+- _can_ reduce the level of conditionality between `\(x\)` and `\(z\)` in some circumstances. 
+
+---
+
+## Link vs Product Term Conditionality
+
+If `\(E(y|x,z) = g^{-1}(b_0 + b_1x + b_2z)\)`
+
+`$$\frac{\partial g^{-1}(\eta)}{\partial x} = \frac{\partial g^{-1}(\eta)}{\partial \eta}b_1 = f(\eta)b_1$$`
+
+If `\(E(y|x,z) = g^{-1}(b_0 + b_1x + b_2z + b_3xz)\)`
+
+`$$\frac{\partial g^{-1}(\eta)}{\partial x} = \frac{\partial g^{-1}(\eta)}{\partial \eta}(b_1 + b_3z) = f(\eta)(b_1 + b_3z)$$`
+
+Since `\(f(\eta)\)` is a density, it is non-negative
+
+---
+
+## Conditionality in GLMs
+
+If the model induces conditionality by definition, how do we think about moderation? 
+
+1. Just as before - generally, an investigation about conditionality should be theoretically interesting. 
+    - At this stage, you should not go "hunting for" interactions.  
+2. Unlike before, the mechanical model building exercise does not lead to clear, immediate answers. 
+    - Whether the product term is significant and the extent of the moderation are less related here. 
+3. Whether a product term belongs in the model depends on whether it generates substantively important conditionality beyond the mechanical conditionality induced by the link function.
+    
+---
+
+## Evaluating Conditionality
+
+
+| Variable Types | Marginal Effect of `\(x\)` | Interaction Quantity |
+|---------------|-------------------------|----------------------|
+| `\(x,z\)` both continuous | `\(\frac{\partial E(Y)}{\partial x}\)` | `\(\frac{\partial}{\partial z}\frac{\partial E(Y)}{\partial x}\)` |
+| `\(x\)` continuous, `\(z\)` binary | `\(\frac{\partial E(Y)}{\partial x}\)` | `\(\Delta_z\left(\frac{\partial E(Y)}{\partial x}\right)\)` |
+| `\(x,z\)` both binary | `\(\Delta_x E(Y)\)` | `\(\Delta_z\left(\Delta_x E(Y)\right)\)` |
+
+Second differences work for any variable types. They are required whenever a variable is categorical, and for continuous variables the step sizes you choose define the quantity.
+
+---
+
+## The Cross-Partial in the Logit Model
+
+For the logit, `\(\frac{\partial p}{\partial \eta} = p(1-p)\)` and `\(\frac{\partial^2 p}{\partial \eta^2} = p(1-p)(1-2p)\)`.
+
+.pull-left[
+_Additive_: `\(\eta = b_0 + b_1x + b_2z\)`
+
+`$$\frac{\partial^2 p}{\partial x \partial z} = b_1b_2\,p(1-p)(1-2p)$$`
+
+- Non-zero whenever `\(b_1\)` and `\(b_2\)` are, except at `\(p = 0.5\)`.
+- Changes sign at `\(p = 0.5\)`.
+- The marginal effect of `\(x\)` cannot change sign, but the interaction can.
+]
+.pull-right[
+_Product_: `\(\eta = b_0 + b_1x + b_2z + b_3xz\)`
+
+`$$\begin{aligned}
+&amp;\frac{\partial^2 p}{\partial x \partial z} = \; b_3\,p(1-p)\; + \\
+&amp;\quad\quad(b_1 + b_3z)(b_2 + b_3x)\,p(1-p)(1-2p)
+\end{aligned}$$`
+
+- The second term is compression; it remains even if `\(b_3 = 0\)`.
+- `\(b_3\)` alone does not give the size, or even the sign, of the interaction (Ai and Norton 2003).
+]
+
+???
+
+In the pid-black example, b_pid &lt; 0 and b_black &gt; 0, so the additive cross-partial is positive where Pr(vote Dem) &gt; 0.5 (Democratic identifiers) and negative where it is below 0.5 (Republican identifiers). This is the sign flip in the second differences that follow.
+
+---
+
+## Example: ANES Voting Democrat
+
+.pull-left[
+
+
+``` r
+anes &lt;- rio::import("anes1992.dta")
+anesu &lt;- anes |&gt;  
+  mutate(retnat = rio::factorize(retnat), 
+         educ = rio::factorize(educ)) |&gt;
+  drop_na(votedem, retnat, pid, age, male,
+          educ, black, south)
+add_mod &lt;- glm(votedem ~ retnat + pid + age + male + educ +
+                black + south, data=anesu, family=binomial)
+tidy(add_mod)
+```
+
+```
+## # A tibble: 9 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   0.512    0.673      0.760  4.47e- 1
+## 2 retnatsame    1.33     0.594      2.24   2.50e- 2
+## 3 retnatworse   1.65     0.570      2.89   3.89e- 3
+## 4 pid          -0.916    0.0557   -16.4    1.06e-60
+## 5 age           0.0131   0.00566    2.32   2.05e- 2
+## 6 male         -0.292    0.180     -1.62   1.04e- 1
+## 7 educ          0.251    0.104      2.42   1.57e- 2
+## 8 black         2.15     0.477      4.50   6.64e- 6
+## 9 south         0.0129   0.221      0.0584 9.53e- 1
+```
+]
+.right-shift50[
+
+_Two Categorical Variables: `retnat, male`_
+
+
+``` r
+econ_comps &lt;- avg_comparisons(add_mod, 
+  datagrid(male = c(0,1), 
+           grid_type="counterfactual"), 
+  variables = list(retnat="pairwise"), 
+  by = c("male"))
+
+econ_comps |&gt; select(contrast, male, estimate, p.value)
+```
+
+```
+## 
+##        Contrast Estimate Pr(&gt;|z|)
+##  same - better    0.1630  0.01889
+##  worse - better   0.2025  0.00235
+##  worse - same     0.0395  0.15592
+##  same - better    0.1598  0.01673
+##  worse - better   0.1992  0.00180
+##  worse - same     0.0394  0.15528
+```
+
+``` r
+econ_comps |&gt; hypotheses(~pairwise  | contrast) |&gt; 
+  select(contrast, hypothesis, estimate, p.value)
+```
+
+```
+## 
+##        Contrast  Hypothesis  Estimate Pr(&gt;|z|)
+##  same - better  (b4) - (b1) -3.26e-03    0.364
+##  worse - better (b5) - (b2) -3.31e-03    0.363
+##  worse - same   (b6) - (b3) -5.02e-05    0.769
+```
+]
+
+
+---
+
+## Example: ANES Voting Democrat
+
+.pull-left[
+
+``` r
+prod_mod &lt;- glm(votedem ~ male*retnat + pid + age + black + educ +
+                south, data=anesu, family=binomial)
+tidy(prod_mod)
+```
+
+```
+## # A tibble: 11 × 5
+##    term             estimate std.error statistic  p.value
+##    &lt;chr&gt;               &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1 (Intercept)       -1.30     1.44      -0.899  3.69e- 1
+##  2 male               2.04     1.54       1.33   1.84e- 1
+##  3 retnatsame         3.02     1.44       2.10   3.56e- 2
+##  4 retnatworse        3.49     1.41       2.47   1.34e- 2
+##  5 pid               -0.916    0.0558   -16.4    1.21e-60
+##  6 age                0.0130   0.00568    2.30   2.17e- 2
+##  7 black              2.22     0.484      4.59   4.41e- 6
+##  8 educ               0.259    0.104      2.48   1.31e- 2
+##  9 south              0.0178   0.223      0.0801 9.36e- 1
+## 10 male:retnatsame   -2.15     1.59      -1.36   1.75e- 1
+## 11 male:retnatworse  -2.44     1.55      -1.57   1.16e- 1
+```
+
+``` r
+lmtest::lrtest(add_mod, prod_mod)
+```
+
+```
+## Likelihood ratio test
+## 
+## Model 1: votedem ~ retnat + pid + age + male + educ + black + south
+## Model 2: votedem ~ male * retnat + pid + age + black + educ + south
+##   #Df  LogLik Df  Chisq Pr(&gt;Chisq)
+## 1   9 -401.05                     
+## 2  11 -399.42  2 3.2613     0.1958
+```
+]
+.right-shift50[
+_Two Categorical Variables: `retnat, male`_
+
+
+``` r
+econ_comps2 &lt;- avg_comparisons(prod_mod, 
+  datagrid(male = c(0,1), 
+           grid_type="counterfactual"), 
+  variables = list(retnat="pairwise"), 
+  by = c("male"))
+
+econ_comps2 |&gt; select(contrast, male, estimate, p.value)
+```
+
+```
+## 
+##        Contrast Estimate Pr(&gt;|z|)
+##  same - better    0.3192  0.00193
+##  worse - better   0.3785  &lt; 0.001
+##  worse - same     0.0594  0.15491
+##  same - better    0.1060  0.19121
+##  worse - better   0.1295  0.09250
+##  worse - same     0.0235  0.52272
+```
+
+``` r
+econ_comps2 |&gt; hypotheses(~pairwise  | contrast) |&gt; 
+  select(contrast, hypothesis, estimate, p.value)
+```
+
+```
+## 
+##        Contrast  Hypothesis Estimate Pr(&gt;|z|)
+##  same - better  (b4) - (b1)  -0.2131   0.1045
+##  worse - better (b5) - (b2)  -0.2490   0.0452
+##  worse - same   (b6) - (b3)  -0.0359   0.5157
+```
+]
+
+---
+
+## Effects:
+
+&lt;img src="Lecture3_files/figure-html/unnamed-chunk-19-1.png" alt="Two-panel point-range plot of the predicted probability of voting Democrat for women and men, by retrospective economic evaluation (better, same, worse), in the Additive and Product models. In the Additive panel, the pattern is nearly identical for both genders: about 0.25 to 0.28 for better, 0.41 to 0.45 for same, and 0.45 to 0.49 for worse. In the Product panel, women who say the economy got better have a much lower predicted probability (about 0.11, with an interval reaching below zero) than men (about 0.31), so the gap between better and worse evaluations is much larger for women (about 0.38) than for men (about 0.13). The same and worse estimates are similar across models, and the better estimates have wide intervals throughout." width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Example: ANES Voting Democrat: Additive
+
+.pull-left[
+_One Categorical, One Numeric: `pid, black`_
+
+
+
+
+``` r
+slp2 &lt;- avg_comparisons(add_mod, 
+    newdata = datagrid(black = c(0,1), pid = 1:6, 
+                       grid_type = "counterfactual"), 
+    variables = list(pid = 1), 
+    by = c("black", "pid")) 
+slp2 |&gt; as_tibble() |&gt; 
+  select(black, pid, estimate, p.value)
+```
+
+```
+## # A tibble: 12 × 4
+##    black   pid estimate  p.value
+##    &lt;dbl&gt; &lt;int&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+##  1     0     1  -0.130  4.75e-78
+##  2     0     2  -0.194  8.50e-79
+##  3     0     3  -0.213  2.39e-63
+##  4     0     4  -0.165  1.34e-80
+##  5     0     5  -0.0950 1.27e-46
+##  6     0     6  -0.0454 2.66e-17
+##  7     1     1  -0.0242 2.10e- 2
+##  8     1     2  -0.0538 9.38e- 3
+##  9     1     3  -0.106  1.40e- 3
+## 10     1     4  -0.174  8.36e- 7
+## 11     1     5  -0.214  2.42e-50
+## 12     1     6  -0.187  2.62e-10
+```
+
+]
+.pull-right[
+
+
+``` r
+slp2 |&gt; 
+  hypotheses(~pairwise | pid) |&gt;
+  as_tibble() |&gt; 
+  left_join(
+    anesu |&gt; count(pid, black) |&gt; 
+      pivot_wider(names_from = "black", values_from = "n", names_prefix = "black_")) |&gt; 
+  select(pid, estimate, p.value, starts_with("black"))
+```
+
+```
+## # A tibble: 6 × 5
+##     pid estimate  p.value black_0 black_1
+##   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;   &lt;int&gt;   &lt;int&gt;
+## 1     1  0.105   9.99e-17     151      48
+## 2     2  0.140   1.10e- 9     142      24
+## 3     3  0.106   1.50e- 3     140      11
+## 4     4 -0.00965 7.78e- 1      71       6
+## 5     5 -0.119   1.23e-11     131       2
+## 6     6 -0.141   2.79e- 6     161       2
+```
+]
+
+
+---
+
+## Example: ANES Voting Democrat
+
+.pull-left[
+_One Categorical, One Numeric: `pid, black`_
+
+
+
+``` r
+slp2a &lt;- avg_comparisons(prod_mod, 
+    newdata = datagrid(black = c(0,1), pid = 1:6, 
+                       grid_type = "counterfactual"), 
+    variables = list(pid = 1), 
+    by = c("black", "pid")) 
+slp2a |&gt; as_tibble() |&gt; 
+  select(black, pid, estimate, p.value)
+```
+
+```
+## # A tibble: 12 × 4
+##    black   pid estimate  p.value
+##    &lt;dbl&gt; &lt;int&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+##  1     0     1  -0.130  1.21e-75
+##  2     0     2  -0.196  1.14e-76
+##  3     0     3  -0.216  2.66e-61
+##  4     0     4  -0.166  1.36e-79
+##  5     0     5  -0.0945 2.50e-44
+##  6     0     6  -0.0444 3.68e-16
+##  7     1     1  -0.0268 7.66e- 3
+##  8     1     2  -0.0472 9.11e- 3
+##  9     1     3  -0.0776 2.46e- 2
+## 10     1     4  -0.115  3.84e- 2
+## 11     1     5  -0.148  2.27e- 2
+## 12     1     6  -0.159  4.78e- 4
+```
+
+]
+.pull-right[
+
+
+``` r
+slp2a |&gt; 
+  hypotheses(~pairwise | pid) |&gt;
+  as_tibble() |&gt; 
+  left_join(
+    anesu |&gt; count(pid, black) |&gt; 
+      pivot_wider(names_from = "black", values_from = "n", names_prefix = "black_")) |&gt; 
+  select(pid, estimate, p.value, starts_with("black"))
+```
+
+```
+## # A tibble: 6 × 5
+##     pid estimate  p.value black_0 black_1
+##   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;   &lt;int&gt;   &lt;int&gt;
+## 1     1   0.103  1.01e-16     151      48
+## 2     2   0.149  1.62e-12     142      24
+## 3     3   0.138  1.71e- 4     140      11
+## 4     4   0.0508 3.65e- 1      71       6
+## 5     5  -0.0536 4.12e- 1     131       2
+## 6     6  -0.115  1.25e- 2     161       2
+```
+
+``` r
+lmtest::lrtest(add_mod, prod_mod)
+```
+
+```
+## Likelihood ratio test
+## 
+## Model 1: votedem ~ retnat + pid + age + male + educ + black + south
+## Model 2: votedem ~ male + retnat + pid * black + age + educ + south
+##   #Df  LogLik Df  Chisq Pr(&gt;Chisq)
+## 1   9 -401.05                     
+## 2  10 -400.43  1 1.2288     0.2676
+```
+]
+
+---
+
+## Effects:
+
+&lt;img src="Lecture3_files/figure-html/unnamed-chunk-26-1.png" alt="Two-panel line plot with confidence ribbons of the predicted probability of voting Democrat across Party ID (Strong Democrat to Strong Republican) for Black and White respondents, in the Additive and Product models. In both panels the Black curve lies above the White curve and both decline from left to right; neither model makes the curves parallel on the probability scale. The White curve is nearly the same in both models, falling from about 0.87 to 0.03. The Black curve starts near 0.98 and stays flat at first because it is near the ceiling. In the Additive model it then falls steeply to about 0.22 at Strong Republican. In the Product model it declines more gradually, to about 0.40, with a very wide interval (roughly 0.03 to 0.80) at the Republican end, where there are few Black respondents." width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Example: ANES Voting Democrat
+
+.pull-left[
+_Two Numeric: `pid, age`_
+
+
+
+``` r
+cmp_grid &lt;- avg_comparisons(add_mod,
+      newdata = datagrid(pid = 1:6,
+                         age = quantile(anesu$age, c(.25, .75)),
+                         grid_type = "counterfactual"),
+      variables = list(pid = 1),
+      by = c("pid", "age")) 
+cmp_grid |&gt; as_tibble() |&gt; 
+    select(pid, age, estimate, p.value)
+```
+
+```
+## # A tibble: 12 × 4
+##      pid   age estimate  p.value
+##    &lt;int&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+##  1     1    33  -0.132  6.32e-57
+##  2     1    58  -0.109  4.53e-43
+##  3     2    33  -0.190  6.03e-70
+##  4     2    58  -0.173  1.74e-66
+##  5     3    33  -0.200  3.73e-57
+##  6     3    58  -0.204  2.69e-60
+##  7     4    33  -0.154  1.93e-54
+##  8     4    58  -0.175  6.96e-60
+##  9     5    33  -0.0954 6.83e-46
+## 10     5    58  -0.115  1.13e-51
+## 11     6    33  -0.0516 6.01e-18
+## 12     6    58  -0.0652 2.51e-24
+```
+]
+.pull-right[
+
+
+
+``` r
+cmp_grid |&gt; 
+  hypotheses(~pairwise | pid) |&gt; 
+  as_tibble() |&gt; 
+  select(pid, estimate, p.value)
+```
+
+```
+## # A tibble: 6 × 3
+##     pid estimate p.value
+##   &lt;int&gt;    &lt;dbl&gt;   &lt;dbl&gt;
+## 1     1  0.0232   0.0216
+## 2     2  0.0177   0.0275
+## 3     3 -0.00413  0.181 
+## 4     4 -0.0205   0.0228
+## 5     5 -0.0200   0.0222
+## 6     6 -0.0136   0.0220
+```
+]
+
+
+---
+
+## Example: ANES Voting Democrat
+
+.pull-left[
+_Two Numeric: `pid, age`_
+
+
+
+
+``` r
+cmp_grid2 &lt;- avg_comparisons(prod_mod,
+      newdata = datagrid(pid = 1:6,
+                         age = quantile(anesu$age, c(.25, .75)),
+                         grid_type = "counterfactual"),
+      variables = list(pid = 1),
+      by = c("pid", "age")) 
+cmp_grid2 |&gt; as_tibble() |&gt; 
+    select(pid, age, estimate, p.value)
+```
+
+```
+## # A tibble: 12 × 4
+##      pid   age estimate  p.value
+##    &lt;int&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+##  1     1    33  -0.131  1.51e-64
+##  2     1    58  -0.107  2.14e-35
+##  3     2    33  -0.179  4.48e-43
+##  4     2    58  -0.179  2.91e-55
+##  5     3    33  -0.186  1.88e-32
+##  6     3    58  -0.216  3.29e-45
+##  7     4    33  -0.147  1.47e-41
+##  8     4    58  -0.182  9.08e-51
+##  9     5    33  -0.0958 7.71e-51
+## 10     5    58  -0.115  5.15e-46
+## 11     6    33  -0.0555 1.93e-20
+## 12     6    58  -0.0621 8.52e-18
+```
+
+]
+.pull-right[
+
+
+
+``` r
+cmp_grid2 |&gt; 
+  hypotheses(~pairwise | pid) |&gt; 
+  as_tibble() |&gt; 
+  select(pid, estimate, p.value)
+```
+
+```
+## # A tibble: 6 × 3
+##     pid  estimate p.value
+##   &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1     1  0.0239   0.0228 
+## 2     2  0.000377 0.980  
+## 3     3 -0.0302   0.100  
+## 4     4 -0.0346   0.00954
+## 5     5 -0.0196   0.0276 
+## 6     6 -0.00665  0.392
+```
+
+``` r
+lmtest::lrtest(add_mod, prod_mod)
+```
+
+```
+## Likelihood ratio test
+## 
+## Model 1: votedem ~ retnat + pid + age + male + educ + black + south
+## Model 2: votedem ~ male + retnat + pid * age + black + educ + south
+##   #Df  LogLik Df  Chisq Pr(&gt;Chisq)
+## 1   9 -401.05                     
+## 2  10 -399.98  1 2.1293     0.1445
+```
+]
+
+---
+
+## Effects:
+
+&lt;img src="Lecture3_files/figure-html/unnamed-chunk-33-1.png" alt="Two-panel line plot with confidence ribbons of the predicted probability of voting Democrat across Party ID (Strong Democrat to Strong Republican) for respondents aged 33 (labelled Younger) and 58 (labelled Wiser), the 25th and 75th percentiles of age, in the Additive and Product models. In both panels the curves fall from about 0.85 to 0.90 at Strong Democrat to about 0.05 at Strong Republican, and the older group is slightly more likely to vote Democrat. In the Additive model the gap is small throughout and shrinks toward both ends of the scale because of compression. In the Product model the gap is somewhat larger at the Democratic end and disappears by the Republican end, where the two curves overlap." width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Product Term can Reduce Moderation
+
+
+
+.pull-left[
+
+``` r
+g_add &lt;- glm(y ~ x + z, data=ex_dat, family=binomial)
+comps_add &lt;- avg_comparisons(g_add, 
+                datagrid(z = c(0,1), grid_type = "counterfactual"), 
+                variables = list(x = c(.25, .75)), 
+                by = "z")
+
+comps_add
+```
+
+```
+## 
+##  z Estimate Std. Error    z Pr(&gt;|z|)    S  2.5 % 97.5 %
+##  0   0.1685     0.0326 5.17   &lt;0.001 22.0 0.1046 0.2323
+##  1   0.0597     0.0131 4.54   &lt;0.001 17.4 0.0339 0.0855
+## 
+## Term: x
+## Type: response
+## Comparison: 0.75 - 0.25
+```
+
+``` r
+comps_add |&gt; hypotheses(~pairwise)
+```
+
+```
+## 
+##   Hypothesis Estimate Std. Error     z Pr(&gt;|z|)    S  2.5 % 97.5 %
+##  (b2) - (b1)   -0.109     0.0229 -4.76   &lt;0.001 19.0 -0.154 -0.064
+```
+]
+.pull-right[
+
+``` r
+g_prod &lt;- glm(y ~ x * z, data=ex_dat, family=binomial)
+comps_prod &lt;- avg_comparisons(g_prod, 
+                datagrid(z = c(0,1), grid_type = "counterfactual"), 
+                variables = list(x = c(.25, .75)), 
+                by = "z")
+
+comps_prod
+```
+
+```
+## 
+##  z Estimate Std. Error    z Pr(&gt;|z|)    S  2.5 % 97.5 %
+##  0    0.119     0.0377 3.16  0.00159  9.3 0.0451  0.193
+##  1    0.105     0.0216 4.88  &lt; 0.001 19.8 0.0631  0.148
+## 
+## Term: x
+## Type: response
+## Comparison: 0.75 - 0.25
+```
+
+``` r
+comps_prod |&gt; hypotheses(~pairwise)
+```
+
+```
+## 
+##   Hypothesis Estimate Std. Error      z Pr(&gt;|z|)   S   2.5 % 97.5 %
+##  (b2) - (b1)  -0.0135     0.0435 -0.312    0.755 0.4 -0.0987 0.0716
+```
+]
+
+---
+
+## Reducing Moderation - What's Happening?
+
+&lt;img src="rainey_example.png" alt="Three-panel line plot illustrating the compression example from Rainey (the image title cites the 2014 working-paper version). Each panel plots Pr(Y) against X from 0 to 1 for Z = 0 (solid) and Z = 1 (dashed). True DGP panel: two parallel straight lines, from 0.30 to 0.50 for Z = 0 and from 0 to 0.20 for Z = 1, so there is no interaction on the probability scale. Logistic (no product term) panel: the gap between the lines grows from about 0.22 to about 0.42 as X increases, an interaction created by the link function. Logistic (with product term) panel: the gap stays near 0.29 to 0.30 at both ends, closer to the true constant gap, although the Z = 1 curve bends upward rather than being straight." width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Effect Heterogeneity in GLMs. 
+
+In non-linear GLMs, effect heterogeneity is really about two questions (or two different sets of assumptions). 
+
+1. Is the functional form as estimated adequate (i.e., is a product term needed if not already included)? 
+2. Do the effects vary interestingly by subgroup? 
+
+
+---
+
+## Review
+
+We covered the following topics: 
+
+1. Discuss Interaction Effects in the Linear Model
+2. Discuss Interaction Effects in the GLM
+3. Presentation of Interaction Results
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9592</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9592
+]
+.subtitle[
+## Lecture 5: Ordinal Data Models
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+
+.tiny {
+  font-size: 1rem;
+}
+&lt;/style&gt;
+
+## Goals for This Session
+
+1. Ordinal Model Estimation
+2. Effects and Effect Displays
+3. Model Fit and Evaluation
+4. Parallel Regressions Assumption
+5. Location-Scale and Stereotype Models
+
+---
+
+
+## Basic Idea Behind Ordinal Model
+
+Assume that there is a phenomenon we are trying to explain, let's call it `\(y^{*}\)`, that lies on a continuum that we don't observe directly.  
+
+
+
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-2-1.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+If we did observe it directly, we would simply be able to do a linear regression on `\(y^{*}\)`.  
+
+
+---
+
+
+## What We Actually Observe
+
+What we actually observe as `\(y\)`, a more coarse version of `\(y^{*}\)`.  
+
+
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-3-1.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+Everything that falls in between two vertical lines is coded the same value.  For example, everything that falls between `\(\tau_1\)` and `\(\tau_2\)` will be a 2 on `\(y\)`.  
+
+
+---
+
+## Models for Ordinal Data
+
+The latent variable is modeled as `\(y_{i}^{*} = \mathbf{x}_{i}\mathbf{b} + e_{i}\)`, and the mathematical notation for the measurement model above is
+
+`$$y_{i} = m \mbox{  if  } \tau_{m-1} \leq y_{i}^{*} &lt; \tau_{m} \mbox{  for  } m=\{1,\ldots, J\}$$`
+
+ where `\(\tau_0 = -\infty\)` and `\(\tau_J = \infty\)`, the other `\(J-1\)` cut-points are estimated.
+
+There is no intercept in `\(\mathbf{x}\mathbf{b}\)` ( `\(b_0 = 0\)` ): the thresholds play that role, which identifies the model. 
+
+
+---
+
+## Probabilities
+
+To characterize `\(Pr(y=m|\mathbf{x})\)` we need to assume a probability distribution for the errors in the latent variable model.
+- Our choices here are really either normal (ordered probit) with `\(\sigma^2 = 1\)` or logistic (ordered logit) with `\(\sigma^2 = \frac{\pi^2}{3}\)`.
+
+Because we know (or estimate) all of the `\(\tau\)` parameters, and we have a probability distribution, say the logistic distribution with CDF `\(\Lambda(\cdot)\)`, then we know:
+
+`$$\begin{aligned}
+  Pr(y\leq m) &amp;= \Lambda(\tau_{m} - \mathbf{x}\mathbf{b})\\
+              &amp;= \frac{1}{1+e^{-(\tau_{m} - \mathbf{x}\mathbf{b})}}
+\end{aligned}$$`
+
+
+---
+
+
+## Probabilities II
+
+Note that what we get above is the probability of being less than or equal to one particular value.  Let's take the observed value 2. We know that: 
+
+`$$\begin{aligned}
+  Pr(y\leq 2) &amp;= \Lambda(\tau_{2} - \mathbf{x}\mathbf{b})
+\end{aligned}$$`
+
+What if we wanted to find `\(Pr(y = 2)\)`?  
+
+--
+
+We would need to find: 
+
+`$$\begin{aligned}
+Pr(y = 2) &amp;= Pr(y\leq 2) - Pr(y \leq 1)\\
+&amp;= \Lambda(\tau_{2} - \mathbf{x}\mathbf{b}) - \Lambda(\tau_{1} - \mathbf{x}\mathbf{b})
+\end{aligned}$$`
+
+---
+
+
+## Likelihood Function
+
+Just like with binary logit models, the likelihood for an individual observation is the probability that the observation takes on its observed value. 
+
+`$$L_i(\mathbf{b}, \boldsymbol{\tau} | y_i, \mathbf{x}_{i}) = \Lambda(\tau_{y_i} - \mathbf{x}_i\mathbf{b}) - \Lambda(\tau_{y_i-1} - \mathbf{x}_i\mathbf{b})$$`
+
+
+And the log-likelihood is just:
+
+`$$\log L_i(\mathbf{b}, \boldsymbol{\tau} | y_i, \mathbf{x}_{i}) = \log\left(\Lambda(\tau_{y_i} - \mathbf{x}_i\mathbf{b}) - \Lambda(\tau_{y_i-1} - \mathbf{x}_i\mathbf{b})\right)$$`
+
+`$$LL = \sum_{i=1}^{N} \log\left(\Lambda(\tau_{y_i} - \mathbf{x}_i\mathbf{b}) - \Lambda(\tau_{y_i-1} - \mathbf{x}_i\mathbf{b})\right)$$`
+
+
+---
+
+
+
+## Example Data
+
+The example data are about state repression.  
+- `sd`: State Department Repression score `\(\{1,2,3,4,5\}\)` (higher = more repression).
+- `cwarcow`: COW civil war indicator. 
+- `iwarcow`: COW interstate war indicator. 
+- `logpop`: Log of population. 
+- `logpcgnp`: Log of per-capita GNP. 
+- `vanadd`: Additive index of democracy (Vanhanen). 
+
+Other notes: 
+  - We use `clm()` from the `ordinal` package, whose `summary()` provides `\(p\)`-values.  The `polr()` function from the `MASS` package doesn't, though an alternative summary function is available in the code file.
+
+---
+
+
+
+## Example
+
+
+``` r
+library(ordinal)
+library(marginaleffects)
+library(tidyr)
+dat &lt;- rio::import("data/ologit_data.dta")
+dat$sd_fac &lt;- factor(dat$sd, levels=1:5)
+mod &lt;- clm(sd_fac ~ cwarcow + iwarcow + logpop + logpcgnp + poly(vanadd, 2), data=dat)
+summary(mod)
+```
+
+```
+## formula: sd_fac ~ cwarcow + iwarcow + logpop + logpcgnp + poly(vanadd, 2)
+## data:    dat
+## 
+##  link  threshold nobs logLik   AIC     niter max.grad cond.H 
+##  logit flexible  2550 -2815.96 5651.91 6(0)  4.05e-11 1.9e+06
+## 
+## Coefficients:
+##                   Estimate Std. Error z value Pr(&gt;|z|)    
+## cwarcow            2.99351    0.16109   18.58  &lt; 2e-16 ***
+## iwarcow            0.93657    0.19472    4.81 1.51e-06 ***
+## logpop             0.42748    0.02723   15.70  &lt; 2e-16 ***
+## logpcgnp          -0.34331    0.03478   -9.87  &lt; 2e-16 ***
+## poly(vanadd, 2)1 -43.81355    2.67265  -16.39  &lt; 2e-16 ***
+## poly(vanadd, 2)2 -25.29074    2.34367  -10.79  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Threshold coefficients:
+##     Estimate Std. Error z value
+## 1|2   3.1857     0.5105   6.241
+## 2|3   5.2670     0.5174  10.180
+## 3|4   7.3189     0.5301  13.807
+## 4|5   9.0755     0.5422  16.738
+```
+
+---
+
+
+
+## Testing Coefficients
+
+Just like in other GLMs and the linear model, the `Anova` function from the `car` package can be used to evaluate the significance of each of the model's terms. 
+
+
+``` r
+library(car)
+Anova(mod)
+```
+
+```
+## Analysis of Deviance Table (Type II tests)
+## 
+## Response: sd_fac
+##                 Df   Chisq Pr(&gt;Chisq)    
+## cwarcow          1 345.334  &lt; 2.2e-16 ***
+## iwarcow          1  23.134  1.511e-06 ***
+## logpop           1 246.530  &lt; 2.2e-16 ***
+## logpcgnp         1  97.422  &lt; 2.2e-16 ***
+## poly(vanadd, 2)  2 290.521  &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+---
+
+## Interpreting Coefficients: Cumulative Odds Ratios
+
+Because `\(Pr(y \leq j) = \Lambda(\tau_j - \mathbf{x}\mathbf{b})\)`, 
+
+`$$\log\frac{Pr(y &gt; j)}{Pr(y \leq j)} = \mathbf{x}\mathbf{b} - \tau_j$$`
+
+- A one-unit increase in `\(x_k\)` multiplies the odds of being *above any threshold* by `\(e^{b_k}\)` - the same for every `\(j\)` ("proportional odds"). 
+
+
+``` r
+round(exp(coef(mod)[c("cwarcow", "iwarcow", "logpop", "logpcgnp")]), 2)
+```
+
+```
+##  cwarcow  iwarcow   logpop logpcgnp 
+##    19.96     2.55     1.53     0.71
+```
+
+- Civil war multiplies the odds of being above any repression level by about 20; a one-unit increase in log GNP/capita multiplies them by 0.71. 
+- Polynomial terms (`vanadd`) can't be read this way - use predicted probabilities. 
+- The same odds ratio at every threshold *is* the parallel regressions assumption 
+
+---
+
+## Odds Ratio Example
+
+.pull-left[
+
+``` r
+p &lt;- predictions(mod, 
+  newdata = datagrid(cwarcow = c(0,1), 
+        grid_type="mean_or_mode"))
+
+p &lt;- p |&gt; select(group, cwarcow, estimate) |&gt; 
+  as_tibble() |&gt; 
+  mutate(estimate = cumsum(estimate), 
+         .by=cwarcow) |&gt; 
+  filter_out(group == 5) |&gt; 
+  pivot_wider(names_from = "group", 
+              values_from = "estimate", 
+              names_prefix = "gp_")
+```
+]
+.pull-right[
+
+``` r
+p
+```
+
+```
+## # A tibble: 2 × 5
+##   cwarcow    gp_1   gp_2  gp_3  gp_4
+##     &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1       0 0.148   0.582  0.915 0.984
+## 2       1 0.00862 0.0651 0.352 0.758
+```
+]
+
+
+``` r
+((1-p$gp_1[2])/p$gp_1[2])/((1-p$gp_1[1])/p$gp_1[1])
+```
+
+```
+## [1] 19.95558
+```
+
+``` r
+((1-p$gp_2[2])/p$gp_2[2])/((1-p$gp_2[1])/p$gp_2[1])
+```
+
+```
+## [1] 19.95558
+```
+
+``` r
+((1-p$gp_3[2])/p$gp_3[2])/((1-p$gp_3[1])/p$gp_3[1])
+```
+
+```
+## [1] 19.95558
+```
+
+``` r
+((1-p$gp_4[2])/p$gp_4[2])/((1-p$gp_4[1])/p$gp_4[1])
+```
+
+```
+## [1] 19.95558
+```
+
+
+---
+
+## Discrete Change
+
+For any variable (and particularly qualitative ones), the discrete change is:
+
+`$$\Delta Pr(y=m|x) = Pr(y=m | x, x_{k} = x_{k}^{\text{end}}) - Pr(y=m | x, x_{k}=x_{k}^{\text{start}})$$`
+
+This simply gives the difference in predicted probability for a discrete change in one `\(x\)`, holding the other `\(x\)`'s constant at particular values.
+
+- **MER** (marginal effect at reasonable values): hold the other `\(x\)`'s at one typical profile (here, medians). 
+- **AME** (average marginal effect): make the change for every observation at its observed values, then average. 
+- Only `\(Pr(y=1)\)` and `\(Pr(y=J)\)` must move in the direction implied by the sign of `\(b_k\)`; middle categories can rise and then fall.  The changes across categories always sum to zero. 
+
+---
+
+
+## Example: MER Approach
+
+
+
+
+
+``` r
+mer_comps &lt;- comparisons(mod, newdata = "median",
+                         # "2sd": x - 1 SD to x + 1 SD; "iqr": 25th to 75th 
+                         # percentile (2sd would push democracy below 0)
+                         variables=list(cwarcow = c(0,1), 
+                                        iwarcow = c(0,1), 
+                                        logpop = "2sd", 
+                                        logpcgnp = "2sd", 
+                                        vanadd = "iqr"), 
+                         type="prob") 
+mer_comps %&gt;% 
+  # * = 95% confidence interval excludes 0
+  mutate(estimate = sprintf("%.2f%s", estimate, ifelse(sign(conf.low) == sign(conf.high), "*", ""))) %&gt;%
+  select(term, contrast, group, estimate) %&gt;%
+  pivot_wider(names_from = "group", values_from = "estimate")
+```
+
+```
+## # A tibble: 5 × 7
+##   term     contrast            `1`    `2`    `3`    `4`    `5`   
+##   &lt;chr&gt;    &lt;chr&gt;               &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt; 
+## 1 cwarcow  1 - 0               -0.13* -0.37* -0.07* 0.34*  0.24* 
+## 2 iwarcow  1 - 0               -0.08* -0.15* 0.12*  0.09*  0.02* 
+## 3 logpcgnp (x + sd) - (x - sd) 0.13*  0.11*  -0.16* -0.07* -0.02*
+## 4 logpop   (x + sd) - (x - sd) -0.16* -0.15* 0.20*  0.09*  0.02* 
+## 5 vanadd   Q3 - Q1             0.25*  0.05*  -0.22* -0.06* -0.02*
+```
+
+
+
+---
+
+
+## Plot
+.pull-left[
+
+``` r
+ggplot(mer_comps, aes(x=as.factor(group), y=estimate, 
+                     ymin=conf.low, ymax=conf.high)) + 
+  geom_pointrange(size=.1) + 
+  geom_hline(yintercept=0, linetype=3) + 
+  facet_wrap(~term, ncol=2) + 
+  theme_bw() + 
+  theme(panel.grid=element_blank()) + 
+  labs(x="", y="Change in Predicted Probability")
+```
+]
+.pull-right-shift[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-7-1.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+
+## Example: AME Approach
+
+``` r
+ave_comps &lt;- avg_comparisons(mod, 
+                         # "2sd": x - 1 SD to x + 1 SD; "iqr": 25th to 75th 
+                         # percentile (2sd would push democracy below 0)
+                         variables=list(cwarcow = c(0,1), 
+                                        iwarcow = c(0,1), 
+                                        logpop = "2sd", 
+                                        logpcgnp = "2sd", 
+                                        vanadd = "iqr"), 
+                         type="prob") 
+ave_comps %&gt;% 
+  # * = 95% confidence interval excludes 0
+  mutate(estimate = sprintf("%.2f%s", estimate, ifelse(sign(conf.low) == sign(conf.high), "*", ""))) %&gt;%
+  select(term, contrast, group, estimate) %&gt;%
+  pivot_wider(names_from = "group", values_from = "estimate")
+```
+
+```
+## # A tibble: 5 × 7
+##   term     contrast            `1`    `2`    `3`    `4`    `5`   
+##   &lt;chr&gt;    &lt;chr&gt;               &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt; 
+## 1 cwarcow  1 - 0               -0.25* -0.20* 0.02   0.21*  0.21* 
+## 2 iwarcow  1 - 0               -0.11* -0.04* 0.06*  0.05*  0.04* 
+## 3 logpcgnp (x + sd) - (x - sd) 0.15*  0.02*  -0.09* -0.05* -0.03*
+## 4 logpop   (x + sd) - (x - sd) -0.17* -0.05* 0.11*  0.07*  0.04* 
+## 5 vanadd   Q3 - Q1             0.22*  0.03*  -0.15* -0.06* -0.04*
+```
+
+
+
+---
+
+
+
+## Plot
+
+.pull-left[
+
+``` r
+bcomps &lt;- bind_rows(
+  mer_comps %&gt;% 
+    select(term, group, estimate, conf.low, conf.high) %&gt;%
+    mutate(type = "MER (medians)"), 
+  ave_comps %&gt;% 
+    select(term, group, estimate, conf.low, conf.high) %&gt;%
+    mutate(type = "AME (observed)"))
+
+
+ggplot(bcomps, aes(x=as.factor(group), y=estimate, 
+                     ymin=conf.low, ymax=conf.high, 
+                  colour=type)) + 
+  geom_pointrange(size=.05, 
+                  position=position_dodge(width=.5)) + 
+  geom_hline(yintercept=0, linetype=3) + 
+  facet_wrap(~term, ncol=2) + 
+  theme_bw() + 
+  theme(panel.grid=element_blank(), 
+        legend.position="bottom") + 
+  labs(x="", y="Change in Predicted Probability")
+```
+]
+.pull-right-shift[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-8-1.png" alt="" width="504" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+
+
+
+---
+
+
+## MER Effects Plot
+
+.pull-left[
+
+``` r
+seq_range &lt;- function(x,n=100){
+  mn &lt;- min(x, na.rm=TRUE)
+  mx &lt;- max(x, na.rm=TRUE)
+  seq(mn, mx, length=n)
+}
+pred_gnp &lt;- predictions(mod,
+  newdata = datagrid(logpcgnp = seq_range(dat$logpcgnp),
+                     FUN_numeric = median))
+ggplot(pred_gnp, aes(x=logpcgnp, y=estimate, 
+                     ymin=conf.low, 
+                     ymax=conf.high, 
+                     fill=as.factor(group), 
+                     colour=as.factor(group))) + 
+  geom_ribbon(alpha=.15, colour="transparent") + 
+  geom_line() + 
+  theme_classic() + 
+  theme(legend.position="bottom") + 
+  labs(x="log(GNP/capita)", y="Predicted Probability", 
+       colour = "Level of Repression", 
+       fill = "Level of Repression")
+```
+]
+.pull-right-shift[
+&lt;img src="lecture5_files/figure-html/merplot-fig-1.png" alt="" width="100%" /&gt;
+]
+
+
+---
+
+## MER Approach: Polynomial
+
+
+.pull-left[
+
+``` r
+pred_dem &lt;- predictions(mod,
+  newdata = datagrid(vanadd = seq_range(dat$vanadd),
+                     FUN_numeric = median))
+
+ggplot(pred_dem, aes(x=vanadd, y=estimate, 
+                     ymin=conf.low, 
+                     ymax=conf.high, 
+                     fill=as.factor(group), 
+                     colour=as.factor(group))) + 
+  geom_ribbon(alpha=.15, colour="transparent") + 
+  geom_line() + 
+  theme_classic() + 
+  theme(legend.position="bottom") + 
+  labs(x="Democracy (Vanhanen index)", 
+       y="Predicted Probability", 
+       colour = "Level of Repression", 
+       fill = "Level of Repression")
+```
+]
+.pull-right-shift[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-9-1.png" alt="" width="100%" /&gt;
+]
+
+---
+
+## Plotting Predicted Probabilities: AME Approach
+
+.pull-left[
+
+``` r
+pred_gnp2 &lt;- avg_predictions(mod, 
+  variables=list(logpcgnp=seq_range(dat$logpcgnp)))
+
+ggplot(pred_gnp2, aes(x=logpcgnp, y=estimate, 
+                     ymin=conf.low, 
+                     ymax=conf.high, 
+                     fill=as.factor(group), 
+                     colour=as.factor(group))) + 
+  geom_ribbon(alpha=.15, colour="transparent") + 
+  geom_line() + 
+  theme_classic() + 
+  theme(legend.position="bottom") + 
+  labs(x="log(GNP/capita)", y="Predicted Probability", 
+       colour = "Level of Repression", 
+       fill = "Level of Repression")
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture5_files/figure-html/ameplot-fig-1.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## MER vs AME
+
+.pull-left[
+**MER**
+&lt;img src="lecture5_files/figure-html/merplot-fig-1.png" alt="" width="75%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+**AME**
+&lt;img src="lecture5_files/figure-html/ameplot-fig-1.png" alt="" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+The MER describes one typical country (at peace, median values).  The AME averages over the observed mix, including war years and the full range of democracy, so probability is spread over more categories and the curves are flatter. 
+
+---
+
+
+## Predicted Probability of the Observed Category
+
+.pull-left[
+
+``` r
+probs &lt;- predictions(mod, newdata=dat)
+probs &lt;- probs %&gt;%  filter(group == sd)
+ggplot(probs, aes(x=estimate)) + 
+  geom_histogram(aes(y=after_stat(ndensity)), bins=15) + 
+  facet_wrap(~sd, nrow=3) + 
+  theme_bw() + 
+  theme(panel.grid=element_blank())
+```
+
+For each observation, the predicted probability of the category it actually fell in, by observed category.  A model that fits well puts much of each panel's mass well above `\(1/J\)`. 
+]
+.pull-right-shift[
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-12-1.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+
+## Model Fit
+
+
+``` r
+library(DAMisc)
+ordfit(mod, data=dat)
+```
+
+```
+##                       Estimate
+## Count R2              0.529   
+## Count R2 (Adj)        0.321   
+## ML R2                 0.497   
+## McFadden R2           0.237   
+## McFadden R2 (Adj)     0.235   
+## McKelvey &amp; Zavoina R2 0.533
+```
+
+
+---
+
+
+
+## Model Fit II
+
+``` r
+p &lt;- MASS::polr(formula(mod), data=dat)
+pre(p, data=dat)
+```
+
+```
+## mod1:  sd_fac ~ cwarcow + iwarcow + logpop + logpcgnp + poly(vanadd, 2) 
+## mod2:  sd_fac ~ 1 
+## 
+## Analytical Results
+##  PMC =  0.306 
+##  PCP =  0.529 
+##  PRE =  0.321 
+## ePMC =  0.255 
+## ePCP =  0.404 
+## ePRE =  0.200
+```
+
+---
+
+## Comparative Model Fit
+
+The same options that exist for the binary model work here, too. 
+- Likelihood ratio tests for nested models. 
+- AIC, AICc and BIC for non-nested models. 
+- Clarke Test for non-nested models. 
+
+---
+
+## Ordered Model vs Linear Model
+
+Sometimes, we wonder whether we _could_ estimate a linear model rather than the ordered model. 
+- Interpretation is much easier. 
+- Effects are not conditional unless specified as such. 
+
+Problems: 
+- OLS on the codes `\(1, \ldots, J\)` treats the categories as equally spaced. 
+- There is no information in the categorical variable to estimate the residual variance of the latent variable model. 
+- The residual variance from a linear model estimated on the categories will not be the residual variance from the latent variable model.
+
+---
+
+## Mathematically
+
+Assume the latent variable `\(y^*\)` has the following equation (no intercept - the thresholds play that role): 
+
+`$$y^* = b_1x + b_2z + e\quad e\sim N(0,\sigma^2)$$`
+
+We can't estimate `\(\sigma\)`, so the probit fixes it at 1.  Dividing through by `\(\sigma\)`: 
+
+`$$\frac{y^*}{\sigma} = \frac{b_1}{\sigma}x + \frac{b_2}{\sigma}z + e^{*}, \quad e^{*}\sim N(0,1), \qquad \text{thresholds } \frac{\tau_j}{\sigma}$$`
+
+So, we actually estimate `\(\mathbf{b}/\sigma\)` and `\(\boldsymbol{\tau}/\sigma\)`: the coefficients are only identified up to the unknown scale `\(\sigma\)`. 
+
+---
+
+## Why the Scale Matters
+
+- Ratios such as `\(b_1/b_2\)` are identified - `\(\sigma\)` cancels. 
+- Adding a variable that explains `\(y^*\)` shrinks `\(\sigma\)`, so the other coefficients grow - even if the new variable is unrelated to `\(x\)`. 
+- Coefficients aren't comparable across models, samples or groups; changes in predicted probabilities (AMEs) are.  Below: binary logit, `\(x\)` and `\(z\)` independent, 2,500 samples. 
+
+.pull-left[
+&lt;img src="lecture5_files/figure-html/rescale1-1.png" alt="" width="75%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="lecture5_files/figure-html/rescale2-1.png" alt="" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## So, Linear or Ordered? 
+
+OLS assumes equally spaced categories.  The ordinal analogue - equally spaced thresholds - is testable: 
+
+
+``` r
+mod_eq &lt;- update(mod, threshold = "equidistant")
+eq_lr &lt;- 2*(as.numeric(logLik(mod)) - as.numeric(logLik(mod_eq)))
+c(LR = round(eq_lr, 1), df = 2, p = round(pchisq(eq_lr, 2, lower.tail = FALSE), 3))
+```
+
+```
+##    LR    df     p 
+## 6.500 2.000 0.039
+```
+
+- Gaps between thresholds: 2.08, 2.05, 1.76 - close to equal, but equal spacing is rejected. 
+- Unequal latent variances (later) can make OLS on the codes get even the *sign* of a latent difference wrong (Liddell and Kruschke 2018). 
+- Bottom line: OLS summarizes changes in the mean code, `\(E(y)\)`; it doesn't estimate effects on `\(y^*\)`.  Whatever the model, compare effects on the probability scale. 
+
+---
+
+## Parallel Regressions Assumption
+
+The ordered logit is a set of `\(J-1\)` binary logits, one for each threshold, that share the same slopes: 
+
+`$$\text{logit}\,Pr(y\leq j) = \tau_j - \mathbf{x}\mathbf{b}, \qquad j = 1,\ldots,J-1$$`
+
+- The effect of `\(x\)` is the same at every cumulative split (1 vs. 2+, 1-2 vs. 3+, ...) - one set of parallel curves, shifted by `\(\tau_j\)`. 
+- A *nominal effect* lets a variable's slope differ by threshold: `\(\text{logit}\,Pr(y\leq j) = \tau_j - \mathbf{x}\mathbf{b}_j\)`. 
+
+The Null and Alternative Hypotheses are: 
+
+- `\(H_{0}\)`: `\(\mathbf{b}_j = \mathbf{b}\)` for every `\(j\)` - the parallel regressions assumption holds. 
+- `\(H_{A}\)`: at least one variable's slopes differ across thresholds. 
+
+---
+
+## Testing Parallel Regressions
+
+.pull-left[
+
+``` r
+# center so the thresholds are 
+# evaluated inside the data
+dat$logpop_c &lt;- dat$logpop - 
+  mean(dat$logpop)
+dat$logpcgnp_c &lt;- dat$logpcgnp - 
+  mean(dat$logpcgnp)
+mod_c &lt;- clm(sd_fac ~ cwarcow + iwarcow + 
+  logpop_c + logpcgnp_c + poly(vanadd, 2), 
+  data=dat)
+nt &lt;- nominal_test(mod_c)
+round(as.data.frame(nt)[-1, 
+  c("Df", "LRT", "Pr(&gt;Chi)")], 3)
+```
+
+```
+##                 Df    LRT Pr(&gt;Chi)
+## cwarcow          3  1.806    0.614
+## iwarcow          3  9.361    0.025
+## logpop_c         3 18.039    0.000
+## logpcgnp_c       3 82.879    0.000
+## poly(vanadd, 2)  6 90.767    0.000
+```
+]
+.pull-right[
+- For each `\(x\)`, `nominal_test()` frees its slopes across thresholds (a *nominal effect*) and LR-tests that model against the ordered logit. 
+- Works on the `clm` model directly - `poly()` terms are tested jointly. 
+- Center continuous predictors first: `clm` requires the thresholds to increase at `\(x = 0\)`.  For log population, 0 is far outside the data, and without centering the test fails. 
+- Here: population, GNP and democracy clearly violate; interstate war marginally; civil war doesn't. 
+]
+
+---
+
+## An Omnibus Test
+
+`nominal_test()` only tests one term at a time.  For an omnibus test, free every slope and compare with the ordered logit: 
+
+
+``` r
+full &lt;- clm(sd_fac ~ 1, nominal = ~ cwarcow + iwarcow + logpop_c + 
+  logpcgnp_c + poly(vanadd, 2), data=dat)
+omni &lt;- 2*(as.numeric(logLik(full)) - as.numeric(logLik(mod_c)))
+data.frame(LR = round(omni, 1), df = 18, 
+           p = signif(pchisq(omni, 18, lower.tail = FALSE), 3))
+```
+
+```
+##      LR df        p
+## 1 179.1 18 1.44e-28
+```
+
+- `\((J-2) \times K = 3 \times 6 = 18\)` degrees of freedom - the same as the Brant test's omnibus statistic. 
+- Freeing every slope can make thresholds cross (negative probabilities).  `clm` only checks at `\(x = 0\)` - another reason to center - so check `full$convergence`. 
+
+---
+
+## Simulation for the Nominal Test
+
+Why simulate? The `\(\chi^2\)` reference is asymptotic, and sparse cells (civil war) might break it.  Generate data where `\(H_0\)` is true (from `mod_c`) and compare. 
+
+.pull-left[
+
+``` r
+probs &lt;- predict(mod_c, type = "prob", 
+  newdata = select(dat, -sd_fac))$fit
+nom_stats &lt;- matrix(NA, 2500, 6)
+# a loop, not replicate(): nominal_test() 
+# refits the model using the global data
+for(i in 1:2500){
+  dat$newy &lt;- factor(apply(probs, 1, 
+    function(p)sample(1:5, 1, prob = p)), 
+    levels = 1:5)
+  u &lt;- update(mod_c, newy ~ .)
+  nt_sim &lt;- nominal_test(u)
+  f_sim &lt;- update(full, newy ~ .)
+  omni_sim &lt;- 2*(as.numeric(logLik(f_sim)) - 
+                 as.numeric(logLik(u)))
+  # drop if separation stops the full model converging
+  if(f_sim$convergence$code != 0) omni_sim &lt;- NA
+  nom_stats[i, ] &lt;- c(nt_sim$LRT[-1], omni_sim)
+}
+colnames(nom_stats) &lt;- c(rownames(nt_sim)[-1], 
+                         "Omnibus")
+save(nom_stats, file = "data/nominal_stats.rda")
+```
+]
+.pull-right[
+
+``` r
+load("data/nominal_stats.rda")
+ns &lt;- as.data.frame(nom_stats) %&gt;% 
+  pivot_longer(everything(), names_to = "term", 
+               values_to = "LR") %&gt;% 
+  filter(!is.na(LR)) %&gt;% 
+  mutate(df = case_when(
+    term == "poly(vanadd, 2)" ~ 6, 
+    term == "Omnibus" ~ 18, 
+    TRUE ~ 3))
+theo &lt;- ns %&gt;% distinct(term, df) %&gt;% 
+  reframe(x = seq(.05, qchisq(.999, df), 
+                  length = 200), 
+          .by = c(term, df)) %&gt;% 
+  mutate(dens = dchisq(x, df))
+ggplot(ns, aes(x = LR)) + 
+  stat_density(aes(colour = "Empirical"), 
+               geom = "line") + 
+  geom_line(data = theo, aes(x = x, y = dens, 
+                    colour = "Theoretical")) + 
+  facet_wrap(~term, ncol = 3, scales = "free") + 
+  theme_classic() + 
+  theme(legend.position = "bottom") + 
+  labs(x = "LR Statistic", y = "Density", 
+       colour = "")
+```
+]
+
+---
+
+## Simulation Results
+
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-14-1.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+
+- Null rejection rates ( `\(\alpha = .05\)` ): cwarcow 0.062, iwarcow 0.054, logpop_c 0.055, logpcgnp_c 0.058, poly(vanadd, 2) 0.047, Omnibus 0.050. 
+- Omnibus fits that failed to converge (no civil-war cases in category 1): 19.8%, dropped. 
+
+---
+
+## Simulated p-values
+
+The share of simulated statistics that exceed the observed one (counting the observed statistic as one draw): 
+
+
+``` r
+obs_res &lt;- c(nt[-1, "LRT"], omni)
+B &lt;- colSums(!is.na(nom_stats))
+sim_p &lt;- (colSums(sweep(nom_stats, 2, obs_res, "&gt;"), na.rm = TRUE) + 1)/(B + 1)
+asy_p &lt;- c(nt[-1, "Pr(&gt;Chi)"], pchisq(omni, 18, lower.tail = FALSE))
+fmt &lt;- function(p) ifelse(p &lt; .001, "&lt;.001", sprintf("%.3f", p))
+data.frame(simulation = fmt(sim_p), asymptotic = fmt(asy_p), 
+           row.names = colnames(nom_stats))
+```
+
+```
+##                 simulation asymptotic
+## cwarcow              0.643      0.614
+## iwarcow              0.028      0.025
+## logpop_c             &lt;.001      &lt;.001
+## logpcgnp_c           &lt;.001      &lt;.001
+## poly(vanadd, 2)      &lt;.001      &lt;.001
+## Omnibus              &lt;.001      &lt;.001
+```
+
+- The simulated and asymptotic `\(p\)`-values agree: with `\(N\)` = 2,550, the `\(\chi^2\)` reference is trustworthy here. 
+
+---
+
+## What Next? 
+
+Rejecting parallel regressions says the equal-slopes, cumulative structure doesn't fit.  It doesn't say *why*: 
+
+- The variance of `\(y^{*}\)` differs across observations. 
+    - `\(\Rightarrow\)` A location-scale model, `clm(..., scale = ~ z)` (next). 
+- The predictors work through a single index, but the categories aren't arranged along it the way the ordered logit assumes. 
+    - `\(\Rightarrow\)` The stereotype model. 
+- The predictors don't work through a single index at all. 
+    - `\(\Rightarrow\)` A model with category-specific effects (next week). 
+
+---
+
+## Diagnosing Unequal Latent Variances
+
+**The assumption:** the latent errors are homoskedastic - `\(Var(e_i) = \pi^2/3\)` for every observation (1 for probit). 
+
+- If `\(\sigma_i\)` varies, the model is really estimating `\(\mathbf{b}/\sigma_i\)` (see "Mathematically") - one set of coefficients can't fit every observation. 
+- A variance difference can look like a parallel-regressions violation. 
+
+**The diagnostic:** `scale_test()` adds each `\(x\)` to the variance function, one at a time, and LR-tests it ( `\(H_0\)`: the latent variance doesn't depend on `\(x_k\)` ). 
+
+
+``` r
+st &lt;- scale_test(mod)
+round(as.data.frame(st)[-1, c("Df", "LRT", "Pr(&gt;Chi)")], 3)
+```
+
+```
+##                 Df    LRT Pr(&gt;Chi)
+## cwarcow          1 13.827    0.000
+## iwarcow          1 14.460    0.000
+## logpop           1  2.921    0.087
+## logpcgnp         1  1.312    0.252
+## poly(vanadd, 2)  2  7.069    0.029
+```
+
+---
+
+## The Location-Scale Model
+
+Let the spread of the latent errors depend on covariates `\(\mathbf{z}\)`: 
+
+`$$y_i^{*} = \mathbf{x}_i\mathbf{b} + \sigma_i e_i, \qquad \sigma_i = \exp(\mathbf{z}_i\boldsymbol{\gamma}) \quad\Rightarrow\quad Pr(y_i \leq j) = \Lambda\left(\frac{\tau_j - \mathbf{x}_i\mathbf{b}}{\exp(\mathbf{z}_i\boldsymbol{\gamma})}\right)$$`
+
+- No intercept in `\(\mathbf{z}\)`: the baseline variance is still fixed ( `\(\pi^2/3\)` when `\(\mathbf{z} = 0\)` ); `\(e^{\gamma_k}\)` is a *ratio* of latent standard deviations. 
+- A scale effect mimics a parallel-regressions violation: if `\(z_k\)` changes `\(\sigma_i\)`, its effect on `\(\text{logit}\,Pr(y \leq j)\)` depends on `\(\tau_j\)`, so `nominal_test()` sees non-parallel slopes for `\(z_k\)`. 
+- Location and scale effects of the same variable are separated mostly by functional form - interpret with predicted probabilities (Keele and Park 2006). 
+
+---
+
+## Location-Scale Model: Repression
+
+.pull-left[
+
+``` r
+mod_ls &lt;- update(mod_c, 
+  scale = ~ cwarcow + iwarcow)
+# ratio of latent SDs
+round(exp(mod_ls$zeta), 2)
+```
+
+```
+## cwarcow iwarcow 
+##    1.36    1.44
+```
+
+``` r
+# remaining parallel-regressions violations
+nt &lt;- nominal_test(mod_ls)
+round(as.data.frame(nt)[-1, 
+  c("Df", "LRT", "Pr(&gt;Chi)")], 3)
+```
+
+```
+##                 Df    LRT Pr(&gt;Chi)
+## cwarcow         NA     NA       NA
+## iwarcow          3  1.237    0.744
+## logpop_c         3 17.064    0.001
+## logpcgnp_c       3 73.991    0.000
+## poly(vanadd, 2)  6 88.976    0.000
+```
+]
+.pull-right[
+- War makes repression less predictable: latent SD 36% higher in civil war, 44% in interstate war. 
+- Beats the ordered logit (LR = 28.4, 2 df; AIC 5627.5 vs. 5651.9). 
+- Interstate war's violation disappears; population, GNP and democracy still violate.  Could scale effects explain those too? 
+- No test for `cwarcow`: too few civil-war cases in categories 1-2 for the larger model to converge. 
+]
+
+---
+
+## Could Scale Effects Explain the Rest? 
+
+Put every variable in the scale part, then test parallel regressions again: 
+
+
+``` r
+mod_all &lt;- update(mod_c, scale = ~ cwarcow + iwarcow + logpop_c + logpcgnp_c + poly(vanadd, 2))
+all_lr &lt;- 2*(as.numeric(logLik(mod_all)) - as.numeric(logLik(mod_ls)))
+c(LR = round(all_lr, 1), df = 4, p = round(pchisq(all_lr, 4, lower.tail = FALSE), 3))
+```
+
+```
+##     LR     df      p 
+## 15.400  4.000  0.004
+```
+
+``` r
+nt_all &lt;- nominal_test(mod_all)
+round(as.data.frame(nt_all)[-1, c("Df", "LRT", "Pr(&gt;Chi)")], 3)
+```
+
+```
+##                 Df     LRT Pr(&gt;Chi)
+## cwarcow         NA      NA       NA
+## iwarcow          3   1.046    0.790
+## logpop_c         3  16.814    0.001
+## logpcgnp_c       3 179.521    0.000
+## poly(vanadd, 2)  6  85.614    0.000
+```
+
+- The extra scale terms improve the fit (mostly democracy), but the violations for population, GNP and democracy remain: heteroskedasticity doesn't explain them, so they need a different model (next). 
+
+---
+
+## The Stereotype Model
+
+Instead of cumulative probabilities, compare each category to the lowest one (Anderson 1984): 
+
+`$$\log\frac{Pr(y=j)}{Pr(y=1)} = \alpha_j + \phi_j(\mathbf{x}\mathbf{b}), \qquad j = 2,\ldots,J, \quad \phi_1 = 0,\; \phi_J = 1$$`
+
+- `\(\mathbf{x}\mathbf{b}\)` is a single index - one combination of the predictors. 
+- `\(\phi_j\)` is category `\(j\)`'s *score*: its position on that index (each category's "stereotype"). 
+- `\(b_k\)` is the effect of `\(x_k\)` on the log-odds of the highest vs. lowest category; for categories `\(j\)` vs. `\(m\)` it is `\((\phi_j - \phi_m)b_k\)`. 
+
+---
+
+## Ordered Logit vs. Stereotype on the Same Scale
+
+`$$\log\frac{Pr(y=j)}{Pr(y=1)} = \begin{cases} \alpha_j + h_j(\mathbf{x}\mathbf{b}) &amp; \text{Ordered logit}\\ \alpha_j + \phi_j(\mathbf{x}\mathbf{b}) &amp; \text{Stereotype}\end{cases}$$`
+
+For the ordered logit, with `\(\eta = \mathbf{x}\mathbf{b}\)` and `\(j = 2,\ldots,J-1\)`: 
+
+`$$\alpha_j = \log\left(e^{\tau_j-\tau_1} - e^{\tau_{j-1}-\tau_1}\right), \quad h_j(\eta) = \log\left(1+e^{\tau_1-\eta}\right) - \log\left(1+e^{\tau_j-\eta}\right) - \log\left(1+e^{\tau_{j-1}-\eta}\right)$$`
+
+and for `\(j = J\)`: `\(\alpha_J = 0\)`, `\(h_J(\eta) = \log\left(1+e^{\eta-\tau_1}\right) - \log\left(1+e^{\tau_{J-1}-\eta}\right)\)`.
+
+- Both depend on `\(\mathbf{x}\)` only through the single index `\(\mathbf{x}\mathbf{b}\)` - both are one-dimensional. 
+- Ordered logit: nonlinear `\(h_j\)`, whose shape is fixed by the thresholds.  Stereotype: linear in `\(\mathbf{x}\mathbf{b}\)`, scaled by a free `\(\phi_j\)`. 
+- Neither nests the other - compare them with AIC/BIC. 
+
+---
+
+## What the Stereotype Model Assumes
+
+- **Kept:** one dimension.  The *relative* effect of any two variables, `\(b_k/b_l\)`, is the same for every pair of categories. 
+- **Swapped:** equal slopes on the cumulative-logit scale (parallel regressions) become proportional slopes, `\(\phi_j\mathbf{b}\)`, on the baseline-category scale. 
+- **Dropped:** ordering is not imposed.  If `\(\phi_1 &lt; \phi_2 &lt; \cdots &lt; \phi_J\)`, the outcome *behaves* as ordered; if `\(\phi_j \approx \phi_k\)`, `\(\mathbf{x}\)` can't distinguish categories `\(j\)` and `\(k\)`. 
+- Fixing equally spaced scores, `\(\phi_j = \frac{j-1}{J-1}\)`, gives the adjacent-category logit, `\(\log\frac{Pr(y=j+1)}{Pr(y=j)} = \alpha_j + \mathbf{x}\mathbf{b}^{*}\)` with `\(\mathbf{b}^{*} = \mathbf{b}/(J-1)\)` - an LR test of equal spacing. 
+
+---
+
+## A Different Question
+
+.pull-left[
+**Ordered logit**
+
+- How does `\(\mathbf{x}\)` move observations along a latent continuum, `\(y^{*}\)`, that the thresholds slice into categories? 
+- Ordering is a property of `\(y\)` - assumed. 
+- `\(\mathbf{b}\)`: shift in `\(y^{*}\)` (up to scale). 
+]
+.pull-right[
+**Stereotype**
+
+- Is there one combination of the predictors that distinguishes the categories, and where does each category fall on it? 
+- Ordering is a property of the relationship between `\(\mathbf{x}\)` and `\(y\)` - estimated. 
+- `\(\mathbf{b}\)`: effect on the log-odds of the highest vs. lowest category. 
+]
+
+Predicted probabilities answer the same substantive question in both models - compare them there. 
+
+---
+
+## Stereotype Model: Repression
+
+.pull-left[
+
+``` r
+dat$va &lt;- as.numeric(scale(dat$vanadd))
+dat$va2 &lt;- dat$va^2
+f &lt;- sd_fac ~ cwarcow + iwarcow + logpop +
+  logpcgnp + va + va2
+st1 &lt;- VGAM::rrvglm(f, VGAM::multinomial(refLevel=1),
+                    data=dat, Rank=1)
+# VGAM fixes phi_2 = 1; rescale so phi_5 = 1
+phi &lt;- c(0, VGAM::Coef(st1)@A[,1])
+setNames(round(phi/phi[5], 2), 1:5)
+```
+
+```
+##    1    2    3    4    5 
+## 0.00 0.52 0.76 0.89 1.00
+```
+]
+.pull-right[
+- The estimated scores are ordered - repression *is* ordered along the dimension the `\(x\)`'s define. 
+- The scores are not equally spaced: categories 4 and 5 are relatively close together. 
+- `rrvglm()` is a nonlinear fit (because of `\(\phi_j\mathbf{b}\)`) - check convergence and starting values. 
+]
+
+---
+
+## Comparing the Models
+
+
+``` r
+ac  &lt;- VGAM::vglm(f, VGAM::acat(parallel=TRUE), data=dat)      # equally spaced scores
+ll &lt;- c(ologit = as.numeric(logLik(mod)), loc_scale = as.numeric(logLik(mod_ls)), 
+        adjacent = logLik(ac), stereotype = logLik(st1))
+k  &lt;- c(10, 12, 10, 13)
+data.frame(logLik = round(ll, 1), params = k, AIC = round(-2*ll + 2*k, 1), 
+           BIC = round(-2*ll + log(nrow(dat))*k, 1))
+```
+
+```
+##             logLik params    AIC    BIC
+## ologit     -2816.0     10 5651.9 5710.3
+## loc_scale  -2801.8     12 5627.5 5697.7
+## adjacent   -2851.3     10 5722.5 5781.0
+## stereotype -2771.1     13 5568.2 5644.2
+```
+
+- Free scores beat equal spacing (LR = 160.3, 3 df), and the stereotype model beats both the ordered logit and the location-scale model on AIC and BIC. 
+- The adjacent-category logit is nested in the stereotype model, so the LR test is valid; the cumulative models aren't nested in either, so they are compared on AIC/BIC. 
+
+---
+
+## Predicted Probabilities: Code
+
+
+``` r
+nd &lt;- data.frame(cwarcow = 0, iwarcow = 0, logpop = median(dat$logpop), 
+                 vanadd = median(dat$vanadd), logpcgnp = seq_range(dat$logpcgnp))
+nd$va &lt;- (nd$vanadd - mean(dat$vanadd))/sd(dat$vanadd)
+nd$va2 &lt;- nd$va^2
+p_ol &lt;- predict(mod, newdata = nd, type = "prob")$fit
+p_ac &lt;- VGAM::predictvglm(ac, newdata = nd, type = "response")
+p_st &lt;- VGAM::predictvglm(st1, newdata = nd, type = "response")
+preds &lt;- bind_rows(
+  as.data.frame(p_ol) %&gt;% mutate(model = "Ordered logit"),
+  as.data.frame(p_ac) %&gt;% setNames(1:5) %&gt;% mutate(model = "Adjacent-category"),
+  as.data.frame(p_st) %&gt;% setNames(1:5) %&gt;% mutate(model = "Stereotype")) %&gt;%
+  mutate(logpcgnp = rep(nd$logpcgnp, 3), 
+         model = factor(model, levels = c("Ordered logit", "Adjacent-category", "Stereotype"))) %&gt;%
+  pivot_longer(`1`:`5`, names_to = "category", values_to = "prob") %&gt;%
+  mutate(category = paste("Repression =", category))
+ggplot(preds, aes(x = logpcgnp, y = prob, colour = model, linetype = model)) + 
+  geom_line(linewidth = .8) + 
+  facet_wrap(~category, nrow = 1) + 
+  theme_bw() + 
+  theme(panel.grid = element_blank(), legend.position = "bottom") + 
+  labs(x = "log(GNP/capita)", y = "Predicted Probability", colour = "", linetype = "")
+```
+
+---
+
+## Predicted Probabilities: Three Models
+
+&lt;img src="lecture5_files/figure-html/unnamed-chunk-15-1.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+
+- Other variables at medians.  The models agree on categories 3-5; the stereotype model's large gap between `\(\phi_1\)` and `\(\phi_2\)` lets GNP separate no (1) from some (2) repression more sharply. 
+
+---
+
+## Review
+
+1. Ordinal Model Estimation
+2. Effects and Effect Displays
+3. Model Fit and Evaluation
+4. Parallel Regressions Assumption
+5. Location-Scale and Stereotype Models
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

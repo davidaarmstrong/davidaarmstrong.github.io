@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>POLSCI 9592</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#3252a8"],"pen_size":5,"eraser_size":50,"palette":["#e41a1c","#4daf4a","#ff7f00","#4F2683","#3252a8"]}) })</script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9592
+]
+.subtitle[
+## Lecture 6: Unordered Categorical Data Models
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+
+
+&lt;style type="text/css"&gt;
+/* custom.css */
+.left-code {
+  color: #777;
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+.right-plot-shift {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -100px;
+}
+.right-plot-shift2 {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+  position:relative; 
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0px;
+  z-index: 100;
+}
+.plot-callout img {
+  width: 100%;
+  border: 4px solid #23373B;
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -100px;
+}
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative; 
+  top: -50px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+.nobullet li {
+  list-style-type: none;
+}
+
+.mycol {
+  float: left;
+  width: 30%;
+  padding: 5px;
+}
+
+/* Clear floats after image containers */
+.myrow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+
+.tiny {
+  font-size: 1rem;
+}
+&lt;/style&gt;
+
+## Goals for This Session
+
+1. From Ordered to Unordered: Stereotype and Reduced-Rank Models
+2. Develop Multinomial Logit Model
+3. Effects and Effect Displays
+4. Model Fit and Evaluation
+5. IIA Assumption
+6. Conditional Logit
+7. Separation Problems
+
+---
+
+## Starting From One Index
+
+Last week's models for ordinal `\(y\)` both work through a single index, `\(\mathbf{x}\mathbf{b}\)`:
+
+`$$\text{Ordered logit:}\quad Pr(y \leq j|\mathbf{x}) = \Lambda(\tau_j - \mathbf{x}\mathbf{b})$$`
+
+`$$\text{Stereotype:}\quad \log\frac{Pr(y=j|\mathbf{x})}{Pr(y=1|\mathbf{x})} = \alpha_j + \phi_j\cdot\mathbf{x}\mathbf{b}, \qquad \phi_1 = 0$$`
+
+- In the ordered logit, the thresholds fix how the index moves `\(y\)` from one category to the next - the order is assumed.
+- In the stereotype model, each category gets a free *score*, `\(\phi_j\)`: its position on the index.  The order is estimated, not assumed.
+- So nothing in the stereotype model requires `\(y\)` to be ordered: it is a model for unordered outcomes, too.
+- One `\(\phi_j\)` is fixed (e.g., `\(\phi_2 = 1\)`) because `\(\phi_j\mathbf{b} = (c\phi_j)(\mathbf{b}/c)\)` for any `\(c \neq 0\)`.
+
+---
+
+## One Dimension for Unordered Outcomes
+
+The log-odds of category `\(j\)` vs. category `\(m\)`:
+
+`$$\log\frac{Pr(y=j|\mathbf{x})}{Pr(y=m|\mathbf{x})} = (\alpha_j - \alpha_m) + (\phi_j - \phi_m)\cdot\mathbf{x}\mathbf{b}$$`
+
+- Every pair of categories is separated by the *same* index, `\(\mathbf{x}\mathbf{b}\)`; only the distance, `\(\phi_j - \phi_m\)`, changes.
+    - The relative effect of any two variables, `\(b_k/b_l\)`, is the same for every pair of categories.
+- Spatial reading: voters choose on the basis of one combined consideration (e.g., left-right) and the `\(\phi_j\)` place the parties on it.
+- If `\(\phi_j \approx \phi_m\)`, `\(\mathbf{x}\)` can't distinguish categories `\(j\)` and `\(m\)`.
+- Category `\(j\)`'s slopes, `\(\boldsymbol{\beta}_j = \phi_j\mathbf{b}\)`, are all multiples of one vector: `\(K + (J-2)\)` slopes in all (10 for France, with `\(J = 6\)` and `\(K = 6\)`).
+
+---
+
+## Relaxing One Dimension
+
+Give each category a position in `\(R\)` dimensions (Anderson 1984; Yee and Hastie 2003):
+
+`$$\log\frac{Pr(y=j|\mathbf{x})}{Pr(y=1|\mathbf{x})} = \alpha_j + \sum_{r=1}^{R} a_{jr}\,\eta_{r}, \qquad \eta_{r} = \mathbf{x}\mathbf{c}_r$$`
+
+- `\(R\)` indices `\(\eta_r\)`, each a combination of the predictors; `\(\mathbf{a}_j\)` is category `\(j\)`'s location (baseline at the origin).  `\(R = 1\)` is the stereotype model.
+- Slopes become combinations of `\(R\)` vectors, `\(\boldsymbol{\beta}_j = \sum_r a_{jr}\mathbf{c}_r\)`; stacked, `\(\mathbf{B} = \mathbf{A}\mathbf{C}'\)` has rank `\(R\)`.
+- Each dimension relaxes the model: `\(R = 1 \subset R = 2 \subset \cdots\)` - the *multidimensional stereotype* or *reduced-rank* model.
+- At `\(R = \min(J-1, K)\)` every category gets its own, unrestricted `\(\boldsymbol{\beta}_j\)` (30 slopes for France): the *multinomial logit* (MNL), developed after this section.
+
+---
+
+## Reading the Multidimensional Model
+
+We look at the model as a picture - a *biplot* - with three pieces:
+
+- **Category locations.** Categories close together are ones the predictors can't tell apart; categories far apart are easy to distinguish.  Only *relative* positions matter.
+- **Variable arrows.** Each arrow shows how strongly a predictor is related to each axis.  The arrows are correlations, so they stay inside a circle of radius 1, and longer arrows mean stronger relationships.  A predictor pushes people toward the categories its arrow points at, and away from those behind it.
+- **Axis shares.** How much of the differences between categories each axis captures.  If the first axis holds most of it, the choice is essentially one-dimensional; a small second axis is a secondary distinction.
+
+Name each axis from the arrows that line up with it and the categories at its ends - much as you would name a factor.
+
+---
+
+## The Stereotype Model as a Diagnostic
+
+Rather than an inferential target, treat the models between the ordered logit and the MNL as a way to *describe* the structure of the choice:
+
+1. **Is there an order?** Do the `\(R=1\)` scores line up with the order we would assume (e.g., the parties' perceived left-right positions)?
+1. **Is it evenly spaced?** Equally spaced scores give the adjacent-category logit; close scores mean `\(\mathbf{x}\)` can't tell those categories apart.
+1. **How many dimensions?** How much of the MNL's improvement over the intercept-only model does each rank capture?
+1. **What are the dimensions?** Which variables define them, and where do the categories sit?
+1. **Which distinctions need the extra dimensions?** Which effects - for which categories - only appear as `\(R\)` grows?
+
+All of this is descriptive: we compare fits, scores and pictures - no standard errors required.
+
+---
+
+## From Ordered Logit to MNL
+
+A ladder of relaxations - from one index with an assumed order to unrestricted slopes:
+
+| Model | Slopes for `\(j\)` | Dimensions | Ordering |
+|:--|:--|:--|:--|
+| Ordered / adjacent-category logit | fixed function of `\(\mathbf{x}\mathbf{b}\)` | 1 | assumed |
+| Stereotype | `\(\phi_j\mathbf{b}\)` | 1 | estimated |
+| Reduced-rank MNL | `\(\mathbf{C}\mathbf{a}_j\)` | `\(R\)` | none |
+| MNL | `\(\boldsymbol{\beta}_j\)` | `\(\min(J-1, K)\)` | none |
+
+- The substantive question: how many distinct considerations does it take to separate the categories?
+- Compare the models with LR tests (where nested) and AIC/BIC, then compare their predicted probabilities and first differences.
+- We work up the ladder with French vote choice, then develop the unrestricted MNL in detail.
+
+---
+
+
+## France Data
+
+
+``` r
+dat &lt;- import("data/france_mnl.dta")
+dat &lt;- factorize(dat)
+labs &lt;- sapply(1:ncol(dat), function(i)attr(dat[[i]], "label"))
+data.frame(var = names(dat), description = labs)
+```
+
+```
+##         var                                              description
+## 1      vote                                            Party of vote
+## 2   votenum                             Party number of chosen party
+## 3      male                              R gender (0=female, 1=male)
+## 4       age                                                 Age of R
+## 5     urban                            size of city in which R lives
+## 6   soclass                                  Subjective social class
+## 7  hhincome                       Household income (in francs/month)
+## 8     union                                        Member of a union
+## 9    retnat              Retrospective national economic evaluations
+## 10   demsat satisfaction with the functioning of democracy in france
+## 11    eusup                   Good choice for France to belong to EU
+## 12   lrself self-position on the left-right scale (0=left, 10=right)
+## 13     rp10        Respondent identified left-right placement of PCF
+## 14     rp20         Respondent identified left-right placement of PS
+## 15     rp50      Respondent identified left-right placement of Green
+## 16     rp70        Respondent identified left-right placement of UDF
+## 17     rp73        Respondent identified left-right placement of UMP
+## 18     rp80         Respondent identified left-right placement of FN
+```
+
+
+---
+
+## Is There an Order?
+
+.pull-left[
+
+``` r
+f &lt;- vote ~ lrself + male + retnat +
+  age + union
+d &lt;- na.omit(dat[, all.vars(f)])
+rr1 &lt;- VGAM::rrvglm(f,
+  VGAM::multinomial(refLevel=1),
+  data=d, Rank=1)
+# VGAM fixes phi_PS = 1;
+# rescale so phi_UMP = 1
+phi &lt;- c(0, VGAM::Coef(rr1)@A[,1])
+# mean perceived left-right positions
+perc &lt;- colMeans(dat[, c("rp10", "rp20",
+  "rp50", "rp70", "rp73", "rp80")],
+  na.rm=TRUE)
+data.frame(perceived = round(perc, 2),
+  phi = round(phi/phi[5], 2),
+  row.names = levels(d$vote))
+```
+
+```
+##       perceived  phi
+## PCF        2.51 0.00
+## PS         3.54 0.25
+## Green      3.69 0.37
+## UDF        6.45 0.84
+## UMP*       7.02 1.00
+## FN         7.79 0.69
+```
+]
+.pull-right[
+- The scores follow the perceived order, except FN: furthest right in perception, but between PS and UDF on the dimension that predicts the vote.
+- Uneven spacing: a big gap between the left bloc (0-0.37) and the right (0.69-1); PS and the Greens are close.
+- An ordered logit assumes this order; an adjacent-category logit also assumes equal spacing.
+]
+
+---
+
+## How Many Dimensions?
+
+
+``` r
+# rr_ladder() (uwo9592) fits every model from the ordered logit to the MNL
+# on the same cases and reports each one's share of the MNL's fit
+lad &lt;- rr_ladder(f, data = d)
+```
+
+```
+## n = 993, J = 6 categories, K = 6 predictor columns
+##              model params  logLik    AIC    BIC share
+##      Ordered logit     11 -1143.8 2309.6 2363.5 0.744
+##  Adjacent-category     11 -1142.5 2307.0 2360.9 0.748
+##              R = 1     15 -1084.8 2199.6 2273.1 0.908
+##              R = 2     23 -1067.9 2181.7 2294.5 0.955
+##              R = 3     29 -1059.0 2176.0 2318.1 0.980
+##              R = 4     33 -1052.7 2171.5 2333.2 0.997
+##        MNL (R = 5)     35 -1051.8 2173.5 2345.0 1.000
+```
+
+- `share`: proportion of the MNL's log-likelihood improvement over the intercept-only model.
+- Ordered and adjacent-category logits: about 3/4.  Free scores ( `\(R=1\)` ): 91% - the order is mostly right, the spacing isn't.  `\(R=2\)`: 96%; `\(R\)` = 3-4 add the last few points.
+
+---
+
+## Where the Picture Comes From
+
+- `rrvglm()` has to fix its dimensions somehow, and it does so with an arbitrary choice of reference categories (its "anchors").  Its raw coefficients depend on that choice, so don't interpret or plot them directly.
+- `rr_biplot()` puts any fitted model on a standard footing: the axes are uncorrelated across respondents and ordered from most to least important.  The picture is the same whatever choices `rrvglm()` made.
+- The model's fit, predicted probabilities and first differences don't depend on any of this.
+- In practice: estimation is iterative, so if `rrvglm()` fails, try different anchors (`Index.corner`).  And like the models later in the lecture, it still assumes IIA (below).
+
+---
+
+## Two Dimensions: France
+
+.pull-left[
+
+``` r
+# the rank-2 fit from the ladder -
+# any anchoring gives the same result
+rr2 &lt;- lad$fits$R2
+bp &lt;- rr_biplot(rr2,
+  orient=c("UMP*", "PS"),
+  var_labels=c("lrself", "male",
+    "retnat: same", "retnat: worse",
+    "age", "union"), plot=FALSE)
+# share of the spread between parties
+round(bp$share, 3)
+```
+
+```
+##  dim1  dim2 
+## 0.948 0.052
+```
+
+``` r
+round(bp$positions, 2)
+```
+
+```
+##       dim1 dim2
+## PCF   0.00 0.00
+## PS    0.81 0.65
+## Green 1.30 0.96
+## UDF   3.08 0.39
+## UMP*  3.68 0.37
+## FN    2.46 0.25
+```
+]
+.pull-right[
+- Axis 1 holds 95% of the spread between parties, and orders them PCF &lt; PS &lt; Green &lt; FN &lt; UDF &lt; UMP - essentially the `\(R=1\)` order.
+- Axis 2 (5%) separates PS and the Greens from the PCF; the right-wing parties sit in between.
+- So the second dimension is real but small: it splits the left rather than adding a second, equal axis.
+]
+
+---
+
+## Structure Correlations
+
+.pull-left[
+
+``` r
+# correlations of each predictor
+# with each axis - the arrows
+round(bp$structure, 2)
+```
+
+```
+##                dim1  dim2
+## lrself         0.97 -0.16
+## male          -0.01  0.17
+## retnat: same   0.20  0.14
+## retnat: worse -0.47 -0.40
+## age            0.17 -0.78
+## union         -0.19 -0.42
+```
+]
+.pull-right[
+- Axis 1 is left-right (0.97), along with economic evaluations.
+- Axis 2 is age (-0.78), union membership (-0.42) and economic pessimism (-0.4): older voters, union members and pessimists sit toward the PCF.
+- Correlations, not coefficients: they reflect how the predictors relate to each other as well as to the indices.
+]
+
+---
+
+## Biplot
+
+
+``` r
+bp$plot
+```
+
+&lt;img src="lecture6_files/figure-html/rrbiplot-1.png" alt="" width="92%" style="display: block; margin: auto;" /&gt;
+
+- Left-right points along axis 1, toward the right; age, union and economic pessimism point down axis 2, toward the PCF and away from PS and the Greens.
+
+---
+
+## Comparing One, Two and Five Dimensions
+
+.pull-left[
+
+``` r
+lrs &lt;- 0:10
+ame_lrs &lt;- function(fit){
+  t(sapply(lrs, function(l)
+    colMeans(VGAM::predictvglm(fit,
+      newdata = mutate(d, lrself = l),
+      type = "response"))))
+}
+comp &lt;- bind_rows(
+  data.frame(lrself = lrs, ame_lrs(rr1),
+    model = "R = 1", check.names = FALSE),
+  data.frame(lrself = lrs, ame_lrs(rr2),
+    model = "R = 2", check.names = FALSE),
+  data.frame(lrself = lrs, ame_lrs(lad$fits$MNL),
+    model = "MNL (R = 5)", check.names = FALSE)) %&gt;%
+  pivot_longer(PCF:FN, names_to = "party",
+               values_to = "estimate") %&gt;%
+  mutate(party = factor(party, levels = levels(d$vote)),
+    model = factor(model,
+      levels = c("R = 1", "R = 2", "MNL (R = 5)")))
+ggplot(comp, aes(x=lrself, y=estimate,
+                 colour=model, linetype=model)) +
+  geom_line(linewidth=.8) +
+  facet_wrap(~party, ncol=2) +
+  theme_bw() +
+  theme(panel.grid=element_blank(),
+        legend.position="bottom") +
+  labs(x="Left-right Self-placement",
+       y="Predicted Pr(Vote)", colour="", linetype="")
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-2-1.png" alt="" width="504" /&gt;
+]
+
+---
+
+## Which Distinctions Need More Dimensions?: Code
+
+
+``` r
+set_var &lt;- function(data, v, val){
+  data[[v]] &lt;- if(is.factor(data[[v]])) factor(rep(val, nrow(data)), levels = levels(data[[v]])) else val
+  data
+}
+pr &lt;- function(m, nd) VGAM::predictvglm(m, newdata = nd, type = "response")
+fd &lt;- function(m, v, lo, hi) colMeans(pr(m, set_var(d, v, hi)) - pr(m, set_var(d, v, lo)))
+lo &lt;- list(lrself = mean(d$lrself) - sd(d$lrself), union = "no, not a union member",
+           age = mean(d$age) - sd(d$age), retnat = "better")
+hi &lt;- list(lrself = mean(d$lrself) + sd(d$lrself), union = "yes, union member",
+           age = mean(d$age) + sd(d$age), retnat = "worse")
+cases &lt;- list(c("lrself", "PS"), c("union", "PCF"), c("age", "Green"), c("retnat", "FN"))
+mods &lt;- lad$fits[c("R1", "R2", "R3", "R4", "MNL")]
+names(mods) &lt;- c(paste("R =", 1:4), "MNL")
+tab &lt;- sapply(mods, function(m) sapply(cases, function(x) fd(m, x[1], lo[[x[1]]], hi[[x[1]]])[[x[2]]]))
+rownames(tab) &lt;- sapply(cases, paste, collapse = " -&gt; ")
+```
+
+---
+
+## Which Distinctions Need More Dimensions?
+
+
+``` r
+round(tab, 3)
+```
+
+```
+##               R = 1  R = 2  R = 3  R = 4    MNL
+## lrself -&gt; PS -0.575 -0.578 -0.603 -0.597 -0.595
+## union -&gt; PCF  0.009  0.042  0.047  0.065  0.067
+## age -&gt; Green -0.001 -0.047 -0.079 -0.080 -0.079
+## retnat -&gt; FN -0.012  0.010  0.035  0.053  0.053
+```
+
+- AME first differences, for the party each variable matters most to: left-right's is the same at every rank; union and PCF, age and the Greens, and the economy and FN only appear as dimensions are added.
+- **Takeaway:** low-rank models get the dominant dimension right but smooth over party-specific effects.  If your question is about one of those, use a higher rank or the MNL.
+
+---
+
+## How Do Voters Choose?
+
+- **A dominant left-right dimension.** It orders the parties roughly as voters perceive them and separates the left and right blocs.  This is the ordered-logit story, and it gets about 3/4 of the way.
+- **Within the left, social structure.** PCF vs. PS and the Greens isn't about left-right (axis 2 of the biplot): union members, older voters and economic pessimists stay with the PCF.
+- **Group-specific appeals for the small parties.** Young voters and the Greens; economic pessimism and FN, unlike the mainstream right.  Each needs its own dimension because it moves one party, not the blocs.
+- **What this means for the model.** An ordered logit is a reasonable first approximation for the blocs, but it misplaces FN and can't capture the small parties' bases.  The MNL is needed for those - and the stereotype ladder tells us which parties and variables require it.
+
+---
+
+## A Workflow
+
+1. **Fit the ladder** with `rr_ladder()`: ordered logit, adjacent-category logit, `\(R = 1, \ldots, J-1\)`.  Use the share of the MNL's fit and AIC/BIC to choose `\(R\)` - roughly the number of distinct *kinds* of options minus one (and at most `\(K\)`).
+1. **Check the order:** do the `\(R=1\)` scores follow the order you would assume?  Are they evenly spaced?
+1. **Make the biplot** with `rr_biplot()`: check each axis's share.  Plot axes 1-2, and 1-3 if axis 3 isn't trivial.
+1. **Read the picture:** structure correlations name the axes; clusters are kinds of options; stacked categories are ones `\(\mathbf{x}\)` can't tell apart.
+1. **Choose the model:** an ordered logit if `\(R=1\)` and the order holds; otherwise the MNL (or the reduced-rank model).  Stacked categories are where IIA is most likely to fail - candidate nests for a nested logit (more below).
+
+---
+
+## A Note on Inference
+
+If you do want standard errors for a reduced-rank model:
+
+- Don't rely on the standard errors `rrvglm()` reports for its raw coefficients.  They depend on the arbitrary anchors: simulating from them, Green's 95% interval at `\(R=4\)` is 0.09-0.15 or 0.02-0.67, depending on the anchors.
+- Use the bootstrap instead: resample the data, refit starting from the full-sample estimates (`Ainit`, `Cinit`), and drop refits that fail - with cold starts, about 1 in 5 does here.  Bootstrap intervals are the same whatever the anchors.
+- For the diagnostic use here, none of this is needed.
+
+---
+
+## Multinomial Logit
+
+- The MNL model is used when the dependent variable is a set of unordered categories.
+- It is the top of the ladder from the first part of the lecture: the same baseline-category logits as the stereotype model, but every category gets its own, unrestricted slopes ( `\(R = J-1\)` ).  The `multinom()` model below is the "MNL" row of the fit table there - the same log-likelihood.
+- The adjacent-category and stereotype models are nested in the MNL; the ordered logit is not (it models cumulative probabilities, not baseline-category logits).
+- Before, we suggested that there is very little difference between logits and probits - that our inferences will likely be very similar.  In the multinomial case, these are two quite different models that require different estimation techniques and make different sets of assumptions.
+  - We will focus exclusively on the multinomial logit (MNL) model here. 
+
+---
+
+
+
+## The MNL Model
+
+The MNL model basically works like a bunch of binary logit models. Assume our dependent variable `\(y\)` has `\(J\)` different values, `\(m = 1, 2, \ldots, J\)`. 
+
+- Let's say we want to consider the probability of being a 2 versus the probability of being a 1.  We could do the following: 
+    - Subset the data to only those observations where `\(y = \{1,2\}\)`.  
+    - Estimate the binary logit model: `\(\log\left(\frac{Pr(y=2|X)}{Pr(y=1|X)}\right) = \mathbf{Xb}\)`.  
+- The MNL model basically does this in turn for every value of `\(y\)` in 
+`\(\{2, \ldots, J\}\)`. 
+    - Each time, estimating `\(\log\left(\frac{Pr(y=m|X)}{Pr(y=1|X)}\right) = \mathbf{Xb}_{m}\)`
+
+---
+
+## The MNL Model
+
+- The group against which we estimate all of the binary logits (i.e., 1 in the example above) is called the reference group.  
+- We can calculate probabilities of being in a single group as follows: 
+`$$Pr(y=m|X) = \frac{exp(\mathbf{X}\beta_{m})}{\sum_{j=1}^{J}exp(\mathbf{X}\beta_{j})}$$`
+
+- For identification purposes, we set `\(\beta_{1} = \mathbf{0}\)`.  That is, all of the coefficients for the first group are set to zero.  Remember, `\(exp(0) = 1\)`.  
+
+
+---
+
+## Likelihood Function
+
+Just like in our other models, the likelihood is simply the probability that the observation takes on its observed `\(y\)` value.  We could write this as: 
+
+`$$L(\mathbf{\beta}_{1},\mathbf{\beta}_{2},\ldots,\mathbf{\beta}_{J-1}|\mathbf{X}) = \prod_{m=1}^{J} \prod_{y_{i} = m} \frac{exp(\mathbf{X\beta}_m)}{\sum_{j=1}^{J}exp(\mathbf{X\beta}_j)}$$`
+
+The Log-likelihood function, then, is:
+
+`$$\log L(\mathbf{\beta}_{1},\mathbf{\beta}_{2},\ldots,\mathbf{\beta}_{J-1}|\mathbf{X}) = \sum_{m=1}^{J} \sum_{y_{i} = m} \log\left(\frac{exp(\mathbf{X\beta}_m)}{\sum_{j=1}^{J}exp(\mathbf{X\beta}_j)}\right)$$`
+
+---
+
+## Estimation: multinom
+
+The model can be estimated with the `multinom` function in the `nnet` package.
+
+
+``` r
+mod &lt;- multinom(vote ~ lrself + male + retnat + age +
+    union , data=dat, trace=F)
+noquote(t(mnlSig(mod)))
+```
+
+```
+##                        PS      Green   UDF     UMP*    FN     
+## (Intercept)            3.809*  3.253*  -0.996  -1.504  -1.153 
+## lrself                 0.227*  0.389*  0.925*  1.151*  0.832* 
+## male                   0.574   0.223   0.727   0.565   0.231  
+## retnatsame             -0.909  -1.306  -1.827  -1.514  -1.196 
+## retnatworse            -1.041  -1.712  -2.524* -2.635* -0.840 
+## age                    -0.020* -0.047* -0.004  -0.010  -0.017 
+## unionyes, union member -1.325* -1.004* -1.272* -1.279* -1.485*
+```
+You could also use `broom::tidy(mod)` to get a tidier model output. 
+
+---
+
+## Interpretation: Comparing Coefficients
+
+- Coefficients are in log-odds of voting for the party identified in the row relative to the base category (in `multinom()`, the base category is the first level of the factor; `VGAM` and `mlogit` let you choose it).
+- Note that the coefficients relating covariates to non-base-category choices must be considered separately.
+- For example, the effect of left-right self-placement on the choice between Greens and Socialists is 0.163, meaning that as left-right increases, voters are more likely to vote for the Green party than the Socialists.
+
+---
+
+
+## Pairwise Comparisons
+
+.pull-left[
+
+``` r
+plot(factorplot(mod, variable="lrself"))
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-3-1.png" alt="" width="504" /&gt;
+]
+
+
+
+---
+
+
+## Pairwise Comparisons with Factors
+
+.pull-left[
+
+``` r
+plot(factorplot(mod, 
+  variable="retnatworse"))
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-4-1.png" alt="" width="504" /&gt;
+]
+
+---
+
+## Pairwise Comparisons with Factors
+
+.pull-left[
+
+``` r
+b &lt;- c(t(coef(mod)))
+v &lt;- vcov(mod)
+rn_inds &lt;- grep("retnat", rownames(v))
+b_rn &lt;- b[rn_inds]
+v_rn &lt;- v[rn_inds, rn_inds]
+names(b_rn) &lt;- rownames(v_rn)
+plot(factorplot(b_rn, var=v_rn, resdf=Inf), 
+     print.est=FALSE, print.se=FALSE,
+     print.square.leg=FALSE, abbrev.char = 25)
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-5-1.png" alt="" width="504" /&gt;
+]
+
+
+
+---
+
+
+
+
+
+## Effects Plots: MER
+
+.pull-left[
+
+``` r
+pred_lrs &lt;- predictions(mod, 
+            newdata=datagrid(grid_type = "mean_or_mode"), 
+            variables= list(lrself = seq_range(dat$lrself)))
+pred_lrs &lt;- as.data.frame(pred_lrs) |&gt; 
+  mutate(lrself = seq_range(dat$lrself)[rowid])
+
+ggplot(pred_lrs, 
+       aes(x=lrself, 
+           y=estimate, 
+           ymin = conf.low, 
+           ymax=conf.high)) + 
+  geom_ribbon(alpha=.2, colour="transparent") + 
+  geom_line() + 
+  facet_wrap(~group, ncol=2) + 
+  theme_bw() + 
+  theme(panel.grid=element_blank())
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-6-1.png" alt="" width="504" /&gt;
+]
+
+
+
+
+
+---
+
+## Effect Plot: AME
+
+.pull-left[
+
+``` r
+ave_pred_lrs &lt;- avg_predictions(mod, 
+            variables=list(lrself = seq_range(dat$lrself)))
+ggplot(ave_pred_lrs, 
+       aes(x=lrself, 
+           y=estimate, 
+           ymin = conf.low, 
+           ymax=conf.high)) + 
+  geom_ribbon(alpha=.2, colour="transparent") + 
+  geom_line() + 
+  facet_wrap(~group, ncol=2) + 
+  theme_bw() + 
+  theme(panel.grid=element_blank())
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-7-1.png" alt="" width="504" /&gt;
+]
+---
+
+## Comparing Effects
+
+.pull-left[
+
+
+``` r
+all_lrs &lt;- bind_rows(pred_lrs %&gt;% mutate(type = "MER"), 
+          ave_pred_lrs %&gt;% mutate(type = "AME"))
+ggplot(all_lrs, 
+       aes(x=lrself, 
+           y=estimate, 
+           ymin = conf.low, 
+           ymax=conf.high, 
+           colour=type, 
+           fill=type)) + 
+  geom_ribbon(alpha=.2, colour="transparent") + 
+  geom_line() + 
+  facet_wrap(~group) + 
+  theme_bw() + 
+  theme(panel.grid=element_blank())
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-8-1.png" alt="" width="504" /&gt;
+]
+
+
+
+
+
+---
+
+## Discrete Changes: MER
+
+
+``` r
+comps &lt;- comparisons(mod, newdata="median", 
+            variables = list(lrself = "2sd", 
+                             male = c(0,1), 
+                             retnat = "minmax", 
+                             age = "2sd", 
+                             union = "reference"))
+
+comps %&gt;% 
+  mutate(eff = sprintf("%.2f%s", 
+                       estimate, 
+                       ifelse(p.value &lt; .05, "*", ""))) %&gt;% 
+  select(2:4, eff) %&gt;% 
+  pivot_wider(names_from="group", values_from="eff")
+```
+
+```
+## # A tibble: 5 × 8
+##   term   contrast                           PCF   PS    Green UDF   `UMP*` FN   
+##   &lt;chr&gt;  &lt;chr&gt;                              &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;
+## 1 age    (x + sd) - (x - sd)                0.02  -0.00 -0.1… 0.04* 0.03   0.01 
+## 2 lrself (x + sd) - (x - sd)                -0.0… -0.5… -0.03 0.14* 0.35*  0.18*
+## 3 male   1 - 0                              -0.01 0.04  -0.03 0.02  0.01   -0.03
+## 4 retnat worse - better                     0.02* 0.23* -0.02 -0.1… -0.18* 0.06 
+## 5 union  yes, union member - no, not a uni… 0.07* -0.06 0.03  -0.00 -0.01  -0.03
+```
+
+
+---
+
+
+## Discrete Changes: AME
+
+
+``` r
+ave_comps &lt;- avg_comparisons(mod, 
+      variables = list(lrself = "2sd", 
+       male = c(0,1), 
+       retnat = "minmax", 
+       age = "2sd", 
+       union = "reference"))
+ave_comps %&gt;% 
+  mutate(eff = sprintf("%.2f%s", 
+                       estimate, 
+                       ifelse(p.value &lt; .05, "*", ""))) %&gt;% 
+  select(1:3, eff) %&gt;% 
+  pivot_wider(names_from="group", values_from="eff")
+```
+
+```
+## # A tibble: 5 × 8
+##   term   contrast                           PCF   PS    Green UDF   `UMP*` FN   
+##   &lt;chr&gt;  &lt;chr&gt;                              &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;
+## 1 age    (x + sd) - (x - sd)                0.03* -0.01 -0.0… 0.04* 0.02   -0.00
+## 2 lrself (x + sd) - (x - sd)                -0.0… -0.6… -0.0… 0.17* 0.44*  0.11*
+## 3 male   1 - 0                              -0.02 0.04  -0.02 0.02  0.00   -0.02
+## 4 retnat worse - better                     0.03* 0.13* -0.03 -0.0… -0.12* 0.05*
+## 5 union  yes, union member - no, not a uni… 0.07* -0.07 0.02  -0.00 -0.00  -0.01
+```
+
+
+---
+
+## Model Fit
+
+
+``` r
+mnlfit(mod)
+```
+
+```
+## $result
+##                               Estimate    p-value
+## Fagerland, Hosmer and Bonfi 57.5035680 0.03593795
+## Count R2                     0.6354481         NA
+## Count R2 (Adj)               0.2760000         NA
+## ML R2                        0.5289860         NA
+## McFadden R2                  0.2622133         NA
+## McFadden R2 (Adj)            0.2334525         NA
+## Cragg-Uhler(Nagelkerke) R2   0.5607412         NA
+## 
+## attr(,"class")
+## [1] "mnlfit"
+```
+
+---
+
+## PRE
+
+
+``` r
+DAMisc::pre(mod)
+```
+
+```
+## mod1:  vote ~ lrself + male + retnat + age + union 
+## mod2:  vote ~ 1 
+## 
+## Analytical Results
+##  PMC =  0.496 
+##  PCP =  0.635 
+##  PRE =  0.276 
+## ePMC =  0.316 
+## ePCP =  0.478 
+## ePRE =  0.237
+```
+
+---
+## Probabilities by Group
+
+
+``` r
+probgroup(mod)
+```
+
+&lt;img src="lecture6_files/figure-html/prgraph3-1.png" alt="" width="\textwidth" /&gt;
+
+
+---
+
+
+## Classification Table
+
+We could also look at the classification table where the rows are the actual votes and the columns are the predicted votes
+
+
+``` r
+y &lt;- model.response(model.frame(mod))
+yhat &lt;- predict(mod)
+table(y, yhat)
+```
+
+```
+##        yhat
+## y       PCF  PS Green UDF UMP*  FN
+##   PCF     0  44     0   0    1   0
+##   PS      0 457     0   0   36   0
+##   Green   0  82     0   0    5   0
+##   UDF     0  39     0   0   56   0
+##   UMP*    0  42     0   0  174   0
+##   FN      0  31     0   0   26   0
+```
+
+Note that we predict everyone will vote for one of the two biggest parties - the socialists or the UMP.  We never predict a vote for the PCF, Greens, UDF or FN: none of them is ever the most likely choice.
+
+---
+
+## IIA Assumption
+
+`\(\text{IIA} = \text{Independence of Irrelevant Alternatives}\)`
+- The addition or removal of choices from the choice set should not change the odds of choosing one category over another.
+- This is forced to be the case in MNL, and in the stereotype and reduced-rank models.  Multinomial probit does not make this assumption.
+- Classic example: add a blue bus identical to an existing red bus.  IIA says it draws riders proportionally from every option, when really it should split the red bus's riders.
+- Categories stacked together in the biplot - ones the predictors can't tell apart - are where IIA is most likely to fail.  A *nested logit* groups such alternatives into nests and relaxes IIA between them.
+
+---
+
+## Tests for IIA
+
+There are tests for IIA, but Long and Freese argue they shouldn't be used.
+- They are not particularly powerful and can often give conflicting results.
+- Dow and Endersby suggest that the relaxing the assumption is rarely important and that doing so comes with its own potential set of problems.
+- In my own work, I have found that if you are trying to estimate predicted probabilities, both models work about the same.
+
+---
+
+
+## Conditional Logit
+
+In the MNL models above, all of the variables varied by individual (i.e., they are attributes of the individuals), but not by choice within individual.  
+- In this case, there is a coefficient for each choice
+Occasionally, there are attributes of the choices we would like to incorporate. 
+- In this case, Conditional Logit can be used.
+
+---
+
+
+## The Model
+
+Remember, before we assumed that the relationship between `\(y\)` and `\(\mathbf{X}\)` was captured with `\(\beta_{m}\)` 
+
+`$$Pr(y=m|X) = \frac{exp(\mathbf{X}\beta_{m})}{\sum_{j=1}^{J}exp(\mathbf{X}\beta_{j})}$$`
+
+where `\(\mathbf{X}\beta_{m} = \beta_{0,m} + \beta_{1,m}X_{1} + \beta_{2,m}X_{2} + \ldots + \beta_{k,m}X_{k}\)`.   By introducing choice-specific information, we need to change the linear predictor to: `\(\mathbf{Z}_{m}\mathbf{\gamma} + \mathbf{X}\beta_{m}\)`.  Notice here, that there are some variables that have an `\(m\)` subscript and those variables only get one coefficient - that is, there is one coefficient relating variable `\(Z_{1}\)` to `\(\mathbf{y}\)` because the information in `\(Z_{1}\)` varies within observations.  
+
+---
+
+
+## Data Preparation
+
+
+``` r
+names(dat)[13:18]
+```
+
+```
+## [1] "rp10" "rp20" "rp50" "rp70" "rp73" "rp80"
+```
+
+``` r
+names(dat)[13:18] &lt;- paste("rp", levels(dat$vote), sep=".")
+dat2 &lt;- dat %&gt;% 
+  dplyr::select(c("vote", "lrself", "urban", "union", "retnat", 
+           "age", "male", starts_with("rp"))) %&gt;% 
+  na.omit()
+library(fastDummies)
+library(dfidx)
+dat2 &lt;- dat2 %&gt;% 
+  dummy_cols("vote", remove_selected_columns=TRUE) 
+names(dat2) &lt;- gsub("vote_", "vote.", names(dat2))
+dat2 &lt;- dat2 %&gt;% 
+  mutate(obs = row_number()) %&gt;% 
+  pivot_longer(7:18, 
+               names_pattern = "(.*)\\.(.*)", 
+               names_to = c(".value", "alt"))
+# mlogit needs a plain data frame, not a tibble
+dat2l &lt;- dfidx(as.data.frame(dat2), idx = c("obs", "alt"), choice = "vote")
+```
+
+---
+
+## Conditional Logit Model
+
+
+``` r
+mlogit2 &lt;- mlogit(vote ~ 0 + I(abs(lrself - rp)) |  urban + union + retnat + 
+    age + male, data=dat2l, reflevel="PS")
+printCoefmat(summary(mlogit2)$CoefTable)
+```
+
+```
+##                                   Estimate Std. Error  z-value  Pr(&gt;|z|)    
+## (Intercept):FN                  -2.2506029  0.7393348  -3.0441 0.0023338 ** 
+## (Intercept):Green               -0.0489038  0.5260797  -0.0930 0.9259362    
+## (Intercept):PCF                 -4.2232729  1.1722648  -3.6027 0.0003150 ***
+## (Intercept):UDF                 -1.5483687  0.5143635  -3.0103 0.0026102 ** 
+## (Intercept):UMP**               -0.5136178  0.4324413  -1.1877 0.2349450    
+## I(abs(lrself - rp))             -0.5122424  0.0284676 -17.9939 &lt; 2.2e-16 ***
+## urbansmall or medium city:FN    -0.0159390  0.3865481  -0.0412 0.9671092    
+## urbansmall or medium city:Green -0.1439434  0.2796757  -0.5147 0.6067769    
+## urbansmall or medium city:PCF    0.0577400  0.3784491   0.1526 0.8787373    
+## urbansmall or medium city:UDF   -0.0467703  0.2977841  -0.1571 0.8751968    
+## urbansmall or medium city:UMP** -0.1612852  0.2502350  -0.6445 0.5192288    
+## urbanbig city:FN                 0.3215769  0.4453963   0.7220 0.4702934    
+## urbanbig city:Green             -0.7541499  0.3812699  -1.9780 0.0479293 *  
+## urbanbig city:PCF               -0.2370372  0.5087779  -0.4659 0.6412905    
+## urbanbig city:UDF                0.0590352  0.3461118   0.1706 0.8645643    
+## urbanbig city:UMP**              0.2174351  0.2829513   0.7685 0.4422174    
+## unionyes, union member:FN        0.0342450  0.5477225   0.0625 0.9501467    
+## unionyes, union member:Green     0.2708221  0.3472815   0.7798 0.4354883    
+## unionyes, union member:PCF       1.2122812  0.3615435   3.3531 0.0007992 ***
+## unionyes, union member:UDF      -0.0684448  0.4150341  -0.1649 0.8690119    
+## unionyes, union member:UMP**    -0.0514542  0.3432224  -0.1499 0.8808316    
+## retnatsame:FN                    0.1536325  0.6381573   0.2407 0.8097536    
+## retnatsame:Green                -0.5581574  0.4260458  -1.3101 0.1901661    
+## retnatsame:PCF                   0.9195162  1.1049479   0.8322 0.4053070    
+## retnatsame:UDF                  -0.6974712  0.3764854  -1.8526 0.0639419 .  
+## retnatsame:UMP**                -0.4516499  0.3214546  -1.4050 0.1600156    
+## retnatworse:FN                   0.5236981  0.5623991   0.9312 0.3517574    
+## retnatworse:Green               -1.0029903  0.3935516  -2.5486 0.0108168 *  
+## retnatworse:PCF                  0.8361887  1.0549149   0.7927 0.4279761    
+## retnatworse:UDF                 -1.2241757  0.3517980  -3.4798 0.0005018 ***
+## retnatworse:UMP**               -1.3604661  0.3090481  -4.4021 1.072e-05 ***
+## age:FN                           0.0082677  0.0097130   0.8512 0.3946598    
+## age:Green                       -0.0182693  0.0082709  -2.2089 0.0271835 *  
+## age:PCF                          0.0196692  0.0100932   1.9488 0.0513247 .  
+## age:UDF                          0.0187180  0.0071785   2.6075 0.0091205 ** 
+## age:UMP**                        0.0159592  0.0060803   2.6247 0.0086721 ** 
+## male:FN                         -0.3943535  0.3442061  -1.1457 0.2519234    
+## male:Green                      -0.2150377  0.2552117  -0.8426 0.3994601    
+## male:PCF                        -0.6022067  0.3500007  -1.7206 0.0853258 .  
+## male:UDF                         0.0208358  0.2604038   0.0800 0.9362264    
+## male:UMP**                      -0.1147029  0.2168462  -0.5290 0.5968335    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+
+
+
+## Effect Plots
+
+For conditional logit, there are no canned functions to make effects plots.  Here are the steps you have to apply: 
+1. Make the data used to generate predictions (either one fake dataset holding all variables at some hypothetical value or a bunch of datasets each with the variable of interest held constant.)
+1. Generate predictions using each dataset. 
+1. If confidence intervals are desired, use simulation to calculate sampling variability of the predicted probabilities. 
+1. Plot predictions 
+
+---
+
+
+
+## MER approach
+
+.pull-left[
+
+``` r
+lrs &lt;- 0:10
+fake &lt;- makeFakeData(mlogit2, 
+                     dat2l, 
+                     change=list(lrself=lrs), 
+                     varying="rp")
+probs &lt;- predict(mlogit2, newdata=fake)
+plot.dat &lt;- data.frame(
+  prob = c(t(probs)), 
+  party = factor(rep(colnames(probs), 
+                     length(lrs)), 
+                 levels=levels(dat$vote)), 
+  lrself = rep(lrs, each=6))
+ggplot(plot.dat, aes(x=lrself, y=prob)) + 
+  geom_line() + 
+  facet_wrap(~party, ncol=2) + 
+  theme_bw() + 
+  theme(panel.grid=element_blank()) + 
+  labs(x="Left-right Self-placement", 
+       y="Predicted Pr(Vote)")
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-10-1.png" alt="" width="504" /&gt;
+]
+
+---
+
+## Confidence Intervals
+
+
+``` r
+B &lt;- MASS::mvrnorm(2500, coef(mlogit2), vcov(mlogit2))
+tmp &lt;- mlogit2
+probs &lt;- NULL
+for(i in 1:2500){
+  tmp$coefficients &lt;- B[i,]
+  probs &lt;- rbind(probs, 
+   cbind(data.frame(lrself = unique(fake$lrself), 
+                    sim=i), 
+         predict(tmp, 
+                 newdata=fake)))
+}
+plot.dat &lt;- probs %&gt;% 
+  pivot_longer(PS:`UMP*`, 
+               names_to="party", 
+               values_to="prob") %&gt;% 
+  mutate(party = factor(party, 
+                        levels=levels(dat$vote))) %&gt;% 
+  group_by(lrself, party) %&gt;% 
+  summarise(p = mean(prob), 
+            lwr= quantile(prob, .025), 
+            upr = quantile(prob, .975))
+```
+
+
+---
+
+## Figure
+.pull-left[
+
+``` r
+ggplot(plot.dat, aes(x=lrself, 
+                 y=p, 
+                 ymin = lwr, 
+                 ymax=upr)) + 
+  geom_ribbon(alpha=.25, 
+              colour="transparent") + 
+  geom_line() + 
+  facet_wrap(~party, ncol=2) + 
+  theme_bw() + 
+  theme(panel.grid=element_blank()) + 
+  labs(x="Left-right Self-placement", 
+       y="Predicted Pr(Vote)")
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-11-1.png" alt="" width="504" /&gt;
+]
+
+---
+
+## AME Approach
+.pull-left[
+
+``` r
+B &lt;- MASS::mvrnorm(2500, coef(mlogit2), vcov(mlogit2))
+lrs &lt;- 0:10
+out &lt;- data.frame(
+  lrself = rep(lrs, each=6),
+  party = rep(levels(index(dat2l)$alt), length(lrs)), 
+  p = NA, 
+  lwr = NA, 
+  upr = NA
+)
+```
+]
+.pull-right[
+
+``` r
+for(j in lrs){
+  tmp &lt;- dat2l
+  tmp$lrself &lt;- j
+  X &lt;- model.matrix(
+    update(mlogit2, data=tmp))
+  
+  b &lt;- coef(mlogit2)
+  XB &lt;- X %*% t(B)
+  Xb &lt;- X %*% b
+  p &lt;- prop.table(matrix(exp(Xb), ncol=6, byrow=TRUE), 1)
+  m &lt;- colMeans(p)
+  
+  res &lt;- NULL
+  for(i in 1:ncol(XB)){
+    exb &lt;- exp(matrix(XB[,i], ncol=6, byrow=TRUE))
+    p &lt;- prop.table(exb, 1)
+    res &lt;- rbind(res, colMeans(p))
+  }
+  
+  l &lt;- apply(res, 2, quantile, .025)
+  u &lt;- apply(res, 2, quantile, .975)
+  out$p[which(out$lrself == j)] &lt;- m
+  out$lwr[which(out$lrself == j)] &lt;- l
+  out$upr[which(out$lrself == j)] &lt;- u
+}
+out$party &lt;- factor(out$party, levels=levels(dat$vote))
+```
+]
+
+---
+
+## Figure
+.pull-left[
+
+``` r
+ggplot(out, aes(x=lrself, y=p, 
+                ymin = lwr, ymax=upr)) + 
+  geom_ribbon(alpha=.25, colour="transparent") + 
+  geom_line() + 
+  facet_wrap(~party) + 
+  theme_bw() + 
+  theme(panel.grid=element_blank()) + 
+  labs(x="Left-right Self-placement", 
+       y="Predicted Pr(Vote)")
+```
+]
+.pull-right-shift2[
+&lt;img src="lecture6_files/figure-html/unnamed-chunk-14-1.png" alt="" width="504" /&gt;
+]
+
+
+
+---
+
+## First Differences: MER
+
+.pull-left[
+
+``` r
+fake &lt;- makeFakeData(mlogit2, 
+                     dat2l, 
+                     change=list(lrself=c(0,10)), 
+                     varying = "rp")
+B &lt;- MASS::mvrnorm(2500, coef(mlogit2), vcov(mlogit2))
+
+tmp &lt;- mlogit2
+probs &lt;- NULL
+for(i in 1:2500){
+  tmp$coefficients &lt;- B[i,]
+  probs &lt;- rbind(probs, 
+   cbind(data.frame(lrself = unique(fake$lrself), 
+                    sim=i), 
+         predict(tmp, 
+                 newdata=fake)))
+}
+
+fd &lt;- probs %&gt;% 
+  group_by(sim) %&gt;% 
+  summarise(across(PS:`UMP*`, ~diff(.x))) %&gt;% 
+  ungroup %&gt;% 
+  summarise(across(-sim, list(mean = ~mean(.x), 
+                              lwr = ~quantile(.x, .025), 
+                              upr = ~quantile(.x, .975), 
+                              pval = ~mean(.x &lt; 0)))) %&gt;% 
+  mutate(across(contains("pval"), ~ifelse(.x &gt; .5, 1-.x, .x))) %&gt;% 
+  pivot_longer(everything(),
+               names_pattern="(.*)_(.*)", 
+               names_to=c("party", ".value"))
+```
+]
+.pull-right[
+
+``` r
+fd %&gt;% 
+  mutate(across(-party, 
+                ~round(.x, 2)))
+```
+
+```
+## # A tibble: 6 × 5
+##   party  mean   lwr   upr  pval
+##   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 PS    -0.58 -0.65 -0.49     0
+## 2 FN     0.4   0.26  0.54     0
+## 3 Green -0.07 -0.1  -0.04     0
+## 4 PCF   -0.1  -0.17 -0.05     0
+## 5 UDF    0.09  0.05  0.14     0
+## 6 UMP*   0.27  0.18  0.37     0
+```
+]
+
+---
+
+## First Differences: AME
+
+.pull-left[
+
+``` r
+fake &lt;- makeFakeData(mlogit2, 
+                     dat2l, 
+                     change=list(lrself=c(0,10)), 
+                     varying="rp")
+
+
+fake1 &lt;- fake0 &lt;- dat2l
+fake0$lrself &lt;- 0
+fake1$lrself &lt;- 10
+
+B &lt;- MASS::mvrnorm(100, coef(mlogit2), vcov(mlogit2))
+tmp &lt;- mlogit2
+res &lt;- NULL
+for(i in 1:100){
+  tmp$coefficients &lt;- B[i,] 
+  p_hat0 &lt;- colMeans(predict(tmp, newdata=fake0))
+  p_hat1 &lt;- colMeans(predict(tmp, newdata=fake1))
+  res &lt;- rbind(res, p_hat1-p_hat0)
+}
+
+fd_ame &lt;- as.data.frame(res) %&gt;% 
+  summarise(across(everything(), 
+                   list(p = ~mean(.x), 
+                        lwr = ~quantile(.x, .025), 
+                        upr = ~quantile(.x, .975), 
+                        pval = ~mean(.x &gt; 0)))) %&gt;% 
+  mutate(across(contains("pval"), 
+                ~ifelse(.x &gt; .5, 1-.x, .x))) %&gt;% 
+  pivot_longer(everything(), 
+               names_pattern="(.*)_(.*)", 
+               names_to=c("party", ".value"))
+```
+]
+.pull-right[
+
+``` r
+fd_ame %&gt;%
+  mutate(across(-party, 
+                ~round(.x, 2)))
+```
+
+```
+## # A tibble: 6 × 5
+##   party     p   lwr   upr  pval
+##   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 PS    -0.46 -0.49 -0.42     0
+## 2 FN     0.26  0.21  0.3      0
+## 3 Green -0.08 -0.1  -0.06     0
+## 4 PCF   -0.1  -0.13 -0.08     0
+## 5 UDF    0.08  0.06  0.1      0
+## 6 UMP*   0.29  0.26  0.32     0
+```
+]
+---
+
+## Model Fit
+
+#### PRE
+
+``` r
+yhat &lt;- predict(mlogit2,newdata=dat2l)
+yhat &lt;- colnames(yhat)[apply(yhat, 1, which.max)]
+yhat &lt;- factor(yhat, levels=levels(dat$vote))
+obs_vote &lt;- dat2l %&gt;%  filter(vote == 1) %&gt;% ungroup %&gt;% unnest(idx) %&gt;% select(alt) %&gt;% pull()
+tab &lt;- table(obs_vote, yhat)
+pcp &lt;- sum(obs_vote == yhat)/sum(tab)
+pmc &lt;- max(table(obs_vote))/sum(tab)
+(pcp-pmc)/(1-pmc)
+```
+
+```
+## [1] 0.2759336
+```
+
+#### LR Test: Does Proximity Matter?
+
+``` r
+# same model without the party-position term
+mlogit0 &lt;- mlogit(vote ~ 0 | urban + union + retnat + age + male,
+                  data=dat2l, reflevel="PS")
+x2 &lt;- 2*as.numeric(logLik(mlogit2) - logLik(mlogit0))
+data.frame(LR = round(x2, 1), df = 1, p = signif(pchisq(x2, 1, lower.tail=FALSE), 2))
+```
+
+```
+##      LR df        p
+## 1 556.1  1 6.1e-123
+```
+
+---
+
+## Separation
+
+Separation can be a problem in unordered categorical models, too.  Let's add `demsat` to the model we ran in the beginning of the lecture: 
+
+
+``` r
+mods &lt;- multinom(vote ~ lrself + male + retnat + age +
+    union + demsat, data=dat, trace=F)
+mnlSig(mods)
+```
+
+```
+##       (Intercept) lrself   male retnatsame retnatworse     age
+## PS         3.572* 0.214* 0.601     -0.977      -1.054  -0.021*
+## Green      1.840  0.388* 0.308     -1.340      -1.783  -0.048*
+## UDF       -0.842  0.919* 0.705     -1.847      -2.392* -0.005 
+## UMP*      -1.251  1.151* 0.515     -1.508      -2.438* -0.011 
+## FN       -14.142* 0.802* 0.341     -1.382      -1.373  -0.018 
+##       unionyes, union member demsatsomewhat satisfied demsata little satisfied
+## PS                   -1.339*                   0.490                    0.405 
+## Green                -1.065*                   1.616                    1.552 
+## UDF                  -1.234*                   0.033                   -0.264 
+## UMP*                 -1.231*                  -0.118                   -0.534 
+## FN                   -1.536*                  13.139*                  13.949*
+##       demsatnot satisfied at all
+## PS                       -0.146 
+## Green                     1.573 
+## UDF                      -1.350 
+## UMP*                     -1.464 
+## FN                       14.195*
+```
+
+---
+
+## Bias Reduced Model
+
+
+``` r
+mods_br &lt;- brmultinom(formula(mods), data=dat)
+```
+
+
+``` r
+noquote(t(mnlSig(mods_br)))
+```
+
+```
+##                            PS      Green   UDF     UMP*    FN     
+## (Intercept)                3.045*  1.531   -1.253  -1.664  -3.447 
+## lrself                     0.201*  0.373*  0.889*  1.115*  0.775* 
+## male                       0.581   0.295   0.684   0.498   0.331  
+## retnatsame                 -0.636  -1.011  -1.489  -1.157  -1.077 
+## retnatworse                -0.672  -1.414  -1.990* -2.034* -1.054 
+## age                        -0.021* -0.047* -0.005  -0.011  -0.017 
+## unionyes, union member     -1.310* -1.020* -1.174* -1.194* -1.447*
+## demsatsomewhat satisfied   0.585   1.509   0.126   -0.007  2.192  
+## demsata little satisfied   0.488   1.441   -0.167  -0.424  2.976  
+## demsatnot satisfied at all -0.065  1.462   -1.161  -1.319  3.211*
+```
+
+---
+
+## Review
+
+
+
+1. From Ordered to Unordered: Stereotype and Reduced-Rank Models
+2. Develop Multinomial Logit Model
+3. Effects and Effect Displays
+4. Model Fit and Evaluation
+5. IIA Assumption
+6. Conditional Logit
+7. Separation Problems
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

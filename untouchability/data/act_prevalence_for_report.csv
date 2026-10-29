@@ -1,0 +1,99 @@
+category,act,actnum,in_index,nvil
+Water,Village wells,1,0,0.662807525325615
+Water,Water tap located in ND area,2,1,0.714396284829721
+Water,Public pub,3,0,0.42876526458616
+Water,Water pot in school,4,0,0.42037186742118
+Water,Water for Panchayat members,5,1,0.627106227106227
+Food,Shops,6,1,0.450605481198216
+Food,Mid-day meal,7,1,0.537798408488064
+Food,Vadu for scavengers,8,0,0.965046888320546
+Food,Food for laborers in farm,9,1,0.967741935483871
+Food,Community meals in village,10,1,0.943100065402224
+Food,At village tea stalls,11,1,0.5648
+Food,Food for ND beggars,12,0,0.945778997940974
+Food,Tea for Panchayat members,13,1,0.671071953010279
+Food,Tea for Dalits in ND houses,14,1,0.980367321089297
+Food,Dalit cook in mid-day meal,15,0,0.786082474226804
+Food,Soda pub,16,0,0.319444444444444
+Food,Liquor pub,17,0,0.818858560794045
+Religion,Temple entry,18,1,0.90810465858328
+Religion,Mata no Madh,19,1,0.971542025148908
+Religion,Prasad,20,1,0.923027989821883
+Religion,Temple inauguration,21,0,0.956123117223314
+Religion,Katha/Parayan,22,1,0.931237721021611
+Religion,Satsang,23,1,0.911111111111111
+Religion,Services of Dalit holy women,24,0,0.972477064220184
+Religion,Religious services by ND priests,25,1,0.968647942521228
+Religion,Dalit religious places,26,1,0.830723340790455
+Religion,Touching worship articles,27,1,0.972990353697749
+Touch,Shaking hands,28,1,0.647096362476069
+Touch,Accidental body touch,29,1,0.383805134957209
+Touch,Smoking pipe,30,0,0.937751004016064
+Touch,Snuff,31,1,0.852822580645161
+Touch,Entering ND house,32,1,0.969065656565657
+Touch,Sitting on cot/chair,33,1,0.935565382185723
+Touch,Bidi smoke passing towards ND,34,1,0.346178548490687
+Touch,Touching water pots/utensils,35,0,0.976478067387158
+Touch,Sprinkle of water from dalit body,36,1,0.447257383966245
+Touch,Touching vegetables in shop,37,1,0.351692103516921
+Touch,Sprinkle water on home entry,38,1,0.513833992094862
+Touch,Touching food,39,0,0.948341836734694
+Touch,Sprinkle on money at shop,40,0,0.0524523160762943
+Touch,Eave teasing Dalit women,41,0,0.435693641618497
+Touch,D teacher touch ND child,42,0,0.0748576078112287
+Public Facilities,Bus services,43,0,0.0747087045921864
+Public Facilities,Ration shop,44,1,0.224521072796935
+Public Facilities,Panchayat office,45,1,0.5554821664465
+Public Facilities,Milk dairy,46,1,0.389900662251656
+Public Facilities,Equal treatment to Dalit teachers,47,1,0.217075386012716
+Public Facilities,Chair for elected Sarpanch,48,0,0.195488721804511
+Public Facilities,Chair for Dalit Talati,49,0,0.0902777777777778
+Public Facilities,Midwife for Dalits,50,1,0.662121212121211
+Public Facilities,Primary health center,51,0,0.103926096997691
+Public Facilities,Public bathing places,52,0,0.299829642248722
+Public Facilities,Washing ghats,53,1,0.371794871794871
+Public Facilities,Halt at Dharmshala,54,0,0.597785977859778
+Public Facilities,Postman,55,1,0.199426111908178
+Public Facilities,Dalit postman,56,0,0.431558935361217
+Public Facilities,Dalit Midwife/nurse,57,1,0.583333333333333
+Public Facilities,Burial ground,58,0,0.955833882663151
+Public Facilities,Multi-purpose co-op soc.,59,1,0.38962472406181
+Public Facilities,Walk on public road sidestepping,60,1,0.241153342070773
+Public Facilities,Sitting together in school,61,1,0.228682170542636
+Public Facilities,Sitting on Chaura,62,1,0.546657842488418
+Public Facilities,Gramsabha participation,63,1,0.444660194174757
+Public Facilities,Gauchar land access,64,1,0.49302649930265
+Jobs,Disposal of carcass,65,0,0.969635627530364
+Jobs,Tying festoons,66,0,0.952547103977669
+Jobs,Saad/voice calling,67,0,0.947939262472885
+Jobs,Melo,68,0,0.849112426035503
+Jobs,Indhoni,69,0,0.85096870342772
+Jobs,Dhol,70,0,0.915273132664437
+Jobs,Collect kafan in cemetery,71,0,0.93485342019544
+Jobs,Scavenging,72,0,0.777188328912467
+Jobs,Dabhdo,73,0,0.746835443037975
+Jobs,Datan,74,0,0.435967302452316
+Practices/Social Sanctions,Calling Bapu,75,0,0.646886446886446
+Practices/Social Sanctions,Vacate Seat in Bus,76,0,0.109154929577465
+Practices/Social Sanctions,Mundan on Baa's Death,77,0,0.0233372228704785
+Practices/Social Sanctions,Touching feet of baa Dalit Bride,78,0,0.644245142002989
+Practices/Social Sanctions,Inter-caste Marriage,79,0,0.984229390681003
+Practices/Social Sanctions,In shirt/ornaments/goggles,80,0,0.21724818959842
+Practices/Social Sanctions,Participating Navratri Garba,81,1,0.851612903225806
+Practices/Social Sanctions,Attending Panchayat Meetings,82,1,0.477936184657162
+Practices/Social Sanctions,Hiring House in ND Locality,83,0,0.981045751633987
+Practices/Social Sanctions,Drive Through the Village in Vehicle,84,0,0.118300653594772
+Practices/Social Sanctions,Passing ND area with Dead Body,85,0,0.556639159789948
+Practices/Social Sanctions,Sitting on Horse,86,0,0.5125
+Practices/Social Sanctions,Phuleku,87,0,0.653146853146853
+Practices/Social Sanctions,Musical Instruments for Wedding,88,0,0.199608610567515
+Public/Private Discrimination,Pvt doctor service in village,89,1,0.100446428571428
+Public/Private Discrimination,Employment in home-based work,90,0,0.647849462365591
+Public/Private Discrimination,Dalit as shop owner,91,0,0.436
+Public/Private Discrimination,Potter,92,1,0.615528531337699
+Public/Private Discrimination,Barber,93,1,0.735891647855531
+Public/Private Discrimination,Tailor,94,1,0.337702390131072
+Public/Private Discrimination,Hiring cooking pots for wedding,95,1,0.876397107166338
+Public/Private Discrimination,Private owner transport system,96,0,0.0821566110397947
+Public/Private Discrimination,Street lights,97,0,0.288801571709234
+Public/Private Discrimination,Drinking water supply,98,1,0.295438596491228

@@ -1,0 +1,111 @@
+:root { --ink: #263b3c; --accent: #8c3c2d; --paper: #fffefa; }
+.book .book-body { background: var(--paper); }
+.book .book-body .page-wrapper .page-inner { max-width: 900px; padding: 36px 48px 70px; }
+.book .book-body .page-wrapper .page-inner section.normal { font-size: 18px; line-height: 1.75; color: #283133; }
+.book .book-body .page-wrapper .page-inner section.normal h1,
+.book .book-body .page-wrapper .page-inner section.normal h2,
+.book .book-body .page-wrapper .page-inner section.normal h3 { color: var(--ink); line-height: 1.25; font-family: Georgia, serif; }
+.book .book-body .page-wrapper .page-inner section.normal h1 { font-size: 2.1em; margin-top: 15px; }
+.book .book-summary { background: #f0f1ec; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.book .book-summary ul.summary li a { white-space: normal; line-height: 1.45; }
+.book .book-summary ul.summary li.active>a { color: var(--accent); font-weight: 600; }
+.book .book-summary .book-title a { font-family: Georgia, serif; font-weight: bold; font-size: 18px; color: var(--ink); padding-top: 24px; padding-bottom: 24px; }
+.book a { color: var(--accent); }
+.report-intro { display: flow-root; margin: 2em 0; }
+.report-cover { float: right; width: 34%; margin: 0 0 24px 32px !important; box-shadow: 0 5px 20px #0002; }
+.download-link { display: inline-block; border: 1px solid #8c3c2d55; border-radius: 4px; padding: 8px 15px; text-decoration: none; }
+.source-page { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 11px !important; letter-spacing: .07em; text-transform: uppercase; margin: 2.4em 0 1em !important; opacity: .75; }
+.table-scroll { overflow-x: auto; max-width: 100%; margin: 1.8em 0; border: 1px solid #ddd; border-radius: 4px; }
+.book .book-body .page-wrapper .page-inner section.normal table { display: table; width: 100%; font-size: 14px; line-height: 1.5; margin: 0; }
+.book .book-body .page-wrapper .page-inner section.normal table th { background: #e6ece8; color: var(--ink); text-align: left; }
+.book .book-body .page-wrapper .page-inner section.normal table td { vertical-align: top; min-width: 65px; }
+.book .book-body .page-wrapper .page-inner section.normal table tr:nth-child(2n) { background: #f5f5ef; }
+section.normal img { display: block; margin: 1.5em auto; max-width: 100%; height: auto; }
+section.normal sup { font-size: .65em; }
+section.normal a:focus-visible, .table-scroll:focus-visible { outline: 3px solid #c2843f; outline-offset: 3px; }
+@media(max-width: 650px) {
+ .book .book-body .page-wrapper .page-inner { padding: 22px 22px 55px; }
+ .book .book-body .page-wrapper .page-inner section.normal { font-size: 17px; }
+ .report-cover { width: 40%; margin-left: 20px !important; }
+ .book .book-body .page-wrapper .page-inner section.normal h1 { font-size: 1.7em; }
+}
+@media print { .source-page, .book-header { display: none; } .table-scroll { overflow: visible; } }
+.table-transcript { white-space: pre-wrap; font-size: 13px; }
+/* Keep multi-column tables legible in narrow reader panels. */
+.table-scroll table:has(tr > :nth-child(2)) { min-width: 580px; }
+
+/* Mokken example: native text and CSS, with a shared ability continuum. */
+.mokken-scale { margin: 1.4em 0; padding: 0; color: var(--ink); break-inside: avoid; }
+.mokken-scale-drawing { display: flex; align-items: center; gap: 16px; height: 100px; font-family: inherit; font-size: 15px; line-height: 1.2; }
+.mokken-end { flex: none; white-space: nowrap; }
+.mokken-track { flex: 1; position: relative; height: 1px; background: currentColor; }
+.mokken-track::before, .mokken-track::after { content: ""; position: absolute; top: -5px; width: 10px; height: 10px; border: solid currentColor; border-width: 1px 0 0 1px; }
+.mokken-track::before { left: 0; transform: rotate(-45deg); }
+.mokken-track::after { right: 0; transform: rotate(135deg); }
+.mokken-tick { position: absolute; left: var(--position); top: -8px; height: 17px; border-left: 1px solid currentColor; }
+.mokken-tick > span { position: absolute; bottom: 27px; left: 0; transform: translateX(-50%); white-space: nowrap; }
+.mokken-student { position: absolute; left: var(--position); top: 19px; transform: translateX(-50%); font-weight: 600; color: var(--accent); }
+@media (max-width: 650px) {
+ .mokken-scale-drawing { font-size: clamp(12px, 2.6vw, 14px); gap: 10px; height: 100px; }
+ .mokken-arithmetic > span { transform: translateX(-65%); }
+ .mokken-calculus > span { transform: translateX(-35%); }
+}
+
+.mokken-scale:not(:has(.mokken-tick)) .mokken-scale-drawing { height: 60px; }
+
+.prevalence-figure { margin: 2em 0; }
+.prevalence-figure figcaption { font-weight: bold; color: var(--ink); margin-bottom: .75em; }
+/* Labels and bars share responsive rows; no fixed-width canvas or scrolling. */
+.prevalence-horizontal { --label-width: 40%; --chart-gap: 14px; }
+.prevalence-row, .prevalence-axis-row { display: grid; grid-template-columns: minmax(0, var(--label-width)) minmax(0, 1fr); column-gap: var(--chart-gap); }
+.prevalence-row { align-items: center; min-height: 32px; padding: 3px 0; }
+.prevalence-label { font-size: 15px; line-height: 1.25; text-align: right; overflow-wrap: break-word; }
+.prevalence-track { position: relative; height: 22px; display: flex; align-items: center; border-left: 1px solid #263b3c55; background-image: linear-gradient(to right, transparent calc(100% - 1px), #263b3c20 0); background-size: 25% 100%; }
+.prevalence-bar { height: 17px; background: var(--ink); min-width: 1px; }
+.prevalence-bar:hover, .prevalence-bar:focus-visible { background: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; }
+.prevalence-axis { grid-column: 2; position: relative; height: 26px; margin-top: 5px; border-top: 1px solid #263b3c55; }
+.prevalence-axis-tick { position: absolute; top: 5px; transform: translateX(-50%); font-size: 12px; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.prevalence-axis-tick:first-child { transform: none; }
+.prevalence-axis-tick:last-child { transform: translateX(-100%); }
+.prevalence-axis-title { margin-left: calc(var(--label-width) + var(--chart-gap)); text-align: center; font-size: 14px; line-height: 1.35; margin-top: 5px; margin-bottom: 20px; }
+.prevalence-data .table-scroll table { min-width: 0 !important; }
+@media(max-width: 650px) {
+ .prevalence-horizontal { --label-width: 45%; --chart-gap: 10px; }
+ .prevalence-label { font-size: 13px; }
+ .prevalence-row { min-height: 29px; }
+ .prevalence-bar { height: 15px; }
+ .prevalence-axis-tick { font-size: 11px; }
+ .prevalence-axis-title { font-size: 12px; }
+}
+.prevalence-data { font-size: .85em; }
+.prevalence-data summary { cursor: pointer; color: var(--accent); }
+@media(max-width: 650px) {
+ .prevalence-axis-tick:nth-child(2), .prevalence-axis-tick:nth-child(4) { display: none; }
+}
+
+.village-map-figure { margin: 2em 0; }
+.village-map-figure figcaption { color: var(--ink); font-weight: bold; line-height: 1.4; }
+.village-map-frame { display: block; width: 100%; height: 620px; border: 1px solid #d4d9d2; border-radius: 4px; }
+.map-instructions, .map-note, .map-open { font-size: 14px !important; line-height: 1.5 !important; }
+@media(max-width: 650px) { .village-map-frame { height: 540px; } }
+
+.activity-controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; margin: 1.5em 0 .7em; }
+.activity-controls label { display: flex; flex-direction: column; gap: 5px; font-size: 15px; font-weight: bold; }
+.activity-controls select, #activity-reset { font-family: inherit; font-size: 15px; line-height: 1.4; color: var(--ink); background: var(--paper); border: 1px solid #b5bfb5; border-radius: 4px; padding: 8px 12px; }
+#activity-reset, .activity-sort { cursor: pointer; }
+#activity-count { font-size: 14px; }
+.activity-sort { font: inherit; font-weight: bold; color: inherit; background: transparent; border: 0; padding: 0; text-align: left; }
+.activity-sort span { margin-left: 5px; }
+.activity-table-wrap { margin-top: .75em; }
+#activity-table th:nth-child(1) { width: 13%; }
+#activity-table th:nth-child(2) { width: 22%; }
+#activity-table th:nth-child(3) { width: 43%; }
+#activity-table .activity-percent { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+#activity-table th:nth-child(4) { text-align: right; }
+#activity-table td:last-child { text-align: center; }
+.book .book-body .page-wrapper .page-inner section.normal #activity-table tr { background: transparent; }
+.book .book-body .page-wrapper .page-inner section.normal #activity-table tr.activity-even { background: #f5f5ef; }
+#activity-table tr[hidden], #activity-empty[hidden] { display: none !important; }
+.activity-controls select:focus-visible, .activity-sort:focus-visible, #activity-reset:focus-visible { outline: 3px solid #c2843f; outline-offset: 3px; }
+
+.activity-sort { white-space: nowrap; }

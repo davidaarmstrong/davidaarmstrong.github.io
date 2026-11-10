@@ -1,0 +1,2445 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+  <head>
+    <title>POLSCI 9592</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Dave Armstrong" />
+    <script src="lecture8_2026_files/header-attrs/header-attrs.js"></script>
+    <link href="lecture8_2026_files/remark-css/default.css" rel="stylesheet" />
+    <script src="lecture8_2026_files/xaringanExtra_fit-screen/fit-screen.js"></script>
+    <script src="lecture8_2026_files/fabric/fabric.min.js"></script>
+    <link href="lecture8_2026_files/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="lecture8_2026_files/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#D86018"],"pen_size":5,"eraser_size":50,"palette":["#9A3324","#575294","#D86018","#00274C","#FFCB05"]}) })</script>
+    <script src="lecture8_2026_files/clipboard/clipboard.min.js"></script>
+    <link href="lecture8_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="lecture8_2026_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="lecture8_2026_files/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="lecture8_2026_files/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <script>
+    function releaseMath(el) {
+      const codes = el.getElementsByTagName('code');
+
+      for (let i = 0; i < codes.length;) {
+        const code = codes[i];
+
+        if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+          const text = code.textContent.trim();
+
+          const isMath =
+            /^\$\$(.|\s)+\$\$$/.test(text) ||
+            /^\$(?!\$)(.|\s)+\$$/.test(text) ||
+            /^\\\((.|\s)+\\\)$/.test(text) ||
+            /^\\\[(.|\s)+\\\]$/.test(text) ||
+            /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text);
+
+          if (isMath) {
+            code.outerHTML = code.innerHTML;
+            continue;
+          }
+        }
+
+        i++;
+      }
+    }
+    </script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-svg.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      function rerenderMath() {
+        releaseMath(document);
+
+        if (window.MathJax && MathJax.typesetPromise) {
+          MathJax.typesetPromise().catch(function (err) {
+            console.error("MathJax typeset failed:", err);
+          });
+        }
+      }
+
+      if (window.slideshow && typeof slideshow.on === "function") {
+        slideshow.on("afterShowSlide", rerenderMath);
+      }
+
+      rerenderMath();
+    });
+    </script>
+    <link rel="stylesheet" href="xaringan-themer-2026.css" type="text/css" />
+    <link rel="stylesheet" href="www/layout.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# POLSCI 9592
+]
+.subtitle[
+## Lecture 8: Splines, Smoothing Splines, and Smooth Interactions
+]
+.author[
+### Dave Armstrong
+]
+
+---
+
+
+&lt;style type="text/css"&gt;
+.full-width table {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+.right-shift50 {
+  width: 48%;
+  float: right;
+  position:relative;
+  top: -50px;
+}
+
+.right-shift100 {
+  width: 48%;
+  float: right;
+  position:relative;
+  top: -100px;
+}
+
+&lt;/style&gt;
+
+
+
+
+
+
+
+## Why Functional Form Matters
+
+Every regression model makes an assumption about the shape of the relationship between `\(x\)` and `\(y\)`.
+
+That assumption can go wrong in a few ways:
+- The estimated relationship is too restrictive (e.g., linear when the truth bends).
+- The estimated relationship is more complex than it needs to be.
+- The estimated relationship imposes (or fails to impose) shape constraints like monotonicity.
+
+--
+
+When it does go wrong, we can get:
+- The wrong shape of the relationship.
+- Wrong effect sizes, or even the wrong direction, in parts of the range of `\(x\)`.
+- Spurious thresholds, turning points, or saturation effects.
+- Poor predictions.
+
+--
+
+Flexible models let the data tell us about the shape - but they bring their own choices (knots, smoothing parameters), and a curve fitted to this sample may not generalize to new data.
+
+---
+
+## Functional Form Assumptions. 
+
+When estimating a parametric (linear) model, particularly when interested in the relationship between `\(x\)` and `\(y\)`, we estimate: 
+
+`$$y_i = a + f(x_i) + g(\mathbf{z}_i) + e_i$$`
+Where:
+- `\(x\)` is a variable of interest
+- `\(\mathbf{z}\)` is a vector of covariates.
+
+Usually, `\(f(x)\)` is pre-specified - we choose a particular functional form (linear, polynomial, logged, etc.) before seeing the results.
+
+In this lecture, we focus on some more flexible models for this task. 
+
+---
+
+## Roadmap for Lecture
+
+1. Regression Splines
+    - What is a basis function?  Hint: we've already used them.
+    - Need to discuss cross-validation.
+2. Smoothing Splines - less noisy regression splines.
+    - Need to discuss regularization.
+3. Generalized Additive Models (GAMs) - smoothing splines in the multiple regression context.
+4. Shape-constrained GAMs - implement monotone constraints on smoothing splines.
+5. Smooth Interactions - relaxing the linearity of conditional effects.
+
+--
+
+Along the way, we will relax three assumptions we usually make without thinking about them:
+- Constant marginal effects
+- Monotonicity
+- Linear conditional effects in interactions
+
+???
+
+Unlike transformations and polynomials, these approaches do not require us to specify the exact shape of the relationship in advance.
+
+---
+
+## Why Not Just Use More Polynomials?
+
+If we want more flexibility, why not just use more polynomial terms? 
+
+- High-order polynomials can oscillate.
+- Local changes affect the entire curve.
+- Difficult to interpret.
+
+--
+
+Consider the following Example
+
+---
+
+## Example
+
+.pull-left[
+We start with the following familiar model:
+
+`$$y = f(x) + \varepsilon$$`
+
+Here, we would like to estimate this with one model rather than a series of local models.
+]
+.pull-right-shift2[
+&lt;img src="lecture8_2026_files/figure-html/simplespline-1.png" alt="Scatter plot of 100 observations showing a V-shaped relationship between x (1–100) and y. Points fan out around a minimum near x = 60, motivating a piecewise model with a slope change at that value." width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+
+## Failure of Polynomials and LPR
+
+.pull-left[
+The polynomial is not sufficiently flexible to match the shape. 
+- the values in the "point" of the relationship are systematically overpredicted.  
+
+The Loess curve is more flexible, but it still struggles to capture the sharp change in direction.
+- Loess also uses more degrees of freedom to fit the relationship. 
+]
+.right-shift50[
+&lt;img src="lecture8_2026_files/figure-html/polyfig-1.png" alt="Scatter plot of the same V-shaped data with two fitted curves: a degree-2 polynomial and a loess smooth (span = 0.75, approximately 4.36 effective df). The polynomial forms a symmetric arc that overpredicts near the bend at x = 60; the loess smooth rounds the corner rather than tracking the sharp change in direction." width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Definition of Splines
+
+Splines are: _piecewise regression functions that are constrained to join smoothly at points on the x-axis called knots_
+
+- Rather than fitting a single relationship across the entire range of `\(x\)`, splines fit several local relationships.
+- The knots determine where one local relationship gives way to another.
+- The constraints ensure that the resulting function behaves as a single smooth curve rather than a collection of disconnected pieces.
+
+---
+
+## Simple Example
+
+
+.pull-left[
+In this simple example, it is easy to figure out what sort of model we want:
+
+- It appears that the relationship between `\(x\)` and `\(y\)` would be well-characterized by two lines.
+    - One with a negative slope in the range `\(x = \lbrack 0, 60)\)`
+    - One with a positive slope in the range `\(x = \lbrack 60,100\rbrack\)`
+
+
+These are all the things we need to know right now to model the relationship.
+
+]
+.right-shift50[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-2-1.png" alt="Scatter plot of 100 observations showing a V-shaped relationship between x (1–100) and y, with the bend at approximately x = 60." width="100%" /&gt;
+]
+
+---
+
+
+## Dummy Interaction
+
+.pull-left[
+You might ask, couldn't we just use an interaction between `\(x\)` and a dummy variable coded 1 if `\(x &gt; 60\)` and zero otherwise.
+
+`$$y = b_{0} + b_{1}x_{1} + b_{2}d + b_{3}x\times d + e$$`
+
+This seems like a perfectly reasonable thing to do.  What can it give you though:
+]
+.right-shift50[
+&lt;img src="lecture8_2026_files/figure-html/dumint-1.png" alt="Line plot of predicted values from the dummy-interaction model (y ~ x * d, d = I(x &amp;gt;= 60)) overlaid on scatter data. The fitted line jumps discontinuously at x = 60 — the two piecewise segments meet at different levels — illustrating that the unconstrained interaction fails to enforce continuity at the knot." width="100%" height="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+
+
+## Constraining the Piecewise Linear Model
+
+.pull-left[
+The problem with the linear interaction model is that it is _too_ flexible.
+
+`$$y = b_{0} + b_{1}x + b_{2}d + b_{3}x\times d + e$$`
+
+This sets up two different equations:
+
+`$$y = \begin{cases}
+ d = 0: &amp; b_0 + b_1x\\
+ d = 1: &amp; (b_0 + b_2) + (b_1 + b_3)x
+ \end{cases}$$`
+
+We need to estimate both slopes, but if we want the lines to join at the knot value, the two model intercepts cannot both be free.
+]
+.pull-right[
+We need the following to be true at knot location `\(k\)`:
+
+`$$\begin{aligned}
+b_0 + b_1 k &amp;= (b_0 + b_2) + (b_1 + b_3)k\\
+b_0 + b_1 k &amp;= b_0 + b_2 + b_1k + b_3k\\
+0 &amp;= b_2 + b_3k\\
+b_2 &amp;= -b_3k
+\end{aligned}$$`
+
+So once we know the change in slope ( `\(b_3\)` ), the change in intercept is determined - it is not a free parameter.
+]
+
+---
+
+## Piecewise Linear Spline
+
+Suppose we define a function as follows:
+
+`$$(x-k)_{+} = \begin{cases}
+x-k &amp; \text{ if } x &gt; k\\
+0 &amp; \text{ Otherwise}
+\end{cases}$$`
+
+We then use that function of `\(x\)` in the model as well. 
+
+`$$y = b_{0} + b_{1}x + b_{3}(x-60)_{+} + e$$`
+
+This sets up essentially 2 equations:
+
+`$$\begin{aligned}
+   x \leq 60:&amp; y = b_{0} + b_{1}x\\
+   x &gt; 60:&amp; y = b_{0} + b_{1}x + b_{3}(x-60) = (b_{0} + \underbrace{-b_{3}60}_{b2}) + (b_{1}+b_{3})x
+\end{aligned}$$`
+
+Notice that here we are only estimating 3 parameters, where the interaction would estimate 4 parameters.  Thus, this is a constrained version of the interaction.
+
+
+---
+
+
+## Fixing the Discontinuity
+
+
+.pull-left[
+Including `\(x\)` and `\((x-60)_{+}\)` as regressors, which generates the following predictions:
+
+
+``` r
+pwl &lt;- function(x, k)ifelse(x &gt; k, x-k, 0)
+
+ggplot(mapping=aes(x=x, y=y)) +
+  geom_smooth(method="lm",
+              formula=y ~ x + pwl(x, 60)) +
+  geom_point() +
+  theme_minimal()
+```
+]
+.right-shift50[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-3-1.png" alt="Scatter plot of the V-shaped data with a piecewise linear spline (y ~ x + pwl(x, 60)) fitted by geom_smooth(), shown as a line with confidence ribbon. The fitted line changes slope at x = 60 but remains continuous, forming a connected V-shape without the jump seen in the interaction model." width="100%" height="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+(Note, with piecewise linear functions, we're not constraining the derivatives to be continuous).
+
+---
+
+## Basis Functions
+
+A basis function is really just a function that transforms the values of `\(x\)`. So, instead of estimating:
+
+`$$y_i = \beta_0 + \beta_1x_i + \varepsilon_i$$`
+
+we estimate:
+
+`$$y_i = \beta_0 + \beta_1s_1(x_i) + \beta_2s_2(x_i) + \ldots +\beta_ks_k(x_i) + \varepsilon_i$$`
+
+The basis functions `\(s_k(\cdot)\)` are known ahead of time (not estimated by the model).
+- We can think of polynomials as basis functions where `\(s_j(x_i) = x_i^j\)`
+- The piecewise linear function `\((x-k)_{+}\)` is also a basis function. 
+
+
+---
+
+## Basis Functions: Interactive Demo
+
+If `\(y_i = \beta_0 + \beta_1s_1(x_i) + \beta_2s_2(x_i) + \varepsilon_i\)`, then we can see how those basis functions combine to make the curve change shape with the app below. 
+
+
+<div style="max-width:730px; margin:0 auto; padding:0.25rem 0; font-family:'Atkinson Hyperlegible',sans-serif;">
+
+  <div style="display:flex; gap:10px; align-items:flex-start;">
+    <div style="flex:1; text-align:center;">
+      <p style="font-size:13px; font-weight:500; color:#333; margin:0 0 4px;">Weighted basis functions</p>
+      <canvas id="bfd-c1" width="345" height="245" style="display:block; width:100%; border-radius:4px;"></canvas>
+    </div>
+    <div style="flex:1; text-align:center;">
+      <p style="font-size:13px; font-weight:500; color:#333; margin:0 0 4px;">Combined: <span id="bfd-eq" style="font-weight:400; font-size:12px; color:#666;"></span></p>
+      <canvas id="bfd-c2" width="345" height="245" style="display:block; width:100%; border-radius:4px;"></canvas>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:12px; justify-content:center; font-size:11px; color:#666; margin-top:6px; flex-wrap:wrap; align-items:center;">
+    <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:18px;height:2.5px;background:#0072B2;border-radius:2px;"></span>&#946;&#8321;&middot;x</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:18px;height:2.5px;background:#E69F00;border-radius:2px;"></span>&#946;&#8322;&middot;x&#178;</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:18px;height:1.5px;background:#0072B2;opacity:0.35;border-radius:2px;"></span>b&#8321;(x)=x (ref)</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:18px;height:1.5px;background:#E69F00;opacity:0.35;border-radius:2px;"></span>b&#8322;(x)=x&#178; (ref)</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:18px;height:3px;background:#222;border-radius:2px;"></span>f(x)</span>
+  </div>
+
+  <div style="display:flex; justify-content:center; gap:28px; margin-top:12px; align-items:center; flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:7px;font-size:13px;">
+      <span style="min-width:18px; color:#555;">&#946;&#8320;</span>
+      <input type="range" id="bfd-s0" min="-2" max="2" step="0.1" value="0" style="width:95px;">
+      <span id="bfd-v0" style="min-width:30px;text-align:right;font-size:12px;color:#555;">0.0</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:7px;font-size:13px;">
+      <span style="min-width:18px; color:#0072B2; font-weight:500;">&#946;&#8321;</span>
+      <input type="range" id="bfd-s1" min="-3" max="3" step="0.1" value="1" style="width:95px;">
+      <span id="bfd-v1" style="min-width:30px;text-align:right;font-size:12px;color:#0072B2;">1.0</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:7px;font-size:13px;">
+      <span style="min-width:18px; color:#E69F00; font-weight:500;">&#946;&#8322;</span>
+      <input type="range" id="bfd-s2" min="-3" max="3" step="0.1" value="1" style="width:95px;">
+      <span id="bfd-v2" style="min-width:30px;text-align:right;font-size:12px;color:#E69F00;">1.0</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var C1 = '#0072B2', C2 = '#E69F00', CF = '#222';
+  var beta = [0, 1, 1];
+
+  function b1(x) { return x; }
+  function b2(x) { return x * x; }
+  function fsum(x) { return beta[0] + beta[1] * b1(x) + beta[2] * b2(x); }
+
+  function niceStep(lo, hi, n) {
+    var r = Math.abs(hi - lo) / n;
+    if (r < 1e-10) return 0.5;
+    var e = Math.floor(Math.log(r) / Math.LN10);
+    var f = r / Math.pow(10, e);
+    return (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * Math.pow(10, e);
+  }
+
+  function yRange(fns) {
+    var lo = Infinity, hi = -Infinity;
+    for (var i = 0; i <= 200; i++) {
+      var x = -1 + 2 * i / 200;
+      fns.forEach(function(fn) {
+        var y = fn(x);
+        if (isFinite(y)) { lo = Math.min(lo, y); hi = Math.max(hi, y); }
+      });
+    }
+    if (!isFinite(lo)) { lo = -1; hi = 1; }
+    var pad = Math.max(0.2, (hi - lo) * 0.15);
+    return [Math.min(lo - pad, -0.1), Math.max(hi + pad, 0.1)];
+  }
+
+  function drawPlot(id, curves, ylo, yhi) {
+    var cv = document.getElementById(id);
+    if (!cv) return;
+    var ctx = cv.getContext('2d');
+    var W = cv.width, H = cv.height;
+    var mg = { t: 8, r: 8, b: 28, l: 40 };
+    var pw = W - mg.l - mg.r, ph = H - mg.t - mg.b;
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#f8f8f8';
+    ctx.fillRect(mg.l, mg.t, pw, ph);
+
+    function xp(x) { return mg.l + (x + 1) / 2 * pw; }
+    function yp(y) { return mg.t + (1 - (y - ylo) / (yhi - ylo)) * ph; }
+
+    var step = niceStep(ylo, yhi, 5);
+    ctx.strokeStyle = '#e0e0e0';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([2, 3]);
+    var yg = Math.ceil(ylo / step - 1e-9) * step;
+    while (yg <= yhi + 1e-9) {
+      ctx.beginPath(); ctx.moveTo(mg.l, yp(yg)); ctx.lineTo(mg.l + pw, yp(yg)); ctx.stroke();
+      yg += step;
+    }
+    [-1, -0.5, 0, 0.5, 1].forEach(function(xv) {
+      ctx.beginPath(); ctx.moveTo(xp(xv), mg.t); ctx.lineTo(xp(xv), mg.t + ph); ctx.stroke();
+    });
+    ctx.setLineDash([]);
+
+    if (ylo < 0 && yhi > 0) {
+      ctx.strokeStyle = '#bbb'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(mg.l, yp(0)); ctx.lineTo(mg.l + pw, yp(0)); ctx.stroke();
+    }
+
+    ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1;
+    ctx.strokeRect(mg.l, mg.t, pw, ph);
+
+    ctx.fillStyle = '#888'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+    [-1, -0.5, 0, 0.5, 1].forEach(function(xv) {
+      ctx.fillText(xv === 0 ? '0' : xv.toFixed(1), xp(xv), mg.t + ph + 12);
+    });
+    ctx.fillText('x', mg.l + pw / 2, H - 1);
+    ctx.textAlign = 'right';
+    yg = Math.ceil(ylo / step - 1e-9) * step;
+    while (yg <= yhi + 1e-9) {
+      ctx.fillText(Math.abs(yg) < 1e-9 ? '0' : yg.toFixed(1), mg.l - 4, yp(yg) + 4);
+      yg += step;
+    }
+
+    curves.forEach(function(c) {
+      ctx.strokeStyle = c.color;
+      ctx.lineWidth = c.lw || 2;
+      ctx.setLineDash(c.dash || []);
+      ctx.globalAlpha = c.alpha !== undefined ? c.alpha : 1;
+      ctx.beginPath();
+      var first = true;
+      for (var i = 0; i <= 300; i++) {
+        var x = -1 + 2 * i / 300;
+        var y = c.fn(x);
+        if (!isFinite(y)) { first = true; continue; }
+        var px = xp(x), py = yp(Math.max(ylo - 0.5, Math.min(yhi + 0.5, y)));
+        first ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+        first = false;
+      }
+      ctx.stroke();
+      ctx.setLineDash([]); ctx.globalAlpha = 1;
+    });
+  }
+
+  function update() {
+    var wb1 = function(x) { return beta[1] * b1(x); };
+    var wb2 = function(x) { return beta[2] * b2(x); };
+
+    var yr1 = yRange([b1, b2, wb1, wb2]);
+    drawPlot('bfd-c1', [
+      { fn: b1,  color: C1, lw: 1.5, dash: [5, 3], alpha: 0.2 },
+      { fn: b2,  color: C2, lw: 1.5, dash: [5, 3], alpha: 0.2 },
+      { fn: wb1, color: C1, lw: 2.5 },
+      { fn: wb2, color: C2, lw: 2.5 }
+    ], yr1[0], yr1[1]);
+
+    var yr2 = yRange([fsum, wb1, wb2]);
+    drawPlot('bfd-c2', [
+      { fn: wb1,  color: C1, lw: 1.5, dash: [5, 3], alpha: 0.35 },
+      { fn: wb2,  color: C2, lw: 1.5, dash: [5, 3], alpha: 0.35 },
+      { fn: fsum, color: CF, lw: 3 }
+    ], yr2[0], yr2[1]);
+
+    var sgn = function(v) { return v >= 0 ? '+' : ''; };
+    document.getElementById('bfd-eq').innerHTML =
+      'f(x) = ' + beta[0].toFixed(1) +
+      ' <span style="color:' + C1 + '">' + sgn(beta[1]) + beta[1].toFixed(1) + 'x</span>' +
+      ' <span style="color:' + C2 + '">' + sgn(beta[2]) + beta[2].toFixed(1) + 'x²</span>';
+  }
+
+  ['bfd-s0', 'bfd-s1', 'bfd-s2'].forEach(function(id, i) {
+    var sl = document.getElementById(id);
+    var vd = document.getElementById('bfd-v' + i);
+    if (!sl) return;
+    sl.addEventListener('input', function() {
+      beta[i] = parseFloat(sl.value);
+      vd.textContent = beta[i].toFixed(1);
+      update();
+    });
+  });
+
+  update();
+}());
+</script>
+
+---
+
+## Piecewise Polynomials
+
+The piecewise linear model is useful in situations like the one we encounter here, but it is insufficiently flexible to capture a wide array of non-linear relationships.  Higher-order piecewise polynomials can. 
+
+`$$y_i = \left\{\begin{array}{lc}
+  \beta_{01} + \beta_{11}x_i + \beta_{21}x_i^2 + \beta_{31}x_i^3 + \varepsilon_i &amp; x_i &lt; c\\
+  \beta_{02} + \beta_{12}x_i + \beta_{22}x_i^2 + \beta_{32}x_i^3 + \varepsilon_i &amp; x_i \geq c
+\end{array}\right.$$`
+
+Just as above though, these polynomials are unconstrained and can generate a discontinuity at the *knot* location `\(c\)`.
+
+---
+
+## Constraining the Piecewise Polynomial Model
+
+To constrain the model, the splines are constructed:
+
+- such that the first and second derivatives of the function continuous.
+
+- Each constraint reduces the number of per-knot degrees of freedom used by one.
+
+- In general, the model uses: Polynomial Degree `\(+\)` \# Knots `\(+\)` 1 (for the intercept) degrees of freedom
+
+
+---
+
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-6-1.png" alt="Four-panel figure illustrating progressively stricter smoothness constraints at a spline knot. Top-left (no constraint): a visible gap separates the left (blue) and right (orange) cubic pieces. Top-right (C0, continuity): the gap closes but mismatched tangent lines reveal a visible corner. Bottom-left (C1, continuous slope): the corner is removed, but a green shaded ribbon between the shared tangent and the right piece shows that curvature still changes abruptly. Bottom-right (C2, continuous curvature): the pieces join with matching level, slope, and curvature, producing a smooth transition." width="75%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+## Truncated Power Basis Functions
+
+The easiest set of spline functions to consider (for knot location `\(k\)` and polynomial degree `\(p\)`) are called truncated power functions, defined as:
+
+`$$h(x, k) = (x - k)_{+}^{p} = \left\{\begin{array}{ll}(x-k)^{p} &amp; \text{if } x &gt; k\\ 0 &amp; \text{otherwise}\end{array}\right.$$`
+
+When using these basis functions, we include the full (i.e., global) polynomial of degree `\(p\)` and one truncated power function of degree `\(p\)` for each knot.  For a cubic spline, `\(p=3\)`.
+
+---
+
+## Other Spline Bases
+
+The truncated power basis is useful for understanding how splines work.
+
+In practice, other spline bases are often used:
+
+- B-splines: numerically stable, local support.
+- Natural splines: constrain behavior in the tails.
+- Thin-plate splines: commonly used in GAMs.
+
+--
+
+All of these produce similar fitted functions.
+
+The primary differences concern computational efficiency, numerical stability, and behavior at the boundaries.
+
+---
+
+## Example: Cubic Spline
+
+&lt;img src="lecture8_2026_files/figure-html/simnl-1.png" alt="Scatter plot of 400 simulated observations with the true function f overlaid as a solid blue line. The true function is nearly flat for small x, rises steeply and peaks near x = 0.8, then falls sharply — a shape too complex for simple polynomial models." width="45%" style="display: block; margin: auto;" /&gt;
+
+
+
+
+---
+
+## Cubic Spline
+
+.pull-left[
+
+`$$\begin{aligned}
+y =&amp; b_{0} + b_{1}x + b_{2}x^2 + b_{3}x^{3}\\
+&amp;+ \sum_{m=1}^{M}b_{m+3}(x-k_m)_{+}^{3}
+\end{aligned}$$`
+
+where `\(M\)` is the number of knots.  Let's consider our example with 4 knots
+
+`$$k = \lbrace .2, .4, .6, .8 \rbrace$$`
+
+
+]
+.right-shift50[
+
+``` r
+car::S(csmod, brief=TRUE)
+```
+
+```
+## Coefficients:
+##                                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                   8.602e-02  6.836e-01   0.126   0.8999    
+## x                            -3.885e+00  1.894e+01  -0.205   0.8376    
+## I(x^2)                        5.772e+02  1.386e+02   4.164 3.84e-05 ***
+## I(x^3)                       -1.703e+03  2.877e+02  -5.921 6.99e-09 ***
+## I((x - k[1])^3 * (x &gt; k[1]))  2.771e+03  3.789e+02   7.314 1.48e-12 ***
+## I((x - k[2])^3 * (x &gt; k[2])) -1.474e+03  1.821e+02  -8.094 7.36e-15 ***
+## I((x - k[3])^3 * (x &gt; k[3]))  3.866e+02  1.821e+02   2.123   0.0344 *  
+## I((x - k[4])^3 * (x &gt; k[4]))  7.080e+02  3.789e+02   1.869   0.0624 .  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard deviation: 1.951 on 392 degrees of freedom
+## Multiple R-squared: 0.6665
+## F-statistic: 111.9 on 7 and 392 DF,  p-value: &lt; 2.2e-16 
+##     AIC     BIC 
+## 1679.71 1715.63
+```
+
+For convenience, a `tpb()` function that does this is in today's R script. 
+
+]
+
+---
+
+## Predictions
+
+.pull-left[
+The estimated values follow the truth pretty closely - without us diagnosing the kind of non-linear relationship. 
+
+The beauty of splines is that they work seamlessly with whatever regression framework you're using - they just plug in as independent variables. 
+
+
+]
+.right-shift50[
+&lt;img src="lecture8_2026_files/figure-html/csp1-1.png" alt="Line plot comparing the cubic spline model's fitted values (Estimated) to the true function (Truth) over faint scatter points. The estimated curve closely tracks the truth across the range of x, including the steep rise near x = 0.7 and the sharp fall near x = 0.9, demonstrating that the spline with 4 interior knots recovers the underlying signal well." width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## What Spline Choices Matter?
+
+| Choice              | Typical Importance   |
+|---------------------|----------------------|
+| Knot Placement      | Usually Low          |
+| Polynomial Degree   | Usually Low - 2 or 3 |
+| Number of Knots     | Moderate             |
+| Smoothing Parameter | High                 |
+
+--
+
+Simulation studies and practical experience suggest that cubic splines are generally sufficient and that knot placement is rarely critical.
+
+The primary concern is controlling flexibility.
+
+---
+
+## Choosing the Number of Knots
+
+More knots make the spline more flexible.
+
+- Too few knots may miss important features of the relationship.
+- Too many knots may fit noise rather than signal.
+
+How should we choose?
+
+--
+
+One possibility is cross-validation.
+
+---
+
+## Cross-Validation
+
+1. Randomly divide the data into `\(V\)` groups (folds).
+2. Fit the model using `\(V-1\)` groups.
+3. Predict the omitted group.
+4. Calculate prediction error.
+5. Repeat omitting the next group until every group has been omitted once.
+6. Repeat steps 1–5 multiple times using different random partitions of the data and average the resulting prediction errors.
+
+Choose the model with the lowest average prediction error.
+
+_Idea:_ A good model should predict observations it has not seen.
+
+---
+
+## What Cross-Validation Does (and Doesn't) Tell Us
+
+Cross-validation does not tell us which model is "correct."
+
+Instead, it helps identify a reasonable level of complexity.
+
+- Too little flexibility may miss meaningful structure.
+- Too much flexibility may fit noise.
+
+It is a guide for choosing flexibility, judged by how well the model predicts data it hasn't seen.
+
+---
+
+
+## Tidy CV
+
+.pull-left[
+
+``` r
+cv_fun &lt;- function(split) {
+  train &lt;- analysis(split)
+  test  &lt;- assessment(split)
+  ## knots at evenly spaced quantiles of x
+  mods &lt;- lapply(1:10, \(k) {
+    q     &lt;- seq(0, 1, length.out = k + 2L)[-c(1L, k + 2L)]
+    knots &lt;- quantile(train$x, q, na.rm = TRUE)
+    lm(y ~ tpb(x, knot_loc = knots), data = train)
+  })
+  ## out-of-sample prediction errors
+  errs &lt;- lapply(mods, \(m)
+    test$y - predict(m, newdata = test))
+
+  tibble(
+    sse     = sapply(errs, \(e) sum(e^2)),
+    n       = nrow(test),
+    n_knots = 1:10
+  )
+}
+library(purrr)
+library(rsample)
+set.seed(519)
+v &lt;- vfold_cv(df, v=5, repeats=250) |&gt;
+  mutate(err = map(splits, cv_fun))
+```
+
+Looks like five knots is the best. 
+
+]
+.pull-right-shift[
+
+
+``` r
+v |&gt; unnest(err) |&gt;
+  summarise(mse = sum(sse)/sum(n), .by=c(id, n_knots)) |&gt;
+  slice_min(mse, by = id) |&gt;
+  pull(n_knots) |&gt;
+  table()
+```
+
+```
+## 
+##  10 
+## 250
+```
+
+``` r
+v |&gt; unnest(err) |&gt;
+  summarise(mse = sum(sse)/sum(n), .by=c(id, n_knots)) |&gt;
+  summarise(mse = mean(mse), .by=n_knots)
+```
+
+```
+## # A tibble: 10 × 2
+##    n_knots   mse
+##      &lt;int&gt; &lt;dbl&gt;
+##  1       1  8.71
+##  2       2  7.88
+##  3       3  7.74
+##  4       4  7.39
+##  5       5  7.36
+##  6       6  7.37
+##  7       7  7.20
+##  8       8  6.80
+##  9       9  6.13
+## 10      10  5.44
+```
+]
+
+---
+
+## CV for Regression Splines
+
+.pull-left[
+The `NKnots()` function in the `DAMisc` package will do CV for the number of knots in a regression spline. 
+
+You can install the package with: 
+
+
+``` r
+remotes::install_github("davidaarmstrong/DAMisc")
+```
+
+]
+.pull-right[
+
+``` r
+library(DAMisc)
+NKnots(y ~ x, "x", df, includePoly=TRUE, criterion="CV") |&gt;
+  ## df 1-3 are polynomials, df &gt; 3 are splines
+  ## with df - 3 knots
+  mutate(df = ifelse(df %in% 1:3,
+                     paste0(df, " degree poly"),
+                     paste0(df-3, " knots")))
+```
+
+```
+##               df     stat
+## 1  1 degree poly 8.635192
+## 2  2 degree poly 7.289482
+## 3  3 degree poly 5.785608
+## 4        1 knots 4.645496
+## 5        2 knots 4.705302
+## 6        3 knots 4.152631
+## 7        4 knots 3.886101
+## 8        5 knots 3.884486
+## 9        6 knots 3.928892
+## 10       7 knots 3.899616
+## 11       8 knots 3.892944
+## 12       9 knots 3.946926
+## 13      10 knots 3.923986
+```
+]
+
+---
+
+## Example: Oil and Democracy
+
+.pull-left[
+In 2001, Michael Ross wrote a piece about the extent to which oil production hinders democracy.  One of his models looks as follows: 
+
+
+``` r
+load("data/ross.rda")
+ross_form &lt;- as.formula(
+  regime1 ~ regime1_lag5 + oil_lag5 + metal_lag5 +
+  log135_lag5 + islam_lag5 + oecd_lag5 + Food_lag5)
+ross &lt;- get_all_vars(ross_form, ross) |&gt;
+  na.omit()
+ross_mod &lt;- lm(ross_form, data=ross)
+
+set.seed(48104)
+ross_nk &lt;- NKnots(ross_form, var = "oil_lag5",
+       data = ross, includePoly=TRUE,
+       criterion="CV")
+```
+]
+.right-shift100[
+
+
+``` r
+tidy(ross_mod)  |&gt;
+  filter(str_detect(term, "oil"))
+```
+
+```
+## # A tibble: 1 × 5
+##   term     estimate std.error statistic  p.value
+##   &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 oil_lag5  -0.0403   0.00488     -8.26 3.59e-16
+```
+
+```
+##               df     stat
+## 1  1 degree poly 3.124165
+## 2  2 degree poly 3.117011
+## 3  3 degree poly 3.114381
+## 4        1 knots 3.126991
+## 5        2 knots 3.102561
+## 6        3 knots 3.117400
+## 7        4 knots 3.113049
+## 8        5 knots 3.132703
+## 9        6 knots 3.126668
+## 10       7 knots 3.130657
+## 11       8 knots 3.154113
+## 12       9 knots 3.150566
+## 13      10 knots 3.142033
+```
+
+CV picks 2 knots (i.e., `bs(oil_lag5, df = 5)`), but the CV error barely changes across models.
+]
+
+---
+
+## Regression Spline for Oil
+
+.pull-left[
+
+``` r
+ross_form_s &lt;- as.formula(
+  regime1 ~ regime1_lag5 +
+    splines::bs(oil_lag5, df = 5) +
+    metal_lag5 + log135_lag5 + islam_lag5 +
+    oecd_lag5 + Food_lag5)
+
+ross_spline &lt;- lm(ross_form_s, data=ross)
+
+anova(ross_mod, ross_spline)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Model 1: regime1 ~ regime1_lag5 + oil_lag5 + metal_lag5 + log135_lag5 + 
+##     islam_lag5 + oecd_lag5 + Food_lag5
+## Model 2: regime1 ~ regime1_lag5 + splines::bs(oil_lag5, df = 5) + metal_lag5 + 
+##     log135_lag5 + islam_lag5 + oecd_lag5 + Food_lag5
+##   Res.Df    RSS Df Sum of Sq      F   Pr(&gt;F)   
+## 1   1275 3950.2                                
+## 2   1271 3908.5  4    41.716 3.3913 0.009058 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+.pull-right[
+
+``` r
+oil_seq &lt;- quantile(ross$oil_lag5,
+                    seq(.1, .9, by=.1))
+fd_oil &lt;- function(mod){
+  avg_comparisons(mod,
+    newdata = datagrid(oil_lag5 = oil_seq,
+                grid_type = "mean_or_mode"),
+    variables = list(oil_lag5 = function(z)
+      data.frame(lo = z, hi = z + .5)),
+    by = "oil_lag5")
+}
+lin_comps &lt;- fd_oil(ross_mod)
+spl_comps &lt;- fd_oil(ross_spline)
+```
+]
+
+---
+
+## Effects
+
+- Most of the data are at low levels of oil production (see the rug).  Zooming in on `\(\lbrack 0, 1\rbrack\)` (right) shows where the spline departs from the linear model.
+- The spline rises sharply between 0 and about 0.15, then declines much faster than the linear model implies up to about 0.75.  Above that, the two are nearly indistinguishable.
+
+.pull-left[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-19-1.png" alt="Line plot with confidence ribbons comparing predicted democracy versus oil production for the linear model and B-spline (df = 5), with a rug plot showing the marginal distribution of oil. Over the full range, the two curves look similar and decline steadily." width="85%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-20-1.png" alt="The same plot zoomed to oil in [0, 1] and democracy in [6, 8]. The spline rises sharply from 0 to about 0.15, then falls below the nearly flat linear fit by about 0.75." width="85%" style="display: block; margin: auto;" /&gt;
+]
+
+
+## Regression Spline Takeaways
+
+1. The regression spline finds non-linearity in a relatively narrow but well-populated region of the data (oil below about 0.75).
+    - If that pattern is real, the linear model mis-states the effect of oil there.
+2. Global polynomial models would struggle to capture this pattern.
+    - The non-linearity is localized rather than affecting the entire support of the variable.
+3. Quantile-based knot placement allocates flexibility where the data are concentrated.
+    - This is particularly useful for highly skewed variables.
+4. The evidence for the local bend is modest.
+    - The F-test rejects linearity, but the CV error barely changes across models, so the bend helps out-of-sample prediction only a little.
+
+
+## Why Not Stop at Regression Splines. 
+
+Regression splines can be quite useful. Why do we need anything else?
+
+- Regression splines can be inefficient, particularly when many knots are required to capture complex relationships.
+
+- Regression splines require several analyst choices:
+
+    - Number of knots
+    - Location of knots
+
+- These choices can be guided by theory and evidence, but they remain somewhat arbitrary.
+
+    - The flexibility of the model is concentrated around the chosen knots.
+
+    - Detecting localized non-linearity therefore depends, in part, on where those knots are placed.
+
+---
+
+## Smoothing Splines
+
+.pull-left[
+Smoothing splines mitigate these problems somewhat: 
+
+- Use lots of knots (up to one per unique `\(x\)`).
+- Penalize excess curvature.
+
+`$$\begin{aligned}
+y_i &amp;= b_0 + b_1x_i + b_2 x_i^2 + b_3x_i^3 \\
+&amp;+ \sum_{j=1}^{J}g_{j}(x_i-k_j)_+^3 + e_i
+\end{aligned}$$`
+
+with `\(J\)` knots at locations `\(k_j\)`.  If all `\(g_j = 0\)`, this is the global cubic; non-zero `\(g\)`s let the fit deviate from it.
+]
+.right-shift100[
+&lt;img src="images/oprah_knots.png" alt="Meme based on the Oprah Winfrey 'You Get a Car' giveaway, with the text changed to 'YOU GET A KNOT / YOU GET A KNOT / YOU GET A KNOT / EVERYBODY GETS A KNOT', humorously illustrating the smoothing-spline strategy of placing a knot at every unique value of x." width="70%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Back to OLS
+
+OLS solves the following:
+
+`$$\underset{b}{\text{arg min}}\sum_i^N(y_i - \mathbf{x}_{i}\mathbf{b})^2$$`
+
+It finds the coefficients `\(\mathbf{b}\)` that minimize the residual sum of squares.
+- The only thing that matters is model fit subject to the constraint of linearity in the parameters.
+
+---
+
+## Penalized Estimation
+
+.pull-left[
+Smoothing splines solve a related, but more complex problem:
+
+`$$\underset{[b,g]}{\text{arg min}}\underbrace{\sum_i^N(y_i - \hat{y}_i)^2}_{\text{Lack of Fit}} + \underbrace{\lambda \int \lbrack f^{\prime\prime}(x)\rbrack^2 dx}_{\text{Wiggliness Penalty}}$$`
+
+Where `\(\hat{y}_i = f(x_i)\)` is the spline defined on the previous slide:
+
+`$$\begin{aligned}
+\hat{y}_{i} &amp;=  b_0 + b_1x_i + b_2 x_i^2 + b_3x_i^3 \\
+&amp;+ \sum_{j=1}^{J}g_{j}(x_i-k_j)_+^3
+\end{aligned}$$`
+]
+.right-shift50[
+- `\(\lambda\)` is a _tuning parameter_ that governs how much weight the penalty is given.
+    - `\(\lambda=0\)` recovers the unpenalized (very wiggly) regression spline.
+    - Larger `\(\lambda\)` values mean smoother curves.
+
+- The penalty measures curvature ( `\(f^{\prime\prime}\)` ).  The only functions with _no_ curvature are straight lines.
+    - As `\(\lambda \rightarrow \infty\)`, the fit approaches the **linear** regression of `\(y\)` on `\(x\)` (not the global cubic).
+    - So the smoothing spline nests the linear model - which is why an edf of 1 means "linear."
+]
+
+???
+
+Penalizing the g coefficients directly (lambda * sum g_j^2, a ridge penalty) would instead shrink toward the global cubic.  GAM software uses curvature-type penalties.
+
+Regression splines control flexibility by limiting the number of knots, smoothing splines do so by penalizing curvature.
+
+---
+
+## Who picks `\(\lambda\)`?
+
+We have replaced several modeling choices (number and location of knots) with a single smoothing parameter, `\(\lambda\)`.
+
+**Methods for Choosing `\(\lambda\)`**
+
+- (Generalized) Cross-validation
+- Random effects shrinkage (REML)
+
+---
+
+## Generalized Additive Models
+
+GAM extend smoothing splines to the multiple regression context.
+
+`$$y_i = b_0 + f(x_i) + g(z_i) + e_i$$`
+
+In practice, GAM software:
+
+- constructs spline bases,
+- estimates smoothing parameters,
+- applies smoothness penalties,
+- returns fitted smooth functions.
+
+---
+
+## Estimating GAMs
+
+We will use the `gam()` function from the `mgcv` package to estimate GAMs.
+
+- Use `method = "REML"` to estimate the smoothing parameters as random effects - currently preferred method.
+- Use `s(x)` to estimate a smooth for a variable.
+    - The argument `k` identifies the size of the basis (roughly, the number of knots).
+    - The argument `bs` identifies the type of basis (default `"tp"`, thin-plate; `"cr"` is a cubic regression spline with knots at quantiles of `\(x\)`).
+    - The argument `fx` is logical indicating whether the spline should be penalized (`FALSE`) or unpenalized (`TRUE`).
+
+---
+
+## Choosing the Basis Dimension `k`
+
+`k` sets the _maximum_ flexibility of a smooth; the penalty decides how much of it is used.
+
+- A smooth with basis dimension `k` can use at most `k - 1` effective degrees of freedom (one is lost to the identifiability constraint).
+- If `k` is too small, the smooth cannot bend enough and we over-smooth - the penalty can't add flexibility that isn't in the basis.
+- If `k` is larger than needed, the results barely change - the penalty shrinks away the extra flexibility.  The cost is computation time (roughly proportional to `\(nk^2\)`).
+- `k` can't exceed the number of unique values of `\(x\)` (e.g., Polity has 21).
+
+--
+
+**In practice:** start with the default (`k = 10`), check whether the smooth is pushing against its ceiling (`k.check()`, below), and if so, double `k` and see whether the fit changes.  The `k = 200` in the next example is far more than necessary (it uses about 2 df) - it's there to make the point that `k` is a ceiling, not a target.
+
+---
+
+## Oil and Democracy GAM
+
+.pull-left[
+
+``` r
+ross_form_gam &lt;- as.formula(
+  regime1 ~ regime1_lag5 + s(oil_lag5, k=200) +
+    metal_lag5 + log135_lag5 + islam_lag5 +
+    oecd_lag5 + Food_lag5)
+ross_gam &lt;- gam(ross_form_gam,
+                data=ross,
+                method = "REML")
+```
+
+The smooth uses approximately 2 degrees of freedom despite having a basis of dimension 200.
+
+]
+.pull-right[
+
+``` r
+tidy(ross_gam, parametric=TRUE)
+```
+
+```
+## # A tibble: 7 × 5
+##   term         estimate std.error statistic   p.value
+##   &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)   -1.40     0.541       -2.58 9.93e-  3
+## 2 regime1_lag5   0.650    0.0192      33.9  2.21e-180
+## 3 metal_lag5    -0.0504   0.0141      -3.58 3.57e-  4
+## 4 log135_lag5    0.560    0.0694       8.07 1.61e- 15
+## 5 islam_lag5    -0.0113   0.00181     -6.22 6.66e- 10
+## 6 oecd_lag5     -0.301    0.160       -1.88 6.04e-  2
+## 7 Food_lag5     -0.0282   0.00988     -2.85 4.45e-  3
+```
+
+``` r
+tidy(ross_gam)
+```
+
+```
+## # A tibble: 1 × 5
+##   term          edf ref.df statistic p.value
+##   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 s(oil_lag5)  2.00   2.01      36.3       0
+```
+
+]
+
+
+---
+
+## GAM Effects
+
+.pull-left[
+The GAM is close to linear over most of the data and departs from the linear model only at the sparse upper end of oil production.
+
+The local bend the regression spline found below about 0.75 does not show up at all.
+
+Is that because the bend is noise, or because of how the GAM penalizes curvature?
+]
+.pull-right[
+
+
+
+
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-26-1.png" alt="Line plot with confidence ribbons comparing predicted democracy versus oil production for the linear model and the GAM (effective df ≈ 2), with a rug plot. The GAM curve tracks the linear trend closely across most of the oil range, diverging only at the sparse upper end." width="90%" style="display: block; margin: auto;" /&gt;
+
+
+]
+
+---
+
+## Why Did the GAM Miss the Bend?
+
+The penalty `\(\lambda \int \lbrack f^{\prime\prime}(x)\rbrack^2 dx\)` has two features that matter here:
+
+1. **It is measured in the units of `\(x\)`.**  Oil runs from 0 to about 116, but half of the observations are below 0.54.  A bend between 0 and 0.15 is extremely "wiggly" on that scale.
+2. **It uses a single `\(\lambda\)` for the whole range of `\(x\)`.**  The `\(\lambda\)` that keeps the curve smooth across the sparse upper range also flattens the dense lower range.
+
+The B-spline didn't have this problem because its knots were placed at quantiles of oil - its flexibility was concentrated where the data are.
+
+--
+
+Two ways to deal with this:
+- Transform `\(x\)` (e.g., `\(\log\)`) so that the penalty operates on a more sensible scale.
+- Let the amount of smoothing vary with `\(x\)` - an **adaptive smooth**.
+
+---
+
+## Adaptive Smooths
+
+.pull-left[
+In an adaptive smooth (`bs = "ad"`), the penalty is `\(\int \lambda(x) \lbrack f^{\prime\prime}(x)\rbrack^2 dx\)` - the smoothing parameter is itself a smooth function of `\(x\)`.
+
+- `m` is the number of basis functions used to represent `\(\lambda(x)\)` (default 5) - i.e., how many separate smoothing parameters get estimated.
+- `xt = list(bs = "cr")` builds it on a cubic regression spline, which places knots at quantiles of `\(x\)`.
+- Costs: many more smoothing parameters, slower estimation, and it needs a lot of data to estimate `\(\lambda(x)\)` well.
+]
+.pull-right[
+
+``` r
+ross_form_ad &lt;- as.formula(
+  regime1 ~ regime1_lag5 +
+    s(oil_lag5, bs="ad", k=40, m=10,
+      xt=list(bs="cr")) +
+    metal_lag5 + log135_lag5 + islam_lag5 +
+    oecd_lag5 + Food_lag5)
+
+ross_ad &lt;- gam(ross_form_ad, data=ross,
+               method = "REML")
+tidy(ross_ad)
+```
+
+```
+## # A tibble: 1 × 5
+##   term          edf ref.df statistic p.value
+##   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 s(oil_lag5)  5.16   6.43      13.0       0
+```
+]
+
+---
+
+## Adaptive GAM Effects
+
+.pull-left[
+With smoothing allowed to vary over oil, the GAM recovers essentially the same local bend the regression spline found.
+
+- The adaptive smooth uses about 5 df, rather than 2.
+- Away from the dense low-oil region it is as smooth as the ordinary GAM.
+
+So the ordinary GAM missed the bend because of how it penalizes curvature, not because the bend is noise.
+]
+.right-shift50[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-28-1.png" alt="Line plot with confidence ribbons of predicted democracy against oil production between 0 and 2 for the linear model, the B-spline, and the adaptive GAM. The adaptive GAM and the spline both rise between 0 and about 0.15 and then decline faster than the nearly flat linear fit." width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Monotonicity in GAMs
+
+So far, we have distinguished two kinds of departures from linearity: monotone non-linearity and non-monotone non-linearity.
+- We can relax the assumption of constant marginal effects in favor of something more flexible.
+- In many of the models we looked at above, the more flexible models permitted a wide range of non-monotone non-linear effects.
+- Sometimes we may want to relax the constant marginal effect assumption, but retain the monotonicity (or some other shape) assumption.
+
+--
+
+Enter: Shape Constrained Additive Models
+
+---
+
+## Shape-Constrained GAMs (SCAMs)
+
+Sometimes theory tells us more than simply "the relationship is non-linear."
+
+Theory may imply that the relationship is:
+
+- Monotonically increasing
+- Monotonically decreasing
+- Convex
+- Concave
+
+--
+
+Examples:
+
+- Income and consumption should generally be non-decreasing.
+- Education should not reduce literacy.
+- State capacity should not decrease tax collection.
+
+A Shape-Constrained Additive Model (SCAM) estimates a smooth function while enforcing these restrictions.
+
+???
+
+If these constraints are theoretically justified, allowing arbitrary non-linearity may generate implausible alternatives.
+
+---
+
+## SCAM Estimation and Interpretation
+
+.pull-left[
+
+``` r
+library(scam)
+mod_scam &lt;- scam(
+  y ~ s(x, bs = "mpi"),
+  data = dat
+)
+```
+
+Possible values for `bs` are:
+- "mpi" - monotone increasing
+- "mpd" - monotone decreasing
+- "cx" - convex
+- "cv" - concave
+
+]
+.pull-right[
+The estimation procedure is similar to a GAM:
+
+- Smoothness is still controlled by a penalty.
+- Shape constraints restrict the space of allowable functions.
+- The fitted function is the smoothest function that both fits the data and satisfies the constraint.
+- Permits relaxing pre-specified functional form while retaining potentially theoretically important structure.
+
+]
+
+---
+
+## Oil and Democracy SCAM
+
+.pull-left[
+
+``` r
+library(scam)
+ross_form_scam &lt;- as.formula(
+  regime1 ~ regime1_lag5 + s(oil_lag5, bs="mpd", k=50) +
+    metal_lag5 + log135_lag5 + islam_lag5 +
+    oecd_lag5 + Food_lag5)
+
+ross_scam &lt;- scam(ross_form_scam,
+                data=ross)
+```
+]
+.pull-right[
+
+``` r
+broom:::tidy.gam(ross_scam, parametric=TRUE)
+```
+
+```
+## # A tibble: 7 × 5
+##   term         estimate std.error statistic   p.value
+##   &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)   -1.41     0.543       -2.59 9.70e-  3
+## 2 regime1_lag5   0.650    0.0192      33.8  3.16e-179
+## 3 metal_lag5    -0.0505   0.0141      -3.58 3.60e-  4
+## 4 log135_lag5    0.561    0.0696       8.06 1.69e- 15
+## 5 islam_lag5    -0.0113   0.00181     -6.23 6.36e- 10
+## 6 oecd_lag5     -0.302    0.160       -1.89 5.94e-  2
+## 7 Food_lag5     -0.0282   0.00991     -2.84 4.58e-  3
+```
+
+``` r
+broom:::tidy.gam(ross_scam)
+```
+
+```
+## # A tibble: 1 × 5
+##   term          edf ref.df statistic  p.value
+##   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 s(oil_lag5)  2.32   2.96      24.7 3.20e-15
+```
+]
+
+---
+
+## SCAM Effects
+
+.pull-left[
+The monotone constraint rules out the uptick the GAM shows at the (sparse) upper end of oil production.
+
+Like the ordinary GAM, the SCAM uses a single smoothing parameter on the raw oil scale, so it also smooths over the local bend at low levels of oil.
+]
+.pull-right[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-32-1.png" alt="Line plot with confidence ribbons comparing predicted democracy versus oil production for the linear model and the SCAM (effective df ≈ 2.3), with a rug plot. The SCAM curve is constrained to be monotonically decreasing and closely parallels the linear fit across the full oil range." width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Oil and Democracy: Comparing the Models
+
+.pull-left[
+Effect of a 0.5 increase in oil, starting at each decile of oil:
+
+
+```
+## # A tibble: 9 × 6
+##   oil_lag5 Linear Spline    GAM Adaptive   SCAM
+##      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+## 1    0.01   -0.02  0.243 -0.027    0.31  -0.025
+## 2    0.054  -0.02 -0.052 -0.027   -0.235 -0.025
+## 3    0.182  -0.02 -0.298 -0.027   -0.249 -0.025
+## 4    0.32   -0.02 -0.234 -0.027   -0.189 -0.025
+## 5    0.541  -0.02 -0.145 -0.026   -0.117 -0.025
+## 6    0.945  -0.02 -0.046 -0.026   -0.061 -0.025
+## 7    1.97   -0.02 -0.022 -0.026   -0.034 -0.025
+## 8    4.50   -0.02 -0.022 -0.026   -0.009 -0.024
+## 9   14.1    -0.02 -0.023 -0.024   -0.038 -0.025
+```
+]
+.pull-right[
+
+```
+## # A tibble: 5 × 3
+##   model            df   AIC
+##   &lt;chr&gt;         &lt;dbl&gt; &lt;dbl&gt;
+## 1 Linear          9   5102.
+## 2 Spline (df=5)  13   5096.
+## 3 GAM            10.0 5099.
+## 4 Adaptive GAM   13.2 5093.
+## 5 SCAM           10.3 5099.
+```
+]
+
+---
+
+## Oil and Democracy Takeaways
+
+1. The spline and the adaptive GAM both find a local bend at low levels of oil, and the adaptive GAM has the lowest AIC of all the models.
+    - The ordinary GAM and SCAM miss it because a single, global smoothing parameter on the raw oil scale flattens it - not because the data reject it.
+2. Beyond about 1, all the models agree closely.  The ordinary GAM differs only at the very sparse upper end of oil production, where uncertainty is large.
+3. Across the models, the main story is the same: more oil production is associated with less democracy across most of the observed range of oil.
+4. **General lesson:** a smoothing penalty is not neutral - it depends on the scale of `\(x\)`.  For highly skewed variables, consider transforming `\(x\)`, using a basis with quantile knots, or using an adaptive smooth.
+
+---
+
+## GAMs Beyond the Linear Model
+
+Just like `glm()`, `gam()` takes a `family` argument.  Some useful ones:
+
+| Outcome | Family |
+|:--|:--|
+| Binary | `binomial` |
+| Counts | `poisson`, `nb()` (negative binomial) |
+| Ordinal | `ocat(R = # categories)` |
+| Unordered categorical | `multinom(K = # categories - 1)` |
+| Survival | `cox.ph()` |
+| Proportions | `betar()` |
+
+`scam()` also supports `binomial` and `poisson`.
+
+--
+
+Smooths are estimated on the **linear predictor** scale (e.g., the logit): edf = 1 means linear in the logit, still non-linear in the probability.  Use `marginaleffects` for the response scale.
+
+---
+
+## Example: Fearon and Laitin (2003)
+
+.pull-left[
+
+``` r
+fldat &lt;- rio::import("data/fl_repdata.dta")
+fldat$onset &lt;- ifelse(fldat$onset &gt; 1, 1, fldat$onset)
+fl_vars &lt;- c("onset", "warl", "gdpenl", "lpopl1",
+  "lmtnest", "ncontig", "Oil", "nwstate",
+  "instab", "polity2l", "ethfrac", "relfrac")
+fldat &lt;- na.omit(fldat[, fl_vars])
+fl_glm &lt;- glm(onset ~ warl + gdpenl + lpopl1 +
+    lmtnest + ncontig + Oil + nwstate + instab +
+    polity2l + ethfrac + relfrac,
+  data=fldat, family=binomial)
+fl_gam &lt;- gam(onset ~ warl + s(gdpenl) +
+    s(lpopl1) + s(lmtnest) + ncontig + Oil +
+    nwstate + instab + s(polity2l) +
+    s(ethfrac) + s(relfrac),
+  data=fldat, family=binomial,
+  method="REML")
+```
+
+Only Polity departs from linearity in the logit (edf `\(\approx\)` 2.7), and the evidence is modest: AIC is only about 2 lower and the smooth's p = 0.11.
+]
+.pull-right[
+
+``` r
+AIC(fl_glm, fl_gam)
+```
+
+```
+##              df      AIC
+## fl_glm 12.00000 984.8033
+## fl_gam 14.42941 983.0010
+```
+
+``` r
+tidy(fl_gam)
+```
+
+```
+## # A tibble: 6 × 5
+##   term          edf ref.df statistic   p.value
+##   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 s(gdpenl)    1.00   1.00   19.0    0.0000125
+## 2 s(lpopl1)    1.00   1.00   13.0    0.000311 
+## 3 s(lmtnest)   1.00   1.00    6.04   0.0140   
+## 4 s(polity2l)  2.74   3.43    6.79   0.111    
+## 5 s(ethfrac)   1.00   1.00    0.0979 0.754    
+## 6 s(relfrac)   1.00   1.00    0.479  0.489
+```
+
+]
+
+---
+
+## Polity and Civil War Onset
+
+.pull-left[
+
+``` r
+pol_grid &lt;- datagrid(model = fl_gam,
+  polity2l = -10:10,
+  grid_type = "mean_or_mode")
+bind_rows(
+  GLM = as_tibble(predictions(fl_glm,
+          newdata = pol_grid)),
+  GAM = as_tibble(predictions(fl_gam,
+          newdata = pol_grid,
+          type = "response")),
+  .id = "model") |&gt;
+  ggplot(aes(x=polity2l, y=estimate,
+             ymin=conf.low, ymax=conf.high,
+             colour=model, fill=model)) +
+  geom_ribbon(alpha=.2, colour="transparent") +
+  geom_line() +
+  scale_colour_okabe_ito() +
+  scale_fill_okabe_ito() +
+  theme_minimal() +
+  theme(legend.position="top") +
+  labs(x="Polity (lagged)",
+       y="Pr(Civil War Onset)",
+       colour="", fill="")
+```
+]
+.right-shift50[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-37-1.png" alt="Predicted probability of civil war onset across lagged Polity scores from the logit GLM and the GAM, with confidence ribbons. The GLM curve is nearly flat; the GAM curve is an inverted U, highest for anocracies in the middle of the Polity scale." width="80%" style="display: block; margin: auto;" /&gt;
+
+The GAM suggests an inverted U (anocracies at highest risk), but the intervals are wide - suggestive, not conclusive.
+]
+
+---
+
+## Checking a GAM: What Can Go Wrong
+
+1. **The basis is too small.**  If `k` is too small, the smooth hits its ceiling and over-smooths.
+    - Signs: edf close to `k'` (the maximum), and residuals that still show a pattern against `\(x\)`.
+    - `k.check()` compares the residual variance between neighboring observations (in `\(x\)`) to the overall residual variance.  A k-index well below 1 with a small p-value suggests a pattern left in the residuals.
+2. **Concurvity** - the non-parametric analogue of collinearity.
+    - One smooth can be well approximated by (combinations of) the other terms in the model, so its shape is poorly identified and its intervals are wide.
+    - Measured from 0 (none) to 1 (complete).  Values above about 0.8 are worth worrying about.
+3. **The usual model diagnostics still apply** - the distribution of the residuals, the mean-variance relationship, influential observations.  Smooths do not fix a misspecified family.
+
+---
+
+## Interpreting Uncertainty in Smooths
+
+- **edf** (effective degrees of freedom) summarizes how flexible a smooth is.  For the default bases, edf = 1 is a straight line.
+- **p-values** for smooths test whether `\(f(x) = 0\)` everywhere.  They are approximate, and a significant smooth is not necessarily a non-linear one - compare the edf, or compare to a parametric model with AIC.
+- **Confidence bands** come from a Bayesian (posterior) covariance matrix.
+    - They have good _average_ coverage across the function, not necessarily at every individual value of `\(x\)`.
+    - By default, they treat the smoothing parameter as known.  `vcov(model, unconditional = TRUE)` (or `plot(model, unconditional = TRUE)`) also accounts for uncertainty about `\(\lambda\)`.
+- Bands are narrowest where the data are dense and widen quickly where data are sparse - always plot a rug.
+
+---
+
+## Checking the Fearon and Laitin GAM: `k`
+
+.pull-left[
+
+``` r
+set.seed(519)
+k.check(fl_gam)
+```
+
+```
+##             k'      edf   k-index p-value
+## s(gdpenl)    9 1.000017 0.8972811  0.1275
+## s(lpopl1)    9 1.000080 0.9181505  0.6300
+## s(lmtnest)   9 1.000140 0.8887647  0.0475
+## s(polity2l)  9 2.742089 0.9212996  0.6875
+## s(ethfrac)   9 1.000063 0.8895644  0.0350
+## s(relfrac)   9 1.000078 0.8867955  0.0400
+```
+
+The k-index p-values come from a randomization, so they change from run to run - treat them as a flag, not a verdict.  The edf are nowhere near `k'` = 9, so the real test is whether doubling `k` changes anything.
+]
+.pull-right[
+
+``` r
+fl_gam20 &lt;- gam(onset ~ warl +
+    s(gdpenl, k=20) + s(lpopl1, k=20) +
+    s(lmtnest, k=20) + ncontig + Oil +
+    nwstate + instab + s(polity2l, k=20) +
+    s(ethfrac, k=20) + s(relfrac, k=20),
+  data=fldat, family=binomial,
+  method="REML")
+```
+
+```
+## # A tibble: 6 × 3
+##   smooth        k10   k20
+##   &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;
+## 1 s(gdpenl)    1     1   
+## 2 s(lpopl1)    1     1   
+## 3 s(lmtnest)   1     1   
+## 4 s(polity2l)  2.74  2.76
+## 5 s(ethfrac)   1     1   
+## 6 s(relfrac)   1     1
+```
+
+Nothing changes, so `k = 10` is enough.
+]
+
+---
+
+## Checking the Fearon and Laitin GAM: Concurvity
+
+.pull-left[
+
+``` r
+concurvity(fl_gam, full = TRUE) |&gt;
+  t() |&gt;
+  round(2)
+```
+
+```
+##             worst observed estimate
+## para         0.50     0.50     0.50
+## s(gdpenl)    0.66     0.53     0.27
+## s(lpopl1)    0.50     0.45     0.39
+## s(lmtnest)   0.47     0.27     0.27
+## s(polity2l)  0.61     0.26     0.45
+## s(ethfrac)   0.47     0.43     0.41
+## s(relfrac)   0.40     0.33     0.33
+```
+]
+.pull-right[
+`full = TRUE` measures how well each term can be approximated by _all_ of the other terms in the model.  The three rows are different estimates of that (`worst` is the most pessimistic). 
+
+Concurvity is moderate at worst (about 0.66 for GDP per capita) - no smooth is close to being determined by the other terms. 
+
+`full = FALSE` gives pairwise concurvity, which helps identify _which_ terms are the problem when concurvity is high. 
+
+`gam.check()` prints the k-check table along with residual plots (less informative for a binary outcome). 
+]
+
+---
+
+## Plotting the Smooths
+
+.pull-left[
+`plot()` draws each smooth on the linear-predictor scale, centered at zero, with a confidence band and a rug: 
+
+
+``` r
+plot(fl_gam, pages = 1,
+     seWithMean = TRUE, scale = 0)
+```
+
+- `seWithMean = TRUE` includes uncertainty in the intercept (better coverage). 
+- `scale = 0` gives each panel its own y-axis. 
+- `select = 4` would plot just the fourth smooth. 
+
+
+]
+.right-shift50[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-42-1.png" alt="Six panels showing the estimated smooth functions from the Fearon and Laitin GAM on the logit scale, each with dashed confidence bands and a rug. Five are straight lines; the Polity panel is an inverted U." width="95%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Key Lesson
+
+We can never be sure we have found the "correct" functional form.
+
+Flexible models let us see whether our substantive conclusions depend on the functional form we assumed.
+
+- Linear models impose strong assumptions.
+- Flexible models relax those assumptions (and introduce new ones) - as the oil example shows, even the smoothing penalty is an assumption.
+- Conclusions that hold up across reasonable functional forms deserve more confidence.
+
+---
+
+## Problems With Linear Interactions
+
+Consider the following model:
+
+`$$y = a + b_{1}X + b_{2}D + b_{3}X\times D + e$$`
+
+Hainmueller, Mummolo and Xu argue that our linear interaction models like above suffer from two potential problems:
+
+- The conditional partial effect of each variable is a linear function of the other: `\(b_{D|X} = b_{2} + b_{3}X\)`.  Thus for every additional unit of `\(X\)` the effect of `\(D\)` changes by the same amount.
+
+- Support - most political scientists do not pay attention to the joint density of the interacting variables and what the implies about our ability to make inferences.
+
+
+---
+
+## Linearity
+
+Again, using the same model
+
+`$$y = a + b_{1}X + b_{2}D + b_{3}X\times D + e$$`
+
+Consider two different values of `\(D: \{d_{1}, d_{2}\}\)`, the effect of this contrast is:
+
+`$$\begin{aligned}
+    \hat{Y}(D=d_{1}|X) - \hat{Y}(D=d_{2}|X) =&amp;  (a + b_{1}X + b_{2}d_{1} + b_{3}Xd_{1})\\
+    &amp; - (a + b_{1}X + b_{2}d_{2} + b_{3}Xd_{2})\\
+    =&amp; b_{2}(d_{1}-d_{2}) + b_{3}X(d_{1}-d_{2})
+\end{aligned}$$`
+
+The effect will only be appropriately estimated if *both* functions of `\(X\)` (for `\(d_{1}\)` and `\(d_{2}\)` are linear).
+
+
+
+---
+
+## Support
+
+`$$b_{2}(d_{1}-d_{2}) + b_{3}X(d_{1}-d_{2})$$`
+
+
+The equation above makes it clear that to reliably estimate the treatment:
+
+
+- We must have reasonable data density at both `\(d_{1}\)` and `\(d_{2}\)` for each value of `\(X\)`.
+
+- Failure of this condition results in interaction effects that are a function of interpolation and extrapolation.
+
+
+
+
+---
+
+## Diagnostics I
+
+.left-code[
+
+``` r
+library(interflex)
+set.seed(43901)
+X1 &lt;- rnorm(200, 3, 1)
+X2 &lt;- runif(200, -3, 3)
+e &lt;- rnorm(200, 0, 4)
+D1 &lt;- rbinom(200, 1, .5)
+Y1 &lt;- 5-4*X1 -9*D1 + 3*D1*X1 + e
+Y2 &lt;- 2.5- X2^2 -5*D1 + 2*D1*X2^2  + e
+dat &lt;- as.data.frame(cbind(Y1,Y2,D1,X1, X2))
+dat$D10 &lt;- 1-dat$D1
+i1 &lt;- interflex(estimator="raw",
+               dat,
+               "Y1",
+               "D1",
+               "X1",
+               treat.type="discrete")
+
+plot(i1)
+```
+]
+.right-plot-shift[
+
+```
+## Baseline group not specified; choose treat = 0 as the baseline group.
+```
+
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-43-1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+
+## Diagnostics II
+
+.left-code[
+
+``` r
+library(interflex)
+i2 &lt;- interflex(estimator="raw",
+               dat,
+               "Y2",
+               "D1",
+               "X2",
+               treat.type="discrete")
+
+plot(i2)
+```
+]
+.right-plot-shift[
+
+```
+## Baseline group not specified; choose treat = 0 as the baseline group.
+```
+
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-44-1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+
+---
+
+## Binning Estimator for Interaction Effects
+
+- Discretize `\(X\)` into three bins using its terciles ( `\(\delta_{\frac{1}{3}}\)` and `\(\delta_{\frac{2}{3}}\)` ).
+
+`$$G_{1}=\left\{\begin{array}{ll}
+        1, &amp;\text{ if }X &lt; \delta_{\frac{1}{3}}\\
+        0, &amp;\text{ Otherwise }
+    \end{array}\right. \text{ }
+    G_{2}=\left\{\begin{array}{ll}
+        1, &amp;\text{ if }\delta_{\frac{1}{3}} \leq X &lt; \delta_{\frac{2}{3}}\\
+        0, &amp;\text{ Otherwise }
+    \end{array}\right.\text{ }
+    G_{3}=\left\{\begin{array}{ll}
+        1, &amp;\text{ if }X \geq \delta_{\frac{2}{3}}\\
+        0, &amp;\text{ Otherwise }
+    \end{array}\right.$$`
+
+
+- Pick an evaluation point, `\(x_{j}\)`, in each of the `\(J\)` bins (usually the median of the `\(x\)` values within the bin)
+
+- Estimate the model:
+
+`$$Y = \sum_{j=1}^{J} \left\{u_{j} + \alpha_{j}D +\eta_{j}(X-x_{j}) + \beta_{j}(X-x_{j})D\right\}G_{j} + \ldots + \varepsilon$$`
+
+
+---
+
+## Advantages over Linear Interaction Effect
+
+
+- More flexible for non-linear functional forms.  It fits separate interactions to each bin.
+
+- Since `\((X-x_{j}) = 0\)` at the evaluation point, the partial conditional effect within each bin is just `\(\alpha_{j}\)`.
+
+- Binning ensures that there is sufficient joint support on `\(X\)` and `\(D\)` since they are constructed from `\(X\)`.
+
+- This model nests the linear interaction model, so it can serve as a test of the linear interaction effect model.
+
+---
+
+## Binning Estimator
+
+.left-code[
+
+``` r
+b1 &lt;- interflex(estimator="binning", 
+                dat, 
+                "Y1",
+                "D1", 
+                "X1", 
+                treat.type="discrete") 
+plot(b1)
+```
+]
+.right-plot-shift2[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-45-1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Binning Estimator II
+
+.left-code[
+
+``` r
+b2 &lt;- interflex(estimator="binning", 
+                dat, 
+                "Y2",
+                "D1", 
+                "X2", 
+                treat.type="discrete") 
+plot(b2)
+```
+]
+.right-plot-shift2[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-46-1.png" alt="" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Testing for Linear Interaction Effect
+
+We could recast the model above (the binning estimator one) to be:
+
+`$$\begin{aligned}
+    Y =&amp; \mu + \alpha D + \eta X + \beta DX + G_{2}(\mu_{2^{\prime}} + \alpha_{2^{\prime}} D + \eta_{2^{\prime}} X + \beta_{2^{\prime}} DX)\\
+       &amp; + G_{3}(\mu_{3^{\prime}} + \alpha_{3^{\prime}} D + \eta_{3^{\prime}} X + \beta_{3^{\prime}} DX)
+\end{aligned}$$`
+
+Here, the primed coefficients are the differences between bins 2 and 3 and bin 1.  If they are all zero, the model collapses to the linear interaction model. 
+
+We can then use a Wald test (i.e., F-test) to test whether all of the primed coefficients ( `\(\mu_{j^{\prime}}, \alpha_{j^{\prime}}, \eta_{j^{\prime}}, \beta_{j^{\prime}}\)` for `\(j = 2, 3\)` ) are simultaneously zero.
+
+---
+
+## On Prestige Data
+
+
+``` r
+data(Prestige, package="carData")
+pres_raw &lt;- interflex("raw", Prestige, "prestige", "income",
+                      "education", ncols=3)
+pres_raw$figure +
+  coord_cartesian(xlim = range(Prestige$income))
+```
+
+&lt;img src="lecture8_2026_files/figure-html/praw-1.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Binning Estimator: Prestige Data
+.left-code[
+
+``` r
+pres.b &lt;- interflex("binning",
+                    Prestige,
+                    "prestige",
+                    "income",
+                    "education",
+                    Z = c("type",
+                          "women"),
+                    na.rm=T,
+                    figure=FALSE)
+```
+
+
+``` r
+unlist(pres.b$tests[c("p.wald", "p.lr")])
+```
+
+```
+##  p.wald    p.lr 
+## "0.000" "0.024"
+```
+
+Both tests reject the linear interaction. 
+]
+.right-plot-shift2[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-48-1.png" alt="" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Non-linearity or Interaction? 
+
+.pull-left[
+The binning test compares bin-specific _linear_ models in income to a single linear interaction.  It rejects if the effect of income changes across bins of education - _or_ if income itself has a non-linear effect. 
+
+The relationship between income and prestige is clearly concave, so let's log income and test again: 
+
+
+``` r
+Prestige$log_income &lt;- log(Prestige$income)
+pres.bl &lt;- interflex("binning", Prestige,
+  "prestige", "log_income", "education",
+  Z = c("type", "women"),
+  na.rm=TRUE, figure=FALSE)
+unlist(pres.bl$tests[c("p.wald", "p.lr")])
+```
+
+```
+##  p.wald    p.lr 
+## "0.726" "0.916"
+```
+]
+.pull-right[
+With log income, there is no evidence against the linear interaction. 
+
+The binning test can't tell a non-linear effect of `\(D\)` from a non-linear interaction.  It is a test of the whole parametric specification, not just of the interaction. 
+
+We'll see the same thing with the GAM for these data below. 
+]
+
+
+---
+
+## Smooth Interactions with GAMs
+
+The binning estimator is still piecewise linear.  A GAM lets the conditional relationship be a smooth function.
+
+For a binary moderator `\(D\)`, estimate a separate smooth of `\(X\)` for each value of `\(D\)`:
+
+`$$y_i = b_0 + b_1D_i + f_0(X_i)(1-D_i) + f_1(X_i)D_i + \ldots + e_i$$`
+
+The effect of `\(D\)` at `\(X = x\)` is then `\(b_1 + f_1(x) - f_0(x)\)`, which can take any smooth shape.
+
+- In `mgcv`, this is `s(X, by = Df)` where `Df` is a factor (the factor main effect must also be in the model).
+- The penalty's null space includes the linear function, so if the smooths come back with edf `\(\approx 1\)`, the data are telling us the linear interaction was fine.
+
+---
+
+## GAMs for the Fake Data I
+
+.pull-left[
+
+``` r
+dat$D1f &lt;- factor(dat$D1)
+lin1 &lt;- gam(Y1 ~ X1*D1f, data=dat,
+            method="ML")
+gam1 &lt;- gam(Y1 ~ D1f + s(X1, by=D1f),
+            data=dat, method="ML")
+AIC(lin1, gam1)
+```
+
+```
+##            df      AIC
+## lin1 5.000000 1115.683
+## gam1 5.000276 1115.683
+```
+]
+.pull-right[
+
+``` r
+tidy(gam1)
+```
+
+```
+## # A tibble: 2 × 5
+##   term         edf ref.df statistic   p.value
+##   &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 s(X1):D1f0  1.00   1.00      86.2 0        
+## 2 s(X1):D1f1  1.00   1.00      18.4 0.0000276
+```
+
+Both smooths use about 1 df - the linear interaction is sufficient here (as it should be, given how we generated `Y1`).
+]
+
+---
+
+## GAMs for the Fake Data II
+
+.pull-left[
+
+``` r
+lin2 &lt;- gam(Y2 ~ X2*D1f, data=dat,
+            method="ML")
+gam2 &lt;- gam(Y2 ~ D1f + s(X2, by=D1f),
+            data=dat, method="ML")
+AIC(lin2, gam2)
+```
+
+```
+##            df      AIC
+## lin2  5.00000 1224.533
+## gam2 12.07807 1119.140
+```
+
+``` r
+anova(lin2, gam2, test="F")
+```
+
+```
+## Analysis of Deviance Table
+## 
+## Model 1: Y2 ~ X2 * D1f
+## Model 2: Y2 ~ D1f + s(X2, by = D1f)
+##   Resid. Df Resid. Dev     Df Deviance      F    Pr(&gt;F)    
+## 1    196.00     5080.2                                     
+## 2    187.06     2794.4 8.9367   2285.8 17.388 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+.pull-right[
+
+``` r
+tidy(gam2)
+```
+
+```
+## # A tibble: 2 × 5
+##   term         edf ref.df statistic p.value
+##   &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 s(X2):D1f0  4.46   5.48      13.1       0
+## 2 s(X2):D1f1  3.59   4.42      17.2       0
+```
+
+Here, the smooths are clearly non-linear and the GAM fits much better than the linear interaction.
+]
+
+---
+
+## Treatment Effect Across `\(X\)`
+
+.pull-left[
+We only want to evaluate the effect of `\(D\)` where both groups have support on `\(X\)`.
+
+
+``` r
+lbx2 &lt;- max(tapply(dat$X2, dat$D1f, min))
+ubx2 &lt;- min(tapply(dat$X2, dat$D1f, max))
+plot_comparisons(gam2,
+  variables = "D1f",
+  condition = list(
+    X2 = seq(lbx2, ubx2, length=100))) +
+  geom_rug(data=dat, aes(x=X2),
+           inherit.aes=FALSE, alpha=.3) +
+  theme_minimal() +
+  labs(x="X2",
+       y="Predicted Treatment Effect")
+```
+
+`marginaleffects` does all of the work we used to do by hand - building the prediction grid, differencing, and the delta-method confidence bands.
+]
+.right-shift50[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-51-1.png" alt="Line plot with confidence ribbon of the estimated effect of D on Y2 across the common support of X2 from the GAM with separate smooths for each value of D. The effect is U-shaped, negative near X2 = 0 and positive at the extremes, with a rug showing the distribution of X2." width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Linear vs. Smooth Treatment Effects
+
+.pull-left[
+
+``` r
+grid_x2 &lt;- list(
+  X2 = seq(lbx2, ubx2, length=100))
+bind_rows(
+  comparisons(lin2, variables="D1f",
+    newdata = datagrid(X2 = grid_x2$X2)) |&gt;
+    as_tibble() |&gt; mutate(model="Linear"),
+  comparisons(gam2, variables="D1f",
+    newdata = datagrid(X2 = grid_x2$X2)) |&gt;
+    as_tibble() |&gt; mutate(model="GAM")) |&gt;
+  ggplot(aes(x=X2, y=estimate,
+             ymin=conf.low, ymax=conf.high,
+             colour=model, fill=model)) +
+  geom_ribbon(alpha=.2, colour="transparent") +
+  geom_line() +
+  scale_colour_okabe_ito() +
+  scale_fill_okabe_ito() +
+  theme_minimal() +
+  theme(legend.position="top") +
+  labs(x="X2", y="Effect of D",
+       colour="", fill="")
+```
+]
+.right-shift50[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-52-1.png" alt="Two effect curves with confidence ribbons for the effect of D across X2: the linear interaction model gives a nearly flat line near zero, while the GAM gives a U-shaped curve, showing that the linear interaction completely misses the conditional effect." width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Two Continuous Variables: Tensor Products
+
+When both moderator and focal variable are continuous, we need a smooth _surface_ `\(f(X, Z)\)`.
+
+- `te(X, Z)` - a tensor product smooth of `\(X\)` and `\(Z\)` jointly.
+- `ti(X) + ti(Z) + ti(X, Z)` - the same surface decomposed into two main-effect smooths and a pure interaction smooth.
+    - This is the smooth analogue of `X + Z + X:Z`.
+    - The `ti(X, Z)` term gives a direct test of whether there is _any_ interaction beyond the additive smooths.
+- Tensor products are scale-invariant, so it doesn't matter that `\(X\)` and `\(Z\)` are measured in different units (unlike `s(X, Z)`, which is isotropic).
+
+---
+
+## GAMs for the Prestige Data
+
+.pull-left[
+
+``` r
+data(Prestige, package="carData")
+Prestige &lt;- na.omit(Prestige)
+pres_lin &lt;- gam(prestige ~
+    log(income)*education +
+    women + type,
+  data=Prestige, method="ML")
+pres_ti &lt;- gam(prestige ~
+    ti(income) + ti(education) +
+    ti(income, education) +
+    women + type,
+  data=Prestige, method="ML")
+AIC(pres_lin, pres_ti)
+```
+
+```
+##                df      AIC
+## pres_lin  8.00000 648.6185
+## pres_ti  11.27454 651.5850
+```
+]
+.pull-right[
+
+``` r
+tidy(pres_ti)
+```
+
+```
+## # A tibble: 3 × 5
+##   term                   edf ref.df statistic    p.value
+##   &lt;chr&gt;                &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+## 1 ti(income)            2.52   2.95     10.2  0.00000795
+## 2 ti(education)         1.00   1.00     21.9  0.0000107 
+## 3 ti(income,education)  1.98   2.32      1.95 0.110
+```
+
+The `ti(income, education)` term is not significant and the parametric `log(income)*education` model has the lower AIC - the non-linearity in income is real, but the logged parametric interaction captures it.  This matches the binning test with log income.
+]
+
+---
+
+## Conditional Effects of Income
+
+.pull-left[
+
+``` r
+p_lin &lt;- plot_predictions(pres_lin,
+  condition = list("income",
+                   education = "threenum")) +
+  ggtitle("Linear Interaction")
+p_ti &lt;- plot_predictions(pres_ti,
+  condition = list("income",
+                   education = "threenum")) +
+  ggtitle("Tensor Product Smooth")
+(p_lin + p_ti) +
+  plot_layout(guides = "collect", ncol=1) &amp;
+  scale_colour_okabe_ito() &amp;
+  scale_fill_okabe_ito() &amp;
+  theme_minimal() &amp;
+  theme(legend.position = "top")
+```
+
+Each line is the predicted prestige across income at the mean and `\(\pm\)` 1 SD of education.
+]
+.right-shift50[
+&lt;img src="lecture8_2026_files/figure-html/unnamed-chunk-54-1.png" alt="Two stacked panels of predicted prestige against income at three levels of education (mean minus one SD, mean, mean plus one SD). The top panel shows the parametric log-income by education interaction; the bottom panel shows the tensor-product smooth surface." width="100%" height="525px" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Flexible Models Need Assumptions, Too
+
+Flexible models replace strong assumptions with weaker or different ones, but do not get rid of assumptions altogether.
+
+|         Model        |           Key Assumption         |
+|:--------------------:|:--------------------------------:|
+|   Linear             |   Constant marginal effect       |
+|   Polynomial         |   Global shape                   |
+|   Regression spline  |   Knot structure                 |
+|   GAM                |   Smoothness penalty             |
+|   SCAM               |   Smoothness + shape constraint  |
+|   Binning estimator  |   Linearity within bins          |
+|   Smooth interaction |   Smoothness + common support    |
+
+---
+
+## Flexible Functional Form Workflow: Numeric Variables
+
+1. Estimate the baseline (parametric) model.
+2. Estimate a GAM (and a SCAM if theory implies a shape constraint) with `mgcv::gam()` / `scam::scam()`.
+    - If smoothing splines are not available for your model, use regression splines + CV for knot selection.
+    - For highly skewed variables, consider an adaptive smooth (or a transformation of `\(x\)`).
+3. Check the GAM: is `k` big enough (`k.check()`, doubling `k`) and is concurvity a problem?
+4. Compare effects across models using predictions or first differences.
+5. Describe where (in the range of `\(x\)`) and how the relationships differ.
+
+Comparing the models tells us which assumptions matter - constant marginal effect and/or monotonicity.
+
+---
+
+## Flexible Functional Form Workflow: Interactions
+
+1. Check joint support of the interacting variables (raw plots).
+2. Compare the linear interaction to a binning estimator and a smooth interaction (`s(X, by=D)` or `ti()`).
+    - Remember that the binning test also picks up non-linearity in the treatment itself, so get the main-effect functional form right first.
+3. Report conditional effects only where there is common support.
+
+---
+
+## Review
+
+1. Regression splines and basis functions
+2. Cross-validation for choosing flexibility
+3. Smoothing splines and GAMs
+4. Shape-constrained GAMs
+5. Linear interactions: linearity and support
+6. Binning estimators and smooth interactions
+
+---
+
+## Exercise
+
+Timothy Peterson wrote "Export Diversity and Human Rights" (2017, _Journal of Conflict Resolution_). His main variable of interest is export diversity (the variable name is `twoway`).  Does the effect of export diversity look linear?  Estimate GAM and SCAM versions of the model and compare the effects of `twoway` across its range.
+
+
+``` r
+load("data/peterson.rda")
+base_mod &lt;- lm(physint_lead ~ twoway + physint + lib_HK +
+                 polity2 + conflictonlocation + lngdppc +
+                 gdpgrowth + lnpop + year_num,
+               data=peterson)
+```
+
+Then: does the effect of export diversity depend on GDP per capita (`lngdppc`)? Compare a linear interaction to a binning estimator and a tensor-product smooth.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "navigation": {
+    "scroll": false
+  },
+  "slideNumberFormat": "%current%",
+  "highlightLanguage": "r",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "ratio": "16:9",
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+  </body>
+</html>

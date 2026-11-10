@@ -1,0 +1,155 @@
+.remark-slide-content {
+  font-size: 1.25rem;
+}
+
+.large-text {
+  font-size: 2rem;
+}
+
+div.red {
+  color: var(--custom-red, var(--red));
+}
+
+.left-narrow {
+  width: 38%;
+  height: 100%;
+  float: left;
+}
+
+.right-wide {
+  width: 58%;
+  float: right;
+  position: relative;
+  top: -33px;
+}
+
+.right-wide100 {
+  width: 60%;
+  float: right;
+  position: relative;
+  top: -100px;
+}
+
+.right-shift100 {
+  width: 48%;
+  float: right;
+  position: relative;
+  top: -100px;
+}
+
+.right-shift50 {
+  width: 48%;
+  float: right;
+  position: relative;
+  top: -50px;
+}
+
+.middle-text {
+  position: relative;
+  top: 125px;
+}
+
+.remark-code {
+  font-size: 55%;
+}
+
+.left-code {
+  color: var(--code-side-text, #777777);
+  width: 35%;
+  height: 92%;
+  float: left;
+}
+
+.left-code-shift2 {
+  color: var(--code-side-text, #777777);
+  width: 35%;
+  height: 92%;
+  float: left;
+  position: relative;
+  top: -50px;
+}
+
+.left-code-shift {
+  color: var(--code-side-text, #777777);
+  width: 35%;
+  height: 92%;
+  float: left;
+  position: relative;
+  top: -100px;
+}
+
+.right-plot {
+  width: 63%;
+  float: right;
+  padding-left: 1%;
+}
+
+.right-plot-shift {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+  position: relative;
+  top: -100px;
+}
+
+.right-plot-shift2 {
+  width: 60%;
+  float: right;
+  padding-left: 1%;
+  position: relative;
+  top: -50px;
+}
+
+.plot-callout {
+  height: 225px;
+  width: 450px;
+  bottom: 5%;
+  right: 5%;
+  position: absolute;
+  padding: 0;
+  z-index: 100;
+}
+
+.plot-callout img {
+  width: 100%;
+  border: 4px solid var(--callout-border, #23373B);
+}
+
+.pull-right-shift {
+  float: right;
+  width: 47%;
+  position: relative;
+  top: -100px;
+}
+
+.pull-right-shift2 {
+  float: right;
+  width: 47%;
+  position: relative;
+  top: -50px;
+}
+
+.pull-left-shift2 {
+  float: left;
+  width: 47%;
+  position: relative;
+  top: -50px;
+}
+
+.shift {
+  position: relative;
+  top: -100px;
+}
+
+.pull-right ~ * {
+  clear: both;
+}
+
+.inverse,
+.inverse h1,
+.inverse h2,
+.inverse h3,
+.inverse p,
+.inverse li {
+  text-shadow: none;
+}

@@ -254,3 +254,26 @@ a { color: var(--accent); }
 .map .labels .city circle { fill: var(--ink); stroke: var(--surface); }
 .map .labels .state-label text { fill: var(--ink-2); font-weight: 600; letter-spacing: 0.08em; }
 .map .labels .county-label text { fill: var(--ink-2); font-style: italic; opacity: 0.8; }
+
+/* chart view switch, comparator, palette picker */
+.view-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; padding-top: 4px; border-top: 1px solid var(--grid); }
+.cmp { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 13px; margin-top: 6px; }
+.cmp:empty { display: none; }
+.cmp .cmp-head { display: flex; align-items: center; gap: 6px; width: 100%; color: var(--ink-2); }
+.cmp .cmp-head b { color: var(--ink); }
+.cmp > .muted { width: 100%; margin: 0; }
+.cmp .vals { margin-top: 2px; }
+.cmp .small.on { background: var(--maize); color: var(--blue); border-color: var(--maize); font-weight: 600; }
+.cmp .x { margin-left: auto; font: inherit; font-size: 16px; line-height: 1; width: 24px; height: 24px; border-radius: 50%;
+  border: 1px solid var(--border); background: var(--surface); color: var(--ink-2); cursor: pointer; padding: 0; }
+.cmp .x:hover { color: var(--ink); }
+svg.key { width: 22px; height: 10px; flex: none; }
+.selection h2 svg.key { margin-right: 6px; vertical-align: middle; }
+.chart .marker-line { stroke-width: 2; }
+.chart .pt-label { font-size: 10px; fill: var(--ink-2); paint-order: stroke; stroke: var(--surface); stroke-width: 3px; }
+.chart .axis-title { font-size: 10px; fill: var(--ink-3); }
+#table h4 { margin: 10px 0 0; font-size: 12px; color: var(--ink); }
+.map-tools { flex-wrap: wrap; }
+.pal { display: inline-flex; align-items: center; gap: 6px; }
+.pal select { padding: 3px 6px; }
+.map .cmp-outline { stroke-dasharray: 5 3; }

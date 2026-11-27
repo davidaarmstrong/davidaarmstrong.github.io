@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Anti-Black Index Map</title>
-<meta name="description" content="County and state estimates of anti-Black hostility and treatment in the United States, 1850-2010.">
+<meta name="description" content="County and state estimates of personal integrity and civil liberties violations against Black Americans, 1850-2010.">
 <link rel="stylesheet" href="style.css">
 <script src="theme.js"></script>
 </head>
@@ -12,7 +12,7 @@
 <header class="top">
   <div class="title">
     <h1>Anti-Black Index</h1>
-    <p class="sub">Hostility and treatment by county and state, 1850&ndash;2010</p>
+    <p class="sub">Personal integrity and civil liberties violations by county and state, 1850&ndash;2010</p>
     <nav class="tabs" aria-label="Pages">
       <a href="index.html" aria-current="page">Map</a>
       <a href="docs.html">Documentation</a>
@@ -25,8 +25,8 @@
       <button type="button" data-level="state" aria-pressed="false">States</button>
     </div>
     <div class="seg" role="radiogroup" aria-label="Dimension">
-      <button type="button" data-dim="h" aria-pressed="true">Hostility</button>
-      <button type="button" data-dim="t" aria-pressed="false">Treatment</button>
+      <button type="button" data-dim="h" aria-pressed="true" title="Personal integrity violations">Personal integrity</button>
+      <button type="button" data-dim="t" aria-pressed="false" title="Civil liberties violations">Civil liberties</button>
     </div>
     <div class="decade">
       <button type="button" id="play" class="icon" aria-label="Play through the decades" title="Play through the decades">
@@ -48,27 +48,38 @@
           <button type="button" data-scale="all" aria-pressed="true" title="Colour classes pooled over every decade, so colours compare across time">All decades</button>
           <button type="button" data-scale="decade" aria-pressed="false" title="Colour classes from the selected decade only">This decade</button>
         </div>
+        <label class="pal" for="palette"><span>Colours</span>
+          <select id="palette" class="small" aria-label="Map colour palette"></select></label>
         <button type="button" id="reset" class="small">Reset zoom</button>
       </div>
     </div>
     <div id="map" class="map"><div class="loading">Loading map&hellip;</div></div>
-    <p class="hint" id="map-hint">Hover for values; click a county for its trajectory. Scroll or pinch to zoom.</p>
+    <p class="hint" id="map-hint">Hover for values; click a county for its charts.</p>
   </section>
 
   <aside class="side card" aria-label="Selected unit">
     <div id="selection" class="selection">
       <h2 id="sel-name">No county selected</h2>
       <p id="sel-sub" class="muted">Click a county on the map to see its trajectory on both dimensions.</p>
+      <div id="cmp" class="cmp"></div>
+    </div>
+    <div class="view-bar">
+      <div class="seg seg-sm" role="radiogroup" aria-label="Charts">
+        <button type="button" data-view="time" aria-pressed="true" title="Each dimension by decade, with 95% intervals">Over time</button>
+        <button type="button" data-view="joint" aria-pressed="false" title="Each dimension against percent Black, decade by decade">Against % Black</button>
+        <button type="button" data-view="dist" aria-pressed="false" title="How every county or state is distributed on each dimension">Distribution</button>
+      </div>
+      <button type="button" id="replay" class="small" hidden>Play from 1850</button>
     </div>
     <div class="chart-block">
-      <h3><span class="swatch sw-h"></span>Hostility</h3>
-      <div id="traj-h" class="chart traj"></div>
+      <h3><span class="swatch sw-h"></span><span id="title-h">Personal integrity violations</span></h3>
+      <div id="chart-h" class="chart"></div>
     </div>
     <div class="chart-block">
-      <h3><span class="swatch sw-t"></span>Treatment</h3>
-      <div id="traj-t" class="chart traj"></div>
+      <h3><span class="swatch sw-t"></span><span id="title-t">Civil liberties violations</span></h3>
+      <div id="chart-t" class="chart"></div>
     </div>
-    <div id="traj-legend" class="traj-legend"></div>
+    <div id="chart-legend" class="traj-legend"></div>
     <details id="table-wrap">
       <summary>Show as table</summary>
       <div id="table"></div>
@@ -81,10 +92,10 @@
 </main>
 
 <footer class="notes">
-  <p><strong>Hostility</strong> combines violence and organised hostility (lynchings, race riots, intimidation, the Klan, sundown towns, hate groups and similar);
-  <strong>treatment</strong> combines legal and institutional measures (enslavement, executions, incarceration, police killings, redlining, school segregation, state laws and similar).
+  <p><strong>Personal integrity violations</strong> combine violence and organised hostility (lynchings, race riots, intimidation, the Klan, sundown towns, hate groups and similar);
+  <strong>civil liberties violations</strong> combine legal and institutional measures (enslavement, executions, incarceration, police killings, redlining, school segregation, state laws and similar).
   Values are rescaled so that, on each dimension, the lowest county or state mean in any decade is 0 and the highest is 100; higher means more anti-Black, and intervals can run below 0 or above 100. Colours are seven quantile classes, pooled over all
-  decades (&ldquo;All decades&rdquo;) or taken from the selected decade alone (&ldquo;This decade&rdquo;). Bands show 95% posterior intervals. Counties use 2010 boundaries and appear
+  decades (&ldquo;All decades&rdquo;) or taken from the selected decade alone (&ldquo;This decade&rdquo;). Bands show 95% posterior intervals. Ctrl-, &#8984;- or Shift-click a second unit (or use &ldquo;Compare&rdquo;) to add it to the charts. Counties use 2010 boundaries and appear
   from the decade they entered the data; hollow points mark county-decades with no county-level data, whose values rest on the state&rsquo;s.
   <a href="docs.html">More on the indicators and the model</a>.</p>
 </footer>

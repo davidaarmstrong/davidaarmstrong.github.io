@@ -1,14 +1,20 @@
 # Anti-Black Index map
 
 A static web app for the county and state estimates: a map by decade
-(hostility or treatment, counties or states), each unit's trajectory on both
-dimensions with 95% intervals, and the distribution of percent Black in the
-selected decade with the unit marked.
+(personal integrity or civil liberties violations, counties or states), and for
+a selected unit, plus an optional second one to compare, charts on both
+dimensions: over time with 95% intervals, against percent Black decade by decade
+(animated), or as distributions across all units, with the distribution of
+percent Black in the selected decade below. The data files keep the model's
+names for the two dimensions: `h` (hostility) is shown as personal integrity
+violations, `t` (treatment) as civil liberties violations.
 
 Everything it needs is in this folder; there is no build step.
 
 Colours follow the University of Michigan palette (Maize, Blue, Ross Orange,
-Arboretum Blue); `style.css` holds the tokens and `app.js` the map ramps.
+Arboretum Blue); `style.css` holds the tokens and `app.js` the map ramps. Readers
+can switch the map to a ColorBrewer sequential palette (from d3's bundled
+d3-scale-chromatic); the browser remembers the choice.
 
 | File | Contents |
 |---|---|
@@ -64,6 +70,9 @@ Either:
 ## Links
 
 The URL keeps the view, so a link opens the same map and selection, e.g.
-`#level=county&dim=h&decade=1960&id=16055` (Kootenai County, Idaho, hostility,
+`#level=county&dim=h&decade=1960&id=16055` (Kootenai County, Idaho, personal integrity,
 1960). Parameters: `level` (county, state), `dim` (h, t), `decade`, `id` (FIPS
-code or state abbreviation), `within=1` (quantiles from the selected decade only, the "This decade" button).
+code or state abbreviation), `id2` (the unit compared with it), `within=1`
+(quantiles and distributions from the selected decade only, the "This decade"
+button), `view` (`joint` for against percent Black, `dist` for distributions;
+over time when absent), `pal` (a ColorBrewer scheme name such as `YlOrRd`).

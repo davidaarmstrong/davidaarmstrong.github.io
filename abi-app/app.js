@@ -12,10 +12,11 @@
   let D, NT, cIdx = new Map(), sIdx = new Map(), cState = [];
   let cFeat = [], sFeat = [], mesh;
   let svg, gRoot, gC, gS, meshPath, hoverPath, selHalo, selPath, zoom, pathGen;
+  let gLab, countyMesh, places, cityXY = [], countyXY = [], stateXY = [], curT = d3.zoomIdentity, labelFrame = 0;
   let scale, playTimer = null;
   const pooled = {};
 
-  const fmt = d3.format(".2f"), fmt1 = d3.format(".1f");
+  const fmt = d3.format(".1f"), fmt1 = d3.format(".1f");
   const tip = document.getElementById("tooltip");
   const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
   const isDark = () => {
@@ -58,7 +59,7 @@
   }
 
   // ---------- map ----------
-  function drawMap(topo) {
+  function drawMap(topo, placeData) {
     const host = document.getElementById("map");
     host.innerHTML = "";
     svg = d3.select(host).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img")
@@ -79,6 +80,9 @@
       .call((p) => { p.append("rect").attr("class", "hatch-bg").attr("width", 4).attr("height", 4);
                      p.append("line").attr("class", "hatch-line").attr("x1", 0).attr("y1", 0).attr("x2", 0).attr("y2", 4); });
     gRoot = svg.append("g");
+    // base: land under the semi-transparent fills
+    gRoot.append("g").attr("class", "base").selectAll("path").data(states.features).join("path")
+      .attr("class", "land").attr("d", pathGen);
     gC = gRoot.append("g").attr("class", "counties-level");
     gS = gRoot.append("g").attr("class", "states-level");
     const mk = (g, feats, level) => g.selectAll("path").data(d3.range(feats.length).filter((i) => feats[i]))
@@ -88,6 +92,8 @@
       .on("click", (e, i) => select(i));
     mk(gC, cFeat, "county");
     mk(gS, sFeat, "state");
+    countyMesh = gRoot.append("path").attr("class", "county-mesh")
+      .attr("d", pathGen(topojson.mesh(topo, topo.objects.counties, (a, b) => a !== b)));
     meshPath = gRoot.append("path").attr("class", "state-mesh").attr("d", pathGen(mesh));
     hoverPath = gRoot.append("path").attr("class", "hover-outline");
     selHalo = gRoot.append("path").attr("class", "sel-halo");
@@ -95,8 +101,17 @@
 
     zoom = d3.zoom().scaleExtent([1, 14]).translateExtent([[0, 0], [W, H]])
       .on("start", clearHover)
-      .on("zoom", (e) => gRoot.attr("transform", e.transform));
+      .on("zoom", (e) => { gRoot.attr("transform", e.transform); curT = e.transform; showCountyMesh(); scheduleLabels(); });
     svg.call(zoom);
+
+    // reference labels (cities, states, counties) drawn above the fills, in
+    // screen space so their size stays constant while zooming
+    gLab = svg.append("g").attr("class", "labels").attr("aria-hidden", "true");
+    places = placeData;
+    const proj = pathGen.projection();
+    cityXY = places.x.map((x, i) => proj([x, places.y[i]]));
+    countyXY = cFeat.map((f) => (f ? pathGen.centroid(f) : null));
+    stateXY = sFeat.map((f) => (f ? pathGen.centroid(f) : null));
     document.getElementById("reset").onclick = () => svg.transition().duration(400).call(zoom.transform, d3.zoomIdentity);
   }
 
@@ -111,10 +126,55 @@
     drawLegend();
   }
 
+  // ---------- basemap labels ----------
+  function showCountyMesh() {
+    countyMesh.style("display", st.level === "state" && curT.k >= 3 ? null : "none");
+  }
+  function scheduleLabels() {
+    if (labelFrame) return;
+    labelFrame = requestAnimationFrame(() => { labelFrame = 0; placeLabels(); });
+  }
+  // cities by population as you zoom in, state names at middle zooms, county
+  // names when close; each label is kept only if it doesn't overlap one
+  // already placed (largest cities first)
+  function placeLabels() {
+    const k = curT.k, rect = svg.node().getBoundingClientRect();
+    if (!rect.width) return;
+    const u = W / rect.width;                       // viewBox units per screen pixel
+    const boxes = [], out = [];
+    const free = (b) => !boxes.some((o) => b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1]);
+    const inView = (p) => p[0] >= 0 && p[0] <= W && p[1] >= 0 && p[1] <= H;
+    const add = (cls, text, p, fs, dot) => {
+      const w = text.length * fs * 0.56, pad = 2 * u;
+      const x = dot ? p[0] + 4 * u : p[0] - w / 2, y = dot ? p[1] + fs * 0.35 : p[1] + fs * 0.35;
+      const b = [x - pad - (dot ? 4 * u : 0), y - fs - pad, x + w + pad, y + pad];
+      if (!free(b)) return false;
+      boxes.push(b); out.push({ cls, text, x, y, fs, dot: dot ? p : null });
+      return true;
+    };
+    const thr = k < 1.4 ? Infinity : k < 2.2 ? 600000 : k < 3.5 ? 200000 : k < 5.5 ? 75000 : k < 8.5 ? 30000 : 10000;
+    for (let i = 0; i < cityXY.length && places.pop[i] >= thr; i++) {
+      const p = curT.apply(cityXY[i]);
+      if (inView(p)) add("city", places.name[i], p, (places.pop[i] >= 1e6 ? 12 : 11) * u, true);
+    }
+    if (k >= 1.6 && k < 6)
+      stateXY.forEach((c, i) => { if (c) { const p = curT.apply(c); if (inView(p)) add("state-label", D.states.name[i].toUpperCase(), p, 10 * u, false); } });
+    if (st.level === "county" && k >= 5)
+      countyXY.forEach((c, i) => { if (c) { const p = curT.apply(c); if (inView(p)) add("county-label", D.counties.name[i], p, 9.5 * u, false); } });
+
+    gLab.selectAll("g").data(out).join("g").attr("class", (d) => d.cls).each(function (d) {
+      const g = d3.select(this);
+      g.selectAll("*").remove();
+      if (d.dot) g.append("circle").attr("cx", d.dot[0]).attr("cy", d.dot[1]).attr("r", 2.2 * u).attr("stroke-width", u);
+      g.append("text").attr("x", d.x).attr("y", d.y).attr("font-size", d.fs).attr("stroke-width", 3 * u).text(d.text);
+    });
+  }
+
   function showLevel() {
     gC.style("display", st.level === "county" ? null : "none");
     gS.style("display", st.level === "state" ? null : "none");
     meshPath.style("display", st.level === "county" ? null : "none");
+    showCountyMesh(); scheduleLabels();
     document.getElementById("map-hint").textContent =
       `Hover for values; click a ${st.level} for its trajectory. Scroll or pinch to zoom.`;
   }
@@ -123,7 +183,7 @@
     const el = document.getElementById("legend");
     const cols = scale.range(), q = scale.quantiles();
     const scope = st.within ? `quantiles within ${decade()}` : "quantiles over all decades";
-    el.innerHTML = `<div class="legend-title">${DIMS[st.dim]}, ${decade()} <span class="muted" style="font-weight:400">(${scope}; higher = more anti-Black)</span></div>`;
+    el.innerHTML = `<div class="legend-title">${DIMS[st.dim]}, ${decade()} <span class="muted" style="font-weight:400">(0–100 scale; ${scope}; higher = more anti-Black)</span></div>`;
     const row = document.createElement("div");
     row.style.display = "flex"; row.style.flexWrap = "wrap"; row.style.alignItems = "flex-start"; row.style.rowGap = "4px";
     const r = document.createElement("div"); r.className = "ramp";
@@ -221,7 +281,7 @@
     }
     const y = d3.scaleLinear().domain(ext).nice(4).range([h - m.b, m.t]);
     svgT.append("g").attr("class", "grid").attr("transform", `translate(${m.l},0)`)
-      .call(d3.axisLeft(y).ticks(4).tickSize(-(w - m.l - m.r)).tickFormat(d3.format(".1f")))
+      .call(d3.axisLeft(y).ticks(4).tickSize(-(w - m.l - m.r)).tickFormat(d3.format("d")))
       .call((g) => g.selectAll(".tick text").attr("x", -6));
     svgT.append("g").attr("class", "axis").attr("transform", `translate(0,${h - m.b})`)
       .call(d3.axisBottom(x).tickValues(d3.range(D.decades[0], D.decades[NT - 1] + 1, 40)).tickFormat(d3.format("d")).tickSize(3));
@@ -390,14 +450,14 @@
   }
 
   // ---------- start ----------
-  Promise.all([d3.json("data/abi.json"), d3.json("data/us.topo.json")]).then(([abi, topo]) => {
+  Promise.all([d3.json("data/abi.json"), d3.json("data/us.topo.json"), d3.json("data/places.json")]).then(([abi, topo, placeData]) => {
     D = abi; NT = D.decades.length;
     D.counties.fips.forEach((f, i) => cIdx.set(f, i));
     D.states.id.forEach((s, i) => sIdx.set(s, i));
     cState = D.counties.state.map((s) => sIdx.get(s));
     readHash();
 
-    drawMap(topo);
+    drawMap(topo, placeData);
     const slider = document.getElementById("decade");
     slider.max = NT - 1; slider.value = st.t;
     document.getElementById("decade-value").textContent = decade();
@@ -412,7 +472,7 @@
       st.within = b.dataset.scale === "decade"; pressed("[data-scale]", "scale", b.dataset.scale); recolor(); writeHash();
     }));
     document.getElementById("play").addEventListener("click", togglePlay);
-    let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderSide, 150); });
+    let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { renderSide(); scheduleLabels(); }, 150); });
     addEventListener("scroll", clearHover, { passive: true });
     document.addEventListener("touchstart", (e) => {
       if (!e.target.closest(".unit, .chart svg")) clearHover();

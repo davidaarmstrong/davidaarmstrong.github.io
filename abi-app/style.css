@@ -240,3 +240,17 @@ a { color: var(--accent); }
 .theme-btn { margin-left: 6px; width: 28px; height: 28px; }
 .theme-btn svg { width: 15px; height: 15px; fill: var(--maize); stroke: var(--maize); }
 .top .theme-btn svg { fill: var(--maize); stroke: var(--maize); }
+
+/* basemap: land underneath, semi-transparent fills, labels on top */
+:root { --land: #e6e9ee; --fill-opacity: 0.78; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --land: #15253a; } }
+:root[data-theme="dark"] { --land: #15253a; }
+.map .land { fill: var(--land); stroke: none; pointer-events: none; }
+.map .unit { fill-opacity: var(--fill-opacity); }
+.map .county-mesh { fill: none; stroke: var(--ink-3); stroke-opacity: 0.55; stroke-width: 0.4; vector-effect: non-scaling-stroke; pointer-events: none; }
+.map .labels { pointer-events: none; }
+.map .labels text { paint-order: stroke; stroke: var(--surface); stroke-linejoin: round; stroke-opacity: 0.85; fill: var(--ink); font-family: inherit; }
+.map .labels .city text { font-weight: 600; }
+.map .labels .city circle { fill: var(--ink); stroke: var(--surface); }
+.map .labels .state-label text { fill: var(--ink-2); font-weight: 600; letter-spacing: 0.08em; }
+.map .labels .county-label text { fill: var(--ink-2); font-style: italic; opacity: 0.8; }

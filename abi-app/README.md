@@ -16,6 +16,7 @@ Arboretum Blue); `style.css` holds the tokens and `app.js` the map ramps.
 | `theme.js` | light/dark switch: follows the system setting until the reader picks one, which the browser remembers |
 | `docs.html` | documentation: what the two dimensions mean, every indicator behind them, how the estimates are made |
 | `data/abi.json` | estimates, column-wise (2.1 MB; about 530 KB as served, compressed) |
+| `data/places.json` | cities of 10,000+ (2010 Census Gazetteer) for the zoom labels, in the map's coordinates (147 KB; about 60 KB compressed) |
 | `data/us.topo.json` | 2010 counties, simplified, with a states layer (0.5 MB; about 160 KB compressed) |
 
 ## Updating the data
@@ -27,7 +28,10 @@ After a new county run (`counties.csv` and `states.csv` from
 Rscript R/28_app_data.R
 ```
 
-It needs `cty_20m.rds` in the top folder, `data/derived/census.csv`, and the
+It needs `cty_20m.rds` in the top folder, `data/derived/census.csv`, the 2010
+Census Gazetteer place and county files in `data/lookups/gazetteer_2010/`
+(`Gaz_places_national.txt`, `Gaz_counties_national.txt`, from
+www2.census.gov/geo/docs/maps-data/data/gazetteer/), and the
 R packages sf, rmapshaper (which bundles mapshaper), jsonlite, dplyr and tidyr.
 The boundaries keep the file's Albers projection with Alaska and Hawaii as
 insets, so the browser only scales them; `simplify` at the top of the script

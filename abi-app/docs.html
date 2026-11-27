@@ -131,7 +131,12 @@
       counts through a crosswalk from historical to 2010 boundaries. A county appears from the decade it entered the
       data.</li>
     </ol>
-    <p>Values are on the model&rsquo;s latent scale. Indicators measured the same way across the whole period carry
+    <p>The map reports a <strong>0&ndash;100 scale</strong>: on each dimension separately, the model&rsquo;s latent values
+    are shifted and stretched so that the lowest posterior mean of any county or state in any decade is 0 and the highest
+    is 100. This is a linear rescaling, so differences keep their proportions; interval bounds use the same map and can fall
+    below 0 or above 100. Because the end points are single extreme county-decades, most values sit well inside the range.
+    The two dimensions are rescaled separately, so a hostility of 60 and a treatment of 60 are not the same amount.</p>
+    <p>Indicators measured the same way across the whole period carry
     information about change over time; those marked &ldquo;within decade&rdquo; only rank places within each decade.
     Comparisons between places in the same decade are therefore firmer than comparisons of levels decades apart.</p>
   </section>
@@ -148,6 +153,9 @@
       the state&rsquo;s and on the county&rsquo;s neighbouring decades, not on local evidence.</li>
       <li><strong>Percent Black</strong> comes from decennial census counts (including enslaved people before 1870),
       allocated to 2010 counties; state values sum their counties.</li>
+      <li><strong>Zooming in</strong> brings up reference labels: the largest cities first, then smaller ones (down to
+      10,000 people, from the 2010 Census Gazetteer), state names, and county names when close. In the state view, county
+      lines appear as you zoom. Map colours are slightly transparent over a neutral land layer.</li>
       <li><strong>State values</strong> in the map are the county model&rsquo;s, on the same scale as the counties.</li>
     </ul>
   </section>

@@ -86,6 +86,7 @@
     selPath = gRoot.append("path").attr("class", "sel-outline");
 
     zoom = d3.zoom().scaleExtent([1, 14]).translateExtent([[0, 0], [W, H]])
+      .on("start", clearHover)
       .on("zoom", (e) => gRoot.attr("transform", e.transform));
     svg.call(zoom);
     document.getElementById("reset").onclick = () => svg.transition().duration(400).call(zoom.transform, d3.zoomIdentity);
@@ -154,6 +155,10 @@
     tip.hidden = false; placeTip(e);
   }
   function hideTip() { tip.hidden = true; }
+  // On touch screens a tap fires mousemove but never mouseleave, so the
+  // tooltip and hover outline would stay up: clear them on scroll, on zoom
+  // or pan, and on a tap anywhere that isn't a map unit or chart.
+  function clearHover() { hideTip(); if (hoverPath) hoverPath.attr("d", null); }
 
   // ---------- selection ----------
   function select(i) {
@@ -397,6 +402,10 @@
     document.getElementById("within").addEventListener("change", (e) => { st.within = e.target.checked; recolor(); writeHash(); });
     document.getElementById("play").addEventListener("click", togglePlay);
     let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderSide, 150); });
+    addEventListener("scroll", clearHover, { passive: true });
+    document.addEventListener("touchstart", (e) => {
+      if (!e.target.closest(".unit, .chart svg")) clearHover();
+    }, { passive: true });
     matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { recolor(); renderSide(); });
   }).catch((err) => {
     document.getElementById("map").innerHTML = `<div class="loading">Could not load the data (${err.message}). Serve the folder over http rather than opening the file directly.</div>`;

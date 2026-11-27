@@ -392,14 +392,16 @@
     const slider = document.getElementById("decade");
     slider.max = NT - 1; slider.value = st.t;
     document.getElementById("decade-value").textContent = decade();
-    document.getElementById("within").checked = st.within;
     pressed("[data-level]", "level", st.level); pressed("[data-dim]", "dim", st.dim);
+    pressed("[data-scale]", "scale", st.within ? "decade" : "all");
     showLevel(); recolor(); select(st.sel);
 
     slider.addEventListener("input", () => setDecade(+slider.value));
     document.querySelectorAll("[data-level]").forEach((b) => b.addEventListener("click", () => setLevel(b.dataset.level)));
     document.querySelectorAll("[data-dim]").forEach((b) => b.addEventListener("click", () => setDim(b.dataset.dim)));
-    document.getElementById("within").addEventListener("change", (e) => { st.within = e.target.checked; recolor(); writeHash(); });
+    document.querySelectorAll("[data-scale]").forEach((b) => b.addEventListener("click", () => {
+      st.within = b.dataset.scale === "decade"; pressed("[data-scale]", "scale", b.dataset.scale); recolor(); writeHash();
+    }));
     document.getElementById("play").addEventListener("click", togglePlay);
     let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderSide, 150); });
     addEventListener("scroll", clearHover, { passive: true });

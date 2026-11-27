@@ -6,6 +6,7 @@
 <title>Anti-Black Index Documentation</title>
 <meta name="description" content="What the Anti-Black Index's hostility and treatment dimensions mean, the indicators behind them, and how the estimates are made.">
 <link rel="stylesheet" href="style.css">
+<script src="theme.js"></script>
 </head>
 <body>
 <header class="top">
@@ -15,6 +16,7 @@
     <nav class="tabs" aria-label="Pages">
       <a href="index.html">Map</a>
       <a href="docs.html" aria-current="page">Documentation</a>
+      <button type="button" id="theme" class="icon theme-btn" aria-label="Switch theme"></button>
     </nav>
   </div>
 </header>
@@ -138,8 +140,8 @@
     <h2>Reading the map</h2>
     <ul>
       <li><strong>Colours</strong> are seven quantile classes, each holding a seventh of all unit-decades. By default the
-      classes are pooled over every decade, so colours compare across time; tick &ldquo;Colour within decade&rdquo; to
-      rank units within the selected decade only.</li>
+      classes are pooled over every decade (&ldquo;All decades&rdquo;), so colours compare across time; switch to
+      &ldquo;This decade&rdquo; to rank units within the selected decade only.</li>
       <li><strong>Hatched</strong> counties have no estimate in that decade: they had not yet entered the data, which a county does once it exists and is settled densely enough. A few sparsely populated western and Alaskan counties therefore enter only after 1960.</li>
       <li><strong>Trajectories</strong> show the posterior mean with a 95% band. For a county, the dashed line is its
       state. <strong>Hollow points</strong> are county-decades with no county-level observations: their values rest on

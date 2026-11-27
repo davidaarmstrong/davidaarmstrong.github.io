@@ -7,9 +7,13 @@ selected decade with the unit marked.
 
 Everything it needs is in this folder; there is no build step.
 
+Colours follow the University of Michigan palette (Maize, Blue, Ross Orange,
+Arboretum Blue); `style.css` holds the tokens and `app.js` the map ramps.
+
 | File | Contents |
 |---|---|
 | `index.html`, `style.css`, `app.js` | the app (D3 7.9.0 and topojson-client 3.1.0 from jsDelivr) |
+| `theme.js` | light/dark switch: follows the system setting until the reader picks one, which the browser remembers |
 | `docs.html` | documentation: what the two dimensions mean, every indicator behind them, how the estimates are made |
 | `data/abi.json` | estimates, column-wise (2.1 MB; about 530 KB as served, compressed) |
 | `data/us.topo.json` | 2010 counties, simplified, with a states layer (0.5 MB; about 160 KB compressed) |
@@ -58,4 +62,4 @@ Either:
 The URL keeps the view, so a link opens the same map and selection, e.g.
 `#level=county&dim=h&decade=1960&id=16055` (Kootenai County, Idaho, hostility,
 1960). Parameters: `level` (county, state), `dim` (h, t), `decade`, `id` (FIPS
-code or state abbreviation), `within=1` (colours within the decade).
+code or state abbreviation), `within=1` (quantiles from the selected decade only, the "This decade" button).

@@ -6,6 +6,7 @@
 <title>Anti-Black Index Map</title>
 <meta name="description" content="County and state estimates of anti-Black hostility and treatment in the United States, 1850-2010.">
 <link rel="stylesheet" href="style.css">
+<script src="theme.js"></script>
 </head>
 <body>
 <header class="top">
@@ -15,6 +16,7 @@
     <nav class="tabs" aria-label="Pages">
       <a href="index.html" aria-current="page">Map</a>
       <a href="docs.html">Documentation</a>
+      <button type="button" id="theme" class="icon theme-btn" aria-label="Switch theme"></button>
     </nav>
   </div>
   <div class="controls" role="group" aria-label="Map controls">
@@ -41,7 +43,11 @@
     <div class="map-head">
       <div id="legend" class="legend" aria-label="Colour legend"></div>
       <div class="map-tools">
-        <label class="check"><input type="checkbox" id="within"> Colour within decade</label>
+        <span class="scale-label" id="scale-label">Quantiles</span>
+        <div class="seg seg-sm" role="radiogroup" aria-labelledby="scale-label">
+          <button type="button" data-scale="all" aria-pressed="true" title="Colour classes pooled over every decade, so colours compare across time">All decades</button>
+          <button type="button" data-scale="decade" aria-pressed="false" title="Colour classes from the selected decade only">This decade</button>
+        </div>
         <button type="button" id="reset" class="small">Reset zoom</button>
       </div>
     </div>
@@ -78,7 +84,7 @@
   <p><strong>Hostility</strong> combines violence and organised hostility (lynchings, race riots, intimidation, the Klan, sundown towns, hate groups and similar);
   <strong>treatment</strong> combines legal and institutional measures (enslavement, executions, incarceration, police killings, redlining, school segregation, state laws and similar).
   Values are on the model&rsquo;s latent scale: higher means more anti-Black. Colours are seven quantile classes, pooled over all
-  decades unless &ldquo;Colour within decade&rdquo; is ticked. Bands show 95% posterior intervals. Counties use 2010 boundaries and appear
+  decades (&ldquo;All decades&rdquo;) or taken from the selected decade alone (&ldquo;This decade&rdquo;). Bands show 95% posterior intervals. Counties use 2010 boundaries and appear
   from the decade they entered the data; hollow points mark county-decades with no county-level data, whose values rest on the state&rsquo;s.
   <a href="docs.html">More on the indicators and the model</a>.</p>
 </footer>

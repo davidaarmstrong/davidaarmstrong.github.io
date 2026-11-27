@@ -11,7 +11,7 @@
 
   let D, NT, cIdx = new Map(), sIdx = new Map(), cState = [];
   let cFeat = [], sFeat = [], mesh;
-  let svg, gRoot, gC, gS, meshPath, hoverPath, selPath, zoom, pathGen;
+  let svg, gRoot, gC, gS, meshPath, hoverPath, selHalo, selPath, zoom, pathGen;
   let scale, playTimer = null;
   const pooled = {};
 
@@ -31,9 +31,16 @@
     level === "county" ? `${D.counties.name[i]}, ${D.counties.state[i]}` : D.states.name[i];
   const decade = (t = st.t) => D.decades[t];
 
+  // University of Michigan palette: hostility runs pale maize -> Maize ->
+  // Ross Orange -> dark orange; treatment pale blue -> Arboretum Blue ->
+  // Michigan Blue. Dark mode runs from the surface up to Maize / light blue.
+  const RAMPS = {
+    light: { h: ["#fff4cc", "#FFCB05", "#D86018", "#6b2a06"], t: ["#e3ebf5", "#8fb0d9", "#2F65A7", "#00274C"] },
+    dark:  { h: ["#2a2f3a", "#8a5a12", "#D86018", "#FFCB05"], t: ["#1d2a3c", "#2F65A7", "#7ea4d6", "#d6e3f3"] },
+  };
   function ramp(dim) {
-    if (!isDark()) return (dim === "h" ? d3.schemeOranges : d3.schemeBlues)[NCLASS];
-    return d3.quantize(d3.interpolateLab(dim === "h" ? "#3a2a21" : "#1f2937", dim === "h" ? "#ffb98f" : "#a9cdf6"), NCLASS);
+    const stops = RAMPS[isDark() ? "dark" : "light"][dim];
+    return d3.quantize(d3.piecewise(d3.interpolateLab, stops), NCLASS);
   }
 
   function buildScale() {
@@ -83,6 +90,7 @@
     mk(gS, sFeat, "state");
     meshPath = gRoot.append("path").attr("class", "state-mesh").attr("d", pathGen(mesh));
     hoverPath = gRoot.append("path").attr("class", "hover-outline");
+    selHalo = gRoot.append("path").attr("class", "sel-halo");
     selPath = gRoot.append("path").attr("class", "sel-outline");
 
     zoom = d3.zoom().scaleExtent([1, 14]).translateExtent([[0, 0], [W, H]])
@@ -165,6 +173,7 @@
     st.sel = i;
     const f = (st.level === "county" ? cFeat : sFeat)[i];
     selPath.attr("d", f ? pathGen(f) : null);
+    selHalo.attr("d", f ? pathGen(f) : null);
     renderSide(); writeHash();
   }
 
@@ -408,7 +417,7 @@
     document.addEventListener("touchstart", (e) => {
       if (!e.target.closest(".unit, .chart svg")) clearHover();
     }, { passive: true });
-    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { recolor(); renderSide(); });
+    document.addEventListener("themechange", () => { recolor(); renderSide(); });   // theme.js
   }).catch((err) => {
     document.getElementById("map").innerHTML = `<div class="loading">Could not load the data (${err.message}). Serve the folder over http rather than opening the file directly.</div>`;
   });

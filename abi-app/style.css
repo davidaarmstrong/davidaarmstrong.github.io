@@ -1,47 +1,43 @@
+/* University of Michigan palette (Maize #FFCB05, Blue #00274C;
+   secondary Ross Orange #D86018, Arboretum Blue #2F65A7). */
 :root {
-  --page: #f9f9f7;
-  --surface: #fcfcfb;
-  --ink: #0b0b0b;
-  --ink-2: #52514e;
-  --ink-3: #7b7a74;
-  --grid: #e1e0d9;
-  --axis: #c3c2b7;
-  --border: #e1e0d9;
-  --missing: #e8e7e1;
-  --boundary: #fcfcfb;
-  --state-line: #52514e;
-  --sel: #0b0b0b;
-  --c-h: #eb6834;
-  --c-t: #2a78d6;
-  --bar: #a3a29b;
-  --accent: #2a78d6;
+  --page: #f5f6f8;
+  --surface: #ffffff;
+  --ink: #0d1b2a;
+  --ink-2: #4a5568;
+  --ink-3: #7a8494;
+  --grid: #e3e7ed;
+  --axis: #c3cad4;
+  --border: #dde2e9;
+  --missing: #e8ebf0;
+  --boundary: #ffffff;
+  --state-line: #00274C;
+  --sel: #00274C;
+  --c-h: #D86018;
+  --c-t: #2F65A7;
+  --bar: #9aa5b4;
+  --accent: #2F65A7;
+  --band: #00274C;
+  --band-ink: #ffffff;
+  --band-ink-2: #c9d4e3;
+  --maize: #FFCB05;
+  --blue: #00274C;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --page: #0d0d0d;
-    --surface: #1a1a19;
-    --ink: #f0efec;
-    --ink-2: #c3c2b7;
-    --ink-3: #8f8e86;
-    --grid: #2c2c2a;
-    --axis: #383835;
-    --border: #2c2c2a;
-    --missing: #2c2c2a;
-    --boundary: #1a1a19;
-    --state-line: #c3c2b7;
-    --sel: #f0efec;
-    --c-h: #d95926;
-    --c-t: #3987e5;
-    --bar: #6b6a64;
-    --accent: #3987e5;
+    --page: #08121f; --surface: #0e1c2e; --ink: #f1f4f8; --ink-2: #b8c3d1; --ink-3: #8592a3;
+    --grid: #1c2c41; --axis: #2a3c54; --border: #1f3048; --missing: #1c2c41; --boundary: #0e1c2e;
+    --state-line: #c9d4e3; --sel: #FFCB05; --c-h: #D86018; --c-t: #4a82c9; --bar: #4c5d74; --accent: #7ea4d6;
+    --band: #00274C; --band-ink: #ffffff; --band-ink-2: #b8c7da;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #8f8e86;
-  --grid: #2c2c2a; --axis: #383835; --border: #2c2c2a; --missing: #2c2c2a; --boundary: #1a1a19;
-  --state-line: #c3c2b7; --sel: #f0efec; --c-h: #d95926; --c-t: #3987e5; --bar: #6b6a64; --accent: #3987e5;
+  --page: #08121f; --surface: #0e1c2e; --ink: #f1f4f8; --ink-2: #b8c3d1; --ink-3: #8592a3;
+  --grid: #1c2c41; --axis: #2a3c54; --border: #1f3048; --missing: #1c2c41; --boundary: #0e1c2e;
+  --state-line: #c9d4e3; --sel: #FFCB05; --c-h: #D86018; --c-t: #4a82c9; --bar: #4c5d74; --accent: #7ea4d6;
+  --band: #00274C; --band-ink: #ffffff; --band-ink-2: #b8c7da;
   color-scheme: dark;
 }
 
@@ -206,3 +202,41 @@ a { color: var(--accent); }
 .doc-table td:last-child { color: var(--ink-2); }
 .steps li { margin-bottom: 8px; }
 @media (max-width: 900px) { .doc { margin: 0 16px 16px; padding: 16px; } }
+
+/* quantile scope switch */
+.scale-label { font-size: 12px; color: var(--ink-2); }
+.seg-sm button { font-size: 12px; padding: 4px 10px; }
+
+/* ---- Michigan header band ---- */
+.top { background: var(--band); color: var(--band-ink); margin-bottom: 16px; border-bottom: 4px solid var(--maize); }
+.top h1 { color: var(--band-ink); }
+.top .sub { color: var(--band-ink-2); }
+.top .seg { background: transparent; border-color: rgba(255, 255, 255, 0.28); }
+.top .seg button { color: var(--band-ink-2); }
+.top .seg button + button { border-left-color: rgba(255, 255, 255, 0.28); }
+.top .seg button[aria-pressed="true"] { background: var(--maize); color: var(--blue); font-weight: 600; }
+.top .icon { background: transparent; border-color: rgba(255, 255, 255, 0.35); }
+.top .icon svg { fill: var(--maize); }
+.top .decade-label { color: var(--band-ink); }
+.top #decade { accent-color: var(--maize); }
+.top .tabs a { color: var(--band-ink-2); }
+.top .tabs a:hover { color: var(--band-ink); border-color: rgba(255, 255, 255, 0.28); }
+.top .tabs a[aria-current="page"] { color: var(--blue); background: var(--maize); border-color: var(--maize); }
+.seg button[aria-pressed="true"] { background: var(--blue); color: #fff; }
+:root[data-theme="dark"] .seg button[aria-pressed="true"] { background: var(--maize); color: var(--blue); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .seg button[aria-pressed="true"] { background: var(--maize); color: var(--blue); } }
+.top .seg button[aria-pressed="true"] { background: var(--maize); color: var(--blue); }
+.card { border-top: 3px solid var(--blue); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .card { border-top-color: var(--maize); } }
+:root[data-theme="dark"] .card { border-top-color: var(--maize); }
+.legend .legend-title, .selection h2, .doc h2 { color: var(--ink); }
+
+/* selected unit: maize line on a dark halo, visible on every class */
+.map .sel-halo { fill: none; stroke: #00152b; stroke-width: 4.5; vector-effect: non-scaling-stroke; pointer-events: none; }
+.map .sel-outline { stroke: var(--maize); stroke-width: 2; }
+
+/* light/dark switch (theme.js) */
+.tabs { align-items: center; }
+.theme-btn { margin-left: 6px; width: 28px; height: 28px; }
+.theme-btn svg { width: 15px; height: 15px; fill: var(--maize); stroke: var(--maize); }
+.top .theme-btn svg { fill: var(--maize); stroke: var(--maize); }

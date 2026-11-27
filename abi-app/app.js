@@ -278,14 +278,15 @@
   function clearHover() { hideTip(); if (hoverPath) hoverPath.attr("d", null); }
 
   // ---------- selection ----------
-  // A plain click selects; a compare click (or a click after "Compare") sets
+  // A plain click selects only that unit (dropping any comparator); a compare
+  // click (or a click after "Compare") sets
   // the second unit, or removes it if it is already the second unit.
   function pick(i, compare) {
     if ((compare || compareMode) && st.sel != null) {
       if (i !== st.sel) st.cmp = st.cmp === i ? null : i;
     } else {
       st.sel = i;
-      if (st.cmp === i) st.cmp = null;
+      st.cmp = null;              // a plain click starts over with just this unit
     }
     compareMode = false;
     updateSelection();

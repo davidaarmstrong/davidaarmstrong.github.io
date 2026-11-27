@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anti-Black Index Documentation</title>
+<meta name="description" content="What the Anti-Black Index's hostility and treatment dimensions mean, the indicators behind them, and how the estimates are made.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="title">
+    <h1>Anti-Black Index</h1>
+    <p class="sub">Hostility and treatment by county and state, 1850&ndash;2010</p>
+    <nav class="tabs" aria-label="Pages">
+      <a href="index.html">Map</a>
+      <a href="docs.html" aria-current="page">Documentation</a>
+    </nav>
+  </div>
+</header>
+
+<main class="doc card">
+  <nav class="toc" aria-label="Contents">
+    <a href="#dimensions">The two dimensions</a>
+    <a href="#hostility">Hostility indicators</a>
+    <a href="#treatment">Treatment indicators</a>
+    <a href="#model">How the estimates are made</a>
+    <a href="#reading">Reading the map</a>
+  </nav>
+
+  <section id="dimensions">
+    <h2>The two dimensions</h2>
+    <p>The index treats anti-Black racism in a place and decade as something no single record measures directly. Each
+    indicator below is a partial, noisy trace of it; the model combines them into two latent (unobserved) variables,
+    estimated for every state and county in every decade from 1850 to 2010.</p>
+    <div class="dim-grid">
+      <div class="dim">
+        <h3><span class="swatch sw-h"></span>Hostility</h3>
+        <p>Overt, interpersonal and organised hostility towards Black people: lynchings and race riots, intimidation
+        and violence, the Klan and white-supremacist organisations, sundown towns, Confederate commemoration, votes for
+        segregationist candidates, and the racial conflict recorded in the Black press. It is about what people
+        <em>did</em> to Black residents and how openly they organised against them.</p>
+      </div>
+      <div class="dim">
+        <h3><span class="swatch sw-t"></span>Treatment</h3>
+        <p>Differential treatment by law and institutions: enslavement, Jim Crow and other state laws, the racial
+        make-up of executions, imprisonment and police killings, redlining and school segregation. It is about how the
+        legal and institutional order treated Black residents compared with white ones.</p>
+      </div>
+    </div>
+    <p>On both, <strong>higher values mean more anti-Black</strong>. The two are estimated jointly and are related
+    (state-decade values correlate at about 0.4), but they can move apart: a state can repeal discriminatory laws while
+    hostile violence persists, or the reverse.</p>
+  </section>
+
+  <section id="hostility">
+    <h2><span class="swatch sw-h"></span>Hostility indicators</h2>
+    <p class="muted">Counts are modelled relative to the Black (or total) population. &ldquo;Within decade&rdquo; marks
+    indicators whose coverage or life cycle changes over time, so they get a separate intercept in each decade: they
+    rank places within a decade but do not drive change over time.</p>
+    <div class="table-scroll">
+    <table class="doc-table">
+      <thead><tr><th>Indicator</th><th>Level</th><th>Years</th><th>Source</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Black lynching victims</td><td>County</td><td>1880&ndash;1930</td><td>Tolnay&ndash;Beck inventory, HAL, National Lynching Database</td><td>Anchor: sets the hostility scale</td></tr>
+        <tr><td>Race riots</td><td>County</td><td>1850s&ndash;1940s</td><td>Turchin&rsquo;s US Political Violence database; 1919 Red Summer</td><td>Within decade</td></tr>
+        <tr><td>Intimidation, violence and economic reprisals (three indicators: police, other, reprisals)</td><td>County</td><td>1955&ndash;58</td><td><i>Intimidation, Reprisal and Violence in the South&rsquo;s Racial Crisis</i> (1959), 11 Southern states</td><td>Within decade</td></tr>
+        <tr><td>We Charge Genocide cases (police; non-police)</td><td>County</td><td>1942&ndash;51</td><td>Civil Rights Congress petition</td><td>Within decade; counties with a case only</td></tr>
+        <tr><td>Racial disorders</td><td>County</td><td>1961&ndash;68</td><td>Spilerman, cities over 25,000</td><td>Within decade</td></tr>
+        <tr><td>Riots naming Black and white groups</td><td>County</td><td>1968&ndash;72</td><td>Myers</td><td>Within decade</td></tr>
+        <tr><td>Anti-Black collective action; police force against Black protest</td><td>County</td><td>1960&ndash;95</td><td>Dynamics of Collective Action (newspaper events)</td><td>Within decade</td></tr>
+        <tr><td>Arsons of Black churches</td><td>County</td><td>1990s</td><td>National Church Arson Task Force</td><td>Within decade</td></tr>
+        <tr><td>Confederate symbols dedicated</td><td>County</td><td>1860s&ndash;2010s</td><td>SPLC, <i>Whose Heritage?</i> (dated symbols)</td><td>Relative to total population</td></tr>
+        <tr><td>Sundown towns (surely or probably excluding Black people)</td><td>County</td><td>1930</td><td>Sundown Towns database (Loewen, Tougaloo College)</td><td>Relative to total population</td></tr>
+        <tr><td>Second Klan chapters</td><td>County</td><td>1910s&ndash;30s</td><td>Klan chapter data</td><td>Within decade; relative to total population</td></tr>
+        <tr><td>Racialist and Nazi organisations</td><td>County</td><td>1970s&ndash;80s</td><td>List of racialist and Nazi organisations, 1970&ndash;86</td><td>Within decade; relative to total population</td></tr>
+        <tr><td>White-supremacist groups</td><td>County</td><td>2000&ndash;18</td><td>SPLC hate-group listings</td><td>Within decade; relative to total population</td></tr>
+        <tr><td>Vote for segregationist candidates for governor</td><td>County</td><td>1950s</td><td>Election returns</td><td>Vote share</td></tr>
+        <tr><td><b>Black press coverage of conflict</b> (one combined score from six indicators): pages pairing police and violence words; pages with Klan, lynching, bombing, mob or white-attack words; pages with integration and protest or violence words; each for states and for counties&rsquo; cities</td><td>State and county</td><td>1969&ndash;2008</td><td><i>Jet</i> magazine, HathiTrust word counts</td><td>Share of pages naming the place</td></tr>
+        <tr><td><b>Racial conflict judged by a language model</b>: pairwise comparisons of which state-decade had more racial conflict, summarised as Bradley&ndash;Terry scores</td><td>State</td><td>1940&ndash;2010</td><td>Gemini Flash judgments</td><td>Enters with its own uncertainty</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section id="treatment">
+    <h2><span class="swatch sw-t"></span>Treatment indicators</h2>
+    <p class="muted">Shares of Black people among executions, prisoners or police killings are measured against the
+    Black share of the population, so they capture over-representation rather than population size. Laws that protect
+    Black residents count towards <em>lower</em> treatment values.</p>
+    <div class="table-scroll">
+    <table class="doc-table">
+      <thead><tr><th>Indicator</th><th>Level</th><th>Years</th><th>Source</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Share of the population enslaved</td><td>County</td><td>1850&ndash;60</td><td>Census slave schedules (slave states)</td><td></td></tr>
+        <tr><td>Black share of executions, by county of conviction</td><td>County</td><td>1850s&ndash;2000s</td><td>The Espy file (ICPSR 8451)</td><td>Anchor: sets the treatment scale</td></tr>
+        <tr><td><b>Punishment</b> (one combined score from four indicators): non-white share of state prison admissions (1926&ndash;80, states); Black share of state prisoners (1940&ndash;2002, states); Black share of state prisoners by county of commitment (1983&ndash;2015); Black share of jail inmates (1990&ndash;2015, counties)</td><td>State and county</td><td>1926&ndash;2015</td><td>Langan (1991); state prisoner counts; Vera Institute Incarceration Trends</td><td></td></tr>
+        <tr><td><b>Police killings</b> (one combined score from five indicators): Black share of people killed by police in FBI Supplementary Homicide Reports (1976&ndash;2019, states and counties); in death certificates, &ldquo;legal intervention&rdquo; (1959&ndash;2004, states; 1962&ndash;2004, counties); in the <i>Washington Post</i> database (2015&ndash;18, counties)</td><td>State and county</td><td>1959&ndash;2019</td><td>FBI SHR; death certificates; <i>Washington Post</i> Fatal Force</td><td></td></tr>
+        <tr><td>Share of HOLC-graded area graded D (&ldquo;redlined&rdquo;)</td><td>County</td><td>1930s</td><td>Mapping Inequality</td><td>Graded cities only</td></tr>
+        <tr><td>Black&ndash;white school segregation within districts (Theil H)</td><td>County</td><td>1990s&ndash;2010</td><td>NCES Common Core of Data</td><td></td></tr>
+        <tr><td>Jim Crow laws in force: interracial-marriage ban, school segregation, segregated tuition, no public-accommodations law</td><td>State</td><td>1850&ndash;1960</td><td>State statutes</td><td>Share of the four in force; carries the most weight on treatment</td></tr>
+        <tr><td>Felon disenfranchisement law</td><td>State</td><td>1850&ndash;1950</td><td>State statutes</td><td></td></tr>
+        <tr><td>Fair employment law</td><td>State</td><td>1950&ndash;60</td><td>State statutes</td><td>Protective: lowers treatment</td></tr>
+        <tr><td>Public-accommodations ban with state enforcement; fair employment law with state enforcement</td><td>State</td><td>1970&ndash;2010</td><td>Caughey and Warshaw</td><td>Protective; within decade</td></tr>
+        <tr><td>Hate-crime law</td><td>State</td><td>1990&ndash;2010</td><td>State statutes</td><td>Protective</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="muted">The three combined scores (Black press, punishment, police killings) each come from a separate
+    one-dimensional model of indicators that measure nearly the same thing over the same years, so that each concept
+    counts once however many records exist for it.</p>
+  </section>
+
+  <section id="model">
+    <h2>How the estimates are made</h2>
+    <ol class="steps">
+      <li><strong>State model.</strong> Each state&rsquo;s value on each dimension follows a random walk from decade to
+      decade, so a state&rsquo;s past informs its present but can change. Every indicator is linked to one dimension with
+      its own weight (loading) and baseline, using a likelihood that suits it: negative binomial for counts,
+      beta-binomial for shares of Black people among a total, logistic for laws in force, normal (with known standard
+      errors) for the combined and language-model scores. Lynchings and the Black share of executions fix each
+      dimension&rsquo;s scale.</li>
+      <li><strong>County model.</strong> With the state model&rsquo;s indicator weights and scales held fixed, each county
+      is estimated as a deviation from its state on both dimensions. The deviation follows an AR(1) process: evidence in
+      one decade carries into neighbouring decades but fades back towards the state&rsquo;s value where a county has no
+      data. States are re-estimated alongside their counties, and the posterior is sampled with Hamiltonian Monte Carlo
+      (Stan), giving 95% intervals for every value.</li>
+      <li><strong>Boundaries.</strong> All records are placed in 2010 counties: events by place, and historical census
+      counts through a crosswalk from historical to 2010 boundaries. A county appears from the decade it entered the
+      data.</li>
+    </ol>
+    <p>Values are on the model&rsquo;s latent scale. Indicators measured the same way across the whole period carry
+    information about change over time; those marked &ldquo;within decade&rdquo; only rank places within each decade.
+    Comparisons between places in the same decade are therefore firmer than comparisons of levels decades apart.</p>
+  </section>
+
+  <section id="reading">
+    <h2>Reading the map</h2>
+    <ul>
+      <li><strong>Colours</strong> are seven quantile classes, each holding a seventh of all unit-decades. By default the
+      classes are pooled over every decade, so colours compare across time; tick &ldquo;Colour within decade&rdquo; to
+      rank units within the selected decade only.</li>
+      <li><strong>Hatched</strong> counties have no estimate in that decade: they had not yet entered the data, which a county does once it exists and is settled densely enough. A few sparsely populated western and Alaskan counties therefore enter only after 1960.</li>
+      <li><strong>Trajectories</strong> show the posterior mean with a 95% band. For a county, the dashed line is its
+      state. <strong>Hollow points</strong> are county-decades with no county-level observations: their values rest on
+      the state&rsquo;s and on the county&rsquo;s neighbouring decades, not on local evidence.</li>
+      <li><strong>Percent Black</strong> comes from decennial census counts (including enslaved people before 1870),
+      allocated to 2010 counties; state values sum their counties.</li>
+      <li><strong>State values</strong> in the map are the county model&rsquo;s, on the same scale as the counties.</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="notes">
+  <p><a href="index.html">Back to the map</a></p>
+</footer>
+</body>
+</html>
